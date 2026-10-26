@@ -8,8 +8,10 @@ import {
   errorHandler,
   notFoundHandler,
 } from '../src/middlewares/error.middleware.js';
+import { auditTracker } from '../src/middlewares/auditTracker.middleware.js';
 import { rateLimit } from '../src/middlewares/rateLimit.middleware.js';
 import adminRoutes from '../src/modules/admin/admin.routes.js';
+import devopsRoutes from '../src/modules/devops/devops.routes.js';
 import ordersRoutes from '../src/modules/orders/orders.routes.js';
 import productsRoutes from '../src/modules/products/products.routes.js';
 import storesRoutes from '../src/modules/stores/stores.routes.js';
@@ -24,8 +26,20 @@ if (process.env.VERCEL || process.env.TRUST_PROXY_HEADERS === 'true') {
   app.set('trust proxy', 1);
 }
 
-// Security & HTTP headers
-app.use(helmet());
+// Security & HTTP headers with CSP configured for DevOps monitoring UI
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://cdn.tailwindcss.com'],
+        styleSrc: ["'self'", "'unsafe-inline'", 'https:'],
+        imgSrc: ["'self'", 'data:', 'https:'],
+        connectSrc: ["'self'"],
+      },
+    },
+  })
+);
 
 // CORS configuration
 const corsOrigin = process.env.CORS_ORIGIN || '*';
@@ -44,6 +58,9 @@ app.use(express.urlencoded({ extended: true, limit: '100kb' }));
 if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('dev'));
 }
+
+// Request telemetry & jury audit tracking (Upstash Redis + in-memory ring buffer)
+app.use(auditTracker);
 
 /**
  * Root informational route
@@ -88,6 +105,7 @@ app.get(
 /**
  * API v1 Module Routes
  */
+app.use(devopsRoutes);
 app.use('/api/v1/products', productsRoutes);
 app.use('/api/v1/stores', storesRoutes);
 app.use('/api/v1/orders', ordersRoutes);

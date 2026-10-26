@@ -1,0 +1,25 @@
+name: DevOps 24/7 Warmup Cron
+
+on:
+  schedule:
+    # Run every 10 minutes to prevent Vercel Serverless cold starts
+    - cron: '*/10 * * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  warmup:
+    name: Ping Vercel Health Endpoint
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+      - name: Send Warmup Ping
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "User-Agent: Inbisco-DevOps-Warmup/1.0 (GitHub-Actions)" \
+            https://inbisco-mitrahub-backend.vercel.app/api/v1/health)
+          echo "Health check HTTP status: $STATUS"
+          if [ "$STATUS" -ne 200 ]; then
+            echo "::warning::Warmup ping returned status $STATUS"
+            exit 1
+          fi
