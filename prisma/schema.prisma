@@ -1,0 +1,88 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PACKING
+  DISPATCHED
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  COD
+  TEMPO_7_DAYS
+}
+
+model Store {
+  id         String   @id @default(uuid())
+  name       String
+  ownerName  String
+  phone      String   @unique
+  district   String
+  address    String
+  isVerified Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  orders     Order[]
+
+  @@index([district])
+  @@index([phone])
+}
+
+model Product {
+  id             String      @id @default(uuid())
+  sku            String      @unique
+  name           String
+  category       String
+  cartonPrice    Decimal     @db.Decimal(12, 2)
+  retailPriceEst Decimal     @db.Decimal(12, 2)
+  stockCartons   Int         @default(0)
+  batchNumber    String
+  expiryDate     DateTime
+  imageUrl       String?
+  isAvailable    Boolean     @default(true)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  orderItems     OrderItem[]
+
+  @@index([category])
+  @@index([expiryDate])
+}
+
+model Order {
+  id            String        @id @default(uuid())
+  trackingCode  String        @unique
+  storeId       String
+  store         Store         @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  totalAmount   Decimal       @db.Decimal(12, 2)
+  paymentMethod PaymentMethod @default(COD)
+  status        OrderStatus   @default(PENDING)
+  notes         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  items         OrderItem[]
+
+  @@index([status])
+  @@index([trackingCode])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  unitPrice Decimal @db.Decimal(12, 2)
+  subtotal  Decimal @db.Decimal(12, 2)
+}

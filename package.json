@@ -1,0 +1,37 @@
+{
+  "name": "inbisco-mitrahub-backend",
+  "version": "1.0.0",
+  "description": "Backend REST API & Data Engine for Inbisco MitraHub (PT Inbisco Niagatama Semesta - GTNIC 2026)",
+  "type": "module",
+  "main": "api/index.js",
+  "scripts": {
+    "dev": "node --watch api/index.js",
+    "start": "node api/index.js",
+    "postinstall": "prisma generate",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "node prisma/seed.js",
+    "db:studio": "prisma studio"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.4.1",
+    "@upstash/redis": "^1.34.4",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "prisma": "^6.4.1"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
+
