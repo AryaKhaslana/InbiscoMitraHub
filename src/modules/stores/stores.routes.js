@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { rateLimit } from '../../middlewares/rateLimit.middleware.js';
 import { validate } from '../../middlewares/validate.middleware.js';
 import * as storesController from './stores.controller.js';
-import { registerStoreSchema } from './stores.schema.js';
+import { lookupStoreSchema, registerStoreSchema } from './stores.schema.js';
 
 const router = Router();
 
@@ -16,6 +16,18 @@ router.post(
   rateLimit({ prefix: 'rl:stores_register', max: 10, windowSeconds: 60 }),
   validate(registerStoreSchema),
   storesController.registerStore
+);
+
+/**
+ * POST /api/v1/stores/lookup
+ * Public endpoint for returning partner stores to look up their storeId & verification status by phone number.
+ * Strictly rate-limited to 10 requests per minute per IP.
+ */
+router.post(
+  '/lookup',
+  rateLimit({ prefix: 'rl:stores_lookup', max: 10, windowSeconds: 60 }),
+  validate(lookupStoreSchema),
+  storesController.lookupStore
 );
 
 export default router;

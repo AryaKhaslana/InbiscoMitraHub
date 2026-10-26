@@ -88,3 +88,15 @@ export const registerStoreSchema = z.object({
     ),
 }).strict();
 
+export const lookupStoreSchema = z
+  .object({
+    phone: z
+      .string({ required_error: 'Phone number is required' })
+      .trim()
+      .transform(normalizePhoneNumber)
+      .refine((val) => phoneRegex.test(val), {
+        message: 'Invalid Indonesian mobile phone number (e.g. 081234567890)',
+      }),
+  })
+  .strict();
+

@@ -15,3 +15,17 @@ export async function registerStore(req, res, next) {
   }
 }
 
+export async function lookupStore(req, res, next) {
+  try {
+    const store = await storesService.lookupStoreByPhone(req.body.phone);
+
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: 'Partner store retrieved successfully',
+      data: store,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+

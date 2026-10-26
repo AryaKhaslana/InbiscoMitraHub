@@ -2,26 +2,35 @@
 
 ## Completed `[x]`
 - [x] Architectural Review & PRD Validation
-- [x] Initialize `.memory-bank/` documentation
+- [x] Initialize `.memory-bank/` documentation (`projectbrief.md`, `productContext.md`, `systemPatterns.md`, `techContext.md`, `activeContext.md`, `progress.md`)
 - [x] Project setup (`package.json`, `.env`, `.env.local`, `.env.example`, `.gitignore`, `vercel.json`)
 - [x] Install dependencies & Supabase Agent Skills (`npx skills add supabase/agent-skills`)
 - [x] Prisma Schema (`prisma/schema.prisma`) pushed to Supabase PostgreSQL & Database Seeding (`prisma/seed.js`)
-- [x] Core Infrastructure & Feature Modules (`products`, `stores`, `orders`, `admin`)
-- [x] **Security Audit Round 1, Round 2, & Round 3 (Attack-Verified):**
-  - [x] Supabase RLS enabled on all 4 tables + `REVOKE ALL` + `ALTER DEFAULT PRIVILEGES` (`prisma/security_rls.sql`)
-  - [x] SHA-256 + `crypto.timingSafeEqual` Admin Bearer Auth & CSPRNG-generated `ADMIN_SECRET_KEY`
-  - [x] Anti-Spoofing Upstash Redis Rate Limiter across all public AND `/api/v1/admin/*` routes
-  - [x] HTTP Parameter Pollution (HPP) protection & In-Memory Redis Cache filtering on `GET /api/v1/products`
-  - [x] Store Name Enumeration protection & KPI Cache-Busting prevention on `POST /api/v1/stores/register`
-  - [x] Unverified Store Checkout Guard (`403 Forbidden`) & Expired Batch Checkout Guard (`400 Bad Request`) on `POST /api/v1/orders`
-  - [x] Public Order Tracking PII & Credential Redaction (`store.id` & `order.storeId` stripped, `maskedPhone`) + 8-char Tracking Codes (`INB-YYMM-XXXXXXXX`)
-  - [x] Explicit boolean `{ isVerified }` on `PATCH /api/v1/admin/stores/:id/verify`, `http/https` URI protocol validation on `imageUrl`, and pagination on `GET /api/v1/admin/stores`
-  - [x] Compare-And-Swap (CAS) concurrency guard on `PATCH /api/v1/admin/orders/:id/status`
-  - [x] **Round 4 Concurrency & DB Index Hardening:** Atomic `redis.pipeline()` (`INCR` + `EXPIRE NX`), production lock on `DISABLE_RATE_LIMIT`, atomic `{ increment }` on `updateProductStock`, and 3 FK indexes (`Order_storeId_idx`, `OrderItem_orderId_idx`, `OrderItem_productId_idx`) applied to Supabase.
-  - [x] **Round 5 Boundary & Schema Hardening:** Post-merge 1000-carton cap, `.strict()` body schemas, mutual exclusion of `stockCartons`/`addCartons`, `Decimal(12,2)` & pagination `page <= 10000` upper bounds, `100kb` body size limit, and `/api/v1/health` metadata redaction.
+- [x] **15 Production API Endpoints Implemented & Verified:**
+  - **Public (7):**
+    - [x] `GET /` & `GET /api/v1/health` (Warm-up & health check)
+    - [x] `GET /api/v1/products` (Redis cached catalog + in-memory search/category filter)
+    - [x] `POST /api/v1/stores/register` (Partner store registration across 18 Sidoarjo districts)
+    - [x] `POST /api/v1/stores/lookup` (Returning store lookup by phone number for checkout flow)
+    - [x] `POST /api/v1/orders` (Atomic wholesale checkout with `Prisma.Decimal` & stock deduction)
+    - [x] `GET /api/v1/orders/track/:code` (Live order tracking with PII redaction)
+  - **Admin (8):**
+    - [x] `GET /api/v1/admin/kpi` (Redis cached 4 KPI metrics + Fast Moving Products)
+    - [x] `GET /api/v1/admin/orders` (Filtered by status & Sidoarjo district + pagination)
+    - [x] `PATCH /api/v1/admin/orders/:id/status` (Strict one-way state machine + CAS auto-restock on `CANCELLED`)
+    - [x] `GET /api/v1/admin/inventory/fefo` (FEFO warehouse sorting + `EXPIRED`/`DANGER`/`WARNING`/`SAFE` alerts)
+    - [x] `GET /api/v1/admin/stores` (Paginated store directory with verified & district filters)
+    - [x] `PATCH /api/v1/admin/stores/:id/verify` (Explicit boolean store verification)
+    - [x] `POST /api/v1/admin/products` (Add new Mayora SKU + cache invalidation)
+    - [x] `PATCH /api/v1/admin/products/:id/stock` (Atomic carton stock/price/FEFO batch update)
+- [x] **6 Rounds of Security Audit & Hardening:**
+  - [x] Round 1: Supabase RLS + `REVOKE ALL`, SHA-256 `timingSafeEqual` auth, Upstash Rate Limiter, Verified-Store Checkout Guard, CAS Cancel Restock, `Prisma.Decimal`.
+  - [x] Round 2: Anti-Spoofing Rate Limiter (`x-vercel-forwarded-for` / socket IP), 8-char high-entropy tracking codes, stripped `storeId` from public tracking, `ALTER DEFAULT PRIVILEGES`, explicit `{ isVerified }`.
+  - [x] Round 3: HPP query validation & in-memory catalog filtering, anti-enumeration on store registration, rate limit on `/admin/*`, expired batch checkout block, `http/https` image URL validation, `/admin/stores` pagination.
+  - [x] Round 4: Atomic `redis.pipeline()` (`INCR` + `EXPIRE NX`), production lock on `DISABLE_RATE_LIMIT`, atomic `{ increment }` on `updateProductStock`, 3 FK indexes in PostgreSQL.
+  - [x] Round 5: Post-merge 1000-carton cap, `.strict()` schemas, mutual exclusion of `stockCartons`/`addCartons`, `100kb` body cap, `/health` metadata redaction.
+  - [x] Round 6: `Cache-Control: no-store` on `/admin/*`, bounded fallback `memoryBuckets`, and `POST /api/v1/stores/lookup` endpoint.
+- [x] Live Deployment on Vercel (`https://inbisco-mitrahub-backend.vercel.app`)
 
 ## In Progress `[-]`
-- *(None — All Round 1, Round 2, and Round 3 security findings resolved and verified)*
-
-## Planned Backlog `[ ]`
-- [ ] Integrasi CORS & Deployment ke Vercel Production
+- *(None — Backend Engine is 100% complete)*

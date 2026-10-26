@@ -34,3 +34,28 @@ export async function registerStore(payload) {
 
   return newStore;
 }
+
+/**
+ * Looks up a partner store by normalized phone number so returning warung owners
+ * can retrieve their `storeId` and verification status for checkout.
+ * Redacts full street address & ownerName to protect PII.
+ */
+export async function lookupStoreByPhone(phone) {
+  const store = await prisma.store.findUnique({
+    where: { phone },
+    select: {
+      id: true,
+      name: true,
+      district: true,
+      isVerified: true,
+    },
+  });
+
+  if (!store) {
+    throw new AppError('No partner store found with that phone number', 404, [
+      { field: 'phone', message: 'Store not registered' },
+    ]);
+  }
+
+  return store;
+}
