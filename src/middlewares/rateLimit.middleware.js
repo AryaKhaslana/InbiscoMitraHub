@@ -2,14 +2,30 @@ import redis from '../config/redis.js';
 import { sendError } from '../utils/response.js';
 
 /**
- * Extracts client IP address safely behind Vercel / reverse proxies.
+ * Extracts client IP address securely.
+ * - On Vercel (`process.env.VERCEL` is truthy), Vercel Edge overwrites `x-vercel-forwarded-for`
+ *   and `x-real-ip` with the true connecting client IP, preventing client header spoofing.
+ * - Outside Vercel (local dev / direct server), we NEVER trust client-supplied `x-forwarded-for`
+ *   unless `TRUST_PROXY_HEADERS=true` is explicitly configured, using `req.socket.remoteAddress` instead.
  */
 function getClientIp(req) {
-  const forwarded = req.headers['x-forwarded-for'];
-  if (typeof forwarded === 'string' && forwarded.length > 0) {
-    return forwarded.split(',')[0].trim();
+  const isVercel = Boolean(process.env.VERCEL);
+
+  if (isVercel) {
+    const vercelIp = req.headers['x-vercel-forwarded-for'] || req.headers['x-real-ip'];
+    if (typeof vercelIp === 'string' && vercelIp.length > 0) {
+      return vercelIp.split(',')[0].trim();
+    }
   }
-  return req.ip || req.socket?.remoteAddress || 'unknown';
+
+  if (process.env.TRUST_PROXY_HEADERS === 'true') {
+    const realIp = req.headers['x-real-ip'];
+    if (typeof realIp === 'string' && realIp.length > 0) {
+      return realIp.trim();
+    }
+  }
+
+  return req.socket?.remoteAddress || req.ip || 'unknown';
 }
 
 // Fallback in-memory sliding window map when Redis is unavailable
@@ -84,4 +100,3 @@ export function rateLimit({ prefix, max = 30, windowSeconds = 60 }) {
     }
   };
 }
-

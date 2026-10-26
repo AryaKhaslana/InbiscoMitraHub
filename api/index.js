@@ -18,8 +18,10 @@ dotenv.config();
 
 const app = express();
 
-// Trust first proxy hop (Vercel Edge / Reverse Proxy) for accurate client IP in rate limiting
-app.set('trust proxy', 1);
+// Only enable Express proxy trust when running behind Vercel Edge or explicit reverse proxy
+if (process.env.VERCEL || process.env.TRUST_PROXY_HEADERS === 'true') {
+  app.set('trust proxy', 1);
+}
 
 // Security & HTTP headers
 app.use(helmet());
