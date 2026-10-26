@@ -18,8 +18,12 @@ const router = Router();
 // Rate-limit all /api/v1/admin/* requests BEFORE authentication to block token brute-force attempts
 router.use(rateLimit({ prefix: 'rl:admin_api', max: 60, windowSeconds: 60 }));
 
-// Protect all /api/v1/admin/* endpoints with Bearer <ADMIN_SECRET_KEY>
+// Protect all /api/v1/admin/* endpoints with Bearer <ADMIN_SECRET_KEY> and prevent browser/proxy caching
 router.use(adminAuth);
+router.use((_req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store');
+  next();
+});
 
 /**
  * GET /api/v1/admin/kpi

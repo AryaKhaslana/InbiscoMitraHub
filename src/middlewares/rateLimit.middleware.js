@@ -62,6 +62,7 @@ export function rateLimit({ prefix, max = 30, windowSeconds = 60 }) {
         currentCount = Number(incrCount) || 1;
       } else {
         const now = Date.now();
+        if (memoryBuckets.size > 5000) memoryBuckets.clear();
         const entry = memoryBuckets.get(key) || {
           count: 0,
           expiresAt: now + windowSeconds * 1000,
