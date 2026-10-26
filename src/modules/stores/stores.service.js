@@ -1,19 +1,21 @@
 import prisma from '../../config/database.js';
-import { CACHE_KEYS, invalidateCache } from '../../config/redis.js';
 import { AppError } from '../../utils/response.js';
 
 /**
  * Registers a new partner store/warung in Sidoarjo.
- * Ensures unique phone number and invalidates KPI summary cache.
+ * - Does NOT leak existing store names when a duplicate phone number is submitted (prevents user/store enumeration).
+ * - Does NOT invalidate `cache:kpi_summary` because newly registered stores start as `isVerified: false`,
+ *   preventing public registration spam from busting the admin KPI cache.
  */
 export async function registerStore(payload) {
   const existingStore = await prisma.store.findUnique({
     where: { phone: payload.phone },
+    select: { id: true },
   });
 
   if (existingStore) {
     throw new AppError(
-      `Phone number ${payload.phone} is already registered to store "${existingStore.name}"`,
+      'Phone number is already registered to an existing partner store',
       409,
       [{ field: 'phone', message: 'Phone number is already registered' }]
     );
@@ -30,8 +32,5 @@ export async function registerStore(payload) {
     },
   });
 
-  await invalidateCache(CACHE_KEYS.KPI_SUMMARY);
-
   return newStore;
 }
-

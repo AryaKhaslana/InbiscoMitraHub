@@ -33,7 +33,8 @@ const memoryBuckets = new Map();
 
 /**
  * Stateless Rate Limiter Middleware backed by Upstash Redis (with in-memory fallback).
- * Fails open if Redis errors out so production traffic is never accidentally bricked.
+ * Uses true sliding-ttl per IP (`prefix:ip` with `EXPIRE` on first hit) so burst attacks
+ * cannot reset their quota across clock-minute boundaries.
  *
  * @param {Object} options
  * @param {string} options.prefix - Unique namespace per route (e.g. 'rl:orders_create')
@@ -42,23 +43,23 @@ const memoryBuckets = new Map();
  */
 export function rateLimit({ prefix, max = 30, windowSeconds = 60 }) {
   return async (req, res, next) => {
-    // Bypass rate limiter during automated local test suites if explicitly set
-    if (process.env.DISABLE_RATE_LIMIT === 'true') {
+    // Bypass rate limiter during automated local test suites (never in production)
+    if (process.env.NODE_ENV !== 'production' && process.env.DISABLE_RATE_LIMIT === 'true') {
       return next();
     }
 
     const ip = getClientIp(req);
-    const windowBucket = Math.floor(Date.now() / (windowSeconds * 1000));
-    const key = `${prefix}:${ip}:${windowBucket}`;
+    const key = `${prefix}:${ip}`;
 
     try {
       let currentCount = 1;
 
       if (redis) {
-        currentCount = await redis.incr(key);
-        if (currentCount === 1) {
-          await redis.expire(key, windowSeconds);
-        }
+        const pipe = redis.pipeline();
+        pipe.incr(key);
+        pipe.expire(key, windowSeconds, 'NX');
+        const [incrCount] = await pipe.exec();
+        currentCount = Number(incrCount) || 1;
       } else {
         const now = Date.now();
         const entry = memoryBuckets.get(key) || {

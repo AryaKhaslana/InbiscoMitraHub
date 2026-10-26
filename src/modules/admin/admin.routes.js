@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { adminAuth } from '../../middlewares/auth.middleware.js';
+import { rateLimit } from '../../middlewares/rateLimit.middleware.js';
 import { validate } from '../../middlewares/validate.middleware.js';
 import * as adminController from './admin.controller.js';
 import {
@@ -13,6 +14,9 @@ import {
 } from './admin.schema.js';
 
 const router = Router();
+
+// Rate-limit all /api/v1/admin/* requests BEFORE authentication to block token brute-force attempts
+router.use(rateLimit({ prefix: 'rl:admin_api', max: 60, windowSeconds: 60 }));
 
 // Protect all /api/v1/admin/* endpoints with Bearer <ADMIN_SECRET_KEY>
 router.use(adminAuth);
@@ -51,7 +55,7 @@ router.get('/inventory/fefo', adminController.getFefoInventory);
 
 /**
  * GET /api/v1/admin/stores
- * List partner stores with optional ?verified=true|false and ?district=...
+ * List partner stores with optional ?verified=true|false&district=...&page=1&limit=50
  */
 router.get(
   '/stores',
@@ -61,7 +65,7 @@ router.get(
 
 /**
  * PATCH /api/v1/admin/stores/:id/verify
- * Toggle (or explicitly set) store isVerified status
+ * Explicitly set store isVerified status
  */
 router.patch(
   '/stores/:id/verify',
@@ -90,4 +94,3 @@ router.patch(
 );
 
 export default router;
-

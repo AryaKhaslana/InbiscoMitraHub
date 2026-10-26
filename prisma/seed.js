@@ -208,15 +208,24 @@ async function main() {
   }
   console.log(`✅ Upserted ${upsertedProducts.length} Mayora FMCG products with FEFO batches.`);
 
-  // 3. Seed Sample Wholesale Orders if none exist yet
+  // 3. Seed Sample Wholesale Orders with non-predictable 8-char tracking codes
+  const [storeKrian, storeTaman, storeWaru] = upsertedStores;
+  const [roma, bengbeng, torabika, energen, leMinerale, tehPucuk] = upsertedProducts;
+
+  // Remove old predictable 4-char seed orders if they exist
+  await prisma.order.deleteMany({
+    where: {
+      trackingCode: {
+        in: ['INB-2610-KR01', 'INB-2610-TM02', 'INB-2610-WR03'],
+      },
+    },
+  });
+
   const existingOrderCount = await prisma.order.count();
   if (existingOrderCount === 0) {
-    const [storeKrian, storeTaman, storeWaru] = upsertedStores;
-    const [roma, bengbeng, torabika, energen, leMinerale, tehPucuk] = upsertedProducts;
-
     const sampleOrders = [
       {
-        trackingCode: 'INB-2610-KR01',
+        trackingCode: 'INB-2610-K8R4M9P2',
         storeId: storeKrian.id,
         paymentMethod: 'COD',
         status: 'COMPLETED',
@@ -228,7 +237,7 @@ async function main() {
         ],
       },
       {
-        trackingCode: 'INB-2610-TM02',
+        trackingCode: 'INB-2610-T7M3W6Q9',
         storeId: storeTaman.id,
         paymentMethod: 'TEMPO_7_DAYS',
         status: 'PACKING',
@@ -240,7 +249,7 @@ async function main() {
         ],
       },
       {
-        trackingCode: 'INB-2610-WR03',
+        trackingCode: 'INB-2610-W5R8N2X7',
         storeId: storeWaru.id,
         paymentMethod: 'COD',
         status: 'PENDING',
@@ -282,7 +291,7 @@ async function main() {
       });
     }
 
-    console.log(`✅ Created ${sampleOrders.length} sample wholesale orders (INB-2610-KR01, INB-2610-TM02, INB-2610-WR03).`);
+    console.log(`✅ Created ${sampleOrders.length} sample wholesale orders (INB-2610-K8R4M9P2, INB-2610-T7M3W6Q9, INB-2610-W5R8N2X7).`);
   } else {
     console.log(`ℹ️ Skipping sample orders creation (${existingOrderCount} orders already in database).`);
   }

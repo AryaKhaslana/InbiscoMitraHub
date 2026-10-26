@@ -79,8 +79,12 @@ export const registerStoreSchema = z.object({
     }),
   address: z
     .string({ required_error: 'Full address is required' })
-    .trim()
-    .min(5, 'Address must be at least 5 characters')
-    .max(500, 'Address must not exceed 500 characters'),
-});
+    .transform((val) => val.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '').trim())
+    .pipe(
+      z
+        .string()
+        .min(5, 'Address must be at least 5 characters')
+        .max(500, 'Address must not exceed 500 characters')
+    ),
+}).strict();
 

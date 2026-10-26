@@ -8,6 +8,7 @@ import {
   errorHandler,
   notFoundHandler,
 } from '../src/middlewares/error.middleware.js';
+import { rateLimit } from '../src/middlewares/rateLimit.middleware.js';
 import adminRoutes from '../src/modules/admin/admin.routes.js';
 import ordersRoutes from '../src/modules/orders/orders.routes.js';
 import productsRoutes from '../src/modules/products/products.routes.js';
@@ -36,9 +37,9 @@ app.use(
   })
 );
 
-// Request parsing & logging
-app.use(express.json({ limit: '1mb' }));
-app.use(express.urlencoded({ extended: true }));
+// Request parsing & logging (100kb max body size to prevent JSON memory exhaustion DoS)
+app.use(express.json({ limit: '100kb' }));
+app.use(express.urlencoded({ extended: true, limit: '100kb' }));
 
 if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('dev'));
@@ -47,38 +48,42 @@ if (process.env.NODE_ENV !== 'test') {
 /**
  * Root informational route
  */
-app.get('/', (_req, res) => {
-  return sendSuccess(res, {
-    statusCode: 200,
-    message: 'Inbisco MitraHub Backend API Engine is running',
-    data: {
-      service: 'Inbisco MitraHub API',
-      version: '1.0.0',
-      documentation: '/api/v1/health',
-    },
-  });
-});
+app.get(
+  '/',
+  rateLimit({ prefix: 'rl:health', max: 120, windowSeconds: 60 }),
+  (_req, res) => {
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: 'Inbisco MitraHub Backend API Engine is running',
+      data: {
+        service: 'Inbisco MitraHub API',
+        version: '1.0.0',
+        documentation: '/api/v1/health',
+      },
+    });
+  }
+);
 
 /**
  * GET /api/v1/health
  * Keep Vercel Serverless instance warm via cron-job.
- * Includes top-level `status: "ok"` and `uptime` alongside standard envelope fields.
+ * Does not leak process.uptime() or NODE_ENV details to public callers.
  */
-app.get('/api/v1/health', (_req, res) => {
-  const uptime = process.uptime();
-  return res.status(200).json({
-    success: true,
-    message: 'Inbisco MitraHub service is healthy',
-    status: 'ok',
-    uptime,
-    timestamp: new Date().toISOString(),
-    data: {
+app.get(
+  '/api/v1/health',
+  rateLimit({ prefix: 'rl:health', max: 120, windowSeconds: 60 }),
+  (_req, res) => {
+    return res.status(200).json({
+      success: true,
+      message: 'Inbisco MitraHub service is healthy',
       status: 'ok',
-      uptime,
-      environment: process.env.NODE_ENV || 'development',
-    },
-  });
-});
+      timestamp: new Date().toISOString(),
+      data: {
+        status: 'ok',
+      },
+    });
+  }
+);
 
 /**
  * API v1 Module Routes

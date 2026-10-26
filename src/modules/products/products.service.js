@@ -28,55 +28,66 @@ export function serializeProduct(product) {
 }
 
 /**
- * Retrieves active public product catalog.
- * Reads from Redis key `cache:catalog_public` (TTL 3600s) when no custom filter is applied.
+ * Applies optional category & search filtering in-memory over the catalog array
+ * so query parameters can never bypass the Redis cache (`cache:catalog_public`) to DoS PostgreSQL.
  */
-export async function getPublicCatalog({ category, search } = {}) {
-  const isUnfiltered = !category && !search;
-
-  if (isUnfiltered) {
-    const cachedCatalog = await getCache(CACHE_KEYS.CATALOG_PUBLIC);
-    if (cachedCatalog) {
-      return {
-        products: cachedCatalog,
-        cacheHit: true,
-      };
-    }
-  }
-
-  const where = {
-    isAvailable: true,
-  };
+function filterCatalogInMemory(catalog, { category, search }) {
+  const now = new Date();
+  let filtered = catalog.filter((p) => new Date(p.expiryDate) > now);
 
   if (category) {
-    where.category = {
-      equals: category,
-      mode: 'insensitive',
-    };
+    const catLower = category.toLowerCase();
+    filtered = filtered.filter(
+      (p) => p.category && p.category.toLowerCase() === catLower
+    );
   }
 
   if (search) {
-    where.OR = [
-      { name: { contains: search, mode: 'insensitive' } },
-      { sku: { contains: search, mode: 'insensitive' } },
-      { category: { contains: search, mode: 'insensitive' } },
-    ];
+    const q = search.toLowerCase();
+    filtered = filtered.filter(
+      (p) =>
+        p.name?.toLowerCase().includes(q) ||
+        p.sku?.toLowerCase().includes(q) ||
+        p.category?.toLowerCase().includes(q)
+    );
   }
 
+  return filtered;
+}
+
+/**
+ * Retrieves active, non-expired public product catalog.
+ * Always reads from / populates Redis key `cache:catalog_public` (TTL 3600s)
+ * and performs optional category/search filtering in memory.
+ */
+export async function getPublicCatalog({ category, search } = {}) {
+  const cachedCatalog = await getCache(CACHE_KEYS.CATALOG_PUBLIC);
+  if (Array.isArray(cachedCatalog)) {
+    return {
+      products: filterCatalogInMemory(cachedCatalog, { category, search }),
+      cacheHit: true,
+    };
+  }
+
+  const now = new Date();
   const rawProducts = await prisma.product.findMany({
-    where,
+    where: {
+      isAvailable: true,
+      expiryDate: { gt: now },
+    },
     orderBy: [{ category: 'asc' }, { name: 'asc' }],
   });
 
-  const products = rawProducts.map(serializeProduct);
+  const allActiveProducts = rawProducts.map(serializeProduct);
 
-  if (isUnfiltered) {
-    await setCache(CACHE_KEYS.CATALOG_PUBLIC, products, CACHE_TTL.CATALOG_PUBLIC);
-  }
+  await setCache(
+    CACHE_KEYS.CATALOG_PUBLIC,
+    allActiveProducts,
+    CACHE_TTL.CATALOG_PUBLIC
+  );
 
   return {
-    products,
+    products: filterCatalogInMemory(allActiveProducts, { category, search }),
     cacheHit: false,
   };
 }
-

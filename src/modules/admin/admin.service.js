@@ -422,9 +422,9 @@ export async function getFefoInventory() {
 
 /**
  * GET /api/v1/admin/stores
- * Lists partner stores with optional `?verified=true|false` and `?district=...` filters.
+ * Lists partner stores with optional `?verified=true|false`, `?district=...`, and pagination (`page`, `limit`).
  */
-export async function getAdminStores({ verified, district } = {}) {
+export async function getAdminStores({ verified, district, page = 1, limit = 50 } = {}) {
   const where = {};
 
   if (typeof verified === 'boolean') {
@@ -438,28 +438,53 @@ export async function getAdminStores({ verified, district } = {}) {
     };
   }
 
-  const stores = await prisma.store.findMany({
-    where,
-    orderBy: [{ isVerified: 'asc' }, { createdAt: 'desc' }],
-    include: {
-      _count: {
-        select: { orders: true },
-      },
-    },
-  });
+  const skip = (page - 1) * limit;
 
-  return stores.map((store) => ({
-    ...store,
-    totalOrders: store._count.orders,
-    _count: undefined,
-  }));
+  const [totalItems, stores] = await Promise.all([
+    prisma.store.count({ where }),
+    prisma.store.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: [{ isVerified: 'asc' }, { createdAt: 'desc' }],
+      include: {
+        _count: {
+          select: { orders: true },
+        },
+      },
+    }),
+  ]);
+
+  const totalPages = Math.ceil(totalItems / limit) || 1;
+
+  return {
+    stores: stores.map((store) => ({
+      ...store,
+      totalOrders: store._count.orders,
+      _count: undefined,
+    })),
+    meta: {
+      page,
+      limit,
+      totalItems,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+    },
+  };
 }
 
 /**
  * PATCH /api/v1/admin/stores/:id/verify
- * Toggles (or explicitly sets) `isVerified` status for a partner store.
+ * Explicitly sets `isVerified` status for a partner store (idempotent, prevents accidental double-click toggle).
  */
 export async function verifyStore(storeId, explicitIsVerified) {
+  if (typeof explicitIsVerified !== 'boolean') {
+    throw new AppError('isVerified (boolean) is required', 400, [
+      { field: 'isVerified', message: 'Explicit boolean isVerified is required' },
+    ]);
+  }
+
   const existing = await prisma.store.findUnique({
     where: { id: storeId },
   });
@@ -470,14 +495,9 @@ export async function verifyStore(storeId, explicitIsVerified) {
     ]);
   }
 
-  const nextVerifiedState =
-    typeof explicitIsVerified === 'boolean'
-      ? explicitIsVerified
-      : !existing.isVerified;
-
   const updatedStore = await prisma.store.update({
     where: { id: storeId },
-    data: { isVerified: nextVerifiedState },
+    data: { isVerified: explicitIsVerified },
   });
 
   await invalidateCache(CACHE_KEYS.KPI_SUMMARY);
@@ -526,53 +546,45 @@ export async function createProduct(payload) {
  * and invalidates `cache:catalog_public` + `cache:kpi_summary`.
  */
 export async function updateProductStock(productId, payload) {
-  const existing = await prisma.product.findUnique({
-    where: { id: productId },
-  });
-
-  if (!existing) {
-    throw new AppError(`Product with ID ${productId} not found`, 404, [
-      { field: 'id', message: 'Product not found' },
-    ]);
-  }
-
   const updateData = {};
+
+  if (payload.cartonPrice !== undefined) updateData.cartonPrice = payload.cartonPrice;
+  if (payload.retailPriceEst !== undefined) updateData.retailPriceEst = payload.retailPriceEst;
+  if (payload.batchNumber !== undefined) updateData.batchNumber = payload.batchNumber;
+  if (payload.expiryDate !== undefined) updateData.expiryDate = payload.expiryDate;
+  if (payload.isAvailable !== undefined) updateData.isAvailable = payload.isAvailable;
 
   if (payload.stockCartons !== undefined) {
     updateData.stockCartons = payload.stockCartons;
   } else if (payload.addCartons !== undefined) {
-    const newStock = existing.stockCartons + payload.addCartons;
-    if (newStock < 0) {
-      throw new AppError(
-        `Resulting stockCartons cannot be negative (current: ${existing.stockCartons}, change: ${payload.addCartons})`,
-        400,
-        [{ field: 'addCartons', message: 'Stock cannot be reduced below 0' }]
-      );
-    }
-    updateData.stockCartons = newStock;
+    updateData.stockCartons = { increment: payload.addCartons };
   }
 
-  if (payload.cartonPrice !== undefined) {
-    updateData.cartonPrice = payload.cartonPrice;
-  }
-  if (payload.retailPriceEst !== undefined) {
-    updateData.retailPriceEst = payload.retailPriceEst;
-  }
-  if (payload.batchNumber !== undefined) {
-    updateData.batchNumber = payload.batchNumber;
-  }
-  if (payload.expiryDate !== undefined) {
-    updateData.expiryDate = payload.expiryDate;
-  }
-  if (payload.isAvailable !== undefined) {
-    updateData.isAvailable = payload.isAvailable;
+  const where = { id: productId };
+  if (payload.stockCartons === undefined && payload.addCartons !== undefined && payload.addCartons < 0) {
+    where.stockCartons = { gte: -payload.addCartons };
   }
 
-  const updatedProduct = await prisma.product.update({
-    where: { id: productId },
+  const { count } = await prisma.product.updateMany({
+    where,
     data: updateData,
   });
 
+  if (count === 0) {
+    const exists = await prisma.product.findUnique({ where: { id: productId }, select: { stockCartons: true } });
+    if (!exists) {
+      throw new AppError(`Product with ID ${productId} not found`, 404, [
+        { field: 'id', message: 'Product not found' },
+      ]);
+    }
+    throw new AppError(
+      `Resulting stockCartons cannot be negative (current: ${exists.stockCartons}, change: ${payload.addCartons})`,
+      400,
+      [{ field: 'addCartons', message: 'Stock cannot be reduced below 0' }]
+    );
+  }
+
+  const updatedProduct = await prisma.product.findUnique({ where: { id: productId } });
   await invalidateCache(CACHE_KEYS.CATALOG_PUBLIC, CACHE_KEYS.KPI_SUMMARY);
 
   return serializeProduct(updatedProduct);

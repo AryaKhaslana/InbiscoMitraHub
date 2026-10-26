@@ -108,6 +108,7 @@ export async function createOrder(payload) {
 
       const productMap = new Map(products.map((p) => [p.id, p]));
 
+      const now = new Date();
       let totalAmountDecimal = new Prisma.Decimal(0);
       const orderItemsData = [];
 
@@ -136,6 +137,29 @@ export async function createOrder(payload) {
           );
         }
 
+        if (new Date(product.expiryDate) <= now) {
+          throw new AppError(
+            `Product "${product.name}" (${product.sku}, Batch ${product.batchNumber}) has expired and cannot be ordered`,
+            400,
+            [
+              {
+                field: 'items',
+                productId: product.id,
+                sku: product.sku,
+                message: `Batch ${product.batchNumber} for "${product.name}" is expired`,
+              },
+            ]
+          );
+        }
+
+        if (reqItem.quantity > 1000) {
+          throw new AppError(
+            `Total quantity per SKU in a single order cannot exceed 1000 cartons (requested: ${reqItem.quantity})`,
+            400,
+            [{ field: 'items', message: 'Total quantity per product exceeds 1000 cartons' }]
+          );
+        }
+
         if (product.stockCartons < reqItem.quantity) {
           throw new AppError(
             `Insufficient stock for "${product.name}". Requested: ${reqItem.quantity} cartons, Available: ${product.stockCartons} cartons`,
@@ -153,11 +177,12 @@ export async function createOrder(payload) {
           );
         }
 
-        // Atomic conditional stock deduction to prevent concurrent overselling
+        // Atomic conditional stock deduction (also enforces expiryDate > now & isAvailable = true)
         const deductionResult = await tx.product.updateMany({
           where: {
             id: product.id,
             isAvailable: true,
+            expiryDate: { gt: now },
             stockCartons: { gte: reqItem.quantity },
           },
           data: {
@@ -217,7 +242,6 @@ export async function createOrder(payload) {
         include: {
           store: {
             select: {
-              id: true,
               name: true,
               district: true,
               isVerified: true,
@@ -296,9 +320,9 @@ export async function getOrderByTrackingCode(trackingCode) {
   }
 
   const serialized = serializeOrder(order);
+  delete serialized.storeId;
   if (serialized.store) {
     serialized.store = {
-      id: serialized.store.id,
       name: serialized.store.name,
       district: serialized.store.district,
       maskedPhone: maskPhoneNumber(serialized.store.phone),

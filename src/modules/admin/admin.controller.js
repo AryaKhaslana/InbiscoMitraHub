@@ -64,12 +64,13 @@ export async function getFefoInventory(req, res, next) {
 
 export async function getStores(req, res, next) {
   try {
-    const stores = await adminService.getAdminStores(req.query);
+    const { stores, meta } = await adminService.getAdminStores(req.query);
 
     return sendSuccess(res, {
       statusCode: 200,
       message: 'Partner stores retrieved successfully',
       data: stores,
+      meta,
     });
   } catch (error) {
     return next(error);

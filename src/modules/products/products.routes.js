@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { rateLimit } from '../../middlewares/rateLimit.middleware.js';
+import { validate } from '../../middlewares/validate.middleware.js';
 import * as productsController from './products.controller.js';
+import { productsQuerySchema } from './products.schema.js';
 
 const router = Router();
 
@@ -11,6 +13,7 @@ const router = Router();
 router.get(
   '/',
   rateLimit({ prefix: 'rl:products_list', max: 60, windowSeconds: 60 }),
+  validate({ query: productsQuerySchema }),
   productsController.listPublicProducts
 );
 
