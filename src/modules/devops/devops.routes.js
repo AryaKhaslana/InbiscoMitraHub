@@ -7,7 +7,7 @@ const router = Router();
 
 /**
  * Validates admin key from Authorization Header OR query parameter `?key=...`.
- * Uses timingSafeEqual to avoid timing side-channels.
+ * Uses timingSafeEqual to prevent timing side-channel attacks.
  */
 function verifyDevopsAuth(req) {
   const expectedSecret = process.env.ADMIN_SECRET_KEY;
@@ -31,7 +31,7 @@ function verifyDevopsAuth(req) {
 
 /**
  * API: GET /api/v1/devops/stats
- * Returns structured metrics and log stream.
+ * Returns structured metrics and log stream for the DevOps console.
  */
 router.get('/api/v1/devops/stats', async (req, res) => {
   if (!verifyDevopsAuth(req)) {
@@ -54,8 +54,9 @@ router.get('/api/v1/devops/stats', async (req, res) => {
         uptimeSeconds,
         uptimeFormatted: `${Math.floor(uptimeSeconds / 60)}m ${Math.floor(uptimeSeconds % 60)}s`,
         environment: process.env.NODE_ENV || 'production',
-        vercelRegion: process.env.VERCEL_REGION || 'local',
+        vercelRegion: process.env.VERCEL_REGION || 'iad1 (US-East)',
         nodeVersion: process.version,
+        memoryUsageMb: (process.memoryUsage().rss / 1024 / 1024).toFixed(1),
       },
     },
   });
@@ -63,7 +64,7 @@ router.get('/api/v1/devops/stats', async (req, res) => {
 
 /**
  * API: POST /api/v1/devops/clear
- * Flushes stored audit logs.
+ * Flushes stored audit logs (Admin only).
  */
 router.post('/api/v1/devops/clear', async (req, res) => {
   if (!verifyDevopsAuth(req)) {
@@ -83,230 +84,299 @@ router.post('/api/v1/devops/clear', async (req, res) => {
 
 /**
  * WEB UI: GET /devops/monitor
- * Serves an ultra-sleek, responsive, dark-mode DevOps Single Page Application.
+ * High-performance, anti-slop, industrial telemetry console for PT Inbisco Niagatama Semesta.
  */
 router.get('/devops/monitor', (req, res) => {
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
 
   const html = `<!DOCTYPE html>
-<html lang="id" class="dark">
+<html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Inbisco MitraHub — DevOps & Jury Live Monitor</title>
+  <title>Inbisco MitraHub — DevOps Telemetry & Jury Monitor</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      darkMode: 'class',
       theme: {
         extend: {
+          fontFamily: {
+            mono: ['JetBrains Mono', 'Fira Code', 'ui-monospace', 'monospace'],
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+          },
           colors: {
-            brand: { 50: '#eef2ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' },
-            dark: { 900: '#070a13', 800: '#0d1322', 700: '#141d33', 600: '#1f2b48' }
+            surface: {
+              DEFAULT: '#090d16',
+              raised: '#0f172a',
+              card: '#131d33',
+              border: '#1e293b',
+              borderLight: '#334155',
+            },
+            amberAccent: '#f59e0b',
           }
         }
       }
     }
   </script>
   <style>
-    @keyframes pulse-glow {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(1.1); }
-    }
-    .pulse-dot { animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    /* Custom Scrollbar for Dense Telemetry */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #090d16; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
+    .badge-tab { transition: all 0.15s ease-in-out; }
   </style>
 </head>
-<body class="bg-dark-900 text-slate-200 min-h-screen font-sans antialiased selection:bg-indigo-500 selection:text-white">
+<body class="bg-surface text-slate-200 min-h-screen font-sans antialiased selection:bg-amberAccent selection:text-black">
 
-  <!-- Header -->
-  <header class="border-b border-dark-700 bg-dark-800/80 backdrop-blur sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-4">
+  <!-- TOP APP BAR -->
+  <header class="border-b border-surface-border bg-surface-raised sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Brand & Identity -->
       <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        <div class="w-8 h-8 rounded bg-surface-card border border-surface-border flex items-center justify-center font-mono text-amber-400 font-bold text-sm tracking-tighter">
+          INB
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <h1 class="font-bold text-base sm:text-lg tracking-tight text-white">Inbisco MitraHub</h1>
-            <span class="text-xs px-2 py-0.5 rounded-full font-mono font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">DevOps Telemetry</span>
+            <h1 class="font-bold text-sm sm:text-base tracking-tight text-white">Inbisco MitraHub</h1>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-surface-card border border-surface-border text-slate-400 uppercase tracking-wider">DevOps Telemetry</span>
           </div>
-          <p class="text-xs text-slate-400">Jury & Web Traffic Audit Live Feed</p>
+          <div class="text-[11px] text-slate-400 flex items-center gap-2">
+            <span>PT Inbisco Niagatama Semesta</span>
+            <span class="text-slate-600">•</span>
+            <span id="headerEnvTag" class="text-emerald-400 font-mono">Production (iad1)</span>
+          </div>
         </div>
       </div>
 
-      <div class="flex items-center gap-3">
-        <!-- Live Polling Status -->
-        <div class="flex items-center gap-2 text-xs font-mono px-3 py-1.5 rounded-lg bg-dark-700 border border-dark-600">
-          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 pulse-dot"></span>
-          <span id="pollStatus" class="text-emerald-400 font-medium">LIVE (5s)</span>
+      <!-- Quick Control Actions -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Polling Indicator & Rate Control -->
+        <div class="flex items-center gap-2 bg-surface border border-surface-border rounded-lg px-2.5 py-1 text-xs font-mono">
+          <span id="pulseIndicator" class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          <select id="selectPollRate" onchange="updatePollRate()" class="bg-transparent text-slate-300 focus:outline-none cursor-pointer">
+            <option value="5000" class="bg-surface-card text-white">Auto: 5s</option>
+            <option value="3000" class="bg-surface-card text-white">Auto: 3s</option>
+            <option value="10000" class="bg-surface-card text-white">Auto: 10s</option>
+            <option value="0" class="bg-surface-card text-white">Pause</option>
+          </select>
         </div>
 
-        <!-- Controls -->
-        <button id="btnManualRefresh" onclick="fetchData()" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition flex items-center gap-1.5 shadow-sm shadow-indigo-600/30">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-          Refresh
+        <button onclick="fetchData()" id="btnRefresh" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-surface-card hover:bg-surface-border text-slate-200 border border-surface-border transition flex items-center gap-1.5" title="Refresh Sekarang">
+          <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          <span class="hidden sm:inline">Refresh</span>
         </button>
 
-        <button onclick="changeKey()" class="px-2.5 py-1.5 text-xs font-medium rounded-lg bg-dark-700 hover:bg-dark-600 text-slate-300 border border-dark-600 transition" title="Ganti Admin Secret Key">
-          🔑 Key
+        <button onclick="openAuthModal()" class="px-2.5 py-1.5 text-xs font-medium rounded-lg bg-surface-card hover:bg-surface-border text-slate-300 border border-surface-border transition flex items-center gap-1.5" title="Ganti Secret Key">
+          <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+          <span class="hidden sm:inline">Auth</span>
         </button>
       </div>
+
     </div>
   </header>
 
-  <!-- Main Container -->
+  <!-- MAIN CONTAINER -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
 
-    <!-- Auth Prompt (Shown if key is missing or invalid) -->
-    <div id="authPrompt" class="hidden rounded-2xl bg-gradient-to-b from-dark-800 to-dark-900 border border-indigo-500/30 p-8 text-center max-w-md mx-auto shadow-2xl">
-      <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-400 mx-auto flex items-center justify-center mb-4">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-      </div>
-      <h2 class="text-lg font-bold text-white mb-1">DevOps Access Gate</h2>
-      <p class="text-xs text-slate-400 mb-5">Halaman ini private untuk kamu sebagai DevOps. Masukkan <code class="text-indigo-400">ADMIN_SECRET_KEY</code> untuk membuka dashboard.</p>
-      <form onsubmit="handleAuthSubmit(event)" class="space-y-3">
-        <input type="password" id="inputSecretKey" placeholder="Paste ADMIN_SECRET_KEY..." class="w-full px-3.5 py-2.5 bg-dark-900 border border-dark-600 focus:border-indigo-500 rounded-xl text-sm font-mono text-white placeholder-slate-500 outline-none transition" required />
-        <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm rounded-xl transition shadow-lg shadow-indigo-600/30">Masuk ke Monitor</button>
-      </form>
-    </div>
-
-    <!-- Dashboard Content -->
-    <div id="dashboardContent" class="space-y-6">
-
-      <!-- JURY DETECTION BANNER -->
-      <div id="juryAlertBanner" class="hidden rounded-2xl bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-red-500/10 border border-amber-500/30 p-4 sm:p-5 flex items-start gap-4">
-        <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex-shrink-0 flex items-center justify-center">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-        </div>
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center gap-2">
-            <h3 class="font-bold text-amber-300 text-sm sm:text-base">Aktivitas Juri / Pengunjung Terdeteksi!</h3>
-            <span class="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 font-bold">LIVE ALERT</span>
+    <!-- AUTH GATE MODAL / OVERLAY -->
+    <div id="authGateModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+      <div class="bg-surface-raised border border-surface-border rounded-xl p-6 max-w-md w-full shadow-2xl">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-9 h-9 rounded bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
+            🔒
           </div>
-          <p id="juryAlertText" class="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed">Menunggu data aktivitas...</p>
-        </div>
-      </div>
-
-      <!-- KPI METRIC CARDS -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <!-- Card 1 -->
-        <div class="p-4 rounded-xl bg-dark-800 border border-dark-700">
-          <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
-            <span>Kunjungan Juri / User</span>
-            <span class="text-amber-400">🕵️</span>
-          </div>
-          <div id="metricJury" class="text-2xl sm:text-3xl font-extrabold text-white font-mono">0</div>
-          <div class="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
-            <span class="text-emerald-400 font-medium">Non-cron</span> human visitors
+          <div>
+            <h2 class="text-base font-bold text-white">DevOps Authentication</h2>
+            <p class="text-xs text-slate-400">Endpoint ini terisolasi untuk tim teknis.</p>
           </div>
         </div>
-
-        <!-- Card 2 -->
-        <div class="p-4 rounded-xl bg-dark-800 border border-dark-700">
-          <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
-            <span>Unique Visitor IPs</span>
-            <span class="text-indigo-400">🌐</span>
-          </div>
-          <div id="metricIps" class="text-2xl sm:text-3xl font-extrabold text-white font-mono">0</div>
-          <div class="text-[11px] text-slate-400 mt-1">Alamat IP unik terekam</div>
-        </div>
-
-        <!-- Card 3 -->
-        <div class="p-4 rounded-xl bg-dark-800 border border-dark-700">
-          <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
-            <span>Total Requests</span>
-            <span class="text-cyan-400">⚡</span>
-          </div>
-          <div id="metricTotal" class="text-2xl sm:text-3xl font-extrabold text-white font-mono">0</div>
-          <div class="text-[11px] text-slate-400 mt-1">Termasuk cron warm-up</div>
-        </div>
-
-        <!-- Card 4 -->
-        <div class="p-4 rounded-xl bg-dark-800 border border-dark-700">
-          <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
-            <span>Server Uptime</span>
-            <span class="text-emerald-400">🟢</span>
-          </div>
-          <div id="metricUptime" class="text-xl sm:text-2xl font-bold text-white font-mono">-</div>
-          <div id="metricRegion" class="text-[11px] text-slate-400 mt-1">Vercel Edge Node</div>
-        </div>
-      </div>
-
-      <!-- TABLE & FILTER SECTION -->
-      <div class="rounded-2xl bg-dark-800 border border-dark-700 overflow-hidden shadow-xl">
-        <!-- Toolbar -->
-        <div class="p-4 border-b border-dark-700 flex flex-wrap items-center justify-between gap-3 bg-dark-800/50">
-          <div class="flex items-center gap-2">
-            <h2 class="font-bold text-sm sm:text-base text-white">Live Request Stream</h2>
-            <span id="logCountBadge" class="text-xs px-2 py-0.5 rounded-full bg-dark-700 text-slate-400 font-mono">0 logs</span>
-          </div>
-
-          <div class="flex items-center gap-2">
-            <!-- Filter Segmented Control -->
-            <div class="bg-dark-900 p-1 rounded-xl border border-dark-700 flex items-center gap-1 text-xs font-medium">
-              <button onclick="setFilter('all')" id="filterBtnAll" class="px-3 py-1 rounded-lg bg-indigo-600 text-white transition">Semua</button>
-              <button onclick="setFilter('jury')" id="filterBtnJury" class="px-3 py-1 rounded-lg text-slate-400 hover:text-white transition">Hanya Juri</button>
-              <button onclick="setFilter('cron')" id="filterBtnCron" class="px-3 py-1 rounded-lg text-slate-400 hover:text-white transition">Hanya Cron</button>
+        
+        <form onsubmit="handleAuthSubmit(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">ADMIN_SECRET_KEY</label>
+            <div class="relative">
+              <input type="password" id="inputSecretKey" placeholder="inbisco_adm_..." class="w-full px-3 py-2 bg-surface border border-surface-border focus:border-amber-500 rounded-lg text-xs font-mono text-white placeholder-slate-600 outline-none transition pr-10" required />
+              <button type="button" onclick="togglePasswordVisibility()" class="absolute right-2.5 top-2 text-xs text-slate-500 hover:text-slate-300">👁️</button>
             </div>
-
-            <!-- Clear Logs -->
-            <button onclick="confirmClearLogs()" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition" title="Hapus Riwayat Log">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-            </button>
+            <p class="text-[11px] text-slate-500 mt-1">Key tersimpan di browser session lu, gak bakal dikirim ke pihak ketiga.</p>
           </div>
+          <div class="flex items-center justify-end gap-2 pt-2">
+            <button type="button" onclick="closeAuthModal()" class="px-3 py-1.5 text-xs text-slate-400 hover:text-white transition">Tutup</button>
+            <button type="submit" class="px-4 py-1.5 text-xs font-medium bg-amber-500 hover:bg-amber-400 text-black rounded-lg transition font-bold">Verifikasi & Akses</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- JURY ALERT CARD (Dynamic) -->
+    <div id="juryAlertCard" class="hidden border border-amber-500/30 bg-amber-500/5 rounded-xl p-4 sm:p-5 flex items-start gap-4">
+      <div class="w-9 h-9 rounded bg-amber-500/20 text-amber-400 flex-shrink-0 flex items-center justify-center font-bold text-base">
+        ⚡
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2">
+          <h3 class="font-bold text-amber-400 text-sm tracking-tight">Kunjungan Juri Terdeteksi</h3>
+          <span id="juryTimeDiffBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold uppercase">Barusan</span>
+        </div>
+        <p id="juryAlertDetails" class="text-xs text-slate-300 mt-1 font-mono leading-relaxed">
+          Menunggu telemetri...
+        </p>
+      </div>
+    </div>
+
+    <!-- METRICS GRID -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+      
+      <!-- Metric 1: Juri / Human Requests -->
+      <div class="p-4 rounded-xl bg-surface-raised border border-surface-border">
+        <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+          <span class="font-medium">Juri / User Hits</span>
+          <span class="text-amber-400 font-mono text-[11px]">Human</span>
+        </div>
+        <div id="valJuryRequests" class="text-2xl sm:text-3xl font-bold font-mono text-white tracking-tight">0</div>
+        <div class="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+          <span>Traffic non-cron</span>
+        </div>
+      </div>
+
+      <!-- Metric 2: Unique Visitor IPs -->
+      <div class="p-4 rounded-xl bg-surface-raised border border-surface-border">
+        <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+          <span class="font-medium">Unique Visitors</span>
+          <span class="text-slate-400 font-mono text-[11px]">IPs</span>
+        </div>
+        <div id="valUniqueIps" class="text-2xl sm:text-3xl font-bold font-mono text-white tracking-tight">0</div>
+        <div class="text-[11px] text-slate-400 mt-1">Perangkat terpisah</div>
+      </div>
+
+      <!-- Metric 3: Total Traffic -->
+      <div class="p-4 rounded-xl bg-surface-raised border border-surface-border">
+        <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+          <span class="font-medium">Total Requests</span>
+          <span class="text-slate-400 font-mono text-[11px]">Throughput</span>
+        </div>
+        <div id="valTotalRequests" class="text-2xl sm:text-3xl font-bold font-mono text-white tracking-tight">0</div>
+        <div class="text-[11px] text-slate-400 mt-1">Termasuk warmup pings</div>
+      </div>
+
+      <!-- Metric 4: System Health & Latency -->
+      <div class="p-4 rounded-xl bg-surface-raised border border-surface-border">
+        <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+          <span class="font-medium">Runtime Status</span>
+          <span class="text-emerald-400 font-mono text-[11px]">Healthy</span>
+        </div>
+        <div id="valAvgLatency" class="text-2xl sm:text-3xl font-bold font-mono text-white tracking-tight">- ms</div>
+        <div id="valServerUptime" class="text-[11px] text-slate-400 mt-1 font-mono">Uptime: -</div>
+      </div>
+
+    </div>
+
+    <!-- TELEMETRY FEED & CONTROLS -->
+    <div class="rounded-xl bg-surface-raised border border-surface-border overflow-hidden">
+      
+      <!-- Toolbar -->
+      <div class="p-4 border-b border-surface-border flex flex-wrap items-center justify-between gap-3 bg-surface/40">
+        
+        <!-- Filter Tabs -->
+        <div class="flex items-center gap-1 bg-surface border border-surface-border p-1 rounded-lg text-xs font-mono">
+          <button onclick="setFilter('all')" id="tabAll" class="px-3 py-1 rounded bg-surface-border text-white font-medium">Semua (<span id="countAll">0</span>)</button>
+          <button onclick="setFilter('jury')" id="tabJury" class="px-3 py-1 rounded text-slate-400 hover:text-white font-medium">Juri (<span id="countJury">0</span>)</button>
+          <button onclick="setFilter('cron')" id="tabCron" class="px-3 py-1 rounded text-slate-400 hover:text-white font-medium">Warmup (<span id="countCron">0</span>)</button>
+          <button onclick="setFilter('error')" id="tabError" class="px-3 py-1 rounded text-slate-400 hover:text-white font-medium">Error (<span id="countError">0</span>)</button>
         </div>
 
-        <!-- Table Container -->
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs font-mono">
-            <thead class="bg-dark-900/60 text-slate-400 border-b border-dark-700 uppercase tracking-wider text-[10px]">
-              <tr>
-                <th class="py-3 px-4">Waktu (WIB)</th>
-                <th class="py-3 px-4">Tipe / Kategori</th>
-                <th class="py-3 px-4">Method & Path</th>
-                <th class="py-3 px-4">Status & Speed</th>
-                <th class="py-3 px-4">Client IP & Lokasi</th>
-                <th class="py-3 px-4">Device / User Agent</th>
-              </tr>
-            </thead>
-            <tbody id="logsTableBody" class="divide-y divide-dark-700/60">
-              <tr>
-                <td colspan="6" class="py-8 text-center text-slate-500">Memuat telemetri...</td>
-              </tr>
-            </tbody>
-          </table>
+        <!-- Search & Action Toolbar -->
+        <div class="flex items-center gap-2 flex-grow sm:flex-grow-0 justify-end">
+          <div class="relative w-full sm:w-56">
+            <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Cari IP, endpoint, kota..." class="w-full bg-surface border border-surface-border focus:border-slate-500 rounded-lg px-2.5 py-1 text-xs font-mono text-slate-200 placeholder-slate-600 outline-none transition" />
+          </div>
+
+          <button onclick="exportLogsJson()" class="px-2.5 py-1 text-xs rounded-lg bg-surface border border-surface-border text-slate-300 hover:text-white hover:bg-surface-border transition flex items-center gap-1 font-mono" title="Export Log ke format JSON">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Export
+          </button>
+
+          <button onclick="confirmClearLogs()" class="px-2.5 py-1 text-xs rounded-lg bg-surface border border-surface-border text-slate-400 hover:text-rose-400 hover:border-rose-500/30 transition font-mono" title="Bersihkan riwayat log">
+            Reset
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Log Table (Desktop) -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs font-mono">
+          <thead class="bg-surface/80 text-slate-400 border-b border-surface-border uppercase tracking-wider text-[10px]">
+            <tr>
+              <th class="py-2.5 px-4">Waktu</th>
+              <th class="py-2.5 px-4">Klasifikasi</th>
+              <th class="py-2.5 px-4">Request Endpoint</th>
+              <th class="py-2.5 px-4">Status & Latency</th>
+              <th class="py-2.5 px-4">Client IP / Origin</th>
+              <th class="py-2.5 px-4">Device Environment</th>
+            </tr>
+          </thead>
+          <tbody id="logsTableBody" class="divide-y divide-surface-border/60">
+            <tr>
+              <td colspan="6" class="py-12 text-center text-slate-500 font-sans text-xs">Memuat data telemetri real-time...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Footer Info -->
+      <div class="px-4 py-2.5 border-t border-surface-border text-[11px] text-slate-500 flex flex-wrap items-center justify-between gap-2 bg-surface/30">
+        <div class="flex items-center gap-2">
+          <span>Penyimpanan: <strong id="footerStorageType" class="text-slate-300 font-mono">Upstash Redis</strong></span>
+          <span>•</span>
+          <span id="footerMemoryUsage">RAM: - MB</span>
+        </div>
+        <div id="footerLastSync" class="font-mono text-slate-500">
+          Sync terakhir: -
         </div>
       </div>
 
     </div>
+
   </main>
 
   <script>
     let currentKey = new URLSearchParams(window.location.search).get('key') || localStorage.getItem('inbisco_devops_key') || '';
+    let pollTimer = null;
+    let pollIntervalMs = 5000;
     let activeFilter = 'all';
-    let pollInterval = null;
-    let cachedData = null;
+    let searchQuery = '';
+    let rawLogs = [];
+    let summaryStats = {};
 
     function init() {
       if (!currentKey) {
-        showAuthPrompt();
+        openAuthModal();
       } else {
         localStorage.setItem('inbisco_devops_key', currentKey);
-        hideAuthPrompt();
         fetchData();
         startPolling();
       }
     }
 
-    function showAuthPrompt() {
-      document.getElementById('authPrompt').classList.remove('hidden');
-      document.getElementById('dashboardContent').classList.add('hidden');
+    function openAuthModal() {
+      document.getElementById('authGateModal').classList.remove('hidden');
     }
 
-    function hideAuthPrompt() {
-      document.getElementById('authPrompt').classList.add('hidden');
-      document.getElementById('dashboardContent').classList.remove('hidden');
+    function closeAuthModal() {
+      if (currentKey) {
+        document.getElementById('authGateModal').classList.add('hidden');
+      }
+    }
+
+    function togglePasswordVisibility() {
+      const input = document.getElementById('inputSecretKey');
+      input.type = input.type === 'password' ? 'text' : 'password';
     }
 
     function handleAuthSubmit(e) {
@@ -315,22 +385,27 @@ router.get('/devops/monitor', (req, res) => {
       if (val) {
         currentKey = val;
         localStorage.setItem('inbisco_devops_key', val);
-        hideAuthPrompt();
+        document.getElementById('authGateModal').classList.add('hidden');
         fetchData();
         startPolling();
       }
     }
 
-    function changeKey() {
-      localStorage.removeItem('inbisco_devops_key');
-      currentKey = '';
-      showAuthPrompt();
-      clearInterval(pollInterval);
+    function updatePollRate() {
+      const select = document.getElementById('selectPollRate');
+      pollIntervalMs = Number(select.value);
+      startPolling();
     }
 
     function startPolling() {
-      if (pollInterval) clearInterval(pollInterval);
-      pollInterval = setInterval(fetchData, 5000);
+      if (pollTimer) clearInterval(pollTimer);
+      const dot = document.getElementById('pulseIndicator');
+      if (pollIntervalMs > 0) {
+        dot.className = 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse';
+        pollTimer = setInterval(fetchData, pollIntervalMs);
+      } else {
+        dot.className = 'w-2 h-2 rounded-full bg-slate-600';
+      }
     }
 
     async function fetchData() {
@@ -338,139 +413,204 @@ router.get('/devops/monitor', (req, res) => {
       try {
         const res = await fetch(\`/api/v1/devops/stats?key=\${encodeURIComponent(currentKey)}\`);
         if (res.status === 401) {
-          showAuthPrompt();
+          openAuthModal();
           return;
         }
         const json = await res.json();
         if (json.success && json.data) {
-          cachedData = json.data;
-          renderDashboard(json.data);
+          renderTelemetry(json.data);
         }
       } catch (err) {
-        console.error('Fetch error:', err);
+        console.error('Fetch error:', err.message);
       }
     }
 
-    function renderDashboard(data) {
-      const stats = data.stats || {};
+    function renderTelemetry(data) {
+      summaryStats = data.stats || {};
+      rawLogs = data.allLogs || [];
       const server = data.server || {};
 
-      document.getElementById('metricJury').innerText = stats.juryRequests || 0;
-      document.getElementById('metricIps').innerText = stats.uniqueVisitors || 0;
-      document.getElementById('metricTotal').innerText = stats.totalRequests || 0;
-      document.getElementById('metricUptime').innerText = server.uptimeFormatted || '-';
-      document.getElementById('metricRegion').innerText = 'Region: ' + (server.vercelRegion || 'iad1') + ' (' + (data.source || 'redis') + ')';
+      // Metric Cards
+      document.getElementById('valJuryRequests').innerText = summaryStats.juryRequests || 0;
+      document.getElementById('valUniqueIps').innerText = summaryStats.uniqueVisitors || 0;
+      document.getElementById('valTotalRequests').innerText = summaryStats.totalRequests || 0;
+      document.getElementById('valServerUptime').innerText = 'Uptime: ' + (server.uptimeFormatted || '0m');
+      document.getElementById('footerStorageType').innerText = data.source === 'redis' ? 'Upstash Redis (Stateful)' : 'In-Memory (Fallback)';
+      document.getElementById('footerMemoryUsage').innerText = 'RSS: ' + (server.memoryUsageMb || '-') + ' MB';
+      document.getElementById('footerLastSync').innerText = 'Sync: ' + new Date().toLocaleTimeString('id-ID');
 
-      // Jury Alert Banner
-      const juryBanner = document.getElementById('juryAlertBanner');
-      const juryAlertText = document.getElementById('juryAlertText');
-      if (data.juryLogs && data.juryLogs.length > 0) {
-        const latest = data.juryLogs[0];
-        juryBanner.classList.remove('hidden');
-        juryAlertText.innerHTML = \`Terakhir terdeteksi pada <strong>\${latest.timeWIB}</strong> dari <strong>\${latest.city}, \${latest.country}</strong> (IP: \${latest.ip}) membuka <code class="bg-amber-400/20 text-amber-200 px-1 py-0.5 rounded">\${latest.method} \${latest.path}</code> memakai <em>\${parseDevice(latest.userAgent)}</em>.\`;
-      } else {
-        juryBanner.classList.add('hidden');
+      // Compute Average Latency from current log sample
+      if (rawLogs.length > 0) {
+        const sumDuration = rawLogs.reduce((acc, curr) => acc + (Number(curr.durationMs) || 0), 0);
+        const avg = (sumDuration / rawLogs.length).toFixed(1);
+        document.getElementById('valAvgLatency').innerText = avg + ' ms';
       }
+
+      // Jury Alert Card
+      const alertCard = document.getElementById('juryAlertCard');
+      const alertDetails = document.getElementById('juryAlertDetails');
+      const juryLogs = data.juryLogs || [];
+      if (juryLogs.length > 0) {
+        const latest = juryLogs[0];
+        alertCard.classList.remove('hidden');
+        document.getElementById('juryTimeDiffBadge').innerText = formatRelativeTime(latest.timestamp);
+        alertDetails.innerHTML = \`
+          Terakhir terdeteksi pada <strong class="text-white">\${latest.timeWIB}</strong> dari 
+          <span class="text-amber-300 font-bold">\${latest.city || 'Sidoarjo/Jatim'}, \${latest.country || 'ID'}</span> 
+          (IP: \${latest.ip}). Membuka <span class="bg-surface px-1.5 py-0.5 rounded border border-surface-border text-white">\${latest.method} \${latest.path}</span> 
+          menggunakan <span class="text-slate-300">\${parseDeviceLabel(latest.userAgent)}</span>.
+        \`;
+      } else {
+        alertCard.classList.add('hidden');
+      }
+
+      // Counts for Filter Tabs
+      document.getElementById('countAll').innerText = rawLogs.length;
+      document.getElementById('countJury').innerText = rawLogs.filter(l => l.isJury).length;
+      document.getElementById('countCron').innerText = rawLogs.filter(l => !l.isJury).length;
+      document.getElementById('countError').innerText = rawLogs.filter(l => l.statusCode >= 400).length;
 
       renderTable();
     }
 
-    function setFilter(filter) {
-      activeFilter = filter;
-      ['all', 'jury', 'cron'].forEach(f => {
-        const btn = document.getElementById('filterBtn' + f.charAt(0).toUpperCase() + f.slice(1));
-        if (f === filter) {
-          btn.className = 'px-3 py-1 rounded-lg bg-indigo-600 text-white transition';
+    function setFilter(type) {
+      activeFilter = type;
+      ['all', 'jury', 'cron', 'error'].forEach(t => {
+        const btn = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
+        if (t === type) {
+          btn.className = 'px-3 py-1 rounded bg-surface-border text-white font-medium';
         } else {
-          btn.className = 'px-3 py-1 rounded-lg text-slate-400 hover:text-white transition';
+          btn.className = 'px-3 py-1 rounded text-slate-400 hover:text-white font-medium';
         }
       });
       renderTable();
     }
 
-    function renderTable() {
-      if (!cachedData) return;
-      const allLogs = cachedData.allLogs || [];
-      const tbody = document.getElementById('logsTableBody');
+    function handleSearch() {
+      searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+      renderTable();
+    }
 
-      let filtered = allLogs;
-      if (activeFilter === 'jury') {
-        filtered = allLogs.filter(l => l.isJury);
-      } else if (activeFilter === 'cron') {
-        filtered = allLogs.filter(l => !l.isJury);
+    function renderTable() {
+      const tbody = document.getElementById('logsTableBody');
+      let filtered = rawLogs;
+
+      // Filter category
+      if (activeFilter === 'jury') filtered = filtered.filter(l => l.isJury);
+      else if (activeFilter === 'cron') filtered = filtered.filter(l => !l.isJury);
+      else if (activeFilter === 'error') filtered = filtered.filter(l => l.statusCode >= 400);
+
+      // Search query filter
+      if (searchQuery) {
+        filtered = filtered.filter(l => 
+          (l.path && l.path.toLowerCase().includes(searchQuery)) ||
+          (l.ip && l.ip.includes(searchQuery)) ||
+          (l.city && l.city.toLowerCase().includes(searchQuery)) ||
+          (l.userAgent && l.userAgent.toLowerCase().includes(searchQuery))
+        );
       }
 
-      document.getElementById('logCountBadge').innerText = \`\${filtered.length} logs\`;
-
       if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-slate-500">Belum ada request untuk filter ini.</td></tr>';
+        tbody.innerHTML = \`
+          <tr>
+            <td colspan="6" class="py-12 text-center text-slate-500 font-sans">
+              Tidak ada request yang sesuai dengan filter atau pencarian saat ini.
+            </td>
+          </tr>
+        \`;
         return;
       }
 
       tbody.innerHTML = filtered.map(log => {
-        const is2xx = log.statusCode >= 200 && log.statusCode < 300;
-        const statusBadge = is2xx
-          ? '<span class="px-2 py-0.5 rounded font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">' + log.statusCode + '</span>'
-          : '<span class="px-2 py-0.5 rounded font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">' + log.statusCode + '</span>';
+        // Status code styling
+        const statusClass = log.statusCode >= 200 && log.statusCode < 300
+          ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
+          : (log.statusCode >= 400 && log.statusCode < 500
+              ? 'text-amber-400 bg-amber-500/10 border-amber-500/20'
+              : 'text-rose-400 bg-rose-500/10 border-rose-500/20');
 
-        const typeBadge = log.isJury
-          ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">🕵️ JURI / USER</span>'
+        // Classification badge
+        const badgeClass = log.isJury
+          ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">JURI / VISITOR</span>'
           : (log.type === 'DEVOPS_ADMIN'
-              ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">🛠️ DEVOPS</span>'
-              : '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-700/60 text-slate-400">🤖 CRON WARMUP</span>');
+              ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-700/60 text-slate-300">DEVOPS</span>'
+              : '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-500">CRON WARMUP</span>');
 
-        const device = parseDevice(log.userAgent);
+        // Latency class
+        const latencyClass = log.durationMs > 500 ? 'text-amber-400 font-bold' : 'text-slate-400';
 
         return \`
-          <tr class="hover:bg-dark-700/40 transition">
-            <td class="py-3 px-4 font-mono text-slate-300 whitespace-nowrap">\${log.timeWIB}</td>
-            <td class="py-3 px-4 whitespace-nowrap">\${typeBadge}</td>
-            <td class="py-3 px-4">
-              <span class="font-bold text-indigo-400 mr-1.5">\${log.method}</span>
-              <span class="text-white select-all">\${log.path}</span>
+          <tr class="hover:bg-surface-card transition">
+            <td class="py-2.5 px-4 text-slate-300 whitespace-nowrap">
+              <div>\${log.timeWIB}</div>
+              <div class="text-[10px] text-slate-500">\${formatRelativeTime(log.timestamp)}</div>
             </td>
-            <td class="py-3 px-4 whitespace-nowrap">
-              <div class="flex items-center gap-2">
-                \${statusBadge}
-                <span class="text-slate-400 text-[11px]">\${log.durationMs}ms</span>
-              </div>
+            <td class="py-2.5 px-4 whitespace-nowrap">\${badgeClass}</td>
+            <td class="py-2.5 px-4">
+              <span class="font-bold text-slate-300 mr-1.5">\${log.method}</span>
+              <span class="text-slate-200 select-all">\${log.path}</span>
             </td>
-            <td class="py-3 px-4 whitespace-nowrap">
+            <td class="py-2.5 px-4 whitespace-nowrap">
+              <span class="px-1.5 py-0.5 rounded text-[11px] font-bold border \${statusClass}">\${log.statusCode}</span>
+              <span class="ml-1.5 \${latencyClass}">\${log.durationMs}ms</span>
+            </td>
+            <td class="py-2.5 px-4 whitespace-nowrap">
               <div class="text-slate-200 select-all">\${log.ip}</div>
-              <div class="text-[10px] text-slate-400">\${log.city || '-'}, \${log.country || 'ID'}</div>
+              <div class="text-[10px] text-slate-500">\${log.city || '-'}, \${log.country || 'ID'}</div>
             </td>
-            <td class="py-3 px-4 text-slate-400 max-w-xs truncate" title="\${log.userAgent}">
-              \${device}
+            <td class="py-2.5 px-4 text-slate-400 max-w-xs truncate" title="\${log.userAgent}">
+              \${parseDeviceLabel(log.userAgent)}
             </td>
           </tr>
         \`;
       }).join('');
     }
 
-    function parseDevice(ua) {
-      if (!ua || ua === 'Unknown') return 'Unknown';
+    function parseDeviceLabel(ua) {
+      if (!ua || ua === 'Unknown') return 'Unknown Client';
+      if (ua.includes('Inbisco-DevOps-Warmup')) return 'GitHub Actions Cron';
       if (ua.includes('Postman')) return 'Postman App';
       if (ua.includes('curl')) return 'cURL CLI';
-      if (ua.includes('vercel-cron')) return 'Vercel Cron';
-      if (ua.includes('GitHub-Hookshot')) return 'GitHub Hook';
-      let os = 'OS';
+      if (ua.includes('HeadlessChrome')) return 'Vercel Deployment Bot';
+
+      let os = '';
       if (ua.includes('Macintosh') || ua.includes('Mac OS')) os = 'macOS';
       else if (ua.includes('Windows')) os = 'Windows';
       else if (ua.includes('Linux')) os = 'Linux';
       else if (ua.includes('Android')) os = 'Android';
       else if (ua.includes('iPhone') || ua.includes('iPad')) os = 'iOS';
 
-      let browser = 'Browser';
+      let browser = '';
       if (ua.includes('Chrome') && !ua.includes('Edg')) browser = 'Chrome';
       else if (ua.includes('Safari') && !ua.includes('Chrome')) browser = 'Safari';
       else if (ua.includes('Firefox')) browser = 'Firefox';
       else if (ua.includes('Edg')) browser = 'Edge';
 
-      return \`\${os} • \${browser}\`;
+      if (os && browser) return \`\${os} • \${browser}\`;
+      return os || browser || ua.slice(0, 24);
+    }
+
+    function formatRelativeTime(isoString) {
+      if (!isoString) return '-';
+      const diffSec = Math.floor((Date.now() - new Date(isoString).getTime()) / 1000);
+      if (diffSec < 5) return 'Barusan';
+      if (diffSec < 60) return diffSec + 'd lalu';
+      if (diffSec < 3600) return Math.floor(diffSec / 60) + 'm lalu';
+      return Math.floor(diffSec / 3600) + 'j lalu';
+    }
+
+    function exportLogsJson() {
+      const blob = new Blob([JSON.stringify(rawLogs, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'inbisco-audit-logs-' + new Date().toISOString().slice(0, 10) + '.json';
+      a.click();
+      URL.revokeObjectURL(url);
     }
 
     async function confirmClearLogs() {
-      if (!confirm('Hapus seluruh riwayat log yang tersimpan di Redis/Memory?')) return;
+      if (!confirm('Hapus seluruh riwayat log yang tersimpan di Upstash Redis? Tindakan ini tidak bisa dibatalkan.')) return;
       try {
         await fetch(\`/api/v1/devops/clear?key=\${encodeURIComponent(currentKey)}\`, { method: 'POST' });
         fetchData();
