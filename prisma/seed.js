@@ -51,7 +51,7 @@ async function main() {
     },
     {
       name: 'Warung Madura 24 Jam Al-Fath',
-      ownerName: 'M. রোfik (Rofik)',
+      ownerName: 'M. Rofik',
       phone: '081234560005',
       district: 'Candi',
       address: 'Jl. Raya Gelam No. 23, Kec. Candi, Sidoarjo',

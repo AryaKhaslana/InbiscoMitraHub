@@ -1,7 +1,19 @@
+import { Prisma } from '@prisma/client';
 import prisma from '../../config/database.js';
 import { CACHE_KEYS, invalidateCache } from '../../config/redis.js';
 import { generateTrackingCode } from '../../utils/orderCode.js';
 import { AppError } from '../../utils/response.js';
+
+/**
+ * Masks a phone number for public tracking display (e.g. "081234560001" -> "0812****0001")
+ * so PII is protected against unauthenticated scraping.
+ */
+export function maskPhoneNumber(phone) {
+  if (!phone || typeof phone !== 'string' || phone.length < 8) {
+    return '****';
+  }
+  return `${phone.slice(0, 4)}****${phone.slice(-4)}`;
+}
 
 /**
  * Formats an Order record (converting Prisma Decimal fields to JS numbers).
@@ -50,170 +62,191 @@ function mergeDuplicateOrderItems(items) {
 
 /**
  * Creates a wholesale restock order inside an atomic Prisma transaction:
- * 1. Verifies the store exists.
+ * 1. Verifies the store exists AND isVerified === true (prevents fake unverified stores from depleting stock).
  * 2. Verifies product availability & sufficient carton stock.
  * 3. Performs conditional atomic stock decrement (`stockCartons: { gte: quantity }`) to prevent race conditions.
- * 4. Generates unique tracking code (`INB-YYMM-XXXX`).
- * 5. Invalidates `cache:kpi_summary` and `cache:catalog_public`.
+ * 4. Uses Prisma.Decimal for exact currency arithmetic.
+ * 5. Generates unique tracking code (`INB-YYMM-XXXX`).
+ * 6. Invalidates `cache:kpi_summary` and `cache:catalog_public`.
  */
 export async function createOrder(payload) {
   const mergedItems = mergeDuplicateOrderItems(payload.items);
 
-  const createdOrder = await prisma.$transaction(async (tx) => {
-    const store = await tx.store.findUnique({
-      where: { id: payload.storeId },
-    });
+  const createdOrder = await prisma.$transaction(
+    async (tx) => {
+      const store = await tx.store.findUnique({
+        where: { id: payload.storeId },
+      });
 
-    if (!store) {
-      throw new AppError('Partner store not found', 404, [
-        { field: 'storeId', message: `Store with ID ${payload.storeId} does not exist` },
-      ]);
-    }
-
-    const productIds = mergedItems.map((i) => i.productId);
-    const products = await tx.product.findMany({
-      where: { id: { in: productIds } },
-    });
-
-    const productMap = new Map(products.map((p) => [p.id, p]));
-
-    let totalAmount = 0;
-    const orderItemsData = [];
-
-    for (const reqItem of mergedItems) {
-      const product = productMap.get(reqItem.productId);
-
-      if (!product) {
-        throw new AppError(`Product ${reqItem.productId} not found`, 400, [
+      if (!store) {
+        throw new AppError('Partner store not found', 404, [
           {
-            field: 'items',
-            message: `Product ID ${reqItem.productId} does not exist`,
+            field: 'storeId',
+            message: `Store with ID ${payload.storeId} does not exist`,
           },
         ]);
       }
 
-      if (!product.isAvailable) {
+      if (!store.isVerified) {
         throw new AppError(
-          `Product "${product.name}" (${product.sku}) is currently unavailable`,
-          400,
+          `Store "${store.name}" is awaiting admin verification before placing wholesale orders`,
+          403,
           [
             {
-              field: 'items',
-              message: `Product "${product.name}" is inactive/unavailable`,
+              field: 'storeId',
+              message:
+                'Partner store must be verified by Inbisco Admin before checkout',
             },
           ]
         );
       }
 
-      if (product.stockCartons < reqItem.quantity) {
-        throw new AppError(
-          `Insufficient stock for "${product.name}". Requested: ${reqItem.quantity} cartons, Available: ${product.stockCartons} cartons`,
-          400,
-          [
+      const productIds = mergedItems.map((i) => i.productId);
+      const products = await tx.product.findMany({
+        where: { id: { in: productIds } },
+      });
+
+      const productMap = new Map(products.map((p) => [p.id, p]));
+
+      let totalAmountDecimal = new Prisma.Decimal(0);
+      const orderItemsData = [];
+
+      for (const reqItem of mergedItems) {
+        const product = productMap.get(reqItem.productId);
+
+        if (!product) {
+          throw new AppError(`Product ${reqItem.productId} not found`, 400, [
             {
               field: 'items',
-              productId: product.id,
-              sku: product.sku,
-              requested: reqItem.quantity,
-              available: product.stockCartons,
-              message: `Insufficient stock for "${product.name}"`,
+              message: `Product ID ${reqItem.productId} does not exist`,
             },
-          ]
-        );
+          ]);
+        }
+
+        if (!product.isAvailable) {
+          throw new AppError(
+            `Product "${product.name}" (${product.sku}) is currently unavailable`,
+            400,
+            [
+              {
+                field: 'items',
+                message: `Product "${product.name}" is inactive/unavailable`,
+              },
+            ]
+          );
+        }
+
+        if (product.stockCartons < reqItem.quantity) {
+          throw new AppError(
+            `Insufficient stock for "${product.name}". Requested: ${reqItem.quantity} cartons, Available: ${product.stockCartons} cartons`,
+            400,
+            [
+              {
+                field: 'items',
+                productId: product.id,
+                sku: product.sku,
+                requested: reqItem.quantity,
+                available: product.stockCartons,
+                message: `Insufficient stock for "${product.name}"`,
+              },
+            ]
+          );
+        }
+
+        // Atomic conditional stock deduction to prevent concurrent overselling
+        const deductionResult = await tx.product.updateMany({
+          where: {
+            id: product.id,
+            isAvailable: true,
+            stockCartons: { gte: reqItem.quantity },
+          },
+          data: {
+            stockCartons: { decrement: reqItem.quantity },
+          },
+        });
+
+        if (deductionResult.count === 0) {
+          throw new AppError(
+            `Concurrent stock conflict or insufficient cartons for "${product.name}"`,
+            400,
+            [
+              {
+                field: 'items',
+                productId: product.id,
+                message: `Stock for "${product.name}" was just depleted by another order`,
+              },
+            ]
+          );
+        }
+
+        const unitPriceDecimal = new Prisma.Decimal(product.cartonPrice);
+        const subtotalDecimal = unitPriceDecimal.mul(reqItem.quantity);
+        totalAmountDecimal = totalAmountDecimal.add(subtotalDecimal);
+
+        orderItemsData.push({
+          productId: product.id,
+          quantity: reqItem.quantity,
+          unitPrice: unitPriceDecimal,
+          subtotal: subtotalDecimal,
+        });
       }
 
-      // Atomic conditional stock deduction to prevent concurrent overselling
-      const deductionResult = await tx.product.updateMany({
-        where: {
-          id: product.id,
-          isAvailable: true,
-          stockCartons: { gte: reqItem.quantity },
-        },
+      // Generate collision-free tracking code (INB-YYMM-XXXX)
+      let trackingCode = generateTrackingCode();
+      for (let attempt = 0; attempt < 5; attempt += 1) {
+        const existing = await tx.order.findUnique({
+          where: { trackingCode },
+          select: { id: true },
+        });
+        if (!existing) break;
+        trackingCode = generateTrackingCode();
+      }
+
+      const order = await tx.order.create({
         data: {
-          stockCartons: { decrement: reqItem.quantity },
-        },
-      });
-
-      if (deductionResult.count === 0) {
-        throw new AppError(
-          `Concurrent stock conflict or insufficient cartons for "${product.name}"`,
-          400,
-          [
-            {
-              field: 'items',
-              productId: product.id,
-              message: `Stock for "${product.name}" was just depleted by another order`,
-            },
-          ]
-        );
-      }
-
-      const unitPrice = Number(product.cartonPrice);
-      const subtotal = Number((unitPrice * reqItem.quantity).toFixed(2));
-      totalAmount = Number((totalAmount + subtotal).toFixed(2));
-
-      orderItemsData.push({
-        productId: product.id,
-        quantity: reqItem.quantity,
-        unitPrice,
-        subtotal,
-      });
-    }
-
-    // Generate collision-free tracking code (INB-YYMM-XXXX)
-    let trackingCode = generateTrackingCode();
-    for (let attempt = 0; attempt < 5; attempt += 1) {
-      const existing = await tx.order.findUnique({
-        where: { trackingCode },
-        select: { id: true },
-      });
-      if (!existing) break;
-      trackingCode = generateTrackingCode();
-    }
-
-    const order = await tx.order.create({
-      data: {
-        trackingCode,
-        storeId: store.id,
-        totalAmount,
-        paymentMethod: payload.paymentMethod || 'COD',
-        status: 'PENDING',
-        notes: payload.notes || null,
-        items: {
-          create: orderItemsData,
-        },
-      },
-      include: {
-        store: {
-          select: {
-            id: true,
-            name: true,
-            ownerName: true,
-            phone: true,
-            district: true,
-            address: true,
-            isVerified: true,
+          trackingCode,
+          storeId: store.id,
+          totalAmount: totalAmountDecimal,
+          paymentMethod: payload.paymentMethod || 'COD',
+          status: 'PENDING',
+          notes: payload.notes || null,
+          items: {
+            create: orderItemsData,
           },
         },
-        items: {
-          include: {
-            product: {
-              select: {
-                id: true,
-                sku: true,
-                name: true,
-                category: true,
-                batchNumber: true,
-                expiryDate: true,
+        include: {
+          store: {
+            select: {
+              id: true,
+              name: true,
+              district: true,
+              isVerified: true,
+            },
+          },
+          items: {
+            include: {
+              product: {
+                select: {
+                  id: true,
+                  sku: true,
+                  name: true,
+                  category: true,
+                  batchNumber: true,
+                  expiryDate: true,
+                },
               },
             },
           },
         },
-      },
-    });
+      });
 
-    return order;
-  });
+      return order;
+    },
+    {
+      maxWait: 10000,
+      timeout: 15000,
+    }
+  );
 
   // Invalidate KPI Summary & Public Catalog cache since stockCartons changed
   await invalidateCache(CACHE_KEYS.KPI_SUMMARY, CACHE_KEYS.CATALOG_PUBLIC);
@@ -223,6 +256,7 @@ export async function createOrder(payload) {
 
 /**
  * Retrieves live order tracking details by trackingCode (e.g. INB-2610-A9F2).
+ * Redacts sensitive store PII (phone is masked, full street address & ownerName are omitted from public tracking).
  */
 export async function getOrderByTrackingCode(trackingCode) {
   const order = await prisma.order.findUnique({
@@ -232,10 +266,8 @@ export async function getOrderByTrackingCode(trackingCode) {
         select: {
           id: true,
           name: true,
-          ownerName: true,
           phone: true,
           district: true,
-          address: true,
           isVerified: true,
         },
       },
@@ -256,11 +288,23 @@ export async function getOrderByTrackingCode(trackingCode) {
   });
 
   if (!order) {
-    throw new AppError(`Order with tracking code "${trackingCode}" not found`, 404, [
-      { field: 'code', message: `No order found for tracking code ${trackingCode}` },
-    ]);
+    throw new AppError(
+      `Order with tracking code "${trackingCode}" not found`,
+      404,
+      [{ field: 'code', message: `No order found for tracking code ${trackingCode}` }]
+    );
   }
 
-  return serializeOrder(order);
-}
+  const serialized = serializeOrder(order);
+  if (serialized.store) {
+    serialized.store = {
+      id: serialized.store.id,
+      name: serialized.store.name,
+      district: serialized.store.district,
+      maskedPhone: maskPhoneNumber(serialized.store.phone),
+      isVerified: serialized.store.isVerified,
+    };
+  }
 
+  return serialized;
+}

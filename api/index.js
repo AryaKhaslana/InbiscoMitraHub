@@ -18,6 +18,9 @@ dotenv.config();
 
 const app = express();
 
+// Trust first proxy hop (Vercel Edge / Reverse Proxy) for accurate client IP in rate limiting
+app.set('trust proxy', 1);
+
 // Security & HTTP headers
 app.use(helmet());
 

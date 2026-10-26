@@ -227,90 +227,124 @@ export async function getAdminOrders({ status, district, page = 1, limit = 20 })
 
 /**
  * PATCH /api/v1/admin/orders/:id/status
- * Enforces strict single-direction state machine.
- * If transitioning to CANCELLED from PENDING or CONFIRMED, automatically restores carton stock inside a transaction.
+ * Enforces strict single-direction state machine with Compare-And-Swap (CAS) concurrency protection.
+ * Uses `updateMany({ where: { id, status: currentStatus } })` so two concurrent `CANCELLED` requests
+ * can never double-restock warehouse inventory.
  */
 export async function updateOrderStatus(orderId, targetStatus) {
-  const updatedOrder = await prisma.$transaction(async (tx) => {
-    const existingOrder = await tx.order.findUnique({
-      where: { id: orderId },
-      include: {
-        items: true,
-      },
-    });
-
-    if (!existingOrder) {
-      throw new AppError(`Order with ID ${orderId} not found`, 404, [
-        { field: 'id', message: 'Order not found' },
-      ]);
-    }
-
-    const currentStatus = existingOrder.status;
-
-    if (currentStatus === targetStatus) {
-      throw new AppError(`Order is already in ${targetStatus} status`, 400, [
-        {
-          field: 'status',
-          message: `Order status is already ${targetStatus}`,
+  const updatedOrder = await prisma.$transaction(
+    async (tx) => {
+      const existingOrder = await tx.order.findUnique({
+        where: { id: orderId },
+        include: {
+          items: true,
         },
-      ]);
-    }
+      });
 
-    const allowedNextStates = ALLOWED_STATUS_TRANSITIONS[currentStatus] || [];
+      if (!existingOrder) {
+        throw new AppError(`Order with ID ${orderId} not found`, 404, [
+          { field: 'id', message: 'Order not found' },
+        ]);
+      }
 
-    if (!allowedNextStates.includes(targetStatus)) {
-      throw new AppError(
-        `Invalid state transition from ${currentStatus} to ${targetStatus}. Allowed transitions from ${currentStatus}: ${
-          allowedNextStates.length > 0 ? allowedNextStates.join(', ') : 'NONE (Terminal State)'
-        }`,
-        400,
-        [
+      const currentStatus = existingOrder.status;
+
+      if (currentStatus === targetStatus) {
+        throw new AppError(`Order is already in ${targetStatus} status`, 400, [
           {
             field: 'status',
-            currentStatus,
-            requestedStatus: targetStatus,
-            allowedTransitions: allowedNextStates,
-            message: `State transition ${currentStatus} -> ${targetStatus} is prohibited`,
+            message: `Order status is already ${targetStatus}`,
           },
-        ]
-      );
-    }
-
-    // If order is CANCELLED (from PENDING or CONFIRMED), atomically return stockCartons to inventory
-    if (targetStatus === 'CANCELLED') {
-      for (const item of existingOrder.items) {
-        await tx.product.update({
-          where: { id: item.productId },
-          data: {
-            stockCartons: { increment: item.quantity },
-          },
-        });
+        ]);
       }
-    }
 
-    const savedOrder = await tx.order.update({
-      where: { id: orderId },
-      data: { status: targetStatus },
-      include: {
-        store: true,
-        items: {
-          include: {
-            product: {
-              select: {
-                id: true,
-                sku: true,
-                name: true,
-                category: true,
-                stockCartons: true,
+      const allowedNextStates = ALLOWED_STATUS_TRANSITIONS[currentStatus] || [];
+
+      if (!allowedNextStates.includes(targetStatus)) {
+        throw new AppError(
+          `Invalid state transition from ${currentStatus} to ${targetStatus}. Allowed transitions from ${currentStatus}: ${
+            allowedNextStates.length > 0
+              ? allowedNextStates.join(', ')
+              : 'NONE (Terminal State)'
+          }`,
+          400,
+          [
+            {
+              field: 'status',
+              currentStatus,
+              requestedStatus: targetStatus,
+              allowedTransitions: allowedNextStates,
+              message: `State transition ${currentStatus} -> ${targetStatus} is prohibited`,
+            },
+          ]
+        );
+      }
+
+      // Compare-And-Swap (CAS) atomic status transition guard:
+      // Ensures only ONE concurrent request can transition out of `currentStatus`
+      const casUpdate = await tx.order.updateMany({
+        where: {
+          id: orderId,
+          status: currentStatus,
+        },
+        data: {
+          status: targetStatus,
+          updatedAt: new Date(),
+        },
+      });
+
+      if (casUpdate.count === 0) {
+        throw new AppError(
+          'Concurrent order status modification detected. Please refresh and try again.',
+          409,
+          [
+            {
+              field: 'status',
+              message: 'Order status was concurrently modified by another request',
+            },
+          ]
+        );
+      }
+
+      // If order is CANCELLED (from PENDING or CONFIRMED), atomically return stockCartons to inventory
+      if (targetStatus === 'CANCELLED') {
+        for (const item of existingOrder.items) {
+          await tx.product.update({
+            where: { id: item.productId },
+            data: {
+              stockCartons: { increment: item.quantity },
+            },
+          });
+        }
+      }
+
+      const savedOrder = await tx.order.findUnique({
+        where: { id: orderId },
+        include: {
+          store: true,
+          items: {
+            include: {
+              product: {
+                select: {
+                  id: true,
+                  sku: true,
+                  name: true,
+                  category: true,
+                  stockCartons: true,
+                },
               },
             },
           },
         },
-      },
-    });
+      });
 
-    return savedOrder;
-  });
+      return savedOrder;
+    },
+    {
+      maxWait: 10000,
+      timeout: 15000,
+    }
+  );
 
   // Invalidate KPI Summary & Public Catalog cache (if stock was restored on cancel)
   await invalidateCache(CACHE_KEYS.KPI_SUMMARY, CACHE_KEYS.CATALOG_PUBLIC);
@@ -354,10 +388,12 @@ export async function getFefoInventory() {
       fefoRecommendation = 'Quarantine batch immediately — Do not dispatch';
     } else if (expiry < threeMonthsFromNow) {
       fefoStatus = 'DANGER';
-      fefoRecommendation = 'CRITICAL FEFO (< 3 months): Prioritize immediate promo/dispatch to fast-moving stores';
+      fefoRecommendation =
+        'CRITICAL FEFO (< 3 months): Prioritize immediate promo/dispatch to fast-moving stores';
     } else if (expiry < sixMonthsFromNow) {
       fefoStatus = 'WARNING';
-      fefoRecommendation = 'WARNING FEFO (< 6 months): Allocate batch first before newer production batches';
+      fefoRecommendation =
+        'WARNING FEFO (< 6 months): Allocate batch first before newer production batches';
     }
 
     return {
@@ -541,4 +577,3 @@ export async function updateProductStock(productId, payload) {
 
   return serializeProduct(updatedProduct);
 }
-

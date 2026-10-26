@@ -1,26 +1,25 @@
 # Active Context: Inbisco MitraHub
 
 ## 1. Current Focus
-Seluruh arsitektur backend REST API **Inbisco MitraHub** telah selesai dibangun di root repository (`/run/media/wisesa/DATA2/MitraHubInbisco`), terhubung dengan Supabase PostgreSQL (Transaction Pooler `:6543` & Direct Session Pooler `:5432`) serta Upstash Redis HTTP REST cache, lengkap dengan data seeder produk Mayora & mitra warung Sidoarjo dan verifikasi End-to-End (E2E).
+Seluruh temuan Security Audit (Kritis, Tinggi, dan Bug/Hardening) telah dieksekusi dan diverifikasi secara End-to-End (E2E) pada database Supabase dan Upstash Redis.
 
-## 2. What Was Accomplished
-- **Inisialisasi Memory Bank & Supabase Agent Skills:**
-  - Membuat 6 dokumen `.memory-bank/`.
-  - Menginstal `supabase/agent-skills` (`supabase` & `supabase-postgres-best-practices`).
-- **Database & ORM Setup (`prisma/schema.prisma`, `prisma/seed.js`):**
-  - Konfigurasi Prisma 6 + NixOS local engine bindings di `.env` dan `.env.local` (serta kompatibel penuh dengan Vercel Serverless Linux).
-  - Sinkronisasi skema (`Store`, `Product`, `Order`, `OrderItem`, enum `OrderStatus`, `PaymentMethod`) ke Supabase PostgreSQL.
-  - Seeding 6 toko mitra di kecamatan Sidoarjo, 8 produk Mayora dengan variasi batch FEFO (`DANGER` < 3 bulan, `WARNING` < 6 bulan, `SAFE` >= 6 bulan), dan 3 sample pesanan grosir (`INB-2610-KR01`, `INB-2610-TM02`, `INB-2610-WR03`).
-- **Clean Layered Architecture (`src/` & `api/index.js`):**
-  - `src/config/database.js` & `src/config/redis.js`: Singleton Prisma Client & fail-open Upstash Redis cache wrapper (`cache:catalog_public` TTL 3600s, `cache:kpi_summary` TTL 180s).
-  - `src/middlewares/*`: Constant-time Bearer token auth (`crypto.timingSafeEqual`), Zod validation middleware, dan centralized error handler.
-  - `src/modules/products/*`: Katalog publik dengan Redis caching & kalkulasi estimasi margin.
-  - `src/modules/stores/*`: Registrasi warung mitra dengan normalisasi nomor HP Indonesia & validasi 18 kecamatan di Kabupaten Sidoarjo.
-  - `src/modules/orders/*`: Atomic checkout (`prisma.$transaction`) dengan conditional atomic stock decrement (`stockCartons: { gte: quantity }`), generator kode resi `INB-YYMM-XXXX`, dan live order tracking.
-  - `src/modules/admin/*`: Ringkasan 4 KPI + Fast Moving Products, filter order per status & kecamatan, *Strict One-Way State Machine* (dengan auto-restock saat `CANCELLED`), FEFO warehouse inventory alert, verifikasi mitra toko, serta penambahan/update stok produk (`POST /api/v1/admin/products` & `PATCH /api/v1/admin/products/:id/stock`).
+## 2. Security & Hardening Changes Applied
+1. **Supabase RLS & Role Lockout (`prisma/security_rls.sql`):**
+   - `ENABLE ROW LEVEL SECURITY` telah diaktifkan pada tabel `Store`, `Product`, `Order`, dan `OrderItem`.
+   - `REVOKE ALL` telah dijalankan terhadap role `anon` dan `authenticated` sehingga PostgREST Data API tertutup rapat.
+2. **Secret Hygiene & Constant-Time SHA-256 Auth (`src/middlewares/auth.middleware.js`):**
+   - `.env.example` telah dibersihkan dari secret asli.
+   - `ADMIN_SECRET_KEY` di `.env` & `.env.local` telah diganti dengan 256-bit high-entropy token.
+   - `adminAuth` kini melakukan hash `SHA-256` pada token sebelum `crypto.timingSafeEqual` agar panjang token tidak bocor via *timing side-channel*.
+3. **Stateless Upstash Rate Limiting (`src/middlewares/rateLimit.middleware.js`):**
+   - Proteksi IP-based rate limiter dipasang di `POST /api/v1/stores/register` (10 req/m), `POST /api/v1/orders` (15 req/m), `GET /api/v1/orders/track/:code` (30 req/m), dan `GET /api/v1/products` (60 req/m).
+4. **Business Logic & PII Hardening (`src/modules/orders/*`, `src/modules/admin/*`):**
+   - **Verified Store Checkout Guard:** `POST /api/v1/orders` menolak (`403 Forbidden`) toko yang belum diverifikasi (`isVerified: false`) agar bot tidak bisa membuat akun palsu dan menguras stok gudang.
+   - **Public Tracking PII Redaction:** `GET /api/v1/orders/track/:code` menyembunyikan alamat detail & nama pemilik serta menyamarkan nomor telepon (`maskedPhone: 0812****0001`).
+   - **Compare-And-Swap (CAS) pada `updateOrderStatus`:** Mencegah *race condition* *double-restock* ketika dua request `CANCELLED` dieksekusi bersamaan.
+   - **Exact Currency Math (`Prisma.Decimal`) & Transaction Timeout:** Perhitungan harga menggunakan `Prisma.Decimal` dan timeout transaksi dinaikkan ke `15000ms` (`connection_limit=5`).
+   - **Malformed JSON & Error Sanitization:** Syntax error JSON dikembalikan sebagai `400 Bad Request` dan pesan error internal 500 tidak lagi dibocorkan ke response publik.
 
 ## 3. Immediate Next Steps
-1. Integrasi endpoint API dengan tim Frontend (Raka - Next.js + Tailwind).
-2. Deploy repository ke Vercel dan masukkan environment variables dari `.env.example` ke dashboard Vercel.
-3. Opsional: Tambahkan unit test / dokumentasi OpenAPI (Swagger) jika dibutuhkan untuk penilaian penjurian GTNIC 2026.
-
+1. Sebelum naik ke produksi penuh, lakukan rotasi password database Supabase dan token Upstash Redis di dashboard masing-masing karena sempat tercantum di chat.
+2. Sesuaikan `CORS_ORIGIN` di Vercel dengan domain frontend Next.js milik Raka.

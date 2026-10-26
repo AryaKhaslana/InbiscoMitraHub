@@ -1,0 +1,11 @@
+.env
+.env.*
+.env.local
+.env.*.local
+.git
+.github
+.agents
+.memory-bank
+README.md
+node_modules
+

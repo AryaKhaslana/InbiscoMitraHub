@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { rateLimit } from '../../middlewares/rateLimit.middleware.js';
 import * as productsController from './products.controller.js';
 
 const router = Router();
@@ -7,7 +8,10 @@ const router = Router();
  * GET /api/v1/products
  * Public endpoint to fetch active Mayora product catalog (cached in Redis `cache:catalog_public` TTL 3600s)
  */
-router.get('/', productsController.listPublicProducts);
+router.get(
+  '/',
+  rateLimit({ prefix: 'rl:products_list', max: 60, windowSeconds: 60 }),
+  productsController.listPublicProducts
+);
 
 export default router;
-
