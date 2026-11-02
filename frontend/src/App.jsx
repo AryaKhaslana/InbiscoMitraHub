@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AuthRoleProvider, useAuthRole } from './context/AuthRoleContext';
 import PublicHeader from './components/public/PublicHeader';
 import PublicFooter from './components/public/PublicFooter';
+import FloatingB2BHelpdesk from './components/public/FloatingB2BHelpdesk';
 import Home from './pages/Home';
 import Products from './pages/Products';
 import Partnership from './pages/Partnership';
@@ -77,6 +78,7 @@ function AppContent() {
           {publicNav === 'contact' && <Contact setActiveNav={handlePublicNav} />}
           {publicNav === 'login' && <Login setActiveNav={handlePublicNav} />}
         </main>
+        <FloatingB2BHelpdesk setActiveNav={handlePublicNav} />
         <PublicFooter setActiveNav={handlePublicNav} />
       </div>
     );

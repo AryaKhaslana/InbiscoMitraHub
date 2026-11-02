@@ -22,7 +22,8 @@ import {
   ArrowRight,
   TrendingUp,
   Store,
-  ShieldCheck
+  ShieldCheck,
+  Printer
 } from 'lucide-react';
 
 export default function Products({ setActiveNav, initialCategory, onCategoryChange }) {
@@ -255,6 +256,169 @@ export default function Products({ setActiveNav, initialCategory, onCategoryChan
     } finally {
       setSubmittingOrder(false);
     }
+  };
+
+  const handlePrintOrderInvoice = () => {
+    if (!orderSuccess || !selectedProduct) return;
+    const trackingCode = orderSuccess.trackingCode || orderSuccess.orderNumber || orderSuccess.id || 'INB-PO-2026';
+    const currentDate = new Date().toLocaleDateString('id-ID', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    const totalAmount = selectedProduct.price * orderQuantity;
+    const dpp = Math.round(totalAmount / 1.11);
+    const ppn = totalAmount - dpp;
+    const payMethod = paymentMethod === 'TOP_14_DAYS' ? 'Tempo Pembayaran Mitra (TOP 14 Hari)' : 'Cash on Delivery (COD Tunai)';
+
+    const printWin = window.open('', '_blank', 'width=800,height=900');
+    if (!printWin) {
+      window.print();
+      return;
+    }
+
+    printWin.document.write(`
+      <!DOCTYPE html>
+      <html lang="id">
+      <head>
+        <meta charset="utf-8">
+        <title>Surat Pesanan Grosir - ${trackingCode}</title>
+        <style>
+          body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #1b1c1c; padding: 40px; margin: 0; background: #fff; line-height: 1.5; }
+          .header { border-bottom: 2.5px solid #a80000; padding-bottom: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-start; }
+          .title { font-size: 20px; font-weight: 800; color: #a80000; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }
+          .subtitle { font-size: 13px; color: #524341; margin-top: 4px; font-weight: 600; }
+          .address { font-size: 11px; color: #7d6b68; margin-top: 4px; }
+          .badge { display: inline-block; background: #e8f5e9; color: #1b5e20; border: 1px solid #c8e6c9; padding: 6px 14px; border-radius: 6px; font-weight: 700; font-size: 12px; }
+          .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; background: #fdf8f7; padding: 16px; border-radius: 8px; border: 1px solid #f0e1df; }
+          .meta-item { font-size: 12px; }
+          .meta-label { color: #7d6b68; font-weight: 500; display: block; margin-bottom: 2px; }
+          .meta-val { color: #1b1c1c; font-weight: 700; font-size: 13px; }
+          table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 12.5px; }
+          th, td { border: 1px solid #e5d8d6; padding: 10px 14px; text-align: left; }
+          th { background: #fbf5f4; font-weight: 700; color: #433332; }
+          .text-right { text-align: right; }
+          .text-center { text-align: center; }
+          .totals-table { width: 50%; margin-left: auto; margin-bottom: 24px; }
+          .totals-table td { padding: 8px 12px; }
+          .grand-total { font-size: 15px; font-weight: 800; color: #a80000; background: #fdf8f7; }
+          .footer-note { font-size: 11px; color: #7d6b68; line-height: 1.6; margin-top: 24px; border-top: 1px dashed #d5c4c2; padding-top: 14px; }
+          .sign-area { display: flex; justify-content: space-between; margin-top: 36px; }
+          .sign-box { text-align: center; width: 220px; }
+          .sign-line { border-bottom: 1px solid #1b1c1c; margin-top: 55px; margin-bottom: 4px; }
+          @media print { body { padding: 15px; } }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div>
+            <h1 class="title">PT Inbisco Niagatama Semesta</h1>
+            <div class="subtitle">Distributor Resmi Mayora Group — Cabang Krian (Sidoarjo)</div>
+            <div class="address">Kawasan Pergudangan KM 29, Jl. Raya Krian, Kabupaten Sidoarjo, Jawa Timur 61262</div>
+          </div>
+          <div style="text-align: right;">
+            <div class="badge">SURAT PESANAN GROSIR (PO)</div>
+            <div style="font-size: 11px; font-family: monospace; color: #7d6b68; margin-top: 6px;">${trackingCode}</div>
+          </div>
+        </div>
+
+        <div class="meta-grid">
+          <div class="meta-item">
+            <span class="meta-label">Nomor Resi / Tracking Code:</span>
+            <span class="meta-val" style="color: #a80000; font-family: monospace;">${trackingCode}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Waktu Pemesanan:</span>
+            <span class="meta-val">${currentDate}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Nama Outlet Pemesan:</span>
+            <span class="meta-val">${storeName || 'Toko Mitra Mayora'}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Kontak WhatsApp:</span>
+            <span class="meta-val" style="font-family: monospace;">${storePhone}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Metode Pembayaran:</span>
+            <span class="meta-val">${payMethod}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Jadwal Keberangkatan:</span>
+            <span class="meta-val" style="color: #1b5e20;">H+1 Terjadwal (Armada Depo Krian)</span>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 50px;" class="text-center">No</th>
+              <th>Deskripsi Produk & Kemasan</th>
+              <th style="width: 140px;">Kode SKU</th>
+              <th style="width: 90px;" class="text-center">Jumlah</th>
+              <th style="width: 130px;" class="text-right">Harga Dus</th>
+              <th style="width: 140px;" class="text-right">Total Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-center">1</td>
+              <td>
+                <strong>${selectedProduct.name}</strong>
+                <div style="font-size: 11px; color: #7d6b68;">${selectedProduct.packSpec || 'Karton Standar Mayora'}</div>
+              </td>
+              <td style="font-family: monospace; font-size: 11px;">${selectedProduct.sku}</td>
+              <td class="text-center font-bold"><strong>${orderQuantity} Karton</strong></td>
+              <td class="text-right font-mono">${formatRupiah(selectedProduct.price)}</td>
+              <td class="text-right font-mono"><strong>${formatRupiah(totalAmount)}</strong></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table class="totals-table">
+          <tr>
+            <td>Dasar Pengenaan Pajak (DPP):</td>
+            <td class="text-right font-mono">${formatRupiah(dpp)}</td>
+          </tr>
+          <tr>
+            <td>PPN 11% (Faktur Pajak Sah):</td>
+            <td class="text-right font-mono">${formatRupiah(ppn)}</td>
+          </tr>
+          <tr class="grand-total">
+            <td><strong>TOTAL FAKTUR RESMI:</strong></td>
+            <td class="text-right font-mono"><strong>${formatRupiah(totalAmount)}</strong></td>
+          </tr>
+        </table>
+
+        <div class="sign-area">
+          <div class="sign-box">
+            <div style="font-size: 11px; color: #7d6b68;">Dipesan Oleh (Mitra Toko)</div>
+            <div class="sign-line"></div>
+            <div style="font-size: 12px; font-weight: 700;">${storeName || 'Penanggung Jawab Toko'}</div>
+            <div style="font-size: 10px; color: #7d6b68;">Cap / Tanda Tangan Outlet</div>
+          </div>
+          <div class="sign-box">
+            <div style="font-size: 11px; color: #7d6b68;">Logistik & Pengiriman Cabang Krian</div>
+            <div class="sign-line"></div>
+            <div style="font-size: 12px; font-weight: 700;">Admin Distribusi Mayora</div>
+            <div style="font-size: 10px; color: #7d6b68;">PT Inbisco Niagatama Semesta</div>
+          </div>
+        </div>
+
+        <div class="footer-note">
+          <strong>Catatan Operasional:</strong> Dokumen ini merupakan Surat Pesanan resmi yang diteruskan ke sistem warehouse loading bay Depot Krian. Pemeriksaan fisik segel karton dan tanda tangan Berita Acara Serah Terima (BAST) wajib dilakukan bersama kurir armada saat bongkar muat. Retur dus cacat diakomodasi 100% tanpa potongan biaya.
+        </div>
+        <script>
+          window.onload = function() { window.print(); }
+        </script>
+      </body>
+      </html>
+    `);
+    printWin.document.close();
   };
 
   return (
@@ -521,14 +685,23 @@ export default function Products({ setActiveNav, initialCategory, onCategoryChan
                         Sales representatif cabang Krian akan segera menghubungi WhatsApp Anda untuk konfirmasi jadwal armada pengiriman.
                       </p>
                     </div>
-                    <div className="pt-2 flex justify-center">
+                    <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2.5">
+                      <Button
+                        type="button"
+                        onClick={handlePrintOrderInvoice}
+                        className="text-xs font-bold px-5 gap-2 bg-primary-container text-white shadow-xs hover:bg-primary transition-colors cursor-pointer w-full sm:w-auto py-2.5"
+                      >
+                        <Printer className="h-4 w-4" />
+                        <span>Cetak Surat Pesanan (PDF)</span>
+                      </Button>
                       <Button
                         type="button"
                         onClick={() => {
                           setOrderSuccess(null);
                           setSelectedProduct(null);
                         }}
-                        className="text-xs font-bold px-8"
+                        variant="outline"
+                        className="text-xs font-semibold px-6 cursor-pointer w-full sm:w-auto py-2.5"
                       >
                         Selesai & Tutup
                       </Button>
