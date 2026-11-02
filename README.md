@@ -57,6 +57,23 @@ Wajib menyertakan header: `Authorization: Bearer <ADMIN_SECRET_KEY>`
 
 ---
 
+### C. SupplySync HQ & Extended Distributor Endpoints (Dual-Role: Mayora HQ & Depo Krian)
+
+| No | Method & Path | Kegunaan & Contoh Payload |
+|----|---------------|---------------------------|
+| 17 | `POST /api/v1/auth/login` | Login Portal Operasional & Role Switcher (`HQ_ADMIN` vs `DISTRIBUTOR_DEPO`). Menghasilkan HMAC Bearer token.<br>Body: `{ "username": "bambang.krian@inbisco.co.id", "password": "Inbisco2026!", "role": "DISTRIBUTOR_DEPO" }` |
+| 18 | `POST /api/v1/distributor/sales`<br>*(alias: `/api/v1/admin/sales`)* | Input Penjualan Harian Kasir / DSR (potong stok fisik atomik & rekam log sinkronisasi SAP).<br>Body: `{ "sku": "MYR-BISC-002", "quantityCartons": 25, "channel": "Grosir Warung & Warkop", "storeName": "Warkop Berkah" }` |
+| 19 | `GET /api/v1/distributor/sales`<br>*(alias: `/api/v1/admin/sales`)* | Ambil daftar transaksi DSR harian + snapshot stok SKU gudang terkini. |
+| 20 | `POST /api/v1/simulation/what-if`<br>*(alias: `/api/v1/admin/simulation/what-if`)* | Mesin Simulasi What-If Restock & Lead Time (kurva deplesi 14 hari, *runway* hari, *lost sales*, efisiensi Wingbox FTL %).<br>Body: `{ "sku": "MYR-RMK-01", "stockOnHand": 280, "ads": 175, "leadTimeDays": 3, "safetyStock": 200, "proposedRestockQty": 850 }` |
+| 21 | `GET /api/v1/admin/stockout-risk` | Radar deteksi dini kerentanan stok (*runway* < 2 hari) & rekomendasi *Cross-Depot Rebalancing*. |
+| 22 | `POST /api/v1/admin/cross-depot-transfer` | Eksekusi realokasi stok darurat antar-gudang (misal Depo Mojokerto $\to$ Depo Krian).<br>Body: `{ "sku": "MYR-RMK-01", "quantityCartons": 150, "sourceDepot": "Depo Mojokerto", "targetDepot": "CV Surya Krian Logistik" }` |
+| 23 | `GET /api/v1/admin/restock-recommendations` | Mesin rekomendasi *Smart Replenishment* berbasis rumus $SS = Z \times \sigma_L \times ADS$ + kalkulator kubikasi truk Wingbox 65 m³ (FTL %). |
+| 24 | `POST /api/v1/admin/batch-approve-po` | Persetujuan massal Purchase Order (*Batch PO Approval*) ke pabrik Mayora DC Pasuruan.<br>Body: `{ "depotName": "CV Surya Krian Logistik", "applyToStock": false, "items": [{ "sku": "MYR-RMK-01", "quantityCartons": 550 }] }` |
+| 25 | `GET /api/v1/distributor/inbound-deliveries`<br>*(alias: `/api/v1/admin/inbound-deliveries`)* | Pelacakan truk pasokan pabrik (*Inbound DO* `DO-2026-0881`, koordinat GPS Tol Pandaan–Krian, status segel e-Lock `MYR-998240`). |
+| 26 | `PATCH /api/v1/distributor/inbound-deliveries/:doNumber/confirm` | Konfirmasi BAST barang tiba di Gudang Krian & tambah stok karton otomatis.<br>Body: `{ "receivedBy": "Bambang Sudiro", "sealCode": "MYR-998240", "applyToStock": true }` |
+
+---
+
 ## 3. Rangkuman 6 Putaran Security Audit & Hardening
 
 1. **Database & PostgREST Lockout (`prisma/security_rls.sql`):**

@@ -7,14 +7,72 @@ import {
   adminAuditLogsQuerySchema,
   adminOrdersQuerySchema,
   adminStoresQuerySchema,
+  batchApprovePoSchema,
+  confirmInboundDeliverySchema,
   createProductSchema,
+  crossDepotTransferSchema,
+  dailySalesInputSchema,
+  dailySalesQuerySchema,
+  doNumberParamSchema,
   idParamSchema,
+  portalLoginSchema,
   updateOrderStatusSchema,
   updateProductStockSchema,
   verifyStoreBodySchema,
+  whatIfSimulationSchema,
 } from './admin.schema.js';
 
 const router = Router();
+export const authRouter = Router();
+export const simulationRouter = Router();
+export const distributorRouter = Router();
+
+/**
+ * Portal Auth Router (/api/v1/auth)
+ */
+authRouter.post(
+  '/login',
+  rateLimit({ prefix: 'rl:portal_login', max: 20, windowSeconds: 60 }),
+  validate({ body: portalLoginSchema }),
+  adminController.loginPortal
+);
+
+/**
+ * Simulation Router (/api/v1/simulation)
+ */
+simulationRouter.use(rateLimit({ prefix: 'rl:sim_api', max: 60, windowSeconds: 60 }));
+simulationRouter.use(adminAuth);
+simulationRouter.post(
+  '/what-if',
+  validate({ body: whatIfSimulationSchema }),
+  adminController.runWhatIfSimulation
+);
+
+/**
+ * Distributor Depo Router (/api/v1/distributor)
+ */
+distributorRouter.use(rateLimit({ prefix: 'rl:dist_api', max: 60, windowSeconds: 60 }));
+distributorRouter.use(adminAuth);
+distributorRouter.use((_req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store');
+  next();
+});
+distributorRouter.get(
+  '/sales',
+  validate({ query: dailySalesQuerySchema }),
+  adminController.getDailySalesLogs
+);
+distributorRouter.post(
+  '/sales',
+  validate({ body: dailySalesInputSchema }),
+  adminController.recordDailySales
+);
+distributorRouter.get('/inbound-deliveries', adminController.getInboundDeliveries);
+distributorRouter.patch(
+  '/inbound-deliveries/:doNumber/confirm',
+  validate({ params: doNumberParamSchema, body: confirmInboundDeliverySchema }),
+  adminController.confirmInboundDelivery
+);
 
 // Rate-limit all /api/v1/admin/* requests BEFORE authentication to block token brute-force attempts
 router.use(rateLimit({ prefix: 'rl:admin_api', max: 60, windowSeconds: 60 }));
@@ -108,4 +166,50 @@ router.get(
   adminController.getAuditLogs
 );
 
+/**
+ * SupplySync HQ & Extended Distributor Endpoints under /api/v1/admin/*
+ */
+router.get('/stockout-risk', adminController.getStockoutRiskAnalysis);
+
+router.post(
+  '/cross-depot-transfer',
+  validate({ body: crossDepotTransferSchema }),
+  adminController.executeCrossDepotTransfer
+);
+
+router.get('/restock-recommendations', adminController.getRestockRecommendations);
+
+router.post(
+  '/batch-approve-po',
+  validate({ body: batchApprovePoSchema }),
+  adminController.batchApprovePo
+);
+
+router.post(
+  '/simulation/what-if',
+  validate({ body: whatIfSimulationSchema }),
+  adminController.runWhatIfSimulation
+);
+
+router.get(
+  '/sales',
+  validate({ query: dailySalesQuerySchema }),
+  adminController.getDailySalesLogs
+);
+
+router.post(
+  '/sales',
+  validate({ body: dailySalesInputSchema }),
+  adminController.recordDailySales
+);
+
+router.get('/inbound-deliveries', adminController.getInboundDeliveries);
+
+router.patch(
+  '/inbound-deliveries/:doNumber/confirm',
+  validate({ params: doNumberParamSchema, body: confirmInboundDeliverySchema }),
+  adminController.confirmInboundDelivery
+);
+
 export default router;
+

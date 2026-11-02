@@ -10,7 +10,11 @@ import {
 } from '../src/middlewares/error.middleware.js';
 import { auditTracker } from '../src/middlewares/auditTracker.middleware.js';
 import { rateLimit } from '../src/middlewares/rateLimit.middleware.js';
-import adminRoutes from '../src/modules/admin/admin.routes.js';
+import adminRoutes, {
+  authRouter,
+  distributorRouter,
+  simulationRouter,
+} from '../src/modules/admin/admin.routes.js';
 import devopsRoutes from '../src/modules/devops/devops.routes.js';
 import ordersRoutes from '../src/modules/orders/orders.routes.js';
 import productsRoutes from '../src/modules/products/products.routes.js';
@@ -106,9 +110,12 @@ app.get(
  * API v1 Module Routes
  */
 app.use(devopsRoutes);
+app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/products', productsRoutes);
 app.use('/api/v1/stores', storesRoutes);
 app.use('/api/v1/orders', ordersRoutes);
+app.use('/api/v1/simulation', simulationRouter);
+app.use('/api/v1/distributor', distributorRouter);
 app.use('/api/v1/admin', adminRoutes);
 
 // 404 & Global Error Handlers

@@ -2,9 +2,26 @@ import crypto from 'node:crypto';
 import { sendError } from '../utils/response.js';
 
 /**
- * Single-Token Bearer Authentication Middleware for internal Admin dashboard routes.
- * Header format: Authorization: Bearer <ADMIN_SECRET_KEY>
- * Uses SHA-256 hashing prior to crypto.timingSafeEqual so token length is never leaked via timing side-channel.
+ * Generates an HMAC-SHA256 session token scoped to a portal role so raw ADMIN_SECRET_KEY is never exposed in login responses.
+ */
+export function createSessionToken(role = 'DISTRIBUTOR_DEPO', secret = process.env.ADMIN_SECRET_KEY) {
+  const normalizedRole = role === 'HQ_ADMIN' ? 'HQ_ADMIN' : 'DISTRIBUTOR_DEPO';
+  const sig = crypto
+    .createHmac('sha256', String(secret || ''))
+    .update(`inbisco_portal_session:${normalizedRole}`)
+    .digest('hex');
+  return `inb_sess_${normalizedRole}_${sig}`;
+}
+
+function safeCompareStrings(a, b) {
+  const digestA = crypto.createHash('sha256').update(String(a), 'utf8').digest();
+  const digestB = crypto.createHash('sha256').update(String(b), 'utf8').digest();
+  return crypto.timingSafeEqual(digestA, digestB);
+}
+
+/**
+ * Single-Token / Session Bearer Authentication Middleware for internal Admin & Distributor routes.
+ * Accepts either raw Bearer <ADMIN_SECRET_KEY> or a signed portal token from POST /api/v1/auth/login.
  */
 export function adminAuth(req, res, next) {
   const authHeader = req.headers.authorization;
@@ -40,11 +57,11 @@ export function adminAuth(req, res, next) {
     });
   }
 
-  // Hash both sides with SHA-256 (always 32 bytes) to eliminate length timing leaks
-  const providedDigest = crypto.createHash('sha256').update(providedToken, 'utf8').digest();
-  const expectedDigest = crypto.createHash('sha256').update(expectedSecret, 'utf8').digest();
+  const isMasterKey = safeCompareStrings(providedToken, expectedSecret);
+  const isHqSession = safeCompareStrings(providedToken, createSessionToken('HQ_ADMIN', expectedSecret));
+  const isDepoSession = safeCompareStrings(providedToken, createSessionToken('DISTRIBUTOR_DEPO', expectedSecret));
 
-  if (!crypto.timingSafeEqual(providedDigest, expectedDigest)) {
+  if (!isMasterKey && !isHqSession && !isDepoSession) {
     return sendError(res, {
       statusCode: 401,
       message: 'Unauthorized: Invalid admin secret key',
@@ -52,5 +69,7 @@ export function adminAuth(req, res, next) {
     });
   }
 
+  req.adminRole = isDepoSession ? 'DISTRIBUTOR_DEPO' : 'HQ_ADMIN';
   return next();
 }
+

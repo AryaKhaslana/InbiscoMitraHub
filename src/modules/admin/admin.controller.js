@@ -146,3 +146,156 @@ export async function getAuditLogs(req, res, next) {
   }
 }
 
+export async function loginPortal(req, res, next) {
+  try {
+    const session = await adminService.loginPortal(req.body, {
+      ipAddress: getClientIp(req),
+    });
+
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: 'Autentikasi portal operasional berhasil',
+      data: session,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function recordDailySales(req, res, next) {
+  try {
+    const result = await adminService.recordDailySales(req.body, {
+      ipAddress: getClientIp(req),
+    });
+
+    return sendSuccess(res, {
+      statusCode: 201,
+      message: `Penjualan ${result.quantityCartons} dus ${result.productName} berhasil direkam & stok diperbarui`,
+      data: result,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function getDailySalesLogs(req, res, next) {
+  try {
+    const data = await adminService.getDailySalesLogs(req.query);
+
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: 'Data penjualan harian (DSR) berhasil diambil',
+      data,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function runWhatIfSimulation(req, res, next) {
+  try {
+    const simulation = await adminService.runWhatIfSimulation(req.body);
+
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: 'Simulasi What-If Restock & Lead Time berhasil dihitung',
+      data: simulation,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function getStockoutRiskAnalysis(req, res, next) {
+  try {
+    const analysis = await adminService.getStockoutRiskAnalysis();
+
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: 'Analisis risiko stockout & rekomendasi cross-depot berhasil diambil',
+      data: analysis,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function executeCrossDepotTransfer(req, res, next) {
+  try {
+    const transfer = await adminService.executeCrossDepotTransfer(req.body, {
+      ipAddress: getClientIp(req),
+    });
+
+    return sendSuccess(res, {
+      statusCode: 201,
+      message: `Realokasi stok antar-depo (${transfer.transferCode}) berhasil dieksekusi`,
+      data: transfer,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function getRestockRecommendations(req, res, next) {
+  try {
+    const data = await adminService.getRestockRecommendations();
+
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: 'Rekomendasi Smart Replenishment & kalkulasi FTL berhasil diambil',
+      data,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function batchApprovePo(req, res, next) {
+  try {
+    const po = await adminService.batchApprovePo(req.body, {
+      ipAddress: getClientIp(req),
+    });
+
+    return sendSuccess(res, {
+      statusCode: 201,
+      message: `Purchase Order ${po.poNumber} berhasil diterbitkan ke Mayora Plant DC Pasuruan`,
+      data: po,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function getInboundDeliveries(req, res, next) {
+  try {
+    const data = await adminService.getInboundDeliveries();
+
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: 'Data pelacakan armada inbound & GPS telemetri berhasil diambil',
+      data,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function confirmInboundDelivery(req, res, next) {
+  try {
+    const bast = await adminService.confirmInboundDelivery(
+      req.params.doNumber,
+      req.body,
+      { ipAddress: getClientIp(req) }
+    );
+
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: `BAST ${bast.bastNumber} untuk ${bast.doNumber} terverifikasi & stok gudang diperbarui`,
+      data: bast,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+
