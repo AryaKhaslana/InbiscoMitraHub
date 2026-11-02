@@ -1159,11 +1159,20 @@ export default function Partnership({ setActiveNav }) {
 
                 <div className="pt-2 flex flex-col gap-2">
                   <Button
+                    type="button"
+                    onClick={handlePrintReceipt}
+                    className="w-full text-xs font-bold gap-2 bg-primary-container text-white shadow-xs hover:bg-primary transition-colors cursor-pointer py-2.5"
+                  >
+                    <Printer className="h-4 w-4" />
+                    <span>Cetak / Simpan Bukti Registrasi (PDF)</span>
+                  </Button>
+                  <Button
                     onClick={() => {
                       setSuccessData(null);
                       setActiveNav('products');
                     }}
-                    className="w-full text-xs font-bold"
+                    variant="outline"
+                    className="w-full text-xs font-semibold cursor-pointer"
                   >
                     Lihat Katalog Produk Grosir
                   </Button>
@@ -1172,8 +1181,8 @@ export default function Partnership({ setActiveNav }) {
                       setSuccessData(null);
                       setActiveNav('home');
                     }}
-                    variant="outline"
-                    className="w-full text-xs"
+                    variant="ghost"
+                    className="w-full text-xs text-outline hover:text-on-surface cursor-pointer"
                   >
                     Kembali ke Beranda
                   </Button>
