@@ -22,6 +22,7 @@ import StockoutRiskAnalysis from './pages/admin/StockoutRiskAnalysis';   // Scre
 import SmartRecommendations from './pages/admin/SmartRecommendations';   // Screen 6
 import WhatIfSimulator from './pages/admin/WhatIfSimulator';             // Screen 7
 import ExecutiveOverview from './pages/admin/ExecutiveOverview';         // Screen 8
+import AuditLogs from './pages/admin/AuditLogs';                         // System Audit & Activity Logs
 
 function AppContent() {
   const { activeRole, switchRole, publicNav, setPublicNav } = useAuthRole();
@@ -111,6 +112,9 @@ function AppContent() {
           )}
           {adminScreen === 'order-tracking' && (
             <OrderDeliveryTracking setCurrentScreen={setAdminScreen} />
+          )}
+          {adminScreen === 'audit-logs' && (
+            <AuditLogs setCurrentScreen={setAdminScreen} />
           )}
         </main>
       </div>

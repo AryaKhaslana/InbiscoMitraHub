@@ -24,7 +24,8 @@ import {
   ArrowRight,
   Clock,
   ShieldCheck,
-  Trash2
+  Trash2,
+  FileText
 } from 'lucide-react';
 
 function timeAgo(dateString) {
@@ -231,6 +232,7 @@ export default function AdminHeader({ currentScreen, setCurrentScreen }) {
     { id: 'daily-sales-input', label: 'Input Penjualan Harian (DSR)', desc: 'Pencatatan faktur keluar ritel dan pemotongan stok otomatis', icon: CheckSquare },
     { id: 'restock-request', label: 'Pengajuan Restock Mandiri', desc: 'Formulir pengajuan PO ke Mayora Manufacturing Plant', icon: Boxes },
     { id: 'order-tracking', label: 'Tracking Armada & Dispatch', desc: 'Pelacakan armada inbound wingbox, BAST, dan antrean toko', icon: Truck },
+    { id: 'audit-logs', label: 'Log & Audit Trail Sistem', desc: 'Riwayat lengkap seluruh mutasi stok, login, otorisasi PO, dan sync SAP', icon: FileText },
   ];
 
   const searchableDocuments = [

@@ -30,6 +30,7 @@ export default function AdminSidebar({ currentScreen, setCurrentScreen }) {
     { id: 'smart-recommendations', label: 'Smart Replenishment', icon: Sparkles },
     { id: 'what-if-simulator', label: 'What-if Simulator', icon: Sliders, badge: 'AI Inovasi', badgeColor: 'tertiary' },
     { id: 'distributor-overview', label: 'Distributor Overview', icon: Store },
+    { id: 'audit-logs', label: 'Audit Trail & Log', icon: FileText, badge: 'Live', badgeColor: 'secondary' },
   ];
 
   const depoNav = [
@@ -37,6 +38,7 @@ export default function AdminSidebar({ currentScreen, setCurrentScreen }) {
     { id: 'daily-sales-input', label: 'Input Penjualan DSR', icon: CheckSquare },
     { id: 'restock-request', label: 'Pengajuan Restock', icon: Boxes, badge: 'AI Ready', badgeColor: 'tertiary' },
     { id: 'order-tracking', label: 'Tracking & Dispatch', icon: Truck, badge: 'Live POD' },
+    { id: 'audit-logs', label: 'Riwayat Log Hub', icon: FileText, badge: 'Live' },
   ];
 
   const currentNavList = isHq ? hqNav : depoNav;
