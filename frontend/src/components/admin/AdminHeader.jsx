@@ -71,7 +71,7 @@ export default function AdminHeader({ currentScreen }) {
               : 'Network Health: 94.2% Optimal'}
           </span>
           <span className="text-outline">•</span>
-          <span className="text-on-surface-variant">Supabase + Upstash Redis Connected</span>
+          <span className="text-on-surface-variant">Sistem Terhubung</span>
         </div>
       </div>
 
@@ -102,7 +102,7 @@ export default function AdminHeader({ currentScreen }) {
           ) : (
             <RefreshCw className="h-3.5 w-3.5 text-primary" />
           )}
-          <span>{syncingSap ? 'Sinkronisasi...' : syncSuccess ? 'SAP & Redis Synced' : 'Sync SAP'}</span>
+          <span>{syncingSap ? 'Sinkronisasi...' : syncSuccess ? 'Data Tersinkronisasi' : 'Sinkronisasi SAP'}</span>
         </Button>
 
         {/* Notification Bell */}

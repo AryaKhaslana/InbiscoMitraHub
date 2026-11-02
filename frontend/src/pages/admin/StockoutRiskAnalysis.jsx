@@ -121,13 +121,13 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
         <div>
           <div className="flex items-center gap-2 text-primary font-mono text-xs uppercase tracking-wider mb-1">
             <ShieldAlert className="h-4 w-4" />
-            <span>HQ Early Warning Radar • Live Supabase Stock Telemetry</span>
+            <span>HQ Early Warning Radar • Telemetri Ketersediaan Stok</span>
           </div>
           <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-on-surface">
             Pusat Peringatan Dini &amp; Kerentanan Stok
           </h1>
           <p className="text-sm text-on-surface-variant mt-1">
-            Deteksi dini probabilitas kelangkaan pasokan (stockout) secara real-time berdasarkan saldo gudang aktual di Supabase.
+            Deteksi dini probabilitas kelangkaan pasokan (stockout) secara real-time berdasarkan saldo stok fisik gudang.
           </p>
         </div>
         <div className="flex items-center gap-2.5">
@@ -233,7 +233,7 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="px-2 py-0.5 rounded bg-primary text-white text-[10px] uppercase font-bold tracking-wider">
-                      Peluang Rerouting Cepat (Live DB Mutation)
+                      Peluang Rerouting Cepat Antar-Depot
                     </span>
                     <span className="text-xs font-bold text-on-surface">
                       Keseimbangan Antar-Depot (Cross-Depot Rebalancing)
@@ -248,7 +248,7 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
                     Stok saat ini di Gudang Krian adalah <strong>{activeTransferTarget.stockCartons} dus</strong> (runway{' '}
                     <strong>{activeTransferTarget.runwayDays} hari</strong>, safety stock {activeTransferTarget.safetyStock} dus).
                     Rute via {activeTransferTarget.crossDepotRecommendation?.routeVia || 'Tol Jombang–Mojokerto -> Exit Krian'}{' '}
-                    memakan waktu {activeTransferTarget.crossDepotRecommendation?.estimatedTransitHours || 1.5} jam dan langsung menambah stok gudang Krian di database.
+                    memakan waktu {activeTransferTarget.crossDepotRecommendation?.estimatedTransitHours || 1.5} jam dan langsung menambah ketersediaan stok Gudang Krian.
                   </p>
                 </div>
               </div>
@@ -262,7 +262,7 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
                   <Sparkles className="h-4 w-4" />
                   <span>
                     {isAuthorizing
-                      ? 'Mengeksekusi Transfer di Database...'
+                      ? 'Memproses Otorisasi Transfer...'
                       : `Otorisasi Transfer +${activeTransferTarget.crossDepotRecommendation?.suggestedTransferCartons || 200} Dus`}
                   </span>
                 </Button>
@@ -321,7 +321,7 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
             <div>
               <h3 className="font-bold text-sm text-on-surface flex items-center gap-2">
                 <Layers className="h-4 w-4 text-primary" />
-                Matriks Prioritas Risiko Stockout Seluruh SKU (Data Riil Supabase)
+                Matriks Prioritas Risiko Ketersediaan SKU
               </h3>
               <p className="text-xs text-on-surface-variant">
                 Klik baris SKU mana saja untuk menjadikannya target simulasi Cross-Depot Rebalancing di atas.
@@ -508,7 +508,7 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
               <h3 className="font-bold text-xs text-on-surface">Protokol Mitigasi GTNIC 2026</h3>
             </div>
             <p className="text-xs text-on-surface-variant leading-relaxed">
-              Model prediktif SupplySync menghitung safety stock dengan rumus <code>SS = 1.65 × 0.85 × ADS</code> langsung dari saldo stok tabel <code>Product</code> di Supabase PostgreSQL.
+              Model prediktif menghitung batas pengaman (safety stock) dengan formula standar industri berdasarkan rata-rata laju konsumsi harian.
             </p>
             <div className="p-2.5 bg-surface-container-low rounded-lg border border-outline/10 text-xs space-y-1">
               <div className="flex justify-between">

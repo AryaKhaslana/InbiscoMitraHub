@@ -142,13 +142,13 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
         <div>
           <div className="flex items-center gap-2 text-primary font-mono text-xs uppercase tracking-wider mb-1">
             <Truck className="h-4 w-4" />
-            <span>Depo Krian Logistics • Live Inbound DO &amp; Outbound Dispatch</span>
+            <span>Depo Krian Logistics • Inbound Delivery &amp; Outbound Dispatch</span>
           </div>
           <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-on-surface">
             Pelacakan Delivery Armada &amp; Status PO Inbound
           </h1>
           <p className="text-sm text-on-surface-variant mt-1">
-            Pantau posisi GPS truk Wingbox dari Pabrik Mayora, verifikasi e-Lock &amp; BAST (otomatis menambah stok di Supabase), serta kelola antrean dispatch ke toko.
+            Pantau armada pengiriman dari Pabrik Mayora, verifikasi serah terima muatan (BAST), serta kelola antrean distribusi ke toko mitra.
           </p>
         </div>
 
@@ -177,7 +177,7 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
                 Berita Acara Serah Terima ({bastReceipt.bastNumber}) untuk {bastReceipt.doNumber} Terverifikasi!
               </div>
               <div className="text-[11px] text-emerald-700 mt-0.5">
-                Stok Gudang Krian di Supabase telah diperbarui:{' '}
+                Stok Gudang Krian telah diperbarui:{' '}
                 {(bastReceipt.restockedItems || [])
                   .map((it) => `${it.name.split('(')[0].trim()} (+${it.addedCartons} dus → ${it.newStockCartons} dus)`)
                   .join(', ')}
@@ -270,7 +270,7 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
               <div className="pt-3 border-t border-outline/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="text-xs text-on-surface-variant">
                   {isBastVerified
-                    ? '✓ Muatan DO ini telah diverifikasi dan masuk ke saldo stok gudang di Supabase.'
+                    ? '✓ Muatan DO ini telah diverifikasi dan masuk ke saldo stok gudang.'
                     : 'Klik tombol di samping saat truk tiba di Bay Gudang Krian untuk memverifikasi BAST dan menambah stok otomatis.'}
                 </div>
 
@@ -432,7 +432,7 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
             <div className="flex items-center gap-2">
               <FileText className="h-4 w-4 text-primary" />
               <h3 className="text-sm font-bold text-on-surface">
-                Status Pengiriman Outbound ke Toko Mitra Sidoarjo (Tabel Order Supabase)
+                Status Pengiriman Outbound ke Toko Mitra Sidoarjo
               </h3>
             </div>
             <span className="text-xs font-mono text-on-surface-variant">{outboundOrders.length} Pesanan Toko</span>

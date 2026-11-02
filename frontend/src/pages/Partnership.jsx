@@ -641,7 +641,7 @@ export default function Partnership({ setActiveNav }) {
                 Pendaftaran Kemitraan Diterima!
               </h3>
               <p className="text-xs text-on-surface-variant">
-                Pengajuan toko Anda telah berhasil dicatat ke dalam database operasional Depo Krian.
+                Pengajuan toko Anda telah berhasil dicatat ke dalam sistem operasional Depo Krian.
               </p>
             </div>
 

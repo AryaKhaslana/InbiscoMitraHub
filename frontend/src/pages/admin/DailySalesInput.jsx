@@ -120,13 +120,13 @@ export default function DailySalesInput({ setCurrentScreen }) {
         <div>
           <div className="flex items-center gap-2 text-primary font-mono text-xs uppercase tracking-wider mb-1">
             <CheckSquare className="h-4 w-4" />
-            <span>Depo Krian • Sinking Stok Real-Time ke Supabase PostgreSQL</span>
+            <span>Depo Krian • Pengelolaan Log Penjualan Harian</span>
           </div>
           <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-on-surface">
             Input Penjualan Harian (DSR)
           </h1>
           <p className="text-sm text-on-surface-variant mt-1">
-            Setiap transaksi retail langsung mengurangi saldo <code>stockCartons</code> di database Supabase secara atomik dan menginvalidasi cache Upstash Redis.
+            Setiap transaksi retail langsung mengurangi saldo stok gudang secara otomatis dan tercatat pada sistem logistik.
           </p>
         </div>
         <div className="flex items-center gap-2.5">
@@ -158,20 +158,17 @@ export default function DailySalesInput({ setCurrentScreen }) {
                     <Bolt className="h-5 w-5" />
                   </div>
                   <div>
-                    <h2 className="text-base font-bold text-on-surface">Formulir Log Transaksi SKU (Live DB)</h2>
+                    <h2 className="text-base font-bold text-on-surface">Formulir Transaksi Penjualan SKU</h2>
                     <p className="text-xs text-on-surface-variant">Potong stok fisik gudang Krian sesuai faktur keluar DSR</p>
                   </div>
                 </div>
-                <span className="text-[11px] font-mono text-on-surface-variant bg-surface-container px-2.5 py-1 rounded">
-                  POST /api/v1/distributor/sales
-                </span>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* SKU Selection from Real DB */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-on-surface flex items-center justify-between">
-                    <span>Pilih SKU Produk Mayora (Stok Live Supabase) <span className="text-primary">*</span></span>
+                    <span>Pilih SKU Produk Mayora <span className="text-primary">*</span></span>
                     <span className="text-[10px] text-primary uppercase font-bold">
                       Harga: {formatRupiah(selectedProduct.cartonPrice || 0)}/Dus
                     </span>
@@ -304,7 +301,7 @@ export default function DailySalesInput({ setCurrentScreen }) {
                     className="bg-primary text-white text-xs font-bold px-6 py-2.5 hover:bg-primary-container shadow-xs flex items-center gap-2"
                   >
                     <Send className="h-4 w-4" />
-                    <span>{isSubmitting ? 'Menyimpan ke Supabase...' : 'Simpan & Potong Stok Gudang'}</span>
+                    <span>{isSubmitting ? 'Menyimpan...' : 'Simpan Transaksi'}</span>
                   </Button>
                 </div>
 
@@ -319,8 +316,8 @@ export default function DailySalesInput({ setCurrentScreen }) {
                   <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-xs font-semibold flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
                     <span>
-                      DSR Berhasil Direkam! Stok {successReceipt.productName?.split('(')[0]} dipotong dari{' '}
-                      {successReceipt.previousStock} dus menjadi {successReceipt.remainingStock} dus di database.
+                      DSR Berhasil Direkam! Stok {successReceipt.productName?.split('(')[0]} diperbarui dari{' '}
+                      {successReceipt.previousStock} dus menjadi {successReceipt.remainingStock} dus di gudang.
                     </span>
                   </div>
                 )}
@@ -396,7 +393,7 @@ export default function DailySalesInput({ setCurrentScreen }) {
           <Card className="border border-outline/10 shadow-xs bg-surface-container-lowest">
             <CardContent className="p-5 space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="font-bold text-xs text-on-surface">Akumulasi DSR Tercatat (Database)</h3>
+                <h3 className="font-bold text-xs text-on-surface">Akumulasi Penjualan Tercatat</h3>
                 <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded">
                   {summary?.totalTransactions || auditLogs.length} Log
                 </span>
@@ -427,7 +424,7 @@ export default function DailySalesInput({ setCurrentScreen }) {
           <div className="flex items-center justify-between border-b border-outline/10 pb-3">
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-primary" />
-              <h3 className="text-sm font-bold text-on-surface">Riwayat Penjualan DSR dari Tabel AuditLog Supabase</h3>
+              <h3 className="text-sm font-bold text-on-surface">Riwayat Transaksi Penjualan Harian (DSR)</h3>
             </div>
             <span className="text-xs text-on-surface-variant font-mono">{auditLogs.length} Transaksi Terakhir</span>
           </div>

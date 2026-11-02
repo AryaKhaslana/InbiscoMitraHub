@@ -213,7 +213,7 @@ export default function RestockRequest({ setCurrentScreen }) {
         <div>
           <div className="flex items-center gap-2 text-primary font-mono text-xs uppercase tracking-wider mb-1">
             <Truck className="h-4 w-4" />
-            <span>Modul Alokasi Pabrik • Terhubung ke Supabase &amp; SAP S/4HANA</span>
+            <span>Modul Alokasi Pabrik • Terhubung ke Jaringan Distribusi Mayora</span>
           </div>
           <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-on-surface">
             Pengajuan Restock Mandiri &amp; Rekomendasi Alokasi Pabrik
@@ -255,7 +255,7 @@ export default function RestockRequest({ setCurrentScreen }) {
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <span className="px-2 py-0.5 rounded bg-primary text-white text-[11px] uppercase tracking-wider font-bold">
-                  Rekomendasi AI Terdeteksi (Live DB)
+                  Rekomendasi Kebutuhan Restock
                 </span>
                 <span className="font-mono text-xs text-tertiary font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
                   Service Level 95% (Z=1.65)
@@ -269,7 +269,7 @@ export default function RestockRequest({ setCurrentScreen }) {
               <p className="text-xs text-on-surface-variant max-w-3xl">
                 {topSku
                   ? `Stok fisik di Gudang Krian saat ini hanya tersisa ${topSku.stockReal} dus dengan laju konsumsi rata-rata ${topSku.avgDailySales} dus/hari.`
-                  : 'Kalkulasi dinamis berdasarkan saldo stok aktual di Supabase.'}
+                  : 'Kalkulasi dinamis berdasarkan saldo stok gudang saat ini.'}
               </p>
             </div>
           </div>
@@ -348,7 +348,7 @@ export default function RestockRequest({ setCurrentScreen }) {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <Boxes className="h-4 w-4 text-primary" />
-                  <span className="font-bold text-sm text-on-surface">Katalog &amp; Alokasi Kuantitas Produk (Data Live Supabase)</span>
+                  <span className="font-bold text-sm text-on-surface">Katalog &amp; Alokasi Kuantitas Produk</span>
                 </div>
                 <span className="text-[11px] text-on-surface-variant">Satuan: <strong>Karton (Dus)</strong></span>
               </div>
@@ -358,7 +358,7 @@ export default function RestockRequest({ setCurrentScreen }) {
                   <thead>
                     <tr className="bg-surface-container-low text-on-surface-variant border-b border-outline/10">
                       <th className="py-2.5 px-3 font-semibold uppercase tracking-wider">Produk SKU</th>
-                      <th className="py-2.5 px-2 font-semibold uppercase tracking-wider text-right">Stok Riil DB</th>
+                      <th className="py-2.5 px-2 font-semibold uppercase tracking-wider text-right">Stok Fisik</th>
                       <th className="py-2.5 px-2 font-semibold uppercase tracking-wider text-right">Avg Laju/Hr</th>
                       <th className="py-2.5 px-2 font-semibold uppercase tracking-wider text-right">Saran AI</th>
                       <th className="py-2.5 px-3 font-semibold uppercase tracking-wider text-center w-36">Input Dus</th>
@@ -570,7 +570,7 @@ export default function RestockRequest({ setCurrentScreen }) {
                 <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-center space-y-2">
                   <div className="flex items-center justify-center gap-1.5 text-emerald-800 font-bold text-xs">
                     <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                    <span>PO {submittedPo.poNumber} Tercatat di Supabase!</span>
+                    <span>Pengajuan PO {submittedPo.poNumber} Berhasil!</span>
                   </div>
                   <p className="text-[11px] text-emerald-700">
                     Surat Jalan: <strong>{submittedPo.doNumber}</strong> ({submittedPo.totalCartons} Dus).
@@ -606,7 +606,7 @@ export default function RestockRequest({ setCurrentScreen }) {
                 {isSubmitting ? (
                   <>
                     <Clock className="h-4 w-4 animate-spin" />
-                    <span>Menyimpan PO ke Database...</span>
+                    <span>Memproses Pengajuan PO...</span>
                   </>
                 ) : (
                   <>
@@ -625,7 +625,7 @@ export default function RestockRequest({ setCurrentScreen }) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <History className="h-4 w-4 text-primary" />
-            <h3 className="text-sm font-bold text-on-surface">Riwayat Status Pengajuan PO Restock (Database AuditLog)</h3>
+            <h3 className="text-sm font-bold text-on-surface">Riwayat Pengajuan Purchase Order (PO)</h3>
           </div>
           <span className="text-xs text-on-surface-variant font-mono">Total {poHistory.length} PO Tercatat</span>
         </div>

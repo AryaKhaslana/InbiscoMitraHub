@@ -163,13 +163,13 @@ export default function SmartRecommendations({ setCurrentScreen }) {
         <div>
           <div className="flex items-center gap-2 text-primary font-mono text-xs uppercase tracking-wider mb-1">
             <Brain className="h-4 w-4" />
-            <span>HQ Replenishment Engine • Explainable AI (Live Supabase Data)</span>
+            <span>HQ Replenishment Engine • Rekomendasi Alokasi Otomatis</span>
           </div>
           <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-on-surface">
             Prescriptive Replenishment Engine
           </h1>
           <p className="text-sm text-on-surface-variant mt-1 max-w-3xl">
-            Sistem optimasi alokasi inventaris otomatis Mayora Enterprise HQ. Mengalkulasi laju penjualan dinamis (ADS), safety stock (<code>SS = Z × σL × ADS</code>), dan utilitas kubikasi armada wingbox langsung dari database.
+            Sistem optimasi alokasi inventaris otomatis Mayora Enterprise HQ. Mengalkulasi laju penjualan dinamis (ADS), safety stock, dan utilitas kubikasi armada wingbox secara presisi berdasarkan data operasional rantai pasok.
           </p>
         </div>
 
@@ -248,7 +248,7 @@ export default function SmartRecommendations({ setCurrentScreen }) {
                 Batch Purchase Order {lastBatchReceipt.poNumber} (Surat Jalan: {lastBatchReceipt.doNumber}) Berhasil Diotorisasi!
               </div>
               <div className="text-[11px] text-emerald-700 mt-0.5">
-                Total {lastBatchReceipt.totalCartons} dus senilai {formatRupiah(lastBatchReceipt.grandTotalIDR)} telah ditambahkan ke stok Gudang Krian di Supabase &amp; dicatat ke AuditLog.
+                Total {lastBatchReceipt.totalCartons} dus senilai {formatRupiah(lastBatchReceipt.grandTotalIDR)} telah disetujui dan dialokasikan ke Gudang Krian.
               </div>
             </div>
           </div>
@@ -398,7 +398,7 @@ export default function SmartRecommendations({ setCurrentScreen }) {
                           <span>PO {approvedPo.poNumber} Aktif!</span>
                         </div>
                         <p className="text-[10px] text-emerald-700">
-                          Stok gudang telah diperbarui di Supabase (+{qty} dus).
+                          Alokasi stok gudang telah diperbarui (+{qty} dus).
                         </p>
                       </div>
                     ) : (
@@ -411,7 +411,7 @@ export default function SmartRecommendations({ setCurrentScreen }) {
                           <Check className="h-4 w-4" />
                           <span>
                             {submittingId === rec.productId
-                              ? 'Menyimpan ke DB...'
+                              ? 'Memproses PO...'
                               : `Otorisasi PO (${qty} Dus)`}
                           </span>
                         </Button>
@@ -466,9 +466,9 @@ export default function SmartRecommendations({ setCurrentScreen }) {
             <ShieldCheck className="h-5 w-5" />
           </div>
           <div className="text-xs">
-            <div className="font-bold text-on-surface">Kepatuhan Algoritma Tata Kelola Mayora (Enterprise Governance Note)</div>
+            <div className="font-bold text-on-surface">Tata Kelola Pasokan Mayora (Enterprise Governance)</div>
             <div className="text-on-surface-variant mt-0.5 leading-relaxed">
-              Setiap otorisasi PO pada layar ini langsung mengeksekusi transaksi <code>BATCH_PO_APPROVED</code> ke Supabase PostgreSQL, memperbarui stok karton gudang, dan menginvalidasi cache Upstash Redis.
+              Setiap otorisasi PO pada layar ini langsung memperbarui kuota alokasi stok gudang dan tercatat resmi pada sistem rantai pasok Mayora.
             </div>
           </div>
         </CardContent>

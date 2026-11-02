@@ -209,7 +209,7 @@ export default function WhatIfSimulator({ setCurrentScreen }) {
                 </span>
                 <span className="text-[10px] text-on-surface-variant font-mono flex items-center gap-1">
                   {loadingSim && <RefreshCw className="h-3 w-3 animate-spin text-primary" />}
-                  {loadingSim ? 'Menghitung...' : 'Synced Backend'}
+                  {loadingSim ? 'Menghitung...' : 'Tersinkronisasi'}
                 </span>
               </div>
 
@@ -217,7 +217,7 @@ export default function WhatIfSimulator({ setCurrentScreen }) {
               <div className="space-y-1">
                 <label className="text-xs font-bold text-on-surface flex items-center gap-1.5">
                   <Boxes className="h-3.5 w-3.5 text-primary" />
-                  <span>Pilih SKU Produk dari Database</span>
+                  <span>Pilih SKU Produk Mayora</span>
                 </label>
                 <select
                   value={selectedProductId}
@@ -226,7 +226,7 @@ export default function WhatIfSimulator({ setCurrentScreen }) {
                 >
                   {products.map((p) => (
                     <option key={p.id} value={p.id}>
-                      {p.name.split('(')[0].trim()} (Stok DB: {p.stockCartons} Dus)
+                      {p.name.split('(')[0].trim()} (Stok: {p.stockCartons} Dus)
                     </option>
                   ))}
                 </select>

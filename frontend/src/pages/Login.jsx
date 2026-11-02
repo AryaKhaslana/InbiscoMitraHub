@@ -160,7 +160,7 @@ export default function Login({ setActiveNav }) {
                       Direktori Mitra Terverifikasi
                     </h2>
                     <p className="text-xs text-white/80 mt-0.5 leading-snug">
-                      Database terpadu toko kelontong, pedagang grosir, dan mitra warkop dengan limit kredit tempo (TOP).
+                      Direktori terpadu toko kelontong, pedagang grosir, dan mitra warkop dengan limit kredit tempo (TOP).
                     </p>
                   </div>
                 </div>

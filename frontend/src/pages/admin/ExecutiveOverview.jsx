@@ -87,7 +87,7 @@ export default function ExecutiveOverview({ setCurrentScreen }) {
 
   const macroKpis = [
     {
-      title: 'Stok Gudang Hub Krian (Live DB)',
+      title: 'Stok Gudang Hub Krian',
       value: totalCartonsInKrian.toLocaleString('id-ID'),
       unit: 'Dus FMCG',
       change: `${fefoData?.summary?.totalSkus || 8} SKU Aktif`,
@@ -182,13 +182,13 @@ export default function ExecutiveOverview({ setCurrentScreen }) {
         <div>
           <div className="flex items-center gap-2 text-primary font-mono text-xs uppercase tracking-wider mb-1">
             <Building2 className="h-4 w-4" />
-            <span>Mayora Enterprise HQ • Regional Governance Jawa Timur (Live Supabase + Redis)</span>
+            <span>Mayora Enterprise HQ • Manajemen Logistik Regional Jawa Timur</span>
           </div>
           <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-on-surface">
             Executive Overview &amp; Network Intelligence
           </h1>
           <p className="text-sm text-on-surface-variant mt-1">
-            Monitoring real-time pergerakan produk Mayora dari database Supabase, performa distributor regional, dan deteksi dini kerentanan kehabisan stok.
+            Pemantauan pergerakan produk Mayora, performa distributor regional, dan mitigasi risiko stok rantai pasok.
           </p>
         </div>
 
@@ -231,7 +231,7 @@ export default function ExecutiveOverview({ setCurrentScreen }) {
             variant="outline"
             size="sm"
             className="h-8 px-2"
-            title="Refresh Data dari Supabase"
+            title="Muat Ulang Data"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin text-primary' : ''}`} />
           </Button>
@@ -332,8 +332,8 @@ export default function ExecutiveOverview({ setCurrentScreen }) {
         <div className="lg:col-span-7 bg-surface-container-lowest p-5 rounded-xl border border-outline/10 shadow-xs space-y-4">
           <div className="flex items-center justify-between border-b border-outline/10 pb-3">
             <div>
-              <h3 className="font-bold text-xs text-on-surface">Distribusi Permintaan &amp; Stok Riil SKU Unggulan (Live DB)</h3>
-              <p className="text-[11px] text-on-surface-variant">Data agregasi OrderItem &amp; saldo stok karton aktual di Supabase.</p>
+              <h3 className="font-bold text-xs text-on-surface">Distribusi Permintaan &amp; Saldo Stok SKU Unggulan</h3>
+              <p className="text-[11px] text-on-surface-variant">Ringkasan volume penjualan dan ketersediaan stok fisik gudang.</p>
             </div>
             <Badge variant="surface" className="text-[10px]">Top {fastMoving.length} SKUs</Badge>
           </div>
@@ -445,7 +445,7 @@ export default function ExecutiveOverview({ setCurrentScreen }) {
                       <td className="py-3 px-3 font-bold text-on-surface">
                         {dist.name}
                         {dist.isFlagshipHub && (
-                          <Badge variant="tertiary" className="ml-2 text-[9px] py-0 px-1">Live DB</Badge>
+                          <Badge variant="tertiary" className="ml-2 text-[9px] py-0 px-1">Hub Utama</Badge>
                         )}
                       </td>
                       <td className="py-3 px-3 text-on-surface-variant">{dist.hubCoverage}</td>

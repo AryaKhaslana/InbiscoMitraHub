@@ -132,7 +132,7 @@ export default function DistributorOverview({ setCurrentScreen }) {
                 Peringatan Stok &amp; FEFO: {lowestSku.name.split('(')[0].trim()}
               </div>
               <div className="text-[11px] text-on-surface-variant">
-                Stok aktual di database: <strong>{lowestSku.stockCartons} dus</strong> • Batch {lowestSku.batchNumber} (Sisa umur simpan: {lowestSku.daysUntilExpiry} hari).
+                Stok fisik gudang: <strong>{lowestSku.stockCartons} dus</strong> • Batch {lowestSku.batchNumber} (Sisa umur simpan: {lowestSku.daysUntilExpiry} hari).
               </div>
             </div>
           </div>
@@ -156,7 +156,7 @@ export default function DistributorOverview({ setCurrentScreen }) {
             <span>/</span>
             <span>Distributor Jatim</span>
             <span>/</span>
-            <span className="text-primary font-bold">Depo Krian Logistik (Live Supabase DB)</span>
+            <span className="text-primary font-bold">Depo Krian Logistik</span>
           </div>
           <h1 className="text-2xl font-extrabold tracking-tight text-on-surface mt-1">
             Ringkasan Operasional Depot &amp; Gudang FEFO
@@ -256,7 +256,7 @@ export default function DistributorOverview({ setCurrentScreen }) {
                   {dsr?.summary?.totalTransactions || recentLogs.length} Transaksi
                 </span>
               </div>
-              <div className="text-[10px] text-on-surface-variant mt-1">Tersinkron langsung ke AuditLog Supabase</div>
+              <div className="text-[10px] text-on-surface-variant mt-1">Tersinkron ke sistem operasional</div>
             </div>
           </CardContent>
         </Card>
@@ -299,7 +299,7 @@ export default function DistributorOverview({ setCurrentScreen }) {
                 Inventori Gudang Krian &amp; Rotasi Batch FEFO (First-Expired, First-Out)
               </h3>
               <p className="text-xs text-on-surface-variant">
-                Diurutkan otomatis berdasarkan tanggal kedaluwarsa terdekat dari tabel <code>Product</code> di Supabase. Gunakan tombol +/- untuk penyesuaian stok fisik.
+                Diurutkan otomatis berdasarkan tanggal kedaluwarsa terdekat. Gunakan tombol +/- untuk penyesuaian stok fisik.
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -553,7 +553,7 @@ export default function DistributorOverview({ setCurrentScreen }) {
           <div className="flex items-center justify-between border-b border-outline/10 pb-3">
             <div className="flex items-center gap-2">
               <CheckSquare className="h-4 w-4 text-primary" />
-              <h3 className="font-bold text-xs text-on-surface">Aktivitas &amp; Input Penjualan DSR Terbaru (Live DB)</h3>
+              <h3 className="font-bold text-xs text-on-surface">Aktivitas Penjualan Harian Terbaru</h3>
             </div>
             <Button
               onClick={() => setCurrentScreen && setCurrentScreen('daily-sales-input')}
