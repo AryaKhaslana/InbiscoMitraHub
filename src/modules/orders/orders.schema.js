@@ -2,13 +2,24 @@ import { z } from 'zod';
 
 export const createOrderSchema = z.object({
   storeId: z
-    .string({ required_error: 'storeId is required' })
-    .uuid('storeId must be a valid UUID'),
+    .string()
+    .uuid('storeId must be a valid UUID')
+    .optional(),
+  storePhone: z
+    .string()
+    .optional(),
+  storeName: z
+    .string()
+    .optional(),
   paymentMethod: z
-    .enum(['COD', 'TEMPO_7_DAYS'], {
-      errorMap: () => ({ message: 'paymentMethod must be either COD or TEMPO_7_DAYS' }),
-    })
-    .default('COD'),
+    .string()
+    .default('COD')
+    .transform((val) => {
+      const upper = (val || '').toUpperCase();
+      if (upper === 'CASH_ON_DELIVERY' || upper === 'COD') return 'COD';
+      if (upper === 'TOP_14_DAYS' || upper === 'TOP_7_DAYS' || upper === 'TEMPO_7_DAYS' || upper === 'TEMPO') return 'TEMPO_7_DAYS';
+      return 'COD';
+    }),
   notes: z
     .string()
     .transform((val) => val.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '').trim())
@@ -27,11 +38,11 @@ export const createOrderSchema = z.object({
             .positive('quantity must be at least 1 carton')
             .max(1000, 'quantity per item must not exceed 1000 cartons'),
         })
-        .strict()
+        .passthrough()
     )
     .min(1, 'Order must contain at least 1 item')
     .max(50, 'Order cannot contain more than 50 distinct items'),
-}).strict();
+}).passthrough();
 
 export const trackOrderParamsSchema = z.object({
   code: z

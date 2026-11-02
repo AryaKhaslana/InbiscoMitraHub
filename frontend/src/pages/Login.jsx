@@ -23,7 +23,7 @@ export default function Login({ setActiveNav }) {
   const { switchRole } = useAuthRole();
   const [selectedRole, setSelectedRole] = useState('HQ_ADMIN'); // 'HQ_ADMIN' | 'DISTRIBUTOR_DEPO'
   const [username, setUsername] = useState('ops.hq');
-  const [password, setPassword] = useState('MayoraGTNIC2026!');
+  const [password, setPassword] = useState('MayoraHQ2026!');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -32,7 +32,7 @@ export default function Login({ setActiveNav }) {
     setError(null);
     if (role === 'HQ_ADMIN') {
       setUsername('ops.hq');
-      setPassword('MayoraGTNIC2026!');
+      setPassword('MayoraHQ2026!');
     } else {
       setUsername('bambang.sudiro');
       setPassword('KrianDepot2026!');
@@ -44,7 +44,7 @@ export default function Login({ setActiveNav }) {
     setError(null);
     try {
       const u = role === 'HQ_ADMIN' ? 'ops.hq' : 'bambang.sudiro';
-      const p = role === 'HQ_ADMIN' ? 'MayoraGTNIC2026!' : 'KrianDepot2026!';
+      const p = role === 'HQ_ADMIN' ? 'MayoraHQ2026!' : 'KrianDepot2026!';
       
       const res = await api.login(u, p, role);
       if (res && res.token) {
@@ -229,12 +229,12 @@ export default function Login({ setActiveNav }) {
                 </button>
               </div>
 
-              {/* GTNIC Jury 1-Click Fast Login Ribbon */}
+              {/* Fast 1-Click Operational Switcher Ribbon */}
               <div className="p-3.5 rounded-xl bg-primary/5 border border-primary/20 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-primary flex items-center gap-1.5">
                     <Sparkles className="h-3.5 w-3.5 text-primary" />
-                    Akses Cepat Demo:
+                    Akses Cepat Sistem Internal:
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-2">

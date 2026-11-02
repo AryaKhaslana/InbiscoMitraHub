@@ -370,7 +370,7 @@ export default function Home({ setActiveNav }) {
             {featuredProducts.map((p, idx) => (
               <div 
                 key={idx} 
-                onClick={() => setActiveNav('products')}
+                onClick={() => setActiveNav('products', p.category)}
                 className="bg-surface-container-lowest rounded-xl border border-surface-container-high p-4 flex flex-col justify-between hover:border-tertiary-container hover:shadow-md transition-all duration-200 group cursor-pointer"
               >
                 <div>

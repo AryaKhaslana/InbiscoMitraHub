@@ -25,13 +25,26 @@ import {
   ShieldCheck
 } from 'lucide-react';
 
-export default function Products({ setActiveNav }) {
+export default function Products({ setActiveNav, initialCategory, onCategoryChange }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('Semua Kategori');
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory || 'Semua Kategori');
+
+  useEffect(() => {
+    if (initialCategory) {
+      setSelectedCategory(initialCategory);
+    }
+  }, [initialCategory]);
+
+  const handleCategorySelect = (cat) => {
+    setSelectedCategory(cat);
+    if (onCategoryChange) {
+      onCategoryChange(cat);
+    }
+  };
 
   // Modal & Order State
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -273,8 +286,8 @@ export default function Products({ setActiveNav }) {
                   <h2 className="text-sm font-bold font-display text-on-surface">Filter Produk</h2>
                 </div>
                 <button 
-                  onClick={() => { setSelectedCategory('Semua Kategori'); setSearchQuery(''); }}
-                  className="text-xs text-primary hover:underline font-bold"
+                  onClick={() => { handleCategorySelect('Semua Kategori'); setSearchQuery(''); }}
+                  className="text-xs text-primary hover:underline font-bold cursor-pointer"
                 >
                   Reset
                 </button>
@@ -292,8 +305,8 @@ export default function Products({ setActiveNav }) {
                   return (
                     <button
                       key={idx}
-                      onClick={() => setSelectedCategory(cat)}
-                      className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors text-left ${
+                      onClick={() => handleCategorySelect(cat)}
+                      className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors text-left cursor-pointer ${
                         selectedCategory === cat
                           ? 'bg-primary-container text-white font-bold'
                           : 'text-on-surface hover:bg-surface-container-low'

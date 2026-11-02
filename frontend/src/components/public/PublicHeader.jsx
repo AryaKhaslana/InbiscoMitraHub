@@ -27,12 +27,12 @@ export default function PublicHeader({ activeNav, setActiveNav }) {
   ];
 
   const productCategories = [
-    { label: 'Semua Produk FMCG', id: 'all' },
-    { label: 'Biskuit Roma', id: 'biscuit' },
-    { label: 'Wafer & Cokelat Beng-Beng', id: 'wafer' },
-    { label: 'Kopi Torabika & Permen Kopiko', id: 'coffee' },
-    { label: 'Sereal & Minuman Energen', id: 'cereal' },
-    { label: 'Air Mineral Le Minerale', id: 'mineral' },
+    { label: 'Semua Produk FMCG', id: 'all', category: 'Semua Kategori' },
+    { label: 'Biskuit Roma', id: 'biscuit', category: 'Biskuit' },
+    { label: 'Wafer & Cokelat Beng-Beng', id: 'wafer', category: 'Wafer & Cokelat' },
+    { label: 'Kopi Torabika & Permen Kopiko', id: 'coffee', category: 'Kopi & Teh' },
+    { label: 'Sereal & Minuman Energen', id: 'cereal', category: 'Sereal & Minuman' },
+    { label: 'Air Mineral Le Minerale', id: 'mineral', category: 'Air Mineral' },
   ];
 
   return (
@@ -111,10 +111,10 @@ export default function PublicHeader({ activeNav, setActiveNav }) {
                 </div>
                 <button
                   onClick={() => {
-                    setActiveNav('products');
+                    setActiveNav('products', 'Semua Kategori');
                     setProductDropdownOpen(false);
                   }}
-                  className="w-full flex items-center justify-between px-4 py-2 hover:bg-surface-container-low text-on-surface text-sm font-semibold text-primary"
+                  className="w-full flex items-center justify-between px-4 py-2 hover:bg-surface-container-low text-on-surface text-sm font-semibold text-primary cursor-pointer"
                 >
                   <span>Semua Produk FMCG</span>
                   <span className="material-symbols-outlined text-[16px] text-primary">arrow_forward</span>
@@ -123,10 +123,10 @@ export default function PublicHeader({ activeNav, setActiveNav }) {
                   <button
                     key={idx}
                     onClick={() => {
-                      setActiveNav('products');
+                      setActiveNav('products', cat.category);
                       setProductDropdownOpen(false);
                     }}
-                    className="w-full flex items-center gap-2 px-4 py-1.5 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface text-xs font-medium text-left"
+                    className="w-full flex items-center gap-2 px-4 py-1.5 hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface text-xs font-medium text-left cursor-pointer"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-tertiary-container shrink-0"></span>
                     <span>{cat.label}</span>

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Badge } from '../components/ui/badge';
 import { Card, CardContent } from '../components/ui/card';
 import { 
@@ -18,6 +19,24 @@ import {
 
 export default function Moments({ setActiveNav }) {
   const [activePhotoModal, setActivePhotoModal] = useState(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && activePhotoModal) {
+        setActivePhotoModal(null);
+      }
+    };
+    if (activePhotoModal) {
+      document.body.style.overflow = 'hidden';
+      window.addEventListener('keydown', handleKeyDown);
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [activePhotoModal]);
 
   const galleryItems = [
     {
@@ -270,44 +289,100 @@ export default function Moments({ setActiveNav }) {
       </section>
 
       {/* ========================================================= */}
-      {/* PHOTO LIGHTBOX MODAL                                     */}
+      {/* SECTION 4: CALL TO ACTION (CTA)                          */}
       {/* ========================================================= */}
-      {activePhotoModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs">
-          <div className="bg-surface-container-lowest max-w-2xl w-full rounded-2xl border border-surface-container-high overflow-hidden shadow-2xl space-y-4 anim-fade-in">
-            <div className="relative h-72 sm:h-96 w-full bg-black">
-              <img
-                src={activePhotoModal.image}
-                alt={activePhotoModal.title}
-                className="w-full h-full object-cover"
-              />
-              <button
-                onClick={() => setActivePhotoModal(null)}
-                className="absolute top-4 right-4 p-2 rounded-full bg-black/60 text-white hover:bg-black/90 transition-colors"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <div className="p-6 pt-2 space-y-2">
-              <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 rounded bg-primary-container text-white text-[10px] font-bold">
-                  {activePhotoModal.badge}
-                </span>
-                <span className="text-xs font-semibold text-outline">
-                  {activePhotoModal.category}
-                </span>
-              </div>
-              <h3 className="text-lg font-bold font-display text-on-surface">
-                {activePhotoModal.title}
-              </h3>
-              <p className="text-xs text-on-surface-variant leading-relaxed">
-                {activePhotoModal.subtitle}
-              </p>
-            </div>
+      <section className="py-14 bg-surface-container-low border-t border-surface-container-high">
+        <div className="max-w-[1280px] mx-auto px-4 md:px-8 text-center space-y-4">
+          <span className="text-xs font-bold text-primary uppercase tracking-wider block">
+            KEMITRAAN DISTRIBUSI RESMI
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-bold font-display text-on-surface max-w-xl mx-auto">
+            Ingin Toko atau Usaha Anda Dipasok Langsung oleh Cabang Krian?
+          </h2>
+          <p className="text-sm text-on-surface-variant max-w-lg mx-auto leading-relaxed">
+            Dapatkan harga resmi pabrikan Mayora, pengiriman rutin terjadwal bebas ongkir, dan jaminan pasokan tanpa putus untuk toko kelontong, warkop, maupun grosir Anda.
+          </p>
+          <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => setActiveNav && setActiveNav('partnership')}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-colors shadow-sm cursor-pointer"
+            >
+              <span>Daftar Kemitraan Toko</span>
+              <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveNav && setActiveNav('products')}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-surface-variant bg-surface-container-lowest text-on-surface text-sm font-semibold hover:bg-surface-container transition-colors cursor-pointer"
+            >
+              <span>Lihat Katalog Produk</span>
+            </button>
           </div>
         </div>
-      )}
+      </section>
+
+      {/* ========================================================= */}
+      {/* PHOTO LIGHTBOX MODAL (PORTALLED)                         */}
+      {/* ========================================================= */}
+      {activePhotoModal &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-50 overflow-y-auto"
+            aria-labelledby="photo-modal-title"
+            role="dialog"
+            aria-modal="true"
+          >
+            {/* Backdrop */}
+            <div
+              onClick={() => setActivePhotoModal(null)}
+              className="fixed inset-0 bg-black/80 backdrop-blur-xs anim-backdrop"
+              aria-hidden="true"
+            />
+
+            {/* Centering Container */}
+            <div className="flex min-h-full items-center justify-center p-3 sm:p-6 text-center">
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="relative w-full max-w-2xl bg-surface-container-lowest rounded-2xl border border-surface-container-high overflow-hidden shadow-2xl text-left anim-modal z-10 my-6 sm:my-8"
+              >
+                <div className="relative h-72 sm:h-96 w-full bg-black">
+                  <img
+                    src={activePhotoModal.image}
+                    alt={activePhotoModal.title}
+                    className="w-full h-full object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setActivePhotoModal(null)}
+                    className="absolute top-4 right-4 p-2 rounded-full bg-black/60 text-white hover:bg-black/90 transition-colors cursor-pointer"
+                    aria-label="Tutup foto"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+
+                <div className="p-6 pt-4 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-0.5 rounded bg-primary-container text-white text-[10px] font-bold">
+                      {activePhotoModal.badge}
+                    </span>
+                    <span className="text-xs font-semibold text-outline">
+                      {activePhotoModal.category}
+                    </span>
+                  </div>
+                  <h3 id="photo-modal-title" className="text-lg font-bold font-display text-on-surface">
+                    {activePhotoModal.title}
+                  </h3>
+                  <p className="text-xs text-on-surface-variant leading-relaxed">
+                    {activePhotoModal.subtitle}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 }

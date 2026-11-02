@@ -3,9 +3,9 @@ import React from 'react';
 export default function PublicFooter({ setActiveNav }) {
   const currentYear = new Date().getFullYear();
 
-  const handleNav = (id) => {
+  const handleNav = (id, param) => {
     if (setActiveNav) {
-      setActiveNav(id);
+      setActiveNav(id, param);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -90,32 +90,32 @@ export default function PublicFooter({ setActiveNav }) {
             </h4>
             <ul className="space-y-2.5 text-sm text-[#b0a2a0]">
               <li>
-                <button type="button" onClick={() => handleNav('products')} className="hover:text-white transition-colors text-left cursor-pointer">
+                <button type="button" onClick={() => handleNav('products', 'Biskuit')} className="hover:text-white transition-colors text-left cursor-pointer">
                   Biskuit & Roti (Roma Kelapa, Sari Gandum)
                 </button>
               </li>
               <li>
-                <button type="button" onClick={() => handleNav('products')} className="hover:text-white transition-colors text-left cursor-pointer">
+                <button type="button" onClick={() => handleNav('products', 'Wafer & Cokelat')} className="hover:text-white transition-colors text-left cursor-pointer">
                   Wafer & Cokelat (Beng-Beng, Malkist)
                 </button>
               </li>
               <li>
-                <button type="button" onClick={() => handleNav('products')} className="hover:text-white transition-colors text-left cursor-pointer">
+                <button type="button" onClick={() => handleNav('products', 'Kopi & Teh')} className="hover:text-white transition-colors text-left cursor-pointer">
                   Kopi Olahan (Torabika Duo, Creamy Latte)
                 </button>
               </li>
               <li>
-                <button type="button" onClick={() => handleNav('products')} className="hover:text-white transition-colors text-left cursor-pointer">
+                <button type="button" onClick={() => handleNav('products', 'Sereal & Minuman')} className="hover:text-white transition-colors text-left cursor-pointer">
                   Sereal Bergizi (Energen Cokelat & Vanila)
                 </button>
               </li>
               <li>
-                <button type="button" onClick={() => handleNav('products')} className="hover:text-white transition-colors text-left cursor-pointer">
+                <button type="button" onClick={() => handleNav('products', 'Permen')} className="hover:text-white transition-colors text-left cursor-pointer">
                   Kembang Gula (Kopiko, Kis Mint)
                 </button>
               </li>
               <li>
-                <button type="button" onClick={() => handleNav('products')} className="hover:text-white transition-colors text-left cursor-pointer">
+                <button type="button" onClick={() => handleNav('products', 'Air Mineral')} className="hover:text-white transition-colors text-left cursor-pointer">
                   Air Mineral Pegunungan (Le Minerale)
                 </button>
               </li>

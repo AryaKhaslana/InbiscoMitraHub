@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
@@ -47,6 +48,24 @@ export default function Partnership({ setActiveNav }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [successData, setSuccessData] = useState(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && successData) {
+        setSuccessData(null);
+      }
+    };
+    if (successData) {
+      document.body.style.overflow = 'hidden';
+      window.addEventListener('keydown', handleKeyDown);
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [successData]);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -627,75 +646,95 @@ export default function Partnership({ setActiveNav }) {
       </section>
 
       {/* ========================================================= */}
-      {/* SUCCESS MODAL DIALOG                                     */}
+      {/* SUCCESS MODAL DIALOG (PORTALLED)                         */}
       {/* ========================================================= */}
-      {successData && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-surface-container-lowest max-w-lg w-full rounded-2xl border border-surface-container-high p-6 md:p-8 shadow-2xl space-y-4 animate-in zoom-in-95">
-            <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center mx-auto">
-              <CheckCircle2 className="h-7 w-7 text-emerald-600" />
-            </div>
+      {successData &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-50 overflow-y-auto"
+            aria-labelledby="partnership-success-title"
+            role="dialog"
+            aria-modal="true"
+          >
+            {/* Backdrop */}
+            <div
+              onClick={() => setSuccessData(null)}
+              className="fixed inset-0 bg-black/75 backdrop-blur-xs anim-backdrop"
+              aria-hidden="true"
+            />
 
-            <div className="text-center space-y-1">
-              <h3 className="text-xl font-bold font-display text-on-surface">
-                Pendaftaran Kemitraan Diterima!
-              </h3>
-              <p className="text-xs text-on-surface-variant">
-                Pengajuan toko Anda telah berhasil dicatat ke dalam sistem operasional Depo Krian.
-              </p>
-            </div>
-
-            <div className="p-4 bg-surface-container-low rounded-xl border border-surface-container-high space-y-2 text-xs">
-              <div className="flex justify-between">
-                <span className="text-outline">Kode Registrasi:</span>
-                <span className="font-mono font-bold text-primary">
-                  {successData.code || successData.id || 'REG-MITRA-2026-SDA'}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-outline">Nama Toko:</span>
-                <span className="font-semibold">{formData.name}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-outline">Kecamatan:</span>
-                <span className="font-semibold">{formData.district}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-outline">Status Verifikasi:</span>
-                <Badge variant="tertiary" className="text-[10px] font-bold">
-                  DIJADWALKAN SURVEY (H+1)
-                </Badge>
-              </div>
-            </div>
-
-            <div className="text-xs text-on-surface-variant text-center">
-              Tim Sales Representatif rute <strong>{formData.district}</strong> akan menghubungi WhatsApp Anda dalam 1×24 jam untuk verifikasi titik GPS dan jadwal pengiriman pertama.
-            </div>
-
-            <div className="pt-2 flex flex-col gap-2">
-              <Button
-                onClick={() => {
-                  setSuccessData(null);
-                  setActiveNav('products');
-                }}
-                className="w-full text-xs font-bold"
+            {/* Centering Flex Container */}
+            <div className="flex min-h-full items-center justify-center p-3 sm:p-6 text-center">
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="relative w-full max-w-lg bg-surface-container-lowest rounded-2xl border border-surface-container-high p-6 md:p-8 shadow-2xl space-y-4 anim-modal text-left z-10 my-6 sm:my-8"
               >
-                Lihat Katalog Produk Grosir
-              </Button>
-              <Button
-                onClick={() => {
-                  setSuccessData(null);
-                  setActiveNav('home');
-                }}
-                variant="outline"
-                className="w-full text-xs"
-              >
-                Kembali ke Beranda
-              </Button>
+                <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center mx-auto">
+                  <CheckCircle2 className="h-7 w-7 text-emerald-600" />
+                </div>
+
+                <div className="text-center space-y-1">
+                  <h3 id="partnership-success-title" className="text-xl font-bold font-display text-on-surface">
+                    Pendaftaran Kemitraan Diterima!
+                  </h3>
+                  <p className="text-xs text-on-surface-variant">
+                    Pengajuan toko Anda telah berhasil dicatat ke dalam sistem operasional Depo Krian.
+                  </p>
+                </div>
+
+                <div className="p-4 bg-surface-container-low rounded-xl border border-surface-container-high space-y-2 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-outline">Kode Registrasi:</span>
+                    <span className="font-mono font-bold text-primary">
+                      {successData.code || successData.id || 'REG-MITRA-2026-SDA'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-outline">Nama Toko:</span>
+                    <span className="font-semibold">{formData.name}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-outline">Kecamatan:</span>
+                    <span className="font-semibold">{formData.district}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-outline">Status Verifikasi:</span>
+                    <Badge variant="tertiary" className="text-[10px] font-bold">
+                      DIJADWALKAN SURVEY (H+1)
+                    </Badge>
+                  </div>
+                </div>
+
+                <div className="text-xs text-on-surface-variant text-center leading-relaxed">
+                  Tim Sales Representatif rute <strong>{formData.district}</strong> akan menghubungi WhatsApp Anda dalam 1×24 jam untuk verifikasi titik GPS dan jadwal pengiriman pertama.
+                </div>
+
+                <div className="pt-2 flex flex-col gap-2">
+                  <Button
+                    onClick={() => {
+                      setSuccessData(null);
+                      setActiveNav('products');
+                    }}
+                    className="w-full text-xs font-bold"
+                  >
+                    Lihat Katalog Produk Grosir
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setSuccessData(null);
+                      setActiveNav('home');
+                    }}
+                    variant="outline"
+                    className="w-full text-xs"
+                  >
+                    Kembali ke Beranda
+                  </Button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AuthRoleProvider, useAuthRole } from './context/AuthRoleContext';
 import PublicHeader from './components/public/PublicHeader';
 import PublicFooter from './components/public/PublicFooter';
@@ -25,6 +25,31 @@ import ExecutiveOverview from './pages/admin/ExecutiveOverview';         // Scre
 
 function AppContent() {
   const { activeRole, switchRole, publicNav, setPublicNav } = useAuthRole();
+  const [productCategoryFilter, setProductCategoryFilter] = useState('Semua Kategori');
+
+  // Dynamic Browser Title per page
+  useEffect(() => {
+    if (activeRole === 'storefront') {
+      const titles = {
+        home: 'Inbisco MitraHub — Solusi Pasokan FMCG Resmi Mayora Sidoarjo',
+        products: 'Katalog Produk FMCG Mayora — Inbisco MitraHub',
+        partnership: 'Pendaftaran Kemitraan Toko & Warung — Inbisco MitraHub',
+        moments: 'Aktivitas & Jaringan Distribusi Cabang Krian — Inbisco MitraHub',
+        about: 'Tentang Kami & Depot Logistik — Inbisco MitraHub',
+        contact: 'Kontak Cabang Krian & FAQ — Inbisco MitraHub',
+        login: 'Portal Masuk Operasional B2B — Inbisco MitraHub',
+      };
+      document.title = titles[publicNav] || 'Inbisco MitraHub — B2B FMCG Supply Chain';
+    }
+  }, [activeRole, publicNav]);
+
+  const handlePublicNav = (nav, param) => {
+    if (nav === 'products') {
+      setProductCategoryFilter(param || 'Semua Kategori');
+    }
+    setPublicNav(nav);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Admin navigation state across 8 SupplySync screens
   const [adminScreen, setAdminScreen] = useState(() => {
@@ -35,17 +60,23 @@ function AppContent() {
   if (activeRole === 'storefront') {
     return (
       <div className="min-h-screen flex flex-col bg-surface text-on-surface antialiased">
-        <PublicHeader activeNav={publicNav} setActiveNav={setPublicNav} />
+        <PublicHeader activeNav={publicNav} setActiveNav={handlePublicNav} />
         <main key={publicNav} className="flex-1 anim-fade-in">
-          {publicNav === 'home' && <Home setActiveNav={setPublicNav} />}
-          {publicNav === 'products' && <Products setActiveNav={setPublicNav} />}
-          {publicNav === 'partnership' && <Partnership setActiveNav={setPublicNav} />}
-          {publicNav === 'moments' && <Moments setActiveNav={setPublicNav} />}
-          {publicNav === 'about' && <About setActiveNav={setPublicNav} />}
-          {publicNav === 'contact' && <Contact setActiveNav={setPublicNav} />}
-          {publicNav === 'login' && <Login setActiveNav={setPublicNav} />}
+          {publicNav === 'home' && <Home setActiveNav={handlePublicNav} />}
+          {publicNav === 'products' && (
+            <Products
+              setActiveNav={handlePublicNav}
+              initialCategory={productCategoryFilter}
+              onCategoryChange={setProductCategoryFilter}
+            />
+          )}
+          {publicNav === 'partnership' && <Partnership setActiveNav={handlePublicNav} />}
+          {publicNav === 'moments' && <Moments setActiveNav={handlePublicNav} />}
+          {publicNav === 'about' && <About setActiveNav={handlePublicNav} />}
+          {publicNav === 'contact' && <Contact setActiveNav={handlePublicNav} />}
+          {publicNav === 'login' && <Login setActiveNav={handlePublicNav} />}
         </main>
-        <PublicFooter setActiveNav={setPublicNav} />
+        <PublicFooter setActiveNav={handlePublicNav} />
       </div>
     );
   }
