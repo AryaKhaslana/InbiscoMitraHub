@@ -27,17 +27,16 @@ export default function AdminSidebar({ currentScreen, setCurrentScreen }) {
   const hqNav = [
     { id: 'executive-overview', label: 'Executive Overview', icon: LayoutDashboard, badge: 'Macro' },
     { id: 'stockout-risk', label: 'Stockout Risk Radar', icon: AlertTriangle, badge: '3 Kritis', badgeColor: 'destructive' },
-    { id: 'what-if-simulator', label: 'What-if Simulator', icon: Sliders, badge: 'AI Inovasi', badgeColor: 'tertiary' },
     { id: 'smart-recommendations', label: 'Smart Replenishment', icon: Sparkles },
-    { id: 'distributor-management', label: 'Distributor Directory', icon: Store },
+    { id: 'what-if-simulator', label: 'What-if Simulator', icon: Sliders, badge: 'AI Inovasi', badgeColor: 'tertiary' },
+    { id: 'distributor-overview', label: 'Distributor Overview', icon: Store },
   ];
 
   const depoNav = [
-    { id: 'krian-dashboard', label: 'Depo Krian Overview', icon: LayoutDashboard },
-    { id: 'fefo-inventory', label: 'Inventori FEFO Gudang', icon: Boxes, badge: 'FEFO Aktif', badgeColor: 'success' },
-    { id: 'dispatch-orders', label: 'Antrean Dispatch Toko', icon: FileText, badge: 'Live Stream' },
+    { id: 'distributor-overview', label: 'Depo Krian Overview', icon: LayoutDashboard },
     { id: 'daily-sales-input', label: 'Input Penjualan DSR', icon: CheckSquare },
-    { id: 'inbound-deliveries', label: 'Penerimaan Inbound Pabrik', icon: Truck },
+    { id: 'restock-request', label: 'Pengajuan Restock', icon: Boxes, badge: 'AI Ready', badgeColor: 'tertiary' },
+    { id: 'order-tracking', label: 'Tracking & Dispatch', icon: Truck, badge: 'Live POD' },
   ];
 
   const currentNavList = isHq ? hqNav : depoNav;
@@ -45,7 +44,7 @@ export default function AdminSidebar({ currentScreen, setCurrentScreen }) {
   const handleToggleRole = () => {
     if (isHq) {
       switchRole('distributor_ops');
-      setCurrentScreen('krian-dashboard');
+      setCurrentScreen('distributor-overview');
     } else {
       switchRole('hq_admin');
       setCurrentScreen('executive-overview');
