@@ -159,7 +159,7 @@ export default function AdminSidebar({ currentScreen, setCurrentScreen }) {
             </div>
           </div>
           <button
-            onClick={() => switchRole('storefront')}
+            onClick={() => switchRole('storefront', 'home')}
             title="Keluar ke Portal Publik"
             className="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors"
           >

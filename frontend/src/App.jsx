@@ -24,10 +24,7 @@ import WhatIfSimulator from './pages/admin/WhatIfSimulator';             // Scre
 import ExecutiveOverview from './pages/admin/ExecutiveOverview';         // Screen 8
 
 function AppContent() {
-  const { activeRole, switchRole } = useAuthRole();
-
-  // Public navigation state: 'home' | 'products' | 'partnership' | 'moments' | 'about' | 'contact' | 'login'
-  const [publicNav, setPublicNav] = useState('home');
+  const { activeRole, switchRole, publicNav, setPublicNav } = useAuthRole();
 
   // Admin navigation state across 8 SupplySync screens
   const [adminScreen, setAdminScreen] = useState(() => {
@@ -58,7 +55,7 @@ function AppContent() {
     <div className="min-h-screen bg-surface text-on-surface antialiased flex">
       <AdminSidebar currentScreen={adminScreen} setCurrentScreen={setAdminScreen} />
       <div className="pl-72 w-full flex flex-col min-h-screen">
-        <AdminHeader currentScreen={adminScreen} />
+        <AdminHeader currentScreen={adminScreen} setCurrentScreen={setAdminScreen} />
         <main className="pt-20 px-6 sm:px-8 max-w-[1600px] w-full mx-auto flex-1">
           {adminScreen === 'executive-overview' && (
             <ExecutiveOverview setCurrentScreen={setAdminScreen} />

@@ -22,8 +22,9 @@ export function AuthRoleProvider({ children }) {
   });
 
   const [activeTab, setActiveTab] = useState('overview');
+  const [publicNav, setPublicNav] = useState('home');
 
-  const switchRole = (newRole) => {
+  const switchRole = (newRole, targetPublicNav = 'home') => {
     setActiveRole(newRole);
     localStorage.setItem('inbisco_active_role', newRole);
     if (newRole === 'hq_admin') {
@@ -43,6 +44,7 @@ export function AuthRoleProvider({ children }) {
       });
       setActiveTab('krian-dashboard');
     } else {
+      setPublicNav(targetPublicNav);
       setActiveTab('home');
     }
   };
@@ -56,6 +58,8 @@ export function AuthRoleProvider({ children }) {
         setCurrentUser,
         activeTab,
         setActiveTab,
+        publicNav,
+        setPublicNav,
         switchRole,
       }}
     >
