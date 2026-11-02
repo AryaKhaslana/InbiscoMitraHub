@@ -582,7 +582,7 @@ export default function Products({ setActiveNav, initialCategory, onCategoryChan
                           <button
                             type="button"
                             onClick={() => setOrderQuantity(Math.max(selectedProduct.minOrder || 1, orderQuantity - 1))}
-                            className="w-8 h-8 rounded-lg border border-surface-variant bg-surface-container-low flex items-center justify-center text-on-surface hover:bg-surface-container font-bold transition-colors"
+                            className="w-8 h-8 rounded-lg border border-surface-variant bg-surface-container-low flex items-center justify-center text-on-surface hover:bg-surface-container font-bold transition-colors cursor-pointer"
                             aria-label="Kurangi"
                           >
                             <Minus className="h-3.5 w-3.5" />
@@ -593,7 +593,7 @@ export default function Products({ setActiveNav, initialCategory, onCategoryChan
                           <button
                             type="button"
                             onClick={() => setOrderQuantity(orderQuantity + 1)}
-                            className="w-8 h-8 rounded-lg border border-surface-variant bg-surface-container-low flex items-center justify-center text-on-surface hover:bg-surface-container font-bold transition-colors"
+                            className="w-8 h-8 rounded-lg border border-surface-variant bg-surface-container-low flex items-center justify-center text-on-surface hover:bg-surface-container font-bold transition-colors cursor-pointer"
                             aria-label="Tambah"
                           >
                             <Plus className="h-3.5 w-3.5" />
@@ -601,12 +601,61 @@ export default function Products({ setActiveNav, initialCategory, onCategoryChan
                         </div>
                       </div>
 
-                      {/* Store Details Input */}
+                      {/* Retail Profit & Margin Calculator (Sentuhan Bisnis Riil) */}
+                      {(() => {
+                        const estRetail = selectedProduct.retailPriceEst || Math.round(selectedProduct.price * 1.18);
+                        const marginCarton = estRetail - selectedProduct.price;
+                        const marginPct = Math.round((marginCarton / selectedProduct.price) * 100);
+                        const totalProfit = marginCarton * orderQuantity;
+                        return (
+                          <div className="p-3 rounded-xl bg-emerald-50/70 border border-emerald-200/80 space-y-2 text-xs">
+                            <div className="flex items-center justify-between">
+                              <span className="font-bold text-emerald-950 flex items-center gap-1.5">
+                                <TrendingUp className="h-4 w-4 text-emerald-700" />
+                                <span>Kalkulator Margin Toko Mitra</span>
+                              </span>
+                              <span className="text-[10px] font-mono font-bold text-emerald-800 bg-emerald-100/90 px-2 py-0.5 rounded border border-emerald-300">
+                                +{marginPct}% Margin Eceran
+                              </span>
+                            </div>
+                            <div className="grid grid-cols-3 gap-2 pt-1 border-t border-emerald-200/60 text-center">
+                              <div>
+                                <span className="text-[10px] text-emerald-800 font-medium block">Harga Modal B2B</span>
+                                <span className="font-bold text-on-surface font-mono text-[11px]">{formatRupiah(selectedProduct.price)}</span>
+                              </div>
+                              <div>
+                                <span className="text-[10px] text-emerald-800 font-medium block">Estimasi Jual Eceran</span>
+                                <span className="font-bold text-on-surface font-mono text-[11px]">{formatRupiah(estRetail)}</span>
+                              </div>
+                              <div>
+                                <span className="text-[10px] text-emerald-800 font-medium block">Potensi Cuan ({orderQuantity} Dus)</span>
+                                <span className="font-bold text-emerald-700 font-mono text-xs">{formatRupiah(totalProfit)}</span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })()}
+
+                      {/* Store Details Input with Quick Auto-fill */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                         <div>
-                          <label className="text-xs font-semibold text-on-surface block mb-1">
-                            Nomor WhatsApp Toko <span className="text-error">*</span>
-                          </label>
+                          <div className="flex items-center justify-between mb-1">
+                            <label className="text-xs font-semibold text-on-surface">
+                              Nomor WhatsApp Toko <span className="text-error">*</span>
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setStorePhone('081234567890');
+                                setStoreName('Toko Berkah Barokah Krian');
+                              }}
+                              className="text-[10px] font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer"
+                              title="Gunakan kontak toko uji untuk pengujian cepat"
+                            >
+                              <Sparkles className="h-3 w-3" />
+                              <span>Auto-Fill Uji</span>
+                            </button>
+                          </div>
                           <Input
                             value={storePhone}
                             onChange={(e) => setStorePhone(e.target.value)}

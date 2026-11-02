@@ -23,22 +23,33 @@ export default function Home({ setActiveNav }) {
   const [trackingLoading, setTrackingLoading] = useState(false);
   const [trackingError, setTrackingError] = useState(null);
 
-  const handleTrackOrder = async (e) => {
-    e.preventDefault();
-    if (!trackingInput.trim()) return;
+  const sampleTrackingCodes = [
+    { code: 'INB-2610-KR06', label: 'Toko Makmur', status: 'Packing' },
+    { code: 'INB-2610-KR05', label: 'Minimarket Barokah', status: 'Selesai' },
+    { code: 'INB-2611-C7CHLQND', label: 'Pesanan Baru', status: 'Pending' },
+  ];
 
+  const handleTrackWithCode = async (code) => {
+    const query = code.trim().toUpperCase();
+    setTrackingInput(query);
     setTrackingLoading(true);
     setTrackingError(null);
     setTrackingResult(null);
 
     try {
-      const res = await api.trackOrder(trackingInput.trim());
+      const res = await api.trackOrder(query);
       setTrackingResult(res.order || res);
     } catch (err) {
       setTrackingError(err.message || 'Nomor resi/tracking code tidak ditemukan.');
     } finally {
       setTrackingLoading(false);
     }
+  };
+
+  const handleTrackOrder = async (e) => {
+    e.preventDefault();
+    if (!trackingInput.trim()) return;
+    await handleTrackWithCode(trackingInput);
   };
 
   const featuredProducts = [
@@ -169,7 +180,7 @@ export default function Home({ setActiveNav }) {
                     <Input
                       value={trackingInput}
                       onChange={(e) => setTrackingInput(e.target.value)}
-                      placeholder="Cth: INB-2610-KR02..."
+                      placeholder="Cth: INB-2610-KR06..."
                       className="text-xs h-9 bg-surface-container-low"
                     />
                     <Button type="submit" size="sm" disabled={trackingLoading} className="h-9 px-4 text-xs font-bold shrink-0">
@@ -177,24 +188,74 @@ export default function Home({ setActiveNav }) {
                     </Button>
                   </form>
 
+                  {/* Quick Preset Tracking Code Chips */}
+                  <div className="mt-2.5 flex flex-wrap items-center gap-1.5 text-[11px]">
+                    <span className="text-outline font-medium flex items-center gap-1 text-[10px]">
+                      <Sparkles className="h-3 w-3 text-primary" />
+                      Contoh Resi:
+                    </span>
+                    {sampleTrackingCodes.map((s) => (
+                      <button
+                        key={s.code}
+                        type="button"
+                        onClick={() => handleTrackWithCode(s.code)}
+                        className={`px-2 py-0.5 rounded-md text-[10px] font-mono transition-all cursor-pointer flex items-center gap-1 ${
+                          trackingInput === s.code
+                            ? 'bg-primary-container text-white font-bold shadow-2xs'
+                            : 'bg-surface-container hover:bg-surface-container-high border border-surface-container-high text-on-surface hover:text-primary'
+                        }`}
+                        title={`Cek status ${s.label}`}
+                      >
+                        <span>{s.code}</span>
+                        <span className={`opacity-80 ${trackingInput === s.code ? 'text-white' : 'text-outline'}`}>
+                          ({s.status})
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+
                   {/* Tracking Result Display */}
                   {trackingError && (
-                    <div className="mt-2 text-xs text-error flex items-center gap-1.5">
+                    <div className="mt-2.5 text-xs text-error flex items-center gap-1.5">
                       <AlertCircle className="h-3.5 w-3.5" />
                       <span>{trackingError}</span>
                     </div>
                   )}
 
                   {trackingResult && (
-                    <div className="mt-3 p-3 bg-surface-container-low rounded-lg border border-surface-container-high text-xs space-y-1.5 animate-in fade-in">
+                    <div className="mt-3 p-3.5 bg-surface-container-low rounded-xl border border-surface-container-high text-xs space-y-2.5 animate-in fade-in">
                       <div className="flex justify-between items-center">
-                        <span className="font-mono font-bold text-primary">
+                        <span className="font-mono font-bold text-primary text-sm">
                           {trackingResult.trackingCode || trackingResult.orderNumber || trackingResult.id}
                         </span>
                         <Badge variant="tertiary" className="text-[10px] uppercase font-bold">
                           {trackingResult.statusLabel || trackingResult.deliveryStatus || trackingResult.status || 'DALAM PERJALANAN'}
                         </Badge>
                       </div>
+
+                      {/* Visual 5-Step Order Journey Bar */}
+                      <div className="py-1">
+                        <div className="flex items-center justify-between text-[10px] font-semibold text-outline mb-1">
+                          <span className={['PENDING', 'CONFIRMED', 'PACKING', 'DISPATCHED', 'COMPLETED'].includes((trackingResult.status || '').toUpperCase()) ? 'text-primary font-bold' : ''}>Diterima</span>
+                          <span className={['CONFIRMED', 'PACKING', 'DISPATCHED', 'COMPLETED'].includes((trackingResult.status || '').toUpperCase()) ? 'text-primary font-bold' : ''}>Konfirmasi</span>
+                          <span className={['PACKING', 'DISPATCHED', 'COMPLETED'].includes((trackingResult.status || '').toUpperCase()) ? 'text-primary font-bold' : ''}>Packing</span>
+                          <span className={['DISPATCHED', 'COMPLETED'].includes((trackingResult.status || '').toUpperCase()) ? 'text-primary font-bold' : ''}>Armada</span>
+                          <span className={['COMPLETED'].includes((trackingResult.status || '').toUpperCase()) ? 'text-emerald-700 font-bold' : ''}>Tiba</span>
+                        </div>
+                        <div className="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden flex">
+                          <div
+                            className="bg-primary-container h-full transition-all duration-500 rounded-full"
+                            style={{
+                              width: (trackingResult.status || '').toUpperCase() === 'COMPLETED' ? '100%'
+                                : (trackingResult.status || '').toUpperCase() === 'DISPATCHED' ? '80%'
+                                : (trackingResult.status || '').toUpperCase() === 'PACKING' ? '60%'
+                                : (trackingResult.status || '').toUpperCase() === 'CONFIRMED' ? '40%'
+                                : '20%',
+                            }}
+                          />
+                        </div>
+                      </div>
+
                       <div className="text-on-surface-variant">
                         Toko: <strong className="text-on-surface">{trackingResult.store?.name || trackingResult.storeName}</strong> ({trackingResult.store?.district || trackingResult.district || 'Sidoarjo'})
                       </div>

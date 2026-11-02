@@ -23,7 +23,8 @@ import {
   Sparkles,
   ArrowRight,
   Clock,
-  ShieldCheck
+  ShieldCheck,
+  Trash2
 } from 'lucide-react';
 
 function timeAgo(dateString) {
@@ -289,6 +290,18 @@ export default function AdminHeader({ currentScreen, setCurrentScreen }) {
     });
   };
 
+  const handleClearAll = () => {
+    setNotifications([]);
+    try {
+      localStorage.setItem('supplysync_read_notifications', JSON.stringify([]));
+    } catch (e) {}
+  };
+
+  const handleDismissNotification = (e, notifId) => {
+    e.stopPropagation();
+    setNotifications((prev) => prev.filter((n) => n.id !== notifId));
+  };
+
   const handleNotificationClick = (notif) => {
     try {
       const saved = JSON.parse(localStorage.getItem('supplysync_read_notifications') || '[]');
@@ -520,18 +533,22 @@ export default function AdminHeader({ currentScreen, setCurrentScreen }) {
 
           {/* Notification Dropdown Panel */}
           {isNotifOpen && (
-            <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-surface-container-lowest rounded-2xl shadow-xl border border-outline/15 z-50 overflow-hidden animate-in fade-in duration-150">
-              <div className="p-3.5 border-b border-outline/10 flex items-center justify-between bg-surface-container-low/50">
+            <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 max-h-[calc(100vh-5rem)] flex flex-col bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline/15 z-50 overflow-hidden animate-in fade-in duration-150">
+              <div className="p-3.5 border-b border-outline/10 flex items-center justify-between bg-surface-container-low/50 shrink-0">
                 <div className="flex items-center gap-2">
                   <Bell className="h-4 w-4 text-primary" />
                   <span className="text-xs font-bold text-on-surface">Pemberitahuan Operasional</span>
-                  {unreadCount > 0 && (
+                  {unreadCount > 0 ? (
                     <Badge variant="destructive" className="text-[10px] py-0 px-1.5">
                       {unreadCount} Baru
                     </Badge>
+                  ) : (
+                    <span className="text-[10px] text-outline font-mono">
+                      {notifications.length} Info
+                    </span>
                   )}
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2.5">
                   {unreadCount > 0 && (
                     <button
                       onClick={handleMarkAllRead}
@@ -540,16 +557,26 @@ export default function AdminHeader({ currentScreen, setCurrentScreen }) {
                       Tandai Dibaca
                     </button>
                   )}
+                  {notifications.length > 0 && (
+                    <button
+                      onClick={handleClearAll}
+                      title="Bersihkan Semua Notifikasi"
+                      className="text-[11px] text-on-surface-variant hover:text-red-600 transition-colors flex items-center gap-1"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                      <span>Bersihkan</span>
+                    </button>
+                  )}
                 </div>
               </div>
 
-              {/* Notification List */}
-              <div className="divide-y divide-outline/10 max-h-88 overflow-y-auto">
+              {/* Notification List - Fixed Max Height & Smooth Scroll */}
+              <div className="divide-y divide-outline/10 overflow-y-auto max-h-[380px] flex-1 overscroll-contain">
                 {notifications.length === 0 ? (
                   <div className="p-6 text-center text-xs text-on-surface-variant">
                     <ShieldCheck className="h-6 w-6 mx-auto mb-1 text-emerald-600 opacity-60" />
                     <p className="font-semibold text-on-surface">Semua Sistem Terkendali</p>
-                    <p className="text-[11px] text-outline mt-0.5">Tidak ada peringatan kritis saat ini.</p>
+                    <p className="text-[11px] text-outline mt-0.5">Tidak ada pemberitahuan baru.</p>
                   </div>
                 ) : (
                   notifications.map((notif) => {
@@ -557,7 +584,7 @@ export default function AdminHeader({ currentScreen, setCurrentScreen }) {
                       <div
                         key={notif.id}
                         onClick={() => handleNotificationClick(notif)}
-                        className={`p-3.5 text-xs hover:bg-surface-container-low transition-colors cursor-pointer flex gap-3 ${
+                        className={`p-3.5 text-xs hover:bg-surface-container-low transition-colors cursor-pointer flex gap-3 relative group ${
                           !notif.read ? 'bg-primary/5' : ''
                         }`}
                       >
@@ -584,7 +611,7 @@ export default function AdminHeader({ currentScreen, setCurrentScreen }) {
                           )}
                         </div>
 
-                        <div className="flex-1 space-y-1 overflow-hidden">
+                        <div className="flex-1 space-y-1 overflow-hidden pr-4">
                           <div className="flex items-center justify-between gap-1">
                             <span className={`font-bold truncate ${!notif.read ? 'text-primary' : 'text-on-surface'}`}>
                               {notif.title}
@@ -599,6 +626,15 @@ export default function AdminHeader({ currentScreen, setCurrentScreen }) {
                             <ArrowRight className="h-3 w-3" />
                           </div>
                         </div>
+
+                        {/* Dismiss Single Notification Button on Hover */}
+                        <button
+                          onClick={(e) => handleDismissNotification(e, notif.id)}
+                          title="Hapus pemberitahuan ini"
+                          className="absolute right-2 top-2 p-1 text-outline hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
                       </div>
                     );
                   })
@@ -606,7 +642,7 @@ export default function AdminHeader({ currentScreen, setCurrentScreen }) {
               </div>
 
               {/* Bottom Quick Refresh Action */}
-              <div className="p-2.5 border-t border-outline/10 bg-surface-container-low/40 flex items-center justify-between text-xs">
+              <div className="p-2.5 border-t border-outline/10 bg-surface-container-low/40 flex items-center justify-between text-xs shrink-0">
                 <span className="text-[11px] text-on-surface-variant">Telemetri Jatim Terhubung</span>
                 <button
                   onClick={() => {

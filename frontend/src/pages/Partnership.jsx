@@ -23,7 +23,8 @@ import {
   Check,
   Clock,
   Navigation,
-  Layers
+  Layers,
+  Printer
 } from 'lucide-react';
 
 const SIDOARJO_DISTRICTS = [
@@ -259,6 +260,144 @@ export default function Partnership({ setActiveNav }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePrintReceipt = () => {
+    if (!successData) return;
+    const regCode = successData.code || successData.id || 'REG-MITRA-2026-SDA';
+    const currentDate = new Date().toLocaleDateString('id-ID', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+
+    const printWindow = window.open('', '_blank', 'width=800,height=900');
+    if (!printWindow) {
+      window.print();
+      return;
+    }
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html lang="id">
+      <head>
+        <meta charset="utf-8">
+        <title>Bukti Registrasi Kemitraan - ${regCode}</title>
+        <style>
+          body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #1b1c1c; padding: 40px; margin: 0; background: #fff; line-height: 1.5; }
+          .header { border-bottom: 2.5px solid #a80000; padding-bottom: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-start; }
+          .title { font-size: 20px; font-weight: 800; color: #a80000; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }
+          .subtitle { font-size: 13px; color: #524341; margin-top: 4px; font-weight: 600; }
+          .address { font-size: 11px; color: #7d6b68; margin-top: 4px; }
+          .badge { display: inline-block; background: #e8f5e9; color: #1b5e20; border: 1px solid #c8e6c9; padding: 6px 14px; border-radius: 6px; font-weight: 700; font-size: 12px; }
+          .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; background: #fdf8f7; padding: 16px; border-radius: 8px; border: 1px solid #f0e1df; }
+          .meta-item { font-size: 12px; }
+          .meta-label { color: #7d6b68; font-weight: 500; display: block; margin-bottom: 2px; }
+          .meta-val { color: #1b1c1c; font-weight: 700; font-size: 13px; }
+          table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 12.5px; }
+          th, td { border: 1px solid #e5d8d6; padding: 9px 14px; text-align: left; }
+          th { background: #fbf5f4; font-weight: 700; color: #433332; width: 35%; }
+          td { color: #1b1c1c; }
+          .footer-note { font-size: 11px; color: #7d6b68; line-height: 1.6; margin-top: 24px; border-top: 1px dashed #d5c4c2; padding-top: 14px; }
+          .sign-area { display: flex; justify-content: space-between; margin-top: 36px; }
+          .sign-box { text-align: center; width: 200px; }
+          .sign-line { border-bottom: 1px solid #1b1c1c; margin-top: 55px; margin-bottom: 4px; }
+          @media print { body { padding: 15px; } .no-print { display: none; } }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div>
+            <h1 class="title">PT Inbisco Niagatama Semesta</h1>
+            <div class="subtitle">Distributor Resmi Mayora Group — Cabang Krian (Sidoarjo)</div>
+            <div class="address">Kawasan Pergudangan KM 29, Jl. Raya Krian, Kabupaten Sidoarjo, Jawa Timur 61262</div>
+          </div>
+          <div style="text-align: right;">
+            <div class="badge">BUKTI RESMI REGISTRASI</div>
+            <div style="font-size: 11px; font-family: monospace; color: #7d6b68; margin-top: 6px;">${regCode}</div>
+          </div>
+        </div>
+
+        <div class="meta-grid">
+          <div class="meta-item">
+            <span class="meta-label">Nomor Registrasi Sistem:</span>
+            <span class="meta-val" style="color: #a80000; font-family: monospace;">${regCode}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Tanggal Pengajuan:</span>
+            <span class="meta-val">${currentDate}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Zonasi Layanan:</span>
+            <span class="meta-val">Kecamatan ${formData.district} (Depot Krian Hub)</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Status Verifikasi Awal:</span>
+            <span class="meta-val" style="color: #1b5e20;">TERDAFTAR — JADWAL SURVEY H+1</span>
+          </div>
+        </div>
+
+        <table>
+          <tr>
+            <th>Nama Toko / Outlet</th>
+            <td><strong>${formData.name}</strong></td>
+          </tr>
+          <tr>
+            <th>Nama Pemilik / PIC</th>
+            <td>${formData.ownerName}</td>
+          </tr>
+          <tr>
+            <th>Nomor WhatsApp Aktif</th>
+            <td>${formData.phone}</td>
+          </tr>
+          <tr>
+            <th>Nomor NIK / KTP</th>
+            <td>${formData.nik || '-'}</td>
+          </tr>
+          <tr>
+            <th>Alamat Lokasi Fisik</th>
+            <td>${formData.address}, Kec. ${formData.district}, Kab. Sidoarjo (${formData.postalCode || '61262'})</td>
+          </tr>
+          <tr>
+            <th>Tipe Profil Usaha</th>
+            <td>${formData.storeType}</td>
+          </tr>
+          <tr>
+            <th>Kapasitas Ruang Simpan</th>
+            <td>${formData.storageCapacity}</td>
+          </tr>
+          <tr>
+            <th>Pilihan Hari Kunjungan</th>
+            <td>${formData.preferredVisitDays}</td>
+          </tr>
+        </table>
+
+        <div class="sign-area">
+          <div class="sign-box">
+            <div style="font-size: 11px; color: #7d6b68;">Pemilik / Penanggung Jawab Outlet</div>
+            <div class="sign-line"></div>
+            <div style="font-size: 12px; font-weight: 700;">${formData.ownerName}</div>
+            <div style="font-size: 10px; color: #7d6b68;">Mitra Toko Inbisco</div>
+          </div>
+          <div class="sign-box">
+            <div style="font-size: 11px; color: #7d6b68;">Logistik & Sales Cabang Krian</div>
+            <div class="sign-line"></div>
+            <div style="font-size: 12px; font-weight: 700;">Tim Kemitraan Mayora</div>
+            <div style="font-size: 10px; color: #7d6b68;">PT Inbisco Niagatama Semesta</div>
+          </div>
+        </div>
+
+        <div class="footer-note">
+          <strong>Pemberitahuan Resmi:</strong> Lembar ini merupakan bukti sah pencatatan permohonan kemitraan baru pada sistem Supply Chain Inbisco MitraHub. Petugas Sales Representatif wilayah Anda akan menghubungi via WhatsApp dalam 1×24 jam untuk verifikasi titik GPS dan jadwal pengiriman perdana produk Mayora bebas ongkir.
+        </div>
+        <script>
+          window.onload = function() { window.print(); }
+        </script>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
   };
 
   return (
