@@ -1,22 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '../components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
 import { api } from '../services/api';
 import { formatRupiah } from '../lib/utils';
 import { 
-  ShieldCheck, 
-  Clock, 
   Truck, 
-  Boxes, 
-  CheckCircle2, 
   Search, 
-  ArrowRight, 
-  Store, 
-  TrendingUp, 
+  CheckCircle2, 
   AlertCircle,
-  PackageCheck
+  PackageCheck,
+  ArrowRight,
+  ShieldCheck,
+  Clock,
+  Sparkles
 } from 'lucide-react';
 
 export default function Home({ setActiveNav }) {
@@ -24,25 +22,6 @@ export default function Home({ setActiveNav }) {
   const [trackingResult, setTrackingResult] = useState(null);
   const [trackingLoading, setTrackingLoading] = useState(false);
   const [trackingError, setTrackingError] = useState(null);
-
-  const [topProducts, setTopProducts] = useState([]);
-  const [productsLoading, setProductsLoading] = useState(true);
-
-  useEffect(() => {
-    // Fetch products for fast moving preview
-    api.getProducts()
-      .then((data) => {
-        if (data && data.products) {
-          setTopProducts(data.products.slice(0, 4));
-        }
-      })
-      .catch((err) => {
-        console.error('Failed to load top products:', err);
-      })
-      .finally(() => {
-        setProductsLoading(false);
-      });
-  }, []);
 
   const handleTrackOrder = async (e) => {
     e.preventDefault();
@@ -62,150 +41,212 @@ export default function Home({ setActiveNav }) {
     }
   };
 
+  const featuredProducts = [
+    {
+      category: 'Biskuit',
+      name: 'Roma Kelapa 300g',
+      sku: 'MYR-RMK-01',
+      pack: 'Karton (30 Roll)',
+      price: 239000,
+      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBX82eOYLKVWquXOSZbuJ03d2ZBQolx7wPPPV2ecCusG0DnhnW3-qhRLNJq1e8rZIMBxhwU_NgDS1Hmjxz8rFGOGYaIIIPjJSTrA66anbiehdb9c6CJkaN8uiotXowYkLcdDNqCLfVZjkjnngWgeKi3odNFh3LVoLjRYiWUAAm563B2cnb_Z7xVgz1EfDf28ksf9f3E8z4RRcxhh8pXzKpwI_Qfr2vZ1Ouex1q2CLk',
+    },
+    {
+      category: 'Wafer & Cokelat',
+      name: 'Beng-Beng Regular',
+      sku: 'MYR-BBG-02',
+      pack: 'Karton (8 Box x 20 Pcs)',
+      price: 295000,
+      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCVONZHYyqYp_IAS7PTpYpxjiQz7nokCI44aQPJJrBEyUMoXak6pEZdQigpSERPL6Op8w_rD14kc8jPXAR9povlHYSC_0MupO4V3fQU4wQTCH-FKHO-RYAWoLSG3dm5Ch5_U8WYM66z_65v9D0VqpaZLc2c_JBD6S8ZM33W7TNCGg-KigNhD9uAh20DAa0aLBG5D72WZ_HySo7fqQU1wKceCIhiB7f9VjPoUK0k8Wc',
+    },
+    {
+      category: 'Kopi & Teh',
+      name: 'Torabika Duo',
+      sku: 'MYR-TBD-03',
+      pack: 'Karton (12 Renceng x 10 Sachet)',
+      price: 138000,
+      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC40oSJaOlq5P3FLnYoLSeuF-gXEX2QfMxboCOnaxfKYbSyPod20KMdOL-I6CLYJhrsP4soICbrHHhk768kwJtadlchRsczqvusdIx1IyCkzUiIMNi-emEVlSRt_PYdV2T49og9zTOU895egcWh5uY8psM-WaQZnQzCrwQsTzJGWtQoENKbhClASS2dco4SSnSnDXIr5bzGNvdTykwnMawiQeJBTBQiUPumhho02PA',
+    },
+    {
+      category: 'Permen',
+      name: 'Kopiko Coffee Candy',
+      sku: 'MYR-KPK-04',
+      pack: 'Karton (24 Bag x 150g)',
+      price: 182000,
+      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDcUl8Rfyocs6JT6wiosku_m3S1Njs-AfTBBdIrR38wSJABjEByqZXL5n-Ma94nfP_E3IfEejvC3TvKpQws8MOOsY2he1VviZ9A5Aly9166mndNHSzcDv5nEYHkdp5xLYNGXtlgiisezmqE5fhPDJlQTBj3U5sPCuginjOTt3FFa-VV8XfnnyK9e69s0C7zr98CTsLZMGZEZadmjbZKmC_RJVEmsWy7DynAN9WuGZQ',
+    },
+    {
+      category: 'Sereal & Minuman',
+      name: 'Energen Cokelat',
+      sku: 'MYR-ENG-05',
+      pack: 'Karton (16 Renceng x 10 Sachet)',
+      price: 248000,
+      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCItX9aSc5wkgCofcKzLwyFZ-AS5EacGA7N961CKzog82So-L4uL0kg0y4_0G8n_BdFN_v2YvMm4U9lK9XhsjsPDwtdu0k33vAtFbUuTHvwZBFFsN8tkyvBS7jCloi8-dYEHPVk2s01Py0Gv46q9_aJIwFCG_InMJHDNd8S-qnIAFEj3xyrlG_vIXOyM3Afae39oHvVTsyYm052S_89xOuBsZiQrNKhFysid_omHwo',
+    },
+    {
+      category: 'Air Mineral',
+      name: 'Le Minerale 600ml',
+      sku: 'MYR-LMN-06',
+      pack: 'Karton (24 Botol)',
+      price: 49500,
+      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDqizQO1bwJ3p0VB3nXYGVdpUPmOqZDUiGIj_ponHFYCKcvHUbjENITrJMCTs8cie92eE3P4KBTqe-wCiYmQM9mJceoV5lk7h6RHj0c8keEfJObfgrTHZX0truKM3D6oowDhIWIMghN-8_Fm5s3icrGt1mY-Ptm5ez0CDnij72AznlxJqEoOh82T6HR9EnHiUhOpzk8meh26J_a_pchFN6j6yfJuXqbRlbBUW_EIOQ',
+    },
+  ];
+
   return (
-    <div className="space-y-16 pb-16">
-      {/* HERO SECTION */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-surface via-surface-container-low to-surface pt-12 pb-20 border-b border-outline/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            <div className="lg:col-span-7 space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-wider">
-                <span className="w-2 h-2 rounded-full bg-primary animate-ping"></span>
-                <span>Distributor Resmi Mayora FMCG Sidoarjo</span>
+    <div className="w-full space-y-0">
+      {/* ========================================================= */}
+      {/* SECTION 0: HERO SECTION (Stitch 13_inbisco_mitrahub_beranda) */}
+      {/* ========================================================= */}
+      <section className="relative bg-surface-container-low border-b border-surface-container-high overflow-hidden py-14 lg:py-20">
+        <div className="max-w-[1280px] mx-auto px-4 md:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            {/* Left Copy & Actions */}
+            <div className="lg:col-span-6 space-y-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-lowest border border-surface-container-high shadow-xs">
+                <span className="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+                <span className="text-[11px] font-bold text-primary-container uppercase tracking-wider">
+                  JARINGAN LOGISTIK RESMI · CABANG KRIAN
+                </span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-on-surface tracking-tight leading-[1.15]">
-                Rantai Pasok Cerdas, <br />
-                <span className="text-primary">Stok Pasti Aman</span> Untuk Warung Anda.
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black font-display text-on-surface tracking-tight leading-[1.15]">
+                Distribusi Produk FMCG Andal untuk Mitra Usaha Anda.
               </h1>
 
               <p className="text-base sm:text-lg text-on-surface-variant max-w-2xl leading-relaxed">
-                Platform B2B Inbisco MitraHub menghubungkan 1.250+ toko kelontong & grosir di 18 kecamatan Kabupaten Sidoarjo langsung dengan Depo Krian. Pengiriman 24 jam, harga distributor pabrik, dan sistem kedaluwarsa FEFO terjamin.
+                Temukan peluang kemitraan distribusi bersama Inbisco dan kembangkan bisnis Anda melalui produk berkualitas serta jaringan distribusi yang terpercaya di Kabupaten Sidoarjo dan sekitarnya.
               </p>
 
               {/* CTAs */}
-              <div className="flex flex-wrap items-center gap-4 pt-2">
-                <Button 
-                  onClick={() => setActiveNav('partnership')} 
-                  size="lg" 
-                  className="gap-2 shadow-md shadow-primary/25"
+              <div className="pt-2 flex flex-wrap items-center gap-3">
+                <button
+                  onClick={() => setActiveNav('partnership')}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg bg-primary-container text-white text-sm font-bold hover:bg-secondary-container transition-all duration-200 shadow-sm active:scale-95"
                 >
-                  <Store className="h-5 w-5" />
-                  <span>Daftar Mitra Toko Sekarang</span>
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
+                  <span className="material-symbols-outlined text-[20px]">how_to_reg</span>
+                  <span>Daftar Kemitraan</span>
+                </button>
 
-                <Button 
-                  onClick={() => setActiveNav('products')} 
-                  variant="outline" 
-                  size="lg" 
-                  className="gap-2"
+                <button
+                  onClick={() => setActiveNav('products')}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg border border-surface-variant bg-surface-container-lowest text-on-surface text-sm font-bold hover:bg-surface-container transition-colors shadow-2xs"
                 >
-                  <Boxes className="h-5 w-5 text-primary" />
-                  <span>Katalog Produk Grosir</span>
-                </Button>
+                  <span className="material-symbols-outlined text-[20px] text-primary">inventory_2</span>
+                  <span>Lihat Katalog Produk</span>
+                </button>
               </div>
 
-              {/* Badges Guarantee */}
-              <div className="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-outline/10">
-                <div className="flex items-center gap-2 text-xs font-semibold text-on-surface">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+              {/* Guarantees Badges */}
+              <div className="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 border-t border-surface-container-high text-xs font-semibold text-on-surface">
+                <div className="flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[18px] text-emerald-600">verified</span>
                   <span>100% Asli Mayora</span>
                 </div>
-                <div className="flex items-center gap-2 text-xs font-semibold text-on-surface">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                <div className="flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[18px] text-emerald-600">schedule</span>
                   <span>SLA Kirim 24 Jam</span>
                 </div>
-                <div className="flex items-center gap-2 text-xs font-semibold text-on-surface">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                  <span>Jaminan FEFO Baru</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[18px] text-emerald-600">inventory</span>
+                  <span>Rotasi FEFO Baru</span>
                 </div>
-                <div className="flex items-center gap-2 text-xs font-semibold text-on-surface">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                  <span>Fasilitas TOP Tempo</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[18px] text-emerald-600">receipt_long</span>
+                  <span>Faktur Pajak Sah</span>
                 </div>
               </div>
-            </div>
 
-            {/* Hero Quick Tracking Card & Stats */}
-            <div className="lg:col-span-5 space-y-4">
-              <Card className="border-primary/20 shadow-xl bg-surface-container-lowest/90 backdrop-blur">
-                <CardHeader className="pb-3 border-b border-outline/10">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-sm font-bold flex items-center gap-2">
+              {/* LIVE TRACKING WIDGET */}
+              <div className="pt-2">
+                <div className="bg-surface-container-lowest rounded-xl border border-surface-container-high p-4 shadow-xs">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-bold text-on-surface flex items-center gap-1.5">
                       <Truck className="h-4 w-4 text-primary" />
-                      Lacak Pesanan Grosir Anda
-                    </CardTitle>
-                    <Badge variant="surface" className="text-[10px]">Real-time GPS</Badge>
+                      Lacak Surat Jalan / Resi Pengiriman
+                    </span>
+                    <span className="text-[10px] font-mono font-bold text-primary-container bg-primary-container/10 px-2 py-0.5 rounded">
+                      GPS LIVE
+                    </span>
                   </div>
-                  <p className="text-xs text-on-surface-variant">
-                    Masukkan nomor kode pelacakan pesanan Anda (contoh: <span className="font-mono text-primary font-semibold">INB-2610-KR03</span>).
-                  </p>
-                </CardHeader>
-                <CardContent className="pt-4 space-y-3">
                   <form onSubmit={handleTrackOrder} className="flex gap-2">
                     <Input
                       value={trackingInput}
                       onChange={(e) => setTrackingInput(e.target.value)}
-                      placeholder="INB-2610-KR03"
-                      className="font-mono uppercase text-xs"
+                      placeholder="Masukkan kode tracking (cth: INB-2610-KR03)..."
+                      className="text-xs h-9 bg-surface-container-low"
                     />
-                    <Button type="submit" disabled={trackingLoading} size="sm" className="shrink-0 gap-1">
-                      {trackingLoading ? 'Memeriksa...' : 'Lacak'}
-                      <Search className="h-3.5 w-3.5" />
+                    <Button type="submit" size="sm" disabled={trackingLoading} className="h-9 px-4 text-xs font-bold shrink-0">
+                      {trackingLoading ? 'Mencari...' : 'Lacak'}
                     </Button>
                   </form>
 
-                  {/* Tracking Error */}
+                  {/* Tracking Result Display */}
                   {trackingError && (
-                    <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-700 flex items-start gap-2">
-                      <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-red-600" />
-                      <div>{trackingError}</div>
+                    <div className="mt-2 text-xs text-error flex items-center gap-1.5">
+                      <AlertCircle className="h-3.5 w-3.5" />
+                      <span>{trackingError}</span>
                     </div>
                   )}
 
-                  {/* Tracking Result */}
                   {trackingResult && (
-                    <div className="p-3 bg-surface-container rounded-lg border border-outline/10 text-xs space-y-2">
-                      <div className="flex items-center justify-between font-bold">
-                        <span className="font-mono text-primary">{trackingResult.trackingCode}</span>
-                        <Badge variant="success">{trackingResult.status}</Badge>
+                    <div className="mt-3 p-3 bg-surface-container-low rounded-lg border border-surface-container-high text-xs space-y-1.5">
+                      <div className="flex justify-between items-center">
+                        <span className="font-mono font-bold text-primary">{trackingResult.orderNumber || trackingResult.id}</span>
+                        <Badge variant="tertiary" className="text-[10px] uppercase font-bold">
+                          {trackingResult.deliveryStatus || trackingResult.status || 'DALAM PERJALANAN'}
+                        </Badge>
                       </div>
                       <div className="text-on-surface-variant">
-                        <div>Toko: <strong className="text-on-surface">{trackingResult.storeName}</strong> ({trackingResult.district})</div>
-                        <div>Total: <strong className="text-on-surface">{formatRupiah(trackingResult.totalAmount)}</strong> ({trackingResult.totalCartons} Dus)</div>
+                        Toko Tujuan: <strong className="text-on-surface">{trackingResult.storeName || 'Toko Mitra Berkah'}</strong> ({trackingResult.district || 'Krian'})
                       </div>
-                      <div className="text-[11px] text-outline pt-1 border-t border-outline/10">
-                        Pembaruan terakhir: {new Date(trackingResult.updatedAt || Date.now()).toLocaleTimeString('id-ID')} WIB
+                      <div className="text-[11px] text-on-surface-variant flex items-center gap-2">
+                        <span>Armada: {trackingResult.driverName || 'Slamet Riyadi'} (Isuzu Giga Wingbox)</span>
+                        <span>•</span>
+                        <span>Estimasi Tiba: {trackingResult.eta || 'Hari ini 14:30 WIB'}</span>
                       </div>
                     </div>
                   )}
+                </div>
+              </div>
+            </div>
 
-                  <div className="pt-2 text-[11px] text-on-surface-variant flex items-center justify-between">
-                    <span>Butuh bantuan armada?</span>
-                    <button 
-                      onClick={() => setActiveNav('contact')} 
-                      className="text-primary font-bold hover:underline"
-                    >
-                      Hubungi Dispatcher
-                    </button>
+            {/* Right Hero Depot Card */}
+            <div className="lg:col-span-6 relative">
+              <div className="relative rounded-2xl overflow-hidden border border-surface-container-high shadow-md bg-surface-container-low p-2">
+                <div className="relative h-[360px] sm:h-[420px] rounded-xl overflow-hidden">
+                  <img
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCU1lsfRf2RijOStSWs_HRnNw-TorpNVrh53pA28nJ1lgEzANReT5jk-wIfOcuHgvL1KpxZ_WpmngV64hL6sMv3u4YBLUP8nHYHAGRdwLzw1CRbAonLimLrNxxHCRvh2SzlzbeISrdl05t3I1SUfVbqHO9UYX9gVnChBTalEXsw_ZHg-ghsDlqZuxWdZ_WaPFUgyOHrtJyPsaABwUy8R6torxHYaZEUh8v3MemRjg"
+                    alt="Depot Konsolidasi Krian Sidoarjo"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                </div>
+
+                {/* Floating Depot Info Box */}
+                <div className="absolute bottom-5 left-5 right-5 bg-surface-container-lowest/95 backdrop-blur-md p-4 rounded-xl border border-surface-container-high shadow-lg">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary-container shrink-0 border border-surface-variant">
+                      <span className="material-symbols-outlined text-[22px]">warehouse</span>
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold font-display text-on-surface">
+                          Depot Konsolidasi Krian
+                        </span>
+                        <span className="px-1.5 py-0.5 text-[10px] font-bold rounded bg-tertiary-container/30 text-tertiary uppercase tracking-wide">
+                          SDA-KRN
+                        </span>
+                      </div>
+                      <p className="text-xs text-on-surface-variant mt-0.5 leading-snug">
+                        Hub logistik lintas Krian, Balongbendo, Tarik, Prambon, dan perimeter industri Sidoarjo Barat.
+                      </p>
+                      <div className="mt-2 flex items-center gap-3 text-[11px] font-mono text-on-surface-variant">
+                        <span className="text-primary font-bold">STATUS: READY INVENTORY</span>
+                        <span>•</span>
+                        <span>LEAD TIME: SAMEDAY / H+1</span>
+                      </div>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
-
-              {/* Quick Metrics */}
-              <div className="grid grid-cols-3 gap-2">
-                <div className="p-3 bg-surface-container-lowest rounded-xl border border-outline/10 text-center shadow-xs">
-                  <div className="text-lg font-black text-primary">18</div>
-                  <div className="text-[10px] text-on-surface-variant font-medium">Kecamatan Sidoarjo</div>
-                </div>
-                <div className="p-3 bg-surface-container-lowest rounded-xl border border-outline/10 text-center shadow-xs">
-                  <div className="text-lg font-black text-primary">1.250+</div>
-                  <div className="text-[10px] text-on-surface-variant font-medium">Mitra Terhubung</div>
-                </div>
-                <div className="p-3 bg-surface-container-lowest rounded-xl border border-outline/10 text-center shadow-xs">
-                  <div className="text-lg font-black text-emerald-700">99.4%</div>
-                  <div className="text-[10px] text-on-surface-variant font-medium">SLA Pengiriman</div>
                 </div>
               </div>
             </div>
@@ -213,153 +254,494 @@ export default function Home({ setActiveNav }) {
         </div>
       </section>
 
-      {/* 4 PILARS VALUE PROPOSITION */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto space-y-2 mb-10">
-          <Badge variant="tertiary" className="text-xs uppercase">Keunggulan Mitra</Badge>
-          <h2 className="text-2xl sm:text-3xl font-bold text-on-surface tracking-tight">
-            Mengapa Toko Kelontong Memilih Inbisco MitraHub?
-          </h2>
-          <p className="text-sm text-on-surface-variant">
-            Standar keandalan logistik tingkat prinsipal Mayora langsung di genggaman Anda.
-          </p>
-        </div>
+      {/* ========================================================= */}
+      {/* SECTION 1: 4 PILLARS OF PARTNERSHIP */}
+      {/* ========================================================= */}
+      <section className="py-14 bg-surface-container-low border-b border-surface-container-high">
+        <div className="max-w-[1280px] mx-auto px-4 md:px-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+            <div>
+              <span className="text-xs font-bold text-primary uppercase tracking-wider">
+                KEUNGGULAN KEMITRAAN
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-bold font-display text-on-surface mt-1">
+                Keuntungan Bermitra Bersama Inbisco
+              </h2>
+            </div>
+            <p className="text-sm text-on-surface-variant max-w-md">
+              Dukungan menyeluruh dan rantai pasok terintegrasi untuk memperkuat daya saing toko kelontong, agen grosir, dan mitra ritel.
+            </p>
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="hover:border-primary/40 transition-all hover:shadow-md">
-            <CardContent className="pt-6 space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold">
-                <ShieldCheck className="h-5 w-5" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="p-6 bg-surface-container-lowest rounded-xl border border-surface-container-high hover:border-outline hover:shadow-sm transition-all duration-200 flex flex-col justify-between">
+              <div>
+                <div className="w-12 h-12 rounded-lg bg-surface-container-low border border-surface-container-high flex items-center justify-center text-primary-container mb-5">
+                  <span className="material-symbols-outlined text-[28px]">stars</span>
+                </div>
+                <h3 className="text-base font-bold font-display text-on-surface mb-2">
+                  Produk FMCG Terkemuka
+                </h3>
+                <p className="text-xs text-on-surface-variant leading-relaxed">
+                  Akses langsung ke portofolio brand FMCG terlaris Mayora dengan perputaran stok cepat dan jaminan keaslian pabrik 100%.
+                </p>
               </div>
-              <h3 className="font-bold text-base text-on-surface">100% Produk Mayora Asli</h3>
-              <p className="text-xs text-on-surface-variant leading-relaxed">
-                Semua SKU (Roma, Kopiko, Beng-Beng, Torabika) dipasok langsung dari pabrik Mayora DC Pasuruan & Cikupa dengan segel resmi.
-              </p>
-            </CardContent>
-          </Card>
+            </div>
 
-          <Card className="hover:border-primary/40 transition-all hover:shadow-md">
-            <CardContent className="pt-6 space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
-                <Clock className="h-5 w-5" />
+            <div className="p-6 bg-surface-container-lowest rounded-xl border border-surface-container-high hover:border-outline hover:shadow-sm transition-all duration-200 flex flex-col justify-between">
+              <div>
+                <div className="w-12 h-12 rounded-lg bg-surface-container-low border border-surface-container-high flex items-center justify-center text-primary-container mb-5">
+                  <span className="material-symbols-outlined text-[28px]">payments</span>
+                </div>
+                <h3 className="text-base font-bold font-display text-on-surface mb-2">
+                  Peluang Bisnis Menguntungkan
+                </h3>
+                <p className="text-xs text-on-surface-variant leading-relaxed">
+                  Struktur harga tiering distributor pabrik, margin keuntungan stabil, serta program promosi berkala yang dirancang khusus bagi mitra.
+                </p>
               </div>
-              <h3 className="font-bold text-base text-on-surface">SLA Pengiriman 24 Jam</h3>
-              <p className="text-xs text-on-surface-variant leading-relaxed">
-                Pesan hari ini sebelum pukul 15:00 WIB, armada Canter Depo Krian mengirimkan barang ke toko Anda keesokan paginya.
-              </p>
-            </CardContent>
-          </Card>
+            </div>
 
-          <Card className="hover:border-primary/40 transition-all hover:shadow-md">
-            <CardContent className="pt-6 space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
-                <PackageCheck className="h-5 w-5" />
+            <div className="p-6 bg-surface-container-lowest rounded-xl border border-surface-container-high hover:border-outline hover:shadow-sm transition-all duration-200 flex flex-col justify-between">
+              <div>
+                <div className="w-12 h-12 rounded-lg bg-surface-container-low border border-surface-container-high flex items-center justify-center text-primary-container mb-5">
+                  <span className="material-symbols-outlined text-[28px]">warehouse</span>
+                </div>
+                <h3 className="text-base font-bold font-display text-on-surface mb-2">
+                  Dukungan Logistik Depot
+                </h3>
+                <p className="text-xs text-on-surface-variant leading-relaxed">
+                  Penyimpanan standar industri di Depot Krian dengan armada pengiriman terjadwal untuk menjamin ketersediaan barang di etalase Anda.
+                </p>
               </div>
-              <h3 className="font-bold text-base text-on-surface">Manajemen FEFO Ketat</h3>
-              <p className="text-xs text-on-surface-variant leading-relaxed">
-                First-Expired, First-Out. Jaminan produk yang Anda terima memiliki sisa masa kedaluwarsa panjang (&gt;10 bulan), bukan barang returan.
-              </p>
-            </CardContent>
-          </Card>
+            </div>
 
-          <Card className="hover:border-primary/40 transition-all hover:shadow-md">
-            <CardContent className="pt-6 space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-800 flex items-center justify-center font-bold">
-                <TrendingUp className="h-5 w-5" />
+            <div className="p-6 bg-surface-container-lowest rounded-xl border border-surface-container-high hover:border-outline hover:shadow-sm transition-all duration-200 flex flex-col justify-between">
+              <div>
+                <div className="w-12 h-12 rounded-lg bg-surface-container-low border border-surface-container-high flex items-center justify-center text-primary-container mb-5">
+                  <span className="material-symbols-outlined text-[28px]">share_location</span>
+                </div>
+                <h3 className="text-base font-bold font-display text-on-surface mb-2">
+                  Jaringan Distribusi Luas
+                </h3>
+                <p className="text-xs text-on-surface-variant leading-relaxed">
+                  Jangkauan rute komprehensif mencakup Krian, Balongbendo, Taman, Waru, Tarik, Prambon, dan sentra perdagangan Sidoarjo.
+                </p>
               </div>
-              <h3 className="font-bold text-base text-on-surface">Fasilitas TOP (Tempo 14 Hari)</h3>
-              <p className="text-xs text-on-surface-variant leading-relaxed">
-                Mitra toko terverifikasi dapat menikmati plafon kredit fleksibel untuk menjaga arus kas warung tetap lancar tanpa modal macet.
-              </p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* FAST MOVING SHOWCASE */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
-          <div>
-            <Badge variant="tertiary" className="text-xs uppercase">Produk Unggulan</Badge>
-            <h2 className="text-2xl sm:text-3xl font-bold text-on-surface tracking-tight mt-1">
-              SKU Terlaris Mayora (Fast Moving)
-            </h2>
-            <p className="text-sm text-on-surface-variant">
-              Produk dengan perputaran harian tertinggi di warung se-Kabupaten Sidoarjo.
-            </p>
-          </div>
-          <Button onClick={() => setActiveNav('products')} variant="outline" className="gap-2 shrink-0">
-            <span>Buka Seluruh Katalog</span>
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-        </div>
-
-        {productsLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-64 bg-surface-container rounded-xl animate-pulse"></div>
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {topProducts.map((p) => (
-              <Card key={p.id} className="overflow-hidden flex flex-col justify-between hover:shadow-lg transition-all border-outline/10">
-                <div className="p-4 bg-surface-container-low flex items-center justify-between border-b border-outline/5">
-                  <span className="font-mono text-xs font-bold text-on-surface-variant">{p.sku}</span>
-                  <Badge variant={p.stock > 100 ? 'success' : 'warning'} className="text-[10px]">
-                    {p.stock > 100 ? 'Stok Melimpah' : 'Stok Terbatas'}
-                  </Badge>
-                </div>
-                <CardContent className="p-4 space-y-2 flex-1">
-                  <span className="text-[11px] font-semibold text-primary uppercase tracking-wider">{p.category}</span>
-                  <h3 className="font-bold text-base text-on-surface leading-snug line-clamp-2">{p.name}</h3>
-                  <div className="text-xs text-on-surface-variant">Isi: {p.packaging}</div>
-                  <div className="pt-2">
-                    <div className="text-xs text-outline">Harga Karton (Dus):</div>
-                    <div className="text-lg font-black text-primary">{formatRupiah(p.price)}</div>
-                  </div>
-                </CardContent>
-                <div className="p-4 pt-0">
-                  <Button 
-                    onClick={() => setActiveNav('products')} 
-                    variant="default" 
-                    size="sm" 
-                    className="w-full font-bold"
-                  >
-                    Pesan Grosir
-                  </Button>
-                </div>
-              </Card>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* PARTNERSHIP CTA BANNER */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="rounded-2xl bg-gradient-to-r from-primary to-secondary p-8 sm:p-12 text-white shadow-xl relative overflow-hidden">
-          <div className="relative z-10 max-w-2xl space-y-4">
-            <Badge variant="tertiary" className="text-xs uppercase bg-white/20 text-white border-0">
-              Pendaftaran Mitra Toko
-            </Badge>
-            <h2 className="text-2xl sm:text-4xl font-black tracking-tight leading-tight">
-              Ingin Menjadi Mitra Toko Resmi Mayora di Sidoarjo?
-            </h2>
-            <p className="text-sm sm:text-base text-white/90 leading-relaxed">
-              Daftarkan warung atau toko kelontong Anda sekarang melalui form 4 langkah mudah. Dapatkan kepastian suplai tanpa calo, margin grosir resmi, dan pengiriman gratis se-Sidoarjo.
-            </p>
-            <div className="pt-2">
-              <Button 
-                onClick={() => setActiveNav('partnership')} 
-                variant="subtle" 
-                size="lg" 
-                className="bg-white text-primary hover:bg-white/90 font-bold shadow-lg"
+      {/* ========================================================= */}
+      {/* SECTION 2: FEATURED FMCG CATALOG */}
+      {/* ========================================================= */}
+      <section className="py-14 bg-surface border-b border-surface-container-high" id="katalog-produk">
+        <div className="max-w-[1280px] mx-auto px-4 md:px-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+            <div>
+              <span className="text-xs font-bold text-primary uppercase tracking-wider">
+                KATALOG UNGGULAN
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-bold font-display text-on-surface mt-1">
+                Produk Pilihan untuk Kebutuhan Harian
+              </h2>
+              <p className="text-sm text-on-surface-variant mt-1.5 max-w-xl">
+                Pilihan produk FMCG favorit konsumen dengan rotasi penjualan tinggi untuk toko kelontong, warkop, dan usaha ritel Anda.
+              </p>
+            </div>
+            <div>
+              <button
+                onClick={() => setActiveNav('products')}
+                className="inline-flex items-center gap-1.5 text-sm font-bold text-primary hover:text-secondary transition-colors group"
               >
-                Mulai Pendaftaran 4 Langkah
-              </Button>
+                <span>Lihat Semua Produk</span>
+                <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">
+                  arrow_forward
+                </span>
+              </button>
             </div>
           </div>
-          <div className="absolute right-0 bottom-0 translate-x-12 translate-y-12 w-96 h-96 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {featuredProducts.map((p, idx) => (
+              <div 
+                key={idx} 
+                onClick={() => setActiveNav('products')}
+                className="bg-surface-container-lowest rounded-xl border border-surface-container-high p-4 flex flex-col justify-between hover:border-tertiary-container hover:shadow-md transition-all duration-200 group cursor-pointer"
+              >
+                <div>
+                  <div className="mb-2">
+                    <span className="text-[11px] px-2.5 py-0.5 rounded bg-surface-container text-on-surface font-semibold">
+                      {p.category}
+                    </span>
+                  </div>
+                  <div className="relative h-36 rounded-lg bg-surface-container-low overflow-hidden mb-3 flex items-center justify-center p-2 border border-surface-container">
+                    <img 
+                      src={p.image} 
+                      alt={p.name} 
+                      className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <div className="text-[10px] font-mono text-outline">{p.sku}</div>
+                  <h3 className="text-sm font-bold font-display text-on-surface line-clamp-1 group-hover:text-primary transition-colors">
+                    {p.name}
+                  </h3>
+                  <p className="text-[11px] text-on-surface-variant mt-0.5">{p.pack}</p>
+                </div>
+                <div className="mt-3 pt-2.5 border-t border-surface-container-high flex items-center justify-between">
+                  <div className="text-xs font-bold text-primary">
+                    {formatRupiah(p.price)}
+                  </div>
+                  <span className="text-[11px] font-bold text-primary group-hover:underline flex items-center gap-0.5">
+                    Detail <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* SECTION 3: B2B OPPORTUNITY & COMPLIANCE */}
+      {/* ========================================================= */}
+      <section className="py-16 max-w-[1280px] mx-auto px-4 md:px-8" id="tentang-kami">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          {/* Photo & Counter Stats */}
+          <div className="lg:col-span-5 relative">
+            <div className="relative rounded-2xl overflow-hidden border border-surface-container-high shadow-sm bg-surface-container-low p-2">
+              <div className="relative h-[440px] rounded-xl overflow-hidden">
+                <img
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoxZNKgeLEThWYt0YQGRYfdVf4meW88QIFAgVB34rWsqpRCv8bWG5lgTDXqRGJbuSdE-_KiDVf0IwqqRpebV89aObO5wtWUov2PHWD_D6szVRdXVnp-j410nLuUvD1QXT6maayfN6LukDCZOlqAcH7XzoFYdpVvGp9q2EWAuH6mvqjtppPaUn7kkzpcBF6I6CvXW1kNj3iWreoNDssxRdO2a7vexsac9_53h-nHfM"
+                  alt="Logistik Inbisco Cabang Krian"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+              </div>
+              <div className="absolute bottom-6 left-6 right-6 bg-surface-container-lowest/95 backdrop-blur-md p-4 rounded-xl border border-surface-container-high shadow-md">
+                <div className="grid grid-cols-2 gap-4 text-center divide-x divide-surface-container-high">
+                  <div>
+                    <span className="text-2xl font-bold font-display text-primary block">
+                      1,850+
+                    </span>
+                    <span className="text-xs text-on-surface-variant font-medium">
+                      Mitra Retail Terdaftar
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-2xl font-bold font-display text-on-surface block">
+                      100%
+                    </span>
+                    <span className="text-xs text-on-surface-variant font-medium">
+                      Kepatuhan Legalitas & Faktur
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Value Proposition List */}
+          <div className="lg:col-span-7 space-y-6">
+            <div>
+              <span className="text-xs font-bold text-primary uppercase tracking-wider">
+                PELUANG KEMITRAAN B2B
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-bold font-display text-on-surface mt-1">
+                Mengapa Pelaku Usaha Ritel & Grosir Memilih Inbisco MitraHub?
+              </h2>
+              <p className="text-base text-on-surface-variant mt-2 leading-relaxed">
+                Kami menghadirkan ekosistem distribusi terpadu yang memangkas hambatan suplai bagi pemilik toko kelontong, warkop, minimarket mandiri, hingga grosir regional.
+              </p>
+            </div>
+
+            <div className="space-y-3.5 pt-1">
+              <div className="p-4 rounded-xl bg-surface-container-low border border-surface-container-high">
+                <div className="flex items-center gap-3 mb-1">
+                  <div className="w-8 h-8 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary-container border border-surface-container-high shrink-0">
+                    <span className="material-symbols-outlined text-[20px]">price_check</span>
+                  </div>
+                  <h3 className="text-sm font-bold font-display text-on-surface">
+                    Jaminan Harga Resmi & Faktur Pajak Sah
+                  </h3>
+                </div>
+                <p className="text-xs text-on-surface-variant pl-11">
+                  Seluruh pesanan mitra didukung faktur resmi langsung dari cabang pabrikan, menjamin akurasi pembukuan dan transparansi harga tanpa biaya tersembunyi.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-surface-container-low border border-surface-container-high">
+                <div className="flex items-center gap-3 mb-1">
+                  <div className="w-8 h-8 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary-container border border-surface-container-high shrink-0">
+                    <span className="material-symbols-outlined text-[20px]">local_shipping</span>
+                  </div>
+                  <h3 className="text-sm font-bold font-display text-on-surface">
+                    Armada Logistik Sendiri & Ketepatan Jadwal
+                  </h3>
+                </div>
+                <p className="text-xs text-on-surface-variant pl-11">
+                  Didukung armada truk dan van box terkelola mandiri dari Depot Krian untuk menjamin integritas kemasan produk tiba tanpa kerusakan di toko Anda.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-surface-container-low border border-surface-container-high">
+                <div className="flex items-center gap-3 mb-1">
+                  <div className="w-8 h-8 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary-container border border-surface-container-high shrink-0">
+                    <span className="material-symbols-outlined text-[20px]">support_agent</span>
+                  </div>
+                  <h3 className="text-sm font-bold font-display text-on-surface">
+                    Dedicated Sales Officer Setiap Wilayah
+                  </h3>
+                </div>
+                <p className="text-xs text-on-surface-variant pl-11">
+                  Setiap mitra didampingi petugas representatif resmi untuk kemudahan reorder berkala, konsultasi stok cepat laku, dan penanganan retur produk.
+                </p>
+              </div>
+            </div>
+
+            <div className="pt-2 flex flex-wrap items-center gap-3">
+              <button
+                onClick={() => setActiveNav('partnership')}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-primary-container text-white text-sm font-bold hover:bg-secondary-container transition-colors shadow-sm"
+              >
+                <span>Daftar Jadi Mitra Sekarang</span>
+                <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+              </button>
+
+              <button
+                onClick={() => setActiveNav('about')}
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-surface-variant text-on-surface text-sm font-semibold hover:bg-surface-container transition-colors"
+              >
+                <span>Pelajari Profil Distribusi</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* SECTION 4: 4-STEP PARTNERSHIP WORKFLOW & COVERAGE */}
+      {/* ========================================================= */}
+      <section className="py-16 bg-surface border-t border-surface-container-high" id="cakupan-wilayah">
+        <div className="max-w-[1280px] mx-auto px-4 md:px-8">
+          <div className="mb-10 max-w-3xl">
+            <span className="text-xs font-bold text-primary uppercase tracking-wider">
+              TAHAPAN KEMITRAAN & LOGISTIK
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-bold font-display text-on-surface mt-1">
+              Alur Distribusi Terstruktur & Cepat
+            </h2>
+            <p className="text-sm text-on-surface-variant mt-2 leading-relaxed">
+              Mulai dari pendaftaran online hingga pengantaran pertama ke titik usaha Anda dengan standar operasional yang terukur.
+            </p>
+          </div>
+
+          {/* Stepper Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-14">
+            <div className="relative p-5 rounded-xl bg-surface-container-lowest border border-surface-container-high">
+              <div className="w-10 h-10 rounded-full bg-primary-container text-white font-mono font-bold flex items-center justify-center mb-3">
+                01
+              </div>
+              <h3 className="text-sm font-bold font-display text-on-surface mb-1">
+                Pendaftaran & Verifikasi
+              </h3>
+              <p className="text-xs text-on-surface-variant">
+                Isi data profil toko, titik lokasi maps, dan legalitas usaha melalui formulir kemitraan online.
+              </p>
+            </div>
+
+            <div className="relative p-5 rounded-xl bg-surface-container-lowest border border-surface-container-high">
+              <div className="w-10 h-10 rounded-full bg-primary-container text-white font-mono font-bold flex items-center justify-center mb-3">
+                02
+              </div>
+              <h3 className="text-sm font-bold font-display text-on-surface mb-1">
+                Konsultasi Wilayah
+              </h3>
+              <p className="text-xs text-on-surface-variant">
+                Tim sales officer cabang Krian menghubungi Anda untuk validasi jadwal rute dan potensi kuota suplai.
+              </p>
+            </div>
+
+            <div className="relative p-5 rounded-xl bg-surface-container-lowest border border-surface-container-high">
+              <div className="w-10 h-10 rounded-full bg-primary-container text-white font-mono font-bold flex items-center justify-center mb-3">
+                03
+              </div>
+              <h3 className="text-sm font-bold font-display text-on-surface mb-1">
+                Alokasi Kuota
+              </h3>
+              <p className="text-xs text-on-surface-variant">
+                Penetapan tier harga grosir pabrik, plafon tempo (TOP), dan kuota produk fast-moving prioritas.
+              </p>
+            </div>
+
+            <div className="relative p-5 rounded-xl bg-surface-container-lowest border border-surface-container-high">
+              <div className="w-10 h-10 rounded-full bg-primary-container text-white font-mono font-bold flex items-center justify-center mb-3">
+                04
+              </div>
+              <h3 className="text-sm font-bold font-display text-on-surface mb-1">
+                Pengiriman Terjadwal
+              </h3>
+              <p className="text-xs text-on-surface-variant">
+                Armada box mengantarkan pesanan secara berkala langsung ke etalase toko Anda secara aman dan tepat waktu.
+              </p>
+            </div>
+          </div>
+
+          {/* Coverage Areas */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div className="lg:col-span-7 space-y-4">
+              <div>
+                <span className="text-xs font-bold text-primary uppercase tracking-wider">
+                  WILAYAH JANGKAUAN LOGISTIK
+                </span>
+                <h3 className="text-xl font-bold font-display text-on-surface mt-1">
+                  Pusat Wilayah Distribusi Utama Sidoarjo
+                </h3>
+                <p className="text-xs text-on-surface-variant mt-1">
+                  Kami mengoperasikan jadwal rute tetap setiap pekannya ke zona sentra retail dan grosir:
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="bg-surface-container-lowest rounded-xl border border-surface-container-high p-4 border-l-4 border-l-primary-container shadow-xs">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-surface-container text-on-surface uppercase">
+                    HUB UTAMA DEPOT
+                  </span>
+                  <h4 className="text-base font-bold font-display text-on-surface mt-1.5 mb-0.5">
+                    Krian
+                  </h4>
+                  <p className="text-xs text-on-surface-variant">
+                    Pusat depot logistik regional, zona pergudangan, pasar grosir Krian, dan sentra toko retail.
+                  </p>
+                </div>
+
+                <div className="bg-surface-container-lowest rounded-xl border border-surface-container-high p-4 border-l-4 border-l-tertiary-container shadow-xs">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-surface-container text-on-surface uppercase">
+                    RUTE JALUR BARAT
+                  </span>
+                  <h4 className="text-base font-bold font-display text-on-surface mt-1.5 mb-0.5">
+                    Balongbendo
+                  </h4>
+                  <p className="text-xs text-on-surface-variant">
+                    Jalur arteri penghubung Sidoarjo-Mojokerto dengan jaringan agen grosir dan warkop strategis.
+                  </p>
+                </div>
+
+                <div className="bg-surface-container-lowest rounded-xl border border-surface-container-high p-4 border-l-4 border-l-tertiary-container shadow-xs">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-surface-container text-on-surface uppercase">
+                    ZONA SUBURBAN
+                  </span>
+                  <h4 className="text-base font-bold font-display text-on-surface mt-1.5 mb-0.5">
+                    Taman
+                  </h4>
+                  <p className="text-xs text-on-surface-variant">
+                    Wilayah padat pemukiman dan konsentrasi usaha toko kelontong, retail modern mandiri, serta warkop aktif.
+                  </p>
+                </div>
+
+                <div className="bg-surface-container-lowest rounded-xl border border-surface-container-high p-4 border-l-4 border-l-tertiary-container shadow-xs">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-surface-container text-on-surface uppercase">
+                    KORIDOR INDUSTRI
+                  </span>
+                  <h4 className="text-base font-bold font-display text-on-surface mt-1.5 mb-0.5">
+                    Waru
+                  </h4>
+                  <p className="text-xs text-on-surface-variant">
+                    Koridor simpul perdagangan dan perimeter industri penghubung logistik Sidoarjo dengan metropolitan Surabaya.
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <button
+                  onClick={() => setActiveNav('contact')}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-surface-container-lowest border border-surface-variant text-on-surface text-xs font-semibold hover:bg-surface-container-low transition-colors shadow-xs"
+                >
+                  <span className="material-symbols-outlined text-[18px]">location_searching</span>
+                  <span>Konsultasikan Ketersediaan Rute Toko Anda</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Hub Logistik Card */}
+            <div className="lg:col-span-5 bg-surface-container-low rounded-2xl border border-surface-container-high p-6 flex flex-col justify-between">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-surface-container-high">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-primary text-[22px]">hub</span>
+                    <span className="text-base font-bold font-display text-on-surface">
+                      Depot Utama Krian
+                    </span>
+                  </div>
+                  <span className="font-mono text-[11px] text-on-surface-variant font-bold">
+                    SDA-KRN-HUB
+                  </span>
+                </div>
+                <p className="text-xs text-on-surface-variant leading-relaxed">
+                  Seluruh titik rute distribusi dikonsolidasikan langsung dari gudang logistik Krian untuk memastikan keteraturan pasokan mingguan dan kebersihan produk terjamin.
+                </p>
+                <div className="p-4 rounded-xl bg-surface-container-lowest border border-surface-container-high space-y-2 text-xs text-on-surface">
+                  <div className="flex justify-between">
+                    <span className="text-on-surface-variant">Jadwal Pengiriman:</span>
+                    <span className="font-semibold">Terjadwal Tetap Tiap Pekan</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-on-surface-variant">Status Kemitraan:</span>
+                    <span className="font-semibold text-primary">Pendaftaran Terbuka</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-on-surface-variant">Area Coverage:</span>
+                    <span className="font-semibold">18 Kecamatan Sidoarjo</span>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-6 pt-4 border-t border-surface-container-high">
+                <span className="text-xs text-on-surface-variant">
+                  Informasi ketersediaan kuota pengiriman baru dapat dikonsultasikan langsung bersama tim sales representatif wilayah kami.
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================= */}
+      {/* SECTION 5: FINAL CTA BANNER */}
+      {/* ========================================================= */}
+      <section className="bg-primary-container text-white py-16 relative overflow-hidden" id="daftar-mitra">
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-tertiary-container"></div>
+        <div className="max-w-[1280px] mx-auto px-4 md:px-8 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div className="lg:col-span-8 space-y-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white text-xs font-semibold">
+                <span className="material-symbols-outlined text-[16px]">stars</span>
+                <span>PELUANG KEMITRAAN RESMI</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-bold font-display text-white tracking-tight">
+                Bangun Kemitraan Distribusi Bersama Inbisco.
+              </h2>
+              <p className="text-sm text-white/90 max-w-2xl leading-relaxed">
+                Daftarkan toko kelontong, warkop, atau usaha grosir Anda untuk menikmati jaminan pasokan produk FMCG Mayora terbaik dengan skema kemitraan yang menguntungkan.
+              </p>
+            </div>
+            <div className="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-3 justify-center">
+              <button
+                onClick={() => setActiveNav('partnership')}
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-surface-container-lowest text-primary text-sm font-bold hover:bg-surface-container-low transition-all shadow-md active:scale-95 text-center"
+              >
+                <span className="material-symbols-outlined text-[20px]">how_to_reg</span>
+                <span>Mulai Daftar Kemitraan</span>
+              </button>
+              <button
+                onClick={() => setActiveNav('contact')}
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border border-white text-white text-sm font-semibold hover:bg-white/10 transition-colors text-center"
+              >
+                <span className="material-symbols-outlined text-[20px]">mail</span>
+                <span>Hubungi Tim Sales Cabang</span>
+              </button>
+            </div>
+          </div>
         </div>
       </section>
     </div>

@@ -1,0 +1,716 @@
+<!DOCTYPE html><html lang="id"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Katalog Produk FMCG - Inbisco MitraHub Cabang Krian</title>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Theme Configuration -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface": "#fcf9f8",
+            "primary": "#900000",
+            "surface-bright": "#fcf9f8",
+            "on-tertiary-fixed": "#241a00",
+            "on-secondary-container": "#fffbff",
+            "surface-dim": "#dcd9d9",
+            "on-background": "#1b1c1c",
+            "on-surface-variant": "#5d3f3b",
+            "surface-container": "#f0eded",
+            "inverse-primary": "#ffb4a8",
+            "tertiary": "#735c00",
+            "inverse-surface": "#303030",
+            "on-tertiary": "#ffffff",
+            "surface-tint": "#c00402",
+            "on-secondary": "#ffffff",
+            "surface-container-highest": "#e5e2e1",
+            "on-secondary-fixed": "#410003",
+            "primary-fixed": "#ffdad4",
+            "tertiary-container": "#cca830",
+            "on-tertiary-container": "#4f3e00",
+            "error": "#ba1a1a",
+            "on-surface": "#1b1c1c",
+            "secondary-container": "#da3433",
+            "surface-variant": "#e5e2e1",
+            "outline": "#926f69",
+            "primary-container": "#bd0000",
+            "on-secondary-fixed-variant": "#930010",
+            "on-primary-fixed": "#410000",
+            "tertiary-fixed-dim": "#e9c349",
+            "tertiary-fixed": "#ffe088",
+            "background": "#fcf9f8",
+            "on-primary-fixed-variant": "#930000",
+            "on-primary-container": "#ffc9c1",
+            "secondary": "#b6171e",
+            "on-error-container": "#93000a",
+            "surface-container-high": "#eae7e7",
+            "secondary-fixed": "#ffdad6",
+            "on-tertiary-fixed-variant": "#574500",
+            "error-container": "#ffdad6",
+            "on-primary": "#ffffff",
+            "primary-fixed-dim": "#ffb4a8",
+            "surface-container-low": "#f6f3f2",
+            "inverse-on-surface": "#f3f0ef",
+            "surface-container-lowest": "#ffffff",
+            "secondary-fixed-dim": "#ffb3ac",
+            "outline-variant": "#e7bdb6",
+            "on-error": "#ffffff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "gutter-sm": "1rem",
+            "space-3xl": "4rem",
+            "space-2xl": "3rem",
+            "space-lg": "1.5rem",
+            "gutter": "1.5rem",
+            "gutter-lg": "2rem",
+            "space-xl": "2rem",
+            "margin": "1rem",
+            "space-2xs": "0.25rem",
+            "space-sm": "0.75rem",
+            "space-md": "1rem",
+            "margin-md": "2rem",
+            "space-xs": "0.5rem",
+            "margin-lg": "4rem"
+          },
+          "fontFamily": {
+            "display-hero-mobile": ["\"Inter, system-ui, sans-serif\""],
+            "display-hero": ["\"Inter, system-ui, sans-serif\""],
+            "headline-sm": ["\"Inter, system-ui, sans-serif\""],
+            "title-md": ["\"Inter, system-ui, sans-serif\""],
+            "label-md": ["\"Inter, system-ui, sans-serif\""],
+            "body-md": ["\"Inter, system-ui, sans-serif\""],
+            "body-sm": ["\"Inter, system-ui, sans-serif\""],
+            "label-sm": ["\"Inter, system-ui, sans-serif\""],
+            "mono-sku": ["\"ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace\""],
+            "body-lg": ["\"Inter, system-ui, sans-serif\""],
+            "headline-lg-mobile": ["\"Inter, system-ui, sans-serif\""],
+            "headline-lg": ["\"Inter, system-ui, sans-serif\""],
+            "headline-md": ["\"Inter, system-ui, sans-serif\""]
+          },
+          "fontSize": {
+            "display-hero-mobile": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "800" }],
+            "display-hero": ["48px", { lineHeight: "56px", letterSpacing: "-0.025em", fontWeight: "800" }],
+            "headline-sm": ["20px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "600" }],
+            "title-md": ["16px", { lineHeight: "24px", letterSpacing: "0em", fontWeight: "600" }],
+            "label-md": ["14px", { lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "600" }],
+            "body-md": ["14px", { lineHeight: "20px", letterSpacing: "0em", fontWeight: "400" }],
+            "body-sm": ["12px", { lineHeight: "16px", letterSpacing: "0.01em", fontWeight: "400" }],
+            "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.05em", fontWeight: "700" }],
+            "mono-sku": ["12px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "500" }],
+            "body-lg": ["18px", { lineHeight: "28px", letterSpacing: "0em", fontWeight: "400" }],
+            "headline-lg-mobile": ["26px", { lineHeight: "34px", letterSpacing: "-0.015em", fontWeight: "700" }],
+            "headline-lg": ["36px", { lineHeight: "44px", letterSpacing: "-0.02em", fontWeight: "700" }],
+            "headline-md": ["24px", { lineHeight: "32px", letterSpacing: "-0.015em", fontWeight: "700" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    /* Custom Scrollbar for Drawer and Layout */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f0eded;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cca830;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md text-body-md antialiased min-h-screen flex flex-col">
+<!-- ========================================== -->
+<!-- 1. TOP APP BAR (SHARED COMPONENT)          -->
+<!-- ========================================== -->
+<header class="docked full-width top-0 sticky z-50 bg-surface-container-lowest dark:bg-inverse-surface border-b border-surface-container-high dark:border-outline-variant shadow-sm dark:shadow-none"><div class="h-20 max-w-[1280px] mx-auto px-4 md:px-8 flex items-center justify-between"><div class="flex items-center gap-space-md"><a class="flex items-center gap-space-xs group" href="/"><div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center text-on-primary shadow-sm group-hover:scale-95 transition-transform duration-200"><span class="material-symbols-outlined text-[24px]">corporate_fare</span></div><div class="flex flex-col"><span class="text-headline-sm font-headline-sm font-bold text-on-surface dark:text-inverse-on-surface tracking-tight leading-none">Inbisco MitraHub</span><span class="font-body-sm text-body-sm text-on-surface-variant font-medium mt-0.5">PT Inbisco Niagatama Semesta</span></div></a></div><nav class="hidden md:flex items-center gap-space-lg"><a class="text-on-surface dark:text-inverse-on-surface font-semibold hover:text-primary dark:hover:text-inverse-primary pb-1 transition-colors font-label-md text-label-md" href="/">Home</a><a class="text-on-surface dark:text-inverse-on-surface font-semibold hover:text-primary dark:hover:text-inverse-primary pb-1 transition-colors font-label-md text-label-md" href="/about">About Us</a><a class="border-b-2 border-primary-container text-primary font-bold dark:border-inverse-primary dark:text-inverse-primary pb-1 transition-all duration-200 font-label-md text-label-md" href="/products">Produk</a><a class="text-on-surface dark:text-inverse-on-surface font-semibold hover:text-primary dark:hover:text-inverse-primary pb-1 transition-colors font-label-md text-label-md" href="/moments">Moments / Jaringan</a><a class="text-on-surface dark:text-inverse-on-surface font-semibold hover:text-primary dark:hover:text-inverse-primary pb-1 transition-colors font-label-md text-label-md" href="/contact">Contact &amp; Kemitraan</a></nav><div class="flex items-center gap-space-sm"><a class="inline-flex items-center px-4 py-2 rounded-lg border border-surface-variant bg-surface-container-lowest text-on-surface font-label-md text-label-md hover:bg-surface-container-low transition-colors duration-150" href="/login">Portal Masuk</a><a class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md hover:bg-secondary-container transition-all duration-200 active:scale-95 shadow-sm font-semibold" href="/partnership"><span class="material-symbols-outlined text-[18px]">handshake</span><span class="">Daftar Kemitraan</span></a></div></div></header>
+<!-- ========================================== -->
+<!-- 2. BREADCRUMB & PAGE HEADER               -->
+<!-- ========================================== -->
+<section class="border-b border-surface-container-high bg-surface-container-lowest"><div class="max-w-[1280px] mx-auto px-4 md:px-8 py-8"><nav class="flex items-center space-x-2 text-body-sm font-body-sm text-outline mb-4"><a class="hover:text-primary transition-colors" href="/">Beranda</a><span class="material-symbols-outlined text-[14px]">chevron_right</span><span class="text-on-surface font-semibold">Katalog Produk FMCG</span></nav><div class="flex flex-col md:flex-row md:items-end justify-between gap-6"><div class="max-w-3xl"><div class="inline-flex items-center space-x-2 px-2.5 py-1 bg-primary-fixed text-primary font-label-sm text-label-sm uppercase rounded mb-3 font-bold"><span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span><span class="">DISTRIBUSI RESMI SIDOARJO BARAT</span></div><h1 class="text-headline-lg font-headline-lg text-on-surface tracking-tight leading-tight font-extrabold">Katalog Produk FMCG</h1><p class="mt-3 text-body-lg font-body-lg text-outline leading-relaxed">Eksplorasi portofolio produk FMCG berkualitas tinggi dengan perputaran penjualan cepat untuk mitra ritel dan grosir.</p></div><div class="bg-surface-container-low border border-surface-container-highest rounded-xl p-4 flex items-center space-x-4 shrink-0 shadow-sm"><div class="w-12 h-12 rounded-lg bg-tertiary-container/30 border border-tertiary-container flex items-center justify-center text-tertiary"><span class="material-symbols-outlined text-[28px]">verified</span></div><div><div class="text-label-sm font-label-sm text-tertiary uppercase font-bold">Jaminan Pasokan Resmi</div><div class="text-title-md font-title-md text-on-surface font-bold">100% Produk Prinsipal Mayora</div><div class="text-body-sm font-body-sm text-outline">Harga grosir B2B &amp; Pengiriman Terjadwal</div></div></div></div></div></section>
+<!-- ========================================== -->
+<!-- 3. SEARCH & CONTROLS TOOLBAR              -->
+<!-- ========================================== -->
+<section class="border-b border-surface-container-high bg-surface-container-lowest sticky z-40 shadow-xs" style="top: 80px;"><div class="max-w-[1280px] mx-auto px-4 md:px-8 py-4"><div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4"><div class="flex-1 max-w-2xl relative"><span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span><input class="w-full h-11 pl-11 pr-10 bg-surface-container-lowest border border-surface-container-highest rounded-lg text-body-md font-body-md text-on-surface placeholder:text-outline focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all" id="searchInput" placeholder="Cari nama produk, SKU, kategori..." type="text"><button class="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface hidden" id="clearSearchBtn"><span class="material-symbols-outlined text-[18px]">close</span></button></div><div class="flex items-center space-x-3 shrink-0"><div class="relative"><select class="h-11 pl-3.5 pr-8 bg-surface-container-lowest border border-surface-container-highest rounded-lg text-body-md font-body-md text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all appearance-none cursor-pointer"><option>Urutkan: Paling Populer</option><option>Nama A–Z</option><option>Nama Z–A</option><option>Perputaran Cepat (Fast-Moving)</option></select><span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-[18px]">sort</span></div><div class="text-body-sm font-body-sm text-outline px-3 py-2 bg-surface-container-low rounded-lg border border-surface-container-highest">Total: <span class="font-bold text-on-surface" id="skuCount">6</span> SKU Aktif</div></div></div><div class="mt-3 pt-3 border-t border-surface-container flex flex-wrap items-center gap-2" id="categoryPillsRow"><button class="px-3.5 py-1.5 bg-primary-container text-on-primary rounded-full text-label-sm font-label-sm font-semibold transition-all shadow-xs">Semua Produk</button><button class="px-3.5 py-1.5 bg-surface-container text-on-surface hover:bg-surface-container-high rounded-full text-label-sm font-label-sm font-medium border border-surface-container-highest transition-all">Biskuit</button><button class="px-3.5 py-1.5 bg-surface-container text-on-surface hover:bg-surface-container-high rounded-full text-label-sm font-label-sm font-medium border border-surface-container-highest transition-all">Wafer &amp; Cokelat</button><button class="px-3.5 py-1.5 bg-surface-container text-on-surface hover:bg-surface-container-high rounded-full text-label-sm font-label-sm font-medium border border-surface-container-highest transition-all">Kopi &amp; Permen</button><button class="px-3.5 py-1.5 bg-surface-container text-on-surface hover:bg-surface-container-high rounded-full text-label-sm font-label-sm font-medium border border-surface-container-highest transition-all">Sereal</button><button class="px-3.5 py-1.5 bg-surface-container text-on-surface hover:bg-surface-container-high rounded-full text-label-sm font-label-sm font-medium border border-surface-container-highest transition-all">Air Mineral</button></div></div></section>
+<!-- ========================================== -->
+<!-- 4. MAIN TWO-COLUMN CONTENT AREA           -->
+<!-- ========================================== -->
+<main class="flex-1 max-w-[1280px] w-full mx-auto px-4 md:px-8 py-8">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- ======================================== -->
+<!-- LEFT FILTER SIDEBAR (240px approx 3 cols) -->
+<!-- ======================================== -->
+<aside class="lg:col-span-3 space-y-6">
+<div class="bg-surface-container-lowest border border-surface-container-high rounded-xl p-5 shadow-xs">
+<!-- Sidebar Header -->
+<div class="flex items-center justify-between pb-3 border-b border-surface-container-high mb-4">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-primary text-[20px]">filter_alt</span>
+<h2 class="text-title-md font-title-md text-[#212121]">Filter Produk</h2>
+</div>
+<button class="text-label-sm font-label-sm text-primary hover:underline font-semibold" onclick="resetAllFilters()">
+              Reset
+            </button>
+</div>
+<!-- Section A: Kategori -->
+<div class="mb-6">
+<h3 class="text-label-md font-label-md text-on-surface mb-3 flex items-center justify-between">
+<span class="">Kategori Produk</span>
+<span class="material-symbols-outlined text-[16px] text-outline">expand_less</span>
+</h3>
+<div class="space-y-2.5">
+<label class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center space-x-2.5">
+<input checked="" class="rounded text-primary-container focus:ring-primary-container border-surface-container-highest" type="checkbox">
+<span class="text-body-sm font-body-sm text-on-surface group-hover:text-primary transition-colors">Semua Kategori</span>
+</div>
+<span class="text-label-sm font-label-sm text-outline bg-surface-container px-2 py-0.5 rounded-full">5</span>
+</label>
+<label class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center space-x-2.5">
+<input class="rounded text-primary-container focus:ring-primary-container border-surface-container-highest" type="checkbox">
+<span class="text-body-sm font-body-sm text-on-surface group-hover:text-primary transition-colors">Biskuit</span>
+</div>
+<span class="text-label-sm font-label-sm text-outline bg-surface-container px-2 py-0.5 rounded-full">1</span>
+</label>
+<label class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center space-x-2.5">
+<input class="rounded text-primary-container focus:ring-primary-container border-surface-container-highest" type="checkbox">
+<span class="text-body-sm font-body-sm text-on-surface group-hover:text-primary transition-colors">Wafer &amp; Cokelat</span>
+</div>
+<span class="text-label-sm font-label-sm text-outline bg-surface-container px-2 py-0.5 rounded-full">1</span>
+</label>
+<label class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center space-x-2.5">
+<input class="rounded text-primary-container focus:ring-primary-container border-surface-container-highest" type="checkbox">
+<span class="text-body-sm font-body-sm text-on-surface group-hover:text-primary transition-colors">Kopi</span>
+</div>
+<span class="text-label-sm font-label-sm text-outline bg-surface-container px-2 py-0.5 rounded-full">1</span>
+</label>
+<label class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center space-x-2.5">
+<input class="rounded text-primary-container focus:ring-primary-container border-surface-container-highest" type="checkbox">
+<span class="text-body-sm font-body-sm text-on-surface group-hover:text-primary transition-colors">Sereal &amp; Minuman</span>
+</div>
+<span class="text-label-sm font-label-sm text-outline bg-surface-container px-2 py-0.5 rounded-full">1</span>
+</label>
+<label class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center space-x-2.5">
+<input class="rounded text-primary-container focus:ring-primary-container border-surface-container-highest" type="checkbox">
+<span class="text-body-sm font-body-sm text-on-surface group-hover:text-primary transition-colors">Air Mineral</span>
+</div>
+<span class="text-label-sm font-label-sm text-outline bg-surface-container px-2 py-0.5 rounded-full">1</span>
+</label>
+</div>
+</div>
+<!-- Section B: Merek Terdaftar -->
+<div class="mb-6 pt-4 border-t border-surface-container">
+<h3 class="text-label-md font-label-md text-on-surface mb-3 flex items-center justify-between">
+<span class="">Merek Terdaftar</span>
+<span class="material-symbols-outlined text-[16px] text-outline">expand_less</span>
+</h3>
+<div class="space-y-2.5">
+<label class="flex items-center space-x-2.5 group cursor-pointer">
+<input class="rounded text-primary-container focus:ring-primary-container border-surface-container-highest" type="checkbox">
+<span class="text-body-sm font-body-sm text-on-surface group-hover:text-primary transition-colors">Roma</span>
+</label>
+<label class="flex items-center space-x-2.5 group cursor-pointer">
+<input class="rounded text-primary-container focus:ring-primary-container border-surface-container-highest" type="checkbox">
+<span class="text-body-sm font-body-sm text-on-surface group-hover:text-primary transition-colors">Beng-Beng</span>
+</label>
+<label class="flex items-center space-x-2.5 group cursor-pointer">
+<input class="rounded text-primary-container focus:ring-primary-container border-surface-container-highest" type="checkbox">
+<span class="text-body-sm font-body-sm text-on-surface group-hover:text-primary transition-colors">Torabika</span>
+</label>
+<label class="flex items-center space-x-2.5 group cursor-pointer">
+<input class="rounded text-primary-container focus:ring-primary-container border-surface-container-highest" type="checkbox">
+<span class="text-body-sm font-body-sm text-on-surface group-hover:text-primary transition-colors">Energen</span>
+</label>
+<label class="flex items-center space-x-2.5 group cursor-pointer">
+<input class="rounded text-primary-container focus:ring-primary-container border-surface-container-highest" type="checkbox">
+<span class="text-body-sm font-body-sm text-on-surface group-hover:text-primary transition-colors">Le Minerale</span>
+</label>
+</div>
+</div>
+<!-- Section C: Format Distribusi B2B -->
+<div class="mb-6 pt-4 border-t border-surface-container">
+<h3 class="text-label-md font-label-md text-on-surface mb-3 flex items-center justify-between">
+<span class="">Format Grosir B2B</span>
+<span class="material-symbols-outlined text-[16px] text-outline">expand_less</span>
+</h3>
+<div class="space-y-2.5">
+<label class="flex items-center space-x-2.5 group cursor-pointer">
+<input checked="" class="rounded text-primary-container focus:ring-primary-container border-surface-container-highest" type="checkbox">
+<span class="text-body-sm font-body-sm text-on-surface group-hover:text-primary transition-colors">Karton / Dus Utuh</span>
+</label>
+<label class="flex items-center space-x-2.5 group cursor-pointer">
+<input checked="" class="rounded text-primary-container focus:ring-primary-container border-surface-container-highest" type="checkbox">
+<span class="text-body-sm font-body-sm text-on-surface group-hover:text-primary transition-colors">Renceng / Sachet Pack</span>
+</label>
+<label class="flex items-center space-x-2.5 group cursor-pointer">
+<input class="rounded text-primary-container focus:ring-primary-container border-surface-container-highest" type="checkbox">
+<span class="text-body-sm font-body-sm text-on-surface group-hover:text-primary transition-colors">Galon / Bal Besar</span>
+</label>
+</div>
+</div>
+<!-- Operational Disclaimer Box -->
+<div class="p-3.5 bg-surface-container-low rounded-lg border border-surface-container-highest flex items-start space-x-2.5">
+<span class="material-symbols-outlined text-tertiary text-[18px] shrink-0 mt-0.5">verified_user</span>
+<p class="text-body-sm font-body-sm text-outline leading-snug">
+              Informasi ketersediaan stok &amp; jadwal pengiriman dikonfirmasi langsung melalui representatif cabang Krian.
+            </p>
+</div>
+</div>
+<!-- Regional Quick Hotline Card -->
+<div class="bg-surface-container-lowest border-l-4 border-tertiary-container border border-surface-container-high rounded-xl p-4 shadow-xs">
+<div class="flex items-center space-x-2 mb-1.5">
+<span class="material-symbols-outlined text-tertiary text-[20px]">support_agent</span>
+<span class="text-title-md font-title-md text-[#212121]">Sales Order Krian</span>
+</div>
+<p class="text-body-sm font-body-sm text-outline mb-3">
+            Punya kebutuhan pesanan karton besar untuk toko kelontong atau warkop?
+          </p>
+<a class="text-label-md font-label-md text-primary font-bold hover:underline inline-flex items-center space-x-1" href="#kontak">
+<span class="">Hubungi Hotline Cabang</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</aside>
+<!-- ======================================== -->
+<!-- RIGHT RESULTS GRID (9 cols desktop)       -->
+<!-- ======================================== -->
+<section class="lg:col-span-9 space-y-6">
+<!-- Product Grid Container (Visible by default) -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="productGrid"><!-- SKU 1: Roma Kelapa 300g -->
+<article class="bg-surface-container-lowest border border-surface-container-highest rounded-xl p-4 flex flex-col justify-between hover:shadow-md hover:border-tertiary-container transition-all group duration-200">
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="px-2.5 py-0.5 bg-surface-container text-on-surface text-label-sm font-label-sm font-semibold rounded border border-surface-container-high">Biskuit</span>
+<span class="px-2.5 py-0.5 bg-amber-50 text-tertiary text-label-sm font-label-sm rounded border border-tertiary-container/40 font-semibold">Karton / Dus</span>
+</div>
+<div class="w-full aspect-square bg-surface-container-low rounded-lg mb-4 flex items-center justify-center p-4 overflow-hidden relative border border-surface-container-high/60 group-hover:bg-surface-container transition-colors">
+<img class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300" alt="Roma Kelapa 300g" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkk8fB3gEbY_xd-o9C45zvfOEhoSpAXv4CkL_3q2PsBi1DAju0lIQ8uBAil3ZvBXnwSQNnrJ5SFkFRHObyk8vPXP-NGWBJFUcLDkTxx8qclXIt_YWa9iGPx1uGUmCZ0XObqeAS7awN4zEfGjvaIosOOnynUhgmWdelXbGW9JFs6MNXeiZ_mZ60ZZmzAwIol5aqIG6VeoC9vvg2eYZ-DrZE0S5JpFkoZxF2X-nh8kk">
+<div class="absolute bottom-2 left-2 px-2 py-0.5 bg-surface-container-lowest/90 backdrop-blur-xs text-outline font-mono-sku text-mono-sku rounded border border-surface-container-high">SKU: ROMA-KLP-300</div>
+</div>
+<div class="space-y-1 mb-3">
+<div class="text-label-sm font-label-sm text-outline uppercase tracking-wider font-semibold">Roma Mayora</div>
+<h3 class="text-title-md font-title-md text-[#212121] font-bold group-hover:text-primary transition-colors">Roma Kelapa 300g</h3>
+<p class="text-body-sm font-body-sm text-outline line-clamp-2">Biskuit kelapa renyah pilihan utama keluarga. Terbuat dari kelapa asli gurih kaya vitamin perputaran tinggi di warung ritel.</p>
+</div>
+<div class="py-2.5 px-3 bg-surface-container-low rounded-lg border border-surface-container-high text-body-sm font-body-sm space-y-1 mb-4">
+<div class="flex justify-between"><span class="text-outline">Kemasan Karton:</span><span class="font-semibold text-on-surface">30 Pack × 300g</span></div>
+<div class="flex justify-between"><span class="text-outline">Minimal Order:</span><span class="font-semibold text-primary">1 Dus (Grosir)</span></div>
+</div>
+</div>
+<div class="pt-3 border-t border-surface-container">
+<button class="w-full py-2.5 px-3 bg-primary-container text-on-primary hover:bg-secondary-container rounded-lg text-label-md font-label-md font-semibold transition-colors flex items-center justify-center gap-1.5 shadow-xs" onclick="openProductDrawer('Roma Kelapa 300g')"><span class="">Lihat Detail &amp; Kemitraan</span><span class="material-symbols-outlined text-[16px]">arrow_forward</span></button>
+</div>
+</article>
+
+<!-- SKU 2: Beng-Beng Regular -->
+<article class="bg-surface-container-lowest border border-surface-container-highest rounded-xl p-4 flex flex-col justify-between hover:shadow-md hover:border-tertiary-container transition-all group duration-200">
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="px-2.5 py-0.5 bg-surface-container text-on-surface text-label-sm font-label-sm font-semibold rounded border border-surface-container-high">Wafer &amp; Cokelat</span>
+<span class="px-2.5 py-0.5 bg-amber-50 text-tertiary text-label-sm font-label-sm rounded border border-tertiary-container/40 font-semibold">Inner Box &amp; Dus</span>
+</div>
+<div class="w-full aspect-square bg-surface-container-low rounded-lg mb-4 flex items-center justify-center p-4 overflow-hidden relative border border-surface-container-high/60 group-hover:bg-surface-container transition-colors">
+<img class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300" alt="Beng-Beng Regular" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCTnmr6rNnIkeLH5N6C6I3Ca--4HcgOrB2cqrgwVlj5Wm_EBc0aWhMUfIV8933PvVKjZaBI27Br1IOytLggToCx9ZmSW4J7i87iCGZYBV9v8ob0LQPtCxGuW30_DHH1ahfYcLvVe_Ae34ZcRST4lN2k9z5HkAprmGJtUEXJrvmMw8_pu71LM15lrmXuj2ixwGx7jHAByvaSoJlZ7TTkbmj48OWBH4YAPu4Mt1ypOY">
+<div class="absolute bottom-2 left-2 px-2 py-0.5 bg-surface-container-lowest/90 backdrop-blur-xs text-outline font-mono-sku text-mono-sku rounded border border-surface-container-high">SKU: BENG-REG-25G</div>
+</div>
+<div class="space-y-1 mb-3">
+<div class="text-label-sm font-label-sm text-outline uppercase tracking-wider font-semibold">Beng-Beng</div>
+<h3 class="text-title-md font-title-md text-[#212121] font-bold group-hover:text-primary transition-colors">Beng-Beng Regular</h3>
+<p class="text-body-sm font-body-sm text-outline line-clamp-2">Wafer 4 kelezatan cokelat, karamel, krispi dan wafer renyah. Produk impulse-buying terfavorit di etalase kasir ritel.</p>
+</div>
+<div class="py-2.5 px-3 bg-surface-container-low rounded-lg border border-surface-container-high text-body-sm font-body-sm space-y-1 mb-4">
+<div class="flex justify-between"><span class="text-outline">Kemasan Karton:</span><span class="font-semibold text-on-surface">12 Box × 20 Pcs (25g)</span></div>
+<div class="flex justify-between"><span class="text-outline">Minimal Order:</span><span class="font-semibold text-primary">1 Karton B2B</span></div>
+</div>
+</div>
+<div class="pt-3 border-t border-surface-container">
+<button class="w-full py-2.5 px-3 bg-primary-container text-on-primary hover:bg-secondary-container rounded-lg text-label-md font-label-md font-semibold transition-colors flex items-center justify-center gap-1.5 shadow-xs" onclick="openProductDrawer('Beng-Beng Regular')"><span class="">Lihat Detail &amp; Kemitraan</span><span class="material-symbols-outlined text-[16px]">arrow_forward</span></button>
+</div>
+</article>
+
+<!-- SKU 3: Torabika Duo -->
+<article class="bg-surface-container-lowest border border-surface-container-highest rounded-xl p-4 flex flex-col justify-between hover:shadow-md hover:border-tertiary-container transition-all group duration-200">
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="px-2.5 py-0.5 bg-surface-container text-on-surface text-label-sm font-label-sm font-semibold rounded border border-surface-container-high">Kopi &amp; Permen</span>
+<span class="px-2.5 py-0.5 bg-amber-50 text-tertiary text-label-sm font-label-sm rounded border border-tertiary-container/40 font-semibold">Renceng &amp; Dus</span>
+</div>
+<div class="w-full aspect-square bg-surface-container-low rounded-lg mb-4 flex items-center justify-center p-4 overflow-hidden relative border border-surface-container-high/60 group-hover:bg-surface-container transition-colors">
+<img class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300" alt="Torabika Duo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcZTQvuCY4GL_4SnLqRmcb0po5i2BaiaMWt83orotvE74fgBgPRyD_sYpFDon6Ndx_pYGhum4JDaILj_LzS7ARtybXJ3tHD0TykTm-at4LCTGwsCcraUZwizlO62hLPaNdIBcPbF6_13TKtqtNtiLOXkNyh7A_DazTHuenJkib8WSSL040M6lXdz9wFj-zSWHh5WhVwyECFatJfUsN7c_gLravCzIR2kJwYeMd6xg">
+<div class="absolute bottom-2 left-2 px-2 py-0.5 bg-surface-container-lowest/90 backdrop-blur-xs text-outline font-mono-sku text-mono-sku rounded border border-surface-container-high">SKU: TRB-DUO-25G</div>
+</div>
+<div class="space-y-1 mb-3">
+<div class="text-label-sm font-label-sm text-outline uppercase tracking-wider font-semibold">Torabika</div>
+<h3 class="text-title-md font-title-md text-[#212121] font-bold group-hover:text-primary transition-colors">Torabika Duo</h3>
+<p class="text-body-sm font-body-sm text-outline line-clamp-2">Kopi hitam berpadu gula murni berkualitas tinggi. Andalan warung kopi (warkop) dan pedagang kelontong dengan rotasi cepat.</p>
+</div>
+<div class="py-2.5 px-3 bg-surface-container-low rounded-lg border border-surface-container-high text-body-sm font-body-sm space-y-1 mb-4">
+<div class="flex justify-between"><span class="text-outline">Kemasan Karton:</span><span class="font-semibold text-on-surface">10 Renteng × 10 Sachet</span></div>
+<div class="flex justify-between"><span class="text-outline">Minimal Order:</span><span class="font-semibold text-primary">2 Dus Cabang</span></div>
+</div>
+</div>
+<div class="pt-3 border-t border-surface-container">
+<button class="w-full py-2.5 px-3 bg-primary-container text-on-primary hover:bg-secondary-container rounded-lg text-label-md font-label-md font-semibold transition-colors flex items-center justify-center gap-1.5 shadow-xs" onclick="openProductDrawer('Torabika Duo')"><span class="">Lihat Detail &amp; Kemitraan</span><span class="material-symbols-outlined text-[16px]">arrow_forward</span></button>
+</div>
+</article>
+
+<!-- SKU 4: Kopiko Coffee Candy -->
+<article class="bg-surface-container-lowest border border-surface-container-highest rounded-xl p-4 flex flex-col justify-between hover:shadow-md hover:border-tertiary-container transition-all group duration-200">
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="px-2.5 py-0.5 bg-surface-container text-on-surface text-label-sm font-label-sm font-semibold rounded border border-surface-container-high">Kopi &amp; Permen</span>
+<span class="px-2.5 py-0.5 bg-amber-50 text-tertiary text-label-sm font-label-sm rounded border border-tertiary-container/40 font-semibold">Bag &amp; Karton</span>
+</div>
+<div class="w-full aspect-square bg-surface-container-low rounded-lg mb-4 flex items-center justify-center p-4 overflow-hidden relative border border-surface-container-high/60 group-hover:bg-surface-container transition-colors">
+<img class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300" alt="Kopiko Coffee Candy" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRPC6qJVUYYDNy00uMaSCjaa0gecThqiireOyrKSWUu2BMrPx1Wn3o7qLRQCC9TnviHEEpwhgK1GPja_w86v4lJDas--FNQx4MmsH3mNVx87xtD1UgKS5gJVuxw5qX0Gg_nf2Q_poDT9uZDySYEnDCifTJu04p0oJ4kNNVCZHNqx_YCNrRwS5j_347fGZmytu2G7Cq5oF1PI6sYnfk8ARso7dyVqwJRihEIm-7-TQ">
+<div class="absolute bottom-2 left-2 px-2 py-0.5 bg-surface-container-lowest/90 backdrop-blur-xs text-outline font-mono-sku text-mono-sku rounded border border-surface-container-high">SKU: KPK-CNDY-150</div>
+</div>
+<div class="space-y-1 mb-3">
+<div class="text-label-sm font-label-sm text-outline uppercase tracking-wider font-semibold">Kopiko</div>
+<h3 class="text-title-md font-title-md text-[#212121] font-bold group-hover:text-primary transition-colors">Kopiko Coffee Candy</h3>
+<p class="text-body-sm font-body-sm text-outline line-clamp-2">Permen kopi nomor satu dunia dari ekstrak biji kopi asli. Produk pelengkap meja kasir dengan repeat order konsisten.</p>
+</div>
+<div class="py-2.5 px-3 bg-surface-container-low rounded-lg border border-surface-container-high text-body-sm font-body-sm space-y-1 mb-4">
+<div class="flex justify-between"><span class="text-outline">Kemasan Karton:</span><span class="font-semibold text-on-surface">24 Bag × 150g (Dus)</span></div>
+<div class="flex justify-between"><span class="text-outline">Minimal Order:</span><span class="font-semibold text-primary">1 Dus Grosir</span></div>
+</div>
+</div>
+<div class="pt-3 border-t border-surface-container">
+<button class="w-full py-2.5 px-3 bg-primary-container text-on-primary hover:bg-secondary-container rounded-lg text-label-md font-label-md font-semibold transition-colors flex items-center justify-center gap-1.5 shadow-xs" onclick="openProductDrawer('Kopiko Coffee Candy')"><span class="">Lihat Detail &amp; Kemitraan</span><span class="material-symbols-outlined text-[16px]">arrow_forward</span></button>
+</div>
+</article>
+
+<!-- SKU 5: Energen Cokelat -->
+<article class="bg-surface-container-lowest border border-surface-container-highest rounded-xl p-4 flex flex-col justify-between hover:shadow-md hover:border-tertiary-container transition-all group duration-200">
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="px-2.5 py-0.5 bg-surface-container text-on-surface text-label-sm font-label-sm font-semibold rounded border border-surface-container-high">Sereal</span>
+<span class="px-2.5 py-0.5 bg-amber-50 text-tertiary text-label-sm font-label-sm rounded border border-tertiary-container/40 font-semibold">Renceng &amp; Dus</span>
+</div>
+<div class="w-full aspect-square bg-surface-container-low rounded-lg mb-4 flex items-center justify-center p-4 overflow-hidden relative border border-surface-container-high/60 group-hover:bg-surface-container transition-colors">
+<img class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300" alt="Energen Cokelat" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_g0BwPpl1PJIZysGTw8s4pt7YeyIoG7iAEOtqKvySNbVtefexo7esKuJwt3EvReVNVKNkoS95rVMnSiY9kxHMT2xDot6dGSLUfozNfu5QIBwQKphKcd4GObxRskQVdajdYm_gKfPbQD0sp7GffTVkTIJbV9QO4HfDwPMgbpgkEWpkclA-kIFKCPl8GIak0gNgqEqVtmQKOzbhZNKpFy2BGGhq9MtlYX5z2aeWCjI">
+<div class="absolute bottom-2 left-2 px-2 py-0.5 bg-surface-container-lowest/90 backdrop-blur-xs text-outline font-mono-sku text-mono-sku rounded border border-surface-container-high">SKU: ENR-CKL-32G</div>
+</div>
+<div class="space-y-1 mb-3">
+<div class="text-label-sm font-label-sm text-outline uppercase tracking-wider font-semibold">Energen</div>
+<h3 class="text-title-md font-title-md text-[#212121] font-bold group-hover:text-primary transition-colors">Energen Cokelat</h3>
+<p class="text-body-sm font-body-sm text-outline line-clamp-2">Minuman serbuk sereal dan susu bernutrisi Sigmavit. Pilihan sarapan harian cepat saji paling diminati konsumen ritel.</p>
+</div>
+<div class="py-2.5 px-3 bg-surface-container-low rounded-lg border border-surface-container-high text-body-sm font-body-sm space-y-1 mb-4">
+<div class="flex justify-between"><span class="text-outline">Kemasan Karton:</span><span class="font-semibold text-on-surface">16 Renteng × 10 Sachet</span></div>
+<div class="flex justify-between"><span class="text-outline">Minimal Order:</span><span class="font-semibold text-primary">1 Karton Grosir</span></div>
+</div>
+</div>
+<div class="pt-3 border-t border-surface-container">
+<button class="w-full py-2.5 px-3 bg-primary-container text-on-primary hover:bg-secondary-container rounded-lg text-label-md font-label-md font-semibold transition-colors flex items-center justify-center gap-1.5 shadow-xs" onclick="openProductDrawer('Energen Cokelat')"><span class="">Lihat Detail &amp; Kemitraan</span><span class="material-symbols-outlined text-[16px]">arrow_forward</span></button>
+</div>
+</article>
+
+<!-- SKU 6: Le Minerale 600ml -->
+<article class="bg-surface-container-lowest border border-surface-container-highest rounded-xl p-4 flex flex-col justify-between hover:shadow-md hover:border-tertiary-container transition-all group duration-200">
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="px-2.5 py-0.5 bg-surface-container text-on-surface text-label-sm font-label-sm font-semibold rounded border border-surface-container-high">Air Mineral</span>
+<span class="px-2.5 py-0.5 bg-amber-50 text-tertiary text-label-sm font-label-sm rounded border border-tertiary-container/40 font-semibold">Dus Karton Botol</span>
+</div>
+<div class="w-full aspect-square bg-surface-container-low rounded-lg mb-4 flex items-center justify-center p-4 overflow-hidden relative border border-surface-container-high/60 group-hover:bg-surface-container transition-colors">
+<img class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300" alt="Le Minerale 600ml" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqizQO1bwJ3p0VB3nXYGVdpUPmOqZDUiGIj_ponHFYCKcvHUbjENITrJMCTs8cie92eE3P4KBTqe-wCiYmQM9mJceoV5lk7h6RHj0c8keEfJObfgrTHZX0truKM3D6oowDhIWIMghN-8_Fm5s3icrGt1mY-Ptm5ez0CDnij72AznlxJqEoOh82T6HR9EnHiUhOpzk8meh26J_a_pchFN6j6yfJuXqbRlbBUW_EIOQ">
+<div class="absolute bottom-2 left-2 px-2 py-0.5 bg-surface-container-lowest/90 backdrop-blur-xs text-outline font-mono-sku text-mono-sku rounded border border-surface-container-high">SKU: LEMIN-BTL-600</div>
+</div>
+<div class="space-y-1 mb-3">
+<div class="text-label-sm font-label-sm text-outline uppercase tracking-wider font-semibold">Le Minerale</div>
+<h3 class="text-title-md font-title-md text-[#212121] font-bold group-hover:text-primary transition-colors">Le Minerale 600ml</h3>
+<p class="text-body-sm font-body-sm text-outline line-clamp-2">Air mineral pegunungan dengan mineral esensial seimbang dan tutup tersegel rapi. Komoditas harian wajib toko &amp; warung.</p>
+</div>
+<div class="py-2.5 px-3 bg-surface-container-low rounded-lg border border-surface-container-high text-body-sm font-body-sm space-y-1 mb-4">
+<div class="flex justify-between"><span class="text-outline">Kemasan Karton:</span><span class="font-semibold text-on-surface">1 Dus × 24 Botol (600ml)</span></div>
+<div class="flex justify-between"><span class="text-outline">Minimal Order:</span><span class="font-semibold text-primary">2 Dus Rute Krian</span></div>
+</div>
+</div>
+<div class="pt-3 border-t border-surface-container">
+<button class="w-full py-2.5 px-3 bg-primary-container text-on-primary hover:bg-secondary-container rounded-lg text-label-md font-label-md font-semibold transition-colors flex items-center justify-center gap-1.5 shadow-xs" onclick="openProductDrawer('Le Minerale 600ml')"><span class="">Lihat Detail &amp; Kemitraan</span><span class="material-symbols-outlined text-[16px]">arrow_forward</span></button>
+</div>
+</article></div>
+<!-- ======================================== -->
+<!-- 6. EMPTY STATE & SKELETON PREVIEWS      -->
+<!-- (Hidden by default, shown via simulation)-->
+<!-- ======================================== -->
+<div class="hidden bg-surface-container-lowest border border-surface-container-high rounded-xl p-12 text-center max-w-xl mx-auto shadow-xs" id="emptyStateBox">
+<div class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center text-outline mx-auto mb-4">
+<span class="material-symbols-outlined text-[32px]">inventory</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-[#212121] mb-2 font-bold">
+            Produk Tidak Ditemukan
+          </h3>
+<p class="text-body-md font-body-md text-outline mb-6 leading-relaxed">
+            Tidak ada produk yang cocok dengan kata kunci atau filter yang Anda pilih. Silakan periksa kembali ejaan atau hapus beberapa kriteria pencarian.
+          </p>
+<div class="flex items-center justify-center space-x-3">
+<button class="px-5 py-2.5 bg-primary-container text-on-primary rounded-lg text-label-md font-label-md hover:bg-primary transition-colors font-medium" onclick="resetAllFilters()">
+              Reset Pencarian dan Filter
+            </button>
+<button class="px-4 py-2.5 border border-surface-container-highest rounded-lg text-label-md font-label-md text-on-surface hover:bg-surface-container" onclick="toggleFallbackState()">
+              Kembali ke Katalog
+            </button>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- ========================================== -->
+<!-- 5. PRODUCT DETAIL QUICK-VIEW DRAWER MODAL  -->
+<!-- ========================================== -->
+<div aria-labelledby="modal-title" aria-modal="true" class="fixed inset-0 z-50 overflow-hidden hidden" id="productDrawer" role="dialog"><!-- Backdrop -->
+<div class="fixed inset-0 bg-inverse-surface/60 backdrop-blur-xs transition-opacity" onclick="closeProductDrawer()"></div>
+<div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
+<div class="w-screen max-w-xl bg-surface-container-lowest shadow-2xl flex flex-col justify-between border-l border-surface-container-high animate-in slide-in-from-right duration-300">
+<!-- Drawer Header -->
+<div class="p-6 border-b border-surface-container-high flex items-center justify-between">
+<div>
+<nav class="flex items-center space-x-1.5 text-body-sm font-body-sm text-outline mb-1">
+<span class="">Katalog B2B</span>
+<span class="">/</span>
+<span class="text-on-surface font-semibold" id="drawerBreadcrumb">Biskuit</span>
+</nav>
+<h2 class="text-headline-sm font-headline-sm text-[#212121] font-bold" id="drawerTitle">Roma Kelapa 300g</h2>
+</div>
+<button class="p-2 text-outline hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors" onclick="closeProductDrawer()">
+<span class="material-symbols-outlined text-[24px]">close</span>
+</button>
+</div>
+<!-- Drawer Body (Scrollable) -->
+<div class="p-6 overflow-y-auto space-y-6 flex-1">
+<!-- Image Box Container -->
+<div class="w-full h-60 bg-surface-container-low rounded-xl border border-surface-container-high flex items-center justify-center p-6 relative">
+<img class="max-h-full max-w-full object-contain mix-blend-multiply" id="drawerImage" alt="Detail Produk Inbisco" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkk8fB3gEbY_xd-o9C45zvfOEhoSpAXv4CkL_3q2PsBi1DAju0lIQ8uBAil3ZvBXnwSQNnrJ5SFkFRHObyk8vPXP-NGWBJFUcLDkTxx8qclXIt_YWa9iGPx1uGUmCZ0XObqeAS7awN4zEfGjvaIosOOnynUhgmWdelXbGW9JFs6MNXeiZ_mZ60ZZmzAwIol5aqIG6VeoC9vvg2eYZ-DrZE0S5JpFkoZxF2X-nh8kk">
+<span class="absolute top-3 left-3 px-2.5 py-1 bg-surface-container-lowest text-label-sm font-label-sm font-bold text-tertiary rounded border border-tertiary-container shadow-xs">Distribusi Resmi Cabang Krian</span>
+</div>
+<!-- Product Description -->
+<div>
+<h4 class="text-label-md font-label-md text-on-surface uppercase tracking-wider mb-1.5 font-bold">Deskripsi &amp; Mutu Produk</h4>
+<p class="text-body-md font-body-md text-outline leading-relaxed" id="drawerDesc">Biskuit kelapa renyah ikonik pilihan utama toko kelontong dan warung keluarga. Dibuat dengan kelapa asli segar pilihan serta diperkaya Vitamin B1, B2, B6, B12, dan E untuk camilan keluarga Indonesia.</p>
+</div>
+<!-- Specifications: Dimensions, Shelf Life, Packing -->
+<div>
+<h4 class="text-label-md font-label-md text-on-surface uppercase tracking-wider mb-2.5 font-bold">Spesifikasi Logistik &amp; Kemasan</h4>
+<div class="border border-surface-container-high rounded-xl overflow-hidden">
+<table class="w-full text-left text-body-sm font-body-sm">
+<tbody class="divide-y divide-surface-container">
+<tr class="bg-surface-container-lowest">
+<td class="py-2.5 px-4 text-outline font-medium w-1/3">Merek Prinsipal</td>
+<td class="py-2.5 px-4 text-on-surface font-semibold" id="drawerBrand">Roma (PT Mayora Indah Tbk)</td>
+</tr>
+<tr class="bg-surface-container-low/40">
+<td class="py-2.5 px-4 text-outline font-medium">Format Master Dus</td>
+<td class="py-2.5 px-4 text-on-surface" id="drawerPackSpec">30 Pack × 300 gram</td>
+</tr>
+<tr class="bg-surface-container-lowest">
+<td class="py-2.5 px-4 text-outline font-medium">Dimensi Karton</td>
+<td class="py-2.5 px-4 text-on-surface" id="drawerDimensions">385 × 255 × 225 mm (Berat Bersih: 9.0 kg)</td>
+</tr>
+<tr class="bg-surface-container-low/40">
+<td class="py-2.5 px-4 text-outline font-medium">Masa Simpan (Shelf Life)</td>
+<td class="py-2.5 px-4 text-on-surface font-semibold text-primary" id="drawerShelfLife">12 Bulan dari Produksi</td>
+</tr>
+<tr class="bg-surface-container-lowest">
+<td class="py-2.5 px-4 text-outline font-medium">Verifikasi Mutu</td>
+<td class="py-2.5 px-4 text-on-surface flex items-center space-x-1.5"><span class="material-symbols-outlined text-green-700 text-[16px]">check_circle</span><span class="">BPOM RI MD &amp; Sertifikasi Halal MUI</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Target Retailer Benefits -->
+<div>
+<h4 class="text-label-md font-label-md text-on-surface uppercase tracking-wider mb-2 font-bold">Keuntungan untuk Mitra Toko &amp; Ritel</h4>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+<div class="p-3 bg-surface-container-low rounded-lg border border-surface-container-high"><div class="flex items-center space-x-2 text-primary font-bold text-label-sm mb-1"><span class="material-symbols-outlined text-[16px]">trending_up</span><span class="">Perputaran Cepat</span></div><p class="text-body-sm text-outline">Demand harian stabil, stok tidak mengendap di etalase toko.</p></div>
+<div class="p-3 bg-surface-container-low rounded-lg border border-surface-container-high"><div class="flex items-center space-x-2 text-primary font-bold text-label-sm mb-1"><span class="material-symbols-outlined text-[16px]">price_check</span><span class="">Marjin Grosir Pasti</span></div><p class="text-body-sm text-outline">Harga berjenjang langsung distributor tanpa perantara pihak ketiga.</p></div>
+</div>
+</div>
+<!-- B2B Wholesale Disclaimer Note -->
+<div class="p-3.5 bg-amber-50/70 border border-amber-200 rounded-xl flex items-start space-x-3">
+<span class="material-symbols-outlined text-tertiary text-[20px] shrink-0 mt-0.5">local_shipping</span>
+<div class="text-body-sm font-body-sm text-tertiary"><span class="font-bold">Ketentuan Distribusi:</span> Pemesanan karton dikirim armada resmi Inbisco rute Krian, Balongbendo, Prambon, Tarik, dan Wonoayu dengan jadwal rutin.</div>
+</div>
+</div>
+<!-- Drawer Footer Actions -->
+<div class="p-6 border-t border-surface-container-high bg-surface-container-low flex flex-col sm:flex-row items-center gap-3">
+<a class="w-full sm:flex-1 py-3 px-4 bg-primary-container text-on-primary hover:bg-secondary-container rounded-lg text-label-md font-label-md text-center font-bold transition-all shadow-sm flex items-center justify-center space-x-2" href="/contact">
+<span class="material-symbols-outlined text-[18px]">support_agent</span>
+<span class="">Konsultasi Pasokan</span>
+</a>
+<a class="w-full sm:w-auto py-3 px-4 border border-surface-container-highest bg-surface-container-lowest hover:bg-surface-container rounded-lg text-label-md font-label-md text-on-surface font-semibold text-center transition-colors" href="/partnership">Daftar Kemitraan</a>
+</div>
+</div>
+</div></div>
+<!-- ========================================== -->
+<!-- 7. B2B WHOLESALE CTA BANNER               -->
+<!-- ========================================== -->
+<section class="mt-12 bg-primary-container text-on-primary py-12 px-4 md:px-8 border-t border-primary"><div class="max-w-[1280px] mx-auto flex flex-col lg:flex-row items-center justify-between gap-8"><div class="max-w-2xl text-center lg:text-left"><span class="text-label-sm font-label-sm uppercase tracking-widest text-on-primary-container font-bold">KEMITRAAN RESMI INBISCO CABANG KRIAN</span><h2 class="text-headline-lg font-headline-lg font-extrabold text-on-primary tracking-tight mt-1">Siap Mengembangkan Usaha Grosir &amp; Toko Anda?</h2><p class="mt-2 text-body-lg font-body-lg text-on-primary/90">Gabung bersama ratusan jaringan toko kelontong, warkop, dan minimarket di Sidoarjo Barat. Dapatkan kepastian pasokan langsung, harga bersaing, dan pengantaran armada terjadwal.</p></div><div class="flex flex-wrap items-center justify-center gap-4 shrink-0"><a class="px-6 py-3.5 bg-surface-container-lowest text-[#212121] hover:bg-surface-container font-label-md text-label-md font-bold rounded-lg shadow-sm transition-all duration-150 inline-flex items-center space-x-2 active:scale-95" href="/partnership"><span class="material-symbols-outlined text-[20px] text-primary">handshake</span><span class="">Daftar Kemitraan Toko</span></a><a class="px-6 py-3.5 border-2 border-on-primary text-on-primary hover:bg-on-primary/10 font-label-md text-label-md font-bold rounded-lg transition-all duration-150 active:scale-95 inline-flex items-center space-x-2" href="/contact"><span class="material-symbols-outlined text-[20px]">chat</span><span class="">Konsultasi Pasokan</span></a></div></div></section>
+<!-- ========================================== -->
+<!-- 8. GLOBAL FOOTER (SHARED COMPONENT)       -->
+<!-- ========================================== -->
+<footer class="docked full-width bg-inverse-surface dark:bg-inverse-surface border-t border-outline/20 dark:border-outline/40 flat no shadows" id="kontak"><div class="w-full py-12 px-4 md:px-8 max-w-[1280px] mx-auto"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 mb-12"><div class="lg:col-span-4 space-y-4"><div class="flex items-center gap-2"><div class="w-8 h-8 rounded bg-primary-container flex items-center justify-center text-on-primary"><span class="material-symbols-outlined text-[20px]">corporate_fare</span></div><span class="text-headline-sm font-headline-sm font-bold text-surface-container-lowest dark:text-inverse-on-surface">Inbisco MitraHub</span></div><p class="font-body-sm text-body-sm text-surface-variant dark:text-surface-dim leading-relaxed">PT Inbisco Niagatama Semesta Cabang Krian adalah unit distribusi regional resmi untuk produk Fast-Moving Consumer Goods (FMCG) di wilayah Sidoarjo dan sekitarnya.</p></div><div class="lg:col-span-2 space-y-3"><h4 class="font-label-md text-label-md font-bold text-surface-container-lowest uppercase tracking-wider">Navigasi</h4><ul class="space-y-2 font-body-sm text-body-sm"><li class=""><a class="text-surface-variant dark:text-surface-dim hover:text-surface-container-lowest transition-colors" href="/">Home</a></li><li class=""><a class="text-surface-variant dark:text-surface-dim hover:text-surface-container-lowest transition-colors" href="/about">About Us</a></li><li class=""><a class="text-surface-variant dark:text-surface-dim hover:text-surface-container-lowest transition-colors" href="/moments">Moments / Jaringan</a></li></ul></div><div class="lg:col-span-3 space-y-3"><h4 class="font-label-md text-label-md font-bold text-surface-container-lowest uppercase tracking-wider">Produk</h4><ul class="space-y-2 font-body-sm text-body-sm"><li class=""><a class="text-surface-variant dark:text-surface-dim hover:text-surface-container-lowest transition-colors" href="/products">Semua Produk</a></li><li class=""><a class="text-surface-variant dark:text-surface-dim hover:text-surface-container-lowest transition-colors" href="/products">Biskuit</a></li><li class=""><a class="text-surface-variant dark:text-surface-dim hover:text-surface-container-lowest transition-colors" href="/products">Wafer &amp; Cokelat</a></li><li class=""><a class="text-surface-variant dark:text-surface-dim hover:text-surface-container-lowest transition-colors" href="/products">Kopi</a></li><li class=""><a class="text-surface-variant dark:text-surface-dim hover:text-surface-container-lowest transition-colors" href="/products">Sereal &amp; Minuman</a></li><li class=""><a class="text-surface-variant dark:text-surface-dim hover:text-surface-container-lowest transition-colors" href="/products">Air Mineral</a></li></ul></div><div class="lg:col-span-3 space-y-3"><h4 class="font-label-md text-label-md font-bold text-surface-container-lowest uppercase tracking-wider">Hubungi Kami</h4><div class="space-y-2.5 font-body-sm text-body-sm text-surface-variant dark:text-surface-dim"><div class="flex items-start gap-2"><span class="material-symbols-outlined text-[18px] text-tertiary-container shrink-0 mt-0.5">location_on</span><span class="">Jl. Raya Krian KM 29, Krian, Sidoarjo, Jawa Timur</span></div><div class="flex items-center gap-2"><span class="material-symbols-outlined text-[18px] text-tertiary-container shrink-0">call</span><span class="">WhatsApp Resmi Cabang</span></div><div class="flex items-center gap-2"><span class="material-symbols-outlined text-[18px] text-tertiary-container shrink-0">mail</span><span class="">mitrahub.krian@inbisco.co.id</span></div><div class="pt-2 flex flex-col gap-1.5 font-label-sm text-label-sm"><a class="text-surface-container-lowest hover:underline" href="/partnership">Daftar Kemitraan →</a><a class="text-surface-container-lowest hover:underline" href="/login">Masuk Portal →</a></div></div></div></div><div class="pt-8 border-t border-outline/20 dark:border-outline/40 flex flex-col md:flex-row items-center justify-between gap-4 text-body-sm text-surface-variant"><p class="font-body-sm text-body-sm text-surface-variant dark:text-surface-dim">© 2025 PT Inbisco Niagatama Semesta (Cabang Krian). Hak Cipta Dilindungi Undang-Undang.</p><div class="flex items-center gap-6 font-body-sm text-body-sm"><a class="hover:text-surface-container-lowest transition-colors" href="/privacy">Kebijakan Privasi</a><a class="hover:text-surface-container-lowest transition-colors" href="/terms">Ketentuan Distribusi B2B</a></div></div></div></footer>
+<!-- ========================================== -->
+<!-- VANILLA INTERACTIVITY JAVASCRIPT          -->
+<!-- ========================================== -->
+<script>
+    // Product data mapping for Drawer
+    const productsData = {
+      'Roma Kelapa': {
+        title: 'Roma Kelapa',
+        brand: 'Roma (PT Mayora Indah)',
+        category: 'Biskuit',
+        desc: 'Biskuit kelapa renyah pilihan utama toko kelontong dan warung keluarga. Dibuat dengan kelapa asli segar pilihan serta diperkaya Vitamin B1, B2, B6, B12, dan E untuk camilan keluarga Indonesia.',
+        specFormat: '30 Pack × 300g (Dus)',
+        minOrder: '1 Karton (Konfirmasi Sales Cabang)'
+      },
+      'Beng-Beng': {
+        title: 'Beng-Beng Reguler',
+        brand: 'Beng-Beng (PT Mayora Indah)',
+        category: 'Wafer & Cokelat',
+        desc: 'Kombinasi 4 lapis kelezatan: wafer renyah, karamel kenyal, crispies gurih, dan cokelat tebal nikmat. Produk impulse buy paling stabil di etalase ritel.',
+        specFormat: '12 Box × 20 Pcs @ 25g (Dus)',
+        minOrder: '1 Karton Grosir'
+      },
+      'Torabika': {
+        title: 'Kopi Torabika Duo & Gilus',
+        brand: 'Torabika (PT Torabika Eka Semesta)',
+        category: 'Kopi Olahan',
+        desc: 'Kopi bubuk istimewa dengan aroma mantap dan paduan gula murni. Sangat ideal untuk stok perputaran harian warung kopi (warkop) dan warung makan seduh.',
+        specFormat: '10 Renteng × 10 Sachet (Dus)',
+        minOrder: '2 Karton Rute Krian'
+      },
+      'Energen': {
+        title: 'Energen Sereal Cokelat & Vanila',
+        brand: 'Energen (PT Torabika Eka Semesta)',
+        category: 'Sereal & Minuman',
+        desc: 'Minuman serbuk sereal dan susu bergizi dengan kebaikan Sigmavit (vitamin A, B kompleks, D, E, dan Kalsium). Pilihan sarapan praktis terlaris untuk ritel.',
+        specFormat: '16 Renteng × 10 Sachet (Dus)',
+        minOrder: '1 Karton Grosir'
+      },
+      'Le Minerale': {
+        title: 'Le Minerale (Galon 15L & Botol)',
+        brand: 'Le Minerale (PT Tirta Fresindo Jaya)',
+        category: 'Air Mineral Pegunungan',
+        desc: 'Air mineral dari sumber mata air terpilih dengan mineral alami terproteksi dan teknologi tutup ulir kedap udara. Solusi air minum higienis bebas BPA.',
+        specFormat: 'Galon 15L Sekali Pakai / Dus Botol 600ml',
+        minOrder: '5 Galon / 2 Dus Botol'
+      }
+    };
+
+    // Quick View Drawer Open / Close
+    function openProductDrawer(name) {
+      const data = productsData[name] || productsData['Roma Kelapa'];
+      document.getElementById('drawerTitle').innerText = data.title;
+      document.getElementById('drawerBreadcrumb').innerText = data.category;
+      document.getElementById('drawerBrand').innerText = data.brand;
+      document.getElementById('drawerCategory').innerText = data.category;
+      document.getElementById('drawerDesc').innerText = data.desc;
+      
+      const drawer = document.getElementById('productDrawer');
+      drawer.classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+    }
+
+    function closeProductDrawer() {
+      const drawer = document.getElementById('productDrawer');
+      drawer.classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    // Prefill direct enquiry handler
+    function tanyakanProduk(name) {
+      alert(`Mengarahkan inquiry produk "${name}" ke representatif Sales Inbisco Cabang Krian. Menyiapkan draf WhatsApp / Form Kontak B2B.`);
+    }
+
+    // Search bar micro-interaction & Reset
+    const searchInput = document.getElementById('searchInput');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+
+    searchInput.addEventListener('input', function() {
+      if (this.value.length > 0) {
+        clearSearchBtn.classList.remove('hidden');
+      } else {
+        clearSearchBtn.classList.add('hidden');
+      }
+    });
+
+    clearSearchBtn.addEventListener('click', function() {
+      searchInput.value = '';
+      clearSearchBtn.classList.add('hidden');
+      searchInput.focus();
+    });
+
+    // Toggle Empty State simulation demonstration
+    let fallbackVisible = false;
+    function toggleFallbackState() {
+      fallbackVisible = !fallbackVisible;
+      const grid = document.getElementById('productGrid');
+      const empty = document.getElementById('emptyStateBox');
+      const count = document.getElementById('skuCount');
+      
+      if (fallbackVisible) {
+        grid.classList.add('hidden');
+        empty.classList.remove('hidden');
+        count.innerText = '0';
+      } else {
+        grid.classList.remove('hidden');
+        empty.classList.add('hidden');
+        count.innerText = '5';
+      }
+    }
+
+    function resetAllFilters() {
+      fallbackVisible = false;
+      document.getElementById('productGrid').classList.remove('hidden');
+      document.getElementById('emptyStateBox').classList.add('hidden');
+      document.getElementById('skuCount').innerText = '5';
+      searchInput.value = '';
+      clearSearchBtn.classList.add('hidden');
+    }
+
+    // Close modal on Escape key press
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeProductDrawer();
+      }
+    });
+  </script>
+
+
+
+
+
+
+</body></html>

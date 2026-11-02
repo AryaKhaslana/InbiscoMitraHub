@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-background" lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Masuk Portal Operasional — Inbisco MitraHub Krian</title>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "secondary": "#b6171e",
+            "secondary-fixed-dim": "#ffb3ac",
+            "background": "#fcf9f8",
+            "on-error": "#ffffff",
+            "tertiary": "#735c00",
+            "primary-container": "#bd0000",
+            "on-error-container": "#93000a",
+            "on-tertiary-container": "#4f3e00",
+            "on-primary-fixed": "#410000",
+            "on-secondary-fixed": "#410003",
+            "error": "#ba1a1a",
+            "on-primary": "#ffffff",
+            "secondary-fixed": "#ffdad6",
+            "surface": "#fcf9f8",
+            "outline-variant": "#e7bdb6",
+            "outline": "#926f69",
+            "surface-container": "#f0eded",
+            "surface-tint": "#c00402",
+            "surface-container-high": "#eae7e7",
+            "surface-container-highest": "#e5e2e1",
+            "on-background": "#1b1c1c",
+            "on-surface-variant": "#5d3f3b",
+            "secondary-container": "#da3433",
+            "on-surface": "#1b1c1c",
+            "on-secondary": "#ffffff",
+            "tertiary-container": "#cca830",
+            "inverse-on-surface": "#f3f0ef",
+            "inverse-primary": "#ffb4a8",
+            "primary-fixed": "#ffdad4",
+            "on-tertiary-fixed-variant": "#574500",
+            "error-container": "#ffdad6",
+            "tertiary-fixed-dim": "#e9c349",
+            "surface-dim": "#dcd9d9",
+            "on-secondary-container": "#fffbff",
+            "surface-variant": "#e5e2e1",
+            "on-primary-container": "#ffc9c1",
+            "on-secondary-fixed-variant": "#930010",
+            "surface-bright": "#fcf9f8",
+            "primary-fixed-dim": "#ffb4a8",
+            "on-tertiary": "#ffffff",
+            "inverse-surface": "#303030",
+            "surface-container-lowest": "#ffffff",
+            "tertiary-fixed": "#ffe088",
+            "on-primary-fixed-variant": "#930000",
+            "primary": "#900000",
+            "on-tertiary-fixed": "#241a00",
+            "surface-container-low": "#f6f3f2"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "margin": "1rem",
+            "margin-md": "2rem",
+            "space-2xl": "3rem",
+            "space-md": "1rem",
+            "gutter-sm": "1rem",
+            "margin-lg": "4rem",
+            "space-xl": "2rem",
+            "space-lg": "1.5rem",
+            "space-2xs": "0.25rem",
+            "gutter-lg": "2rem",
+            "gutter": "1.5rem",
+            "space-3xl": "4rem",
+            "space-xs": "0.5rem",
+            "space-sm": "0.75rem"
+          },
+          "fontFamily": {
+            "headline-md": ["\"Inter, system-ui, sans-serif\""],
+            "body-sm": ["\"Inter, system-ui, sans-serif\""],
+            "label-md": ["\"Inter, system-ui, sans-serif\""],
+            "mono-sku": ["\"ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace\""],
+            "display-hero-mobile": ["\"Inter, system-ui, sans-serif\""],
+            "body-md": ["\"Inter, system-ui, sans-serif\""],
+            "title-md": ["\"Inter, system-ui, sans-serif\""],
+            "headline-lg-mobile": ["\"Inter, system-ui, sans-serif\""],
+            "label-sm": ["\"Inter, system-ui, sans-serif\""],
+            "headline-lg": ["\"Inter, system-ui, sans-serif\""],
+            "headline-sm": ["\"Inter, system-ui, sans-serif\""],
+            "display-hero": ["\"Inter, system-ui, sans-serif\""],
+            "body-lg": ["\"Inter, system-ui, sans-serif\""]
+          },
+          "fontSize": {
+            "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+            "mono-sku": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "display-hero-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "title-md": ["16px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "600" }],
+            "headline-lg-mobile": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+            "headline-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "display-hero": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.025em", "fontWeight": "800" }],
+            "body-lg": ["18px", { "lineHeight": "28px", "letterSpacing": "0em", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-outlined[data-weight="fill"] {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    /* Pattern texture overlay for left panel */
+    .bg-grid-white {
+      background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col font-body-md text-on-surface bg-background antialiased selection:bg-primary-container selection:text-white">
+<!-- 1. TOP MINIMAL NAVIGATION / APP BAR -->
+<header class="bg-surface-container-lowest sticky top-0 z-40 border-b border-surface-container-high shadow-sm">
+<div class="max-w-[1440px] mx-auto h-[64px] px-4 sm:px-8 flex items-center justify-between">
+<!-- Brand & Depot Specification -->
+<div class="flex items-center gap-3">
+<a class="flex items-center gap-2 group focus:outline-none" href="/">
+<div class="w-9 h-9 rounded-xl bg-primary-container flex items-center justify-center text-white shadow-sm transition-transform duration-200 group-hover:scale-95">
+<span class="material-symbols-outlined text-[20px]" data-icon="inventory_2">inventory_2</span>
+</div>
+<div class="flex flex-col">
+<span class="text-headline-sm font-headline-sm font-bold tracking-tight text-on-surface leading-tight">
+              Inbisco <span class="text-primary-container font-extrabold">MitraHub</span>
+</span>
+<span class="text-body-sm font-body-sm text-outline font-medium tracking-wide">
+              Cabang Krian, Sidoarjo
+            </span>
+</div>
+</a>
+<div class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-container text-outline text-label-sm font-label-sm ml-2 border border-surface-container-high">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+<span>Depot B2B Online</span>
+</div>
+</div>
+<!-- Action Cluster -->
+<div class="flex items-center gap-3">
+<a class="inline-flex items-center gap-1.5 px-3.5 py-2 text-label-md font-label-md text-on-surface hover:text-primary-container transition-colors rounded-xl hover:bg-surface-container" href="/">
+<span class="material-symbols-outlined text-[18px]" data-icon="arrow_back">arrow_back</span>
+<span>Kembali ke Website Utama</span>
+</a>
+</div>
+</div>
+</header>
+<!-- 2. SPLIT-SCREEN MAIN CANVAS -->
+<main class="flex-1 flex flex-col lg:flex-row max-w-[1440px] w-full mx-auto overflow-hidden">
+<!-- LEFT PANEL: Corporate Red B2B Operational Identity (~45% Desktop) -->
+<section class="lg:w-[45%] relative bg-gradient-to-br from-primary-container via-[#a80000] to-primary p-8 sm:p-12 lg:p-16 text-white flex flex-col justify-between overflow-hidden shadow-inner">
+<!-- Background Contextual Warehouse Logistics Image with Deep Brand Overlay -->
+<div class="absolute inset-0 bg-cover bg-center mix-blend-multiply opacity-25 pointer-events-none scale-105 transform duration-1000 ease-out" data-alt="Modern high-density FMCG distribution warehouse facility with tall industrial shelving pallets stocked with packaged consumer goods. Warm directional overhead warehouse lighting cuts through organized clean aisles. Crisp corporate logistics environment rendered in deep crimson and amber warmth showcasing commercial supply chain excellence." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDbPHvnZR4aUHaGjVWcgh4KMhwPD69ZUEWa3lhp5k1X5TrOBCl7HG3G-ff4sQh-I_hplbp6P8ypDDIJjDCeB1xxQ3Qbt_ht1Q1W5AIXJuPimbe5ScTUz61Eq9OJJv39MidFbAW7LoyqZ277KZVfhHWUkhYQTCJ4rgqde8KzHo4CGIreDB9Hrz9JY9E2tZ1sKXyDfHjYNAUO1e2lUP01ZoGm6QfGdkI7pcblu9Hykl8')">
+</div>
+<!-- Subtle dot matrix pattern overlay -->
+<div class="absolute inset-0 bg-grid-white pointer-events-none opacity-40"></div>
+<!-- Left Panel Top Content -->
+<div class="relative z-10 space-y-8">
+<!-- Eyebrow Badge -->
+<div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-label-sm font-label-sm tracking-wide shadow-sm">
+<span class="material-symbols-outlined text-[15px] text-tertiary-fixed" data-icon="verified_user">verified_user</span>
+<span>PORTAL OPERASIONAL &amp; MITRA RESMI</span>
+</div>
+<!-- Main Title & Copy -->
+<div class="space-y-4">
+<h1 class="text-display-hero-mobile lg:text-headline-lg font-display-hero-mobile lg:font-headline-lg font-bold tracking-tight text-white leading-tight">
+            Satu Portal untuk Operasional yang Lebih Terarah.
+          </h1>
+<p class="text-body-lg font-body-lg text-white/90 font-normal leading-relaxed max-w-lg">
+            Akses sistem operasional terintegrasi untuk membantu percepatan pesanan, pemantauan stok gudang Krian secara real-time, dan verifikasi mitra ritel se-Sidoarjo Barat.
+          </p>
+</div>
+<!-- Value Proposition Indicators (Bento Glass Cards) -->
+<div class="space-y-3.5 pt-2 max-w-lg">
+<!-- Card 1 -->
+<div class="p-4 rounded-xl bg-white/10 hover:bg-white/15 backdrop-blur-md border border-white/15 flex items-start gap-3.5 transition-all duration-200">
+<div class="w-10 h-10 rounded-lg bg-white/15 flex-shrink-0 flex items-center justify-center text-tertiary-fixed shadow-sm">
+<span class="material-symbols-outlined text-[22px]" data-icon="local_shipping">local_shipping</span>
+</div>
+<div>
+<h2 class="text-title-md font-title-md font-semibold text-white">
+                Pengelolaan Order &amp; Delivery
+              </h2>
+<p class="text-body-sm font-body-sm text-white/80 mt-0.5">
+                Sinkronisasi otomatis Surat Jalan &amp; Delivery Order (DO) harian ritel Krian, Balongbendo, dan sekitarnya.
+              </p>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="p-4 rounded-xl bg-white/10 hover:bg-white/15 backdrop-blur-md border border-white/15 flex items-start gap-3.5 transition-all duration-200">
+<div class="w-10 h-10 rounded-lg bg-white/15 flex-shrink-0 flex items-center justify-center text-tertiary-fixed shadow-sm">
+<span class="material-symbols-outlined text-[22px]" data-icon="inventory">inventory</span>
+</div>
+<div>
+<h2 class="text-title-md font-title-md font-semibold text-white">
+                Kontrol Stok Gudang Krian
+              </h2>
+<p class="text-body-sm font-body-sm text-white/80 mt-0.5">
+                Manajemen perputaran FEFO ketat dan visibilitas buffer stock SKU Mayora Group (Roma, Torabika, Beng-Beng).
+              </p>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="p-4 rounded-xl bg-white/10 hover:bg-white/15 backdrop-blur-md border border-white/15 flex items-start gap-3.5 transition-all duration-200">
+<div class="w-10 h-10 rounded-lg bg-white/15 flex-shrink-0 flex items-center justify-center text-tertiary-fixed shadow-sm">
+<span class="material-symbols-outlined text-[22px]" data-icon="storefront">storefront</span>
+</div>
+<div>
+<h2 class="text-title-md font-title-md font-semibold text-white">
+                Direktori Mitra Terverifikasi
+              </h2>
+<p class="text-body-sm font-body-sm text-white/80 mt-0.5">
+                Database terpadu toko kelontong, pedagang grosir, dan mitra warkop dengan limit kredit &amp; program loyalitas.
+              </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Left Panel Bottom Security Notice -->
+<div class="relative z-10 mt-10 pt-6 border-t border-white/20">
+<div class="flex items-center gap-3 text-white/85 text-body-sm font-body-sm">
+<span class="material-symbols-outlined text-[20px] text-tertiary-fixed shrink-0" data-icon="lock_clock">lock_clock</span>
+<p>
+<strong class="font-semibold text-white">Akses Terbatas:</strong> Khusus personel operasional terdaftar dan perwakilan mitra resmi PT Inbisco Niagatama Semesta.
+          </p>
+</div>
+</div>
+</section>
+<!-- RIGHT PANEL: Authentication Canvas & Form Engine (~55% Desktop) -->
+<section class="lg:w-[55%] bg-surface-container-lowest flex flex-col justify-center px-6 sm:px-12 py-10 lg:py-16 overflow-y-auto">
+<div class="max-w-[460px] w-full mx-auto">
+<!-- Prototype Simulation Switcher Ribbon -->
+<div class="mb-8 p-2 rounded-xl bg-surface-container border border-surface-container-high">
+<div class="flex items-center justify-between mb-1.5 px-2">
+<span class="text-label-sm font-label-sm text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="tune">tune</span>
+              Simulasi Status UI (Interactive Prototype):
+            </span>
+<span class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-semibold" id="currentStatusBadge">
+              Default State
+            </span>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+<button class="state-btn text-body-sm font-label-md px-2.5 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface shadow-xs hover:bg-white text-center transition-all border border-surface-container-high" data-state="default" onclick="setFormState('default')" type="button">
+              Default
+            </button>
+<button class="state-btn text-body-sm font-label-md px-2.5 py-1.5 rounded-lg text-outline hover:bg-surface-container-lowest text-center transition-all" data-state="validation" onclick="setFormState('validation')" type="button">
+              Field Error
+            </button>
+<button class="state-btn text-body-sm font-label-md px-2.5 py-1.5 rounded-lg text-outline hover:bg-surface-container-lowest text-center transition-all" data-state="auth_error" onclick="setFormState('auth_error')" type="button">
+              Gagal Masuk
+            </button>
+<button class="state-btn text-body-sm font-label-md px-2.5 py-1.5 rounded-lg text-outline hover:bg-surface-container-lowest text-center transition-all" data-state="loading" onclick="setFormState('loading')" type="button">
+              Loading
+            </button>
+</div>
+</div>
+<!-- Header Titles -->
+<div class="space-y-2 mb-8">
+<div class="flex items-center gap-2 mb-1">
+<span class="inline-block w-2.5 h-2.5 rounded-full bg-primary-container"></span>
+<span class="text-label-sm font-label-sm text-primary font-bold uppercase tracking-wider">Otorisasi Kredensial</span>
+</div>
+<h2 class="text-headline-md font-headline-md font-bold text-on-surface tracking-tight">
+            Selamat Datang Kembali
+          </h2>
+<p class="text-body-md font-body-md text-on-surface-variant">
+            Masuk untuk melanjutkan ke portal operasional Inbisco MitraHub Cabang Krian.
+          </p>
+</div>
+<!-- Global Alert / Auth Failure Banner (Dynamic) -->
+<div class="hidden mb-6 p-4 rounded-xl bg-error-container/60 border border-error text-on-error-container flex items-start gap-3 transition-all duration-200" id="authErrorAlert">
+<span class="material-symbols-outlined text-[20px] text-error shrink-0 mt-0.5" data-icon="error">error</span>
+<div class="text-body-sm font-body-sm">
+<strong class="font-semibold text-error">Autentikasi Gagal!</strong>
+<p class="text-on-surface mt-0.5">Email, ID Mitra, atau kata sandi yang Anda masukkan tidak terdaftar dalam database operasional Cabang Krian.</p>
+</div>
+</div>
+<!-- AUTHENTICATION FORM -->
+<form class="space-y-5" id="portalLoginForm" novalidate="" onsubmit="handleFormSubmit(event)">
+<!-- FIELD 1: Email / Username -->
+<div class="space-y-1.5">
+<div class="flex justify-between items-center">
+<label class="text-label-md font-label-md text-on-surface flex items-center gap-1" for="usernameInput">
+<span>Email atau Username Operasional</span>
+<span class="text-primary-container font-bold">*</span>
+</label>
+<span class="text-label-sm font-label-sm text-outline">ID Mitra / NIK</span>
+</div>
+<div class="relative rounded-lg shadow-xs">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[20px]" data-icon="mail">mail</span>
+</div>
+<input class="block w-full pl-11 pr-10 py-3 text-body-md font-body-md rounded-lg border border-surface-container-high bg-white text-on-surface placeholder:text-outline focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all duration-150" id="usernameInput" name="username" placeholder="Masukkan email atau ID (contoh: krian.ops@inbisco.co.id)" type="text" value="mitra.krian@inbisco.co.id"/>
+<div class="hidden absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-emerald-600" id="usernameValidIcon">
+<span class="material-symbols-outlined text-[20px]" data-icon="check_circle">check_circle</span>
+</div>
+</div>
+<!-- Error message container -->
+<p class="hidden text-body-sm font-body-sm text-error flex items-center gap-1 mt-1" id="usernameErrorMsg">
+<span class="material-symbols-outlined text-[16px]" data-icon="report">report</span>
+<span>Format email atau username operasional tidak valid.</span>
+</p>
+</div>
+<!-- FIELD 2: Password -->
+<div class="space-y-1.5">
+<div class="flex justify-between items-center">
+<label class="text-label-md font-label-md text-on-surface flex items-center gap-1" for="passwordInput">
+<span>Password</span>
+<span class="text-primary-container font-bold">*</span>
+</label>
+</div>
+<div class="relative rounded-lg shadow-xs">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[20px]" data-icon="lock">lock</span>
+</div>
+<input class="block w-full pl-11 pr-11 py-3 text-body-md font-body-md rounded-lg border border-surface-container-high bg-white text-on-surface placeholder:text-outline focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all duration-150" id="passwordInput" name="password" placeholder="Masukkan password akun Anda" type="password" value="••••••••••••"/>
+<button aria-label="Tampilkan atau sembunyikan kata sandi" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-outline hover:text-on-surface transition-colors focus:outline-none" id="togglePasswordBtn" onclick="togglePasswordVisibility()" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="visibility" id="togglePasswordIcon">visibility</span>
+</button>
+</div>
+<!-- Password error message container -->
+<p class="hidden text-body-sm font-body-sm text-error flex items-center gap-1 mt-1" id="passwordErrorMsg">
+<span class="material-symbols-outlined text-[16px]" data-icon="report">report</span>
+<span>Password minimal terdiri dari 8 karakter huruf dan angka.</span>
+</p>
+</div>
+<!-- REMEMBER & FORGOT PASSWORD ROW -->
+<div class="flex items-center justify-between pt-1">
+<label class="flex items-center gap-2 cursor-pointer select-none">
+<input checked="" class="w-4 h-4 rounded text-primary-container focus:ring-primary-container/30 border-surface-container-high text-primary" id="rememberDevice" type="checkbox"/>
+<span class="text-body-sm font-body-sm text-on-surface font-medium">Ingat perangkat ini</span>
+</label>
+<a class="text-body-sm font-label-md text-primary-container hover:text-primary transition-colors hover:underline" href="javascript:void(0)" onclick="openForgotPasswordModal()">
+              Lupa Password?
+            </a>
+</div>
+<!-- PRIMARY ACTION BUTTON -->
+<button class="w-full py-3.5 px-6 rounded-lg bg-primary-container hover:bg-primary text-white font-label-md text-label-md shadow-md hover:shadow-lg transition-all duration-200 active:scale-[0.99] flex items-center justify-center gap-2 font-semibold" id="submitLoginBtn" type="submit">
+<span class="material-symbols-outlined text-[20px]" data-icon="login" id="buttonIcon">login</span>
+<span class="hidden animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full" id="buttonSpinner"></span>
+<span id="buttonText">Masuk ke Portal</span>
+</button>
+</form>
+<!-- SECURITY REASSURANCE BOX -->
+<div class="mt-6 p-3.5 rounded-xl bg-surface-container-low border border-surface-container-high flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-lowest flex-shrink-0 flex items-center justify-center text-primary-container border border-surface-container-high">
+<span class="material-symbols-outlined text-[18px]" data-icon="shield">shield</span>
+</div>
+<p class="text-body-sm font-body-sm text-outline">
+            Sesi portal dilindungi standar enkripsi TLS 1.3 &amp; 2FA. Harap pastikan Anda tidak membagikan kredensial ke pihak lain.
+          </p>
+</div>
+<!-- PARTNER REGISTRATION / HELP INQUIRY -->
+<div class="mt-8 pt-6 border-t border-surface-container-high text-center space-y-2">
+<p class="text-body-sm font-body-sm text-on-surface-variant">
+            Belum memiliki akses kredensial atau perwakilan toko baru?
+          </p>
+<div class="flex items-center justify-center gap-3 flex-wrap text-body-sm font-body-sm">
+<a class="text-label-md font-label-md text-primary-container hover:underline font-semibold flex items-center gap-1" href="/">
+<span>Daftar Jadi Mitra Inbisco</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward">arrow_forward</span>
+</a>
+<span class="text-outline">•</span>
+<a class="text-body-sm font-body-sm text-outline hover:text-on-surface flex items-center gap-1 transition-colors" href="https://wa.me/6281234567890" rel="noopener" target="_blank">
+<span class="material-symbols-outlined text-[16px]" data-icon="support_agent">support_agent</span>
+<span>Hubungi Admin Cabang Krian</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- 3. MINIMAL LOGIN FOOTER -->
+<footer class="bg-surface-container-lowest border-t border-surface-container-high py-4 px-4 sm:px-8 text-body-sm font-body-sm">
+<div class="max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-outline">
+<!-- Copyright text from design specification -->
+<div class="text-center md:text-left">
+<span>© 2025 PT Inbisco Niagatama Semesta (Krian Branch). Hak Cipta Dilindungi Undang-Undang.</span>
+</div>
+<!-- Links & Logistics Node Status -->
+<div class="flex items-center flex-wrap justify-center gap-4 text-body-sm font-body-sm">
+<a class="hover:text-primary-container transition-colors" href="/">Katalog FMCG</a>
+<span>•</span>
+<a class="hover:text-primary-container transition-colors" href="javascript:void(0)">Kebijakan Privasi</a>
+<span>•</span>
+<a class="hover:text-primary-container transition-colors" href="javascript:void(0)">Syarat &amp; Ketentuan Kemitraan</a>
+<span>•</span>
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container text-on-surface font-medium border border-surface-container-high">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span>Sistem Portal Operasional: <strong class="text-emerald-700 font-semibold">Aktif</strong></span>
+</div>
+</div>
+</div>
+</footer>
+<!-- FORGOT PASSWORD MODAL (Interactive) -->
+<div class="fixed inset-0 z-50 hidden bg-inverse-surface/60 backdrop-blur-xs flex items-center justify-center p-4" id="forgotPasswordModal">
+<div class="bg-surface-container-lowest rounded-xl max-w-md w-full p-6 shadow-xl border border-surface-container-high space-y-4 animate-in fade-in zoom-in duration-200">
+<div class="flex items-center justify-between pb-3 border-b border-surface-container-high">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[20px]" data-icon="lock_reset">lock_reset</span>
+</div>
+<h3 class="text-title-md font-title-md font-bold text-on-surface">Reset Akses Akun</h3>
+</div>
+<button class="text-outline hover:text-on-surface p-1 rounded-md" onclick="closeForgotPasswordModal()">
+<span class="material-symbols-outlined text-[20px]" data-icon="close">close</span>
+</button>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant">
+        Masukkan email terdaftar operasional Inbisco Anda. Tautan pemulihan dan token verifikasi OTP akan dikirimkan ke kotak masuk Anda atau nomor WhatsApp terhubung.
+      </p>
+<div class="space-y-1.5">
+<label class="text-label-sm font-label-sm text-on-surface font-semibold">Email Operasional / Nomor HP Terdaftar</label>
+<input class="w-full px-3.5 py-2.5 rounded-lg border border-surface-container-high text-body-md focus:border-primary-container focus:ring-1 focus:ring-primary-container" placeholder="krian.admin@inbisco.co.id" type="text"/>
+</div>
+<div class="flex items-center justify-end gap-2 pt-2">
+<button class="px-4 py-2 text-label-md font-label-md text-outline hover:text-on-surface rounded-lg hover:bg-surface-container" onclick="closeForgotPasswordModal()">
+          Batal
+        </button>
+<button class="px-4 py-2 text-label-md font-label-md bg-primary-container text-white rounded-lg hover:bg-primary shadow-sm font-semibold" onclick="alert('Instruksi pemulihan telah dikirim ke email terdaftar Anda.'); closeForgotPasswordModal();">
+          Kirim Tautan Reset
+        </button>
+</div>
+</div>
+</div>
+<!-- INTERACTIVE INLINE JAVASCRIPT CONTROLLERS -->
+<script>
+    let isPasswordVisible = false;
+
+    // Toggle password visibility
+    function togglePasswordVisibility() {
+      const passwordInput = document.getElementById('passwordInput');
+      const toggleIcon = document.getElementById('togglePasswordIcon');
+      
+      if (!passwordInput || !toggleIcon) return;
+
+      isPasswordVisible = !isPasswordVisible;
+      if (isPasswordVisible) {
+        passwordInput.type = 'text';
+        toggleIcon.textContent = 'visibility_off';
+      } else {
+        passwordInput.type = 'password';
+        toggleIcon.textContent = 'visibility';
+      }
+    }
+
+    // Modal controllers
+    function openForgotPasswordModal() {
+      document.getElementById('forgotPasswordModal').classList.remove('hidden');
+    }
+    function closeForgotPasswordModal() {
+      document.getElementById('forgotPasswordModal').classList.add('hidden');
+    }
+
+    // Interactive Prototype State Switcher
+    function setFormState(state) {
+      const usernameInput = document.getElementById('usernameInput');
+      const passwordInput = document.getElementById('passwordInput');
+      const usernameError = document.getElementById('usernameErrorMsg');
+      const passwordError = document.getElementById('passwordErrorMsg');
+      const authErrorAlert = document.getElementById('authErrorAlert');
+      const validIcon = document.getElementById('usernameValidIcon');
+      const submitBtn = document.getElementById('submitLoginBtn');
+      const btnIcon = document.getElementById('buttonIcon');
+      const btnSpinner = document.getElementById('buttonSpinner');
+      const btnText = document.getElementById('buttonText');
+      const statusBadge = document.getElementById('currentStatusBadge');
+
+      // Update button highlights in prototype ribbon
+      document.querySelectorAll('.state-btn').forEach(btn => {
+        if (btn.getAttribute('data-state') === state) {
+          btn.className = 'state-btn text-body-sm font-label-md px-2.5 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface shadow-xs text-center transition-all border border-surface-container-high font-semibold';
+        } else {
+          btn.className = 'state-btn text-body-sm font-label-md px-2.5 py-1.5 rounded-lg text-outline hover:bg-surface-container-lowest text-center transition-all';
+        }
+      });
+
+      // Reset base element states
+      usernameInput.className = "block w-full pl-11 pr-10 py-3 text-body-md font-body-md rounded-lg border border-surface-container-high bg-white text-on-surface placeholder:text-outline focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all duration-150";
+      passwordInput.className = "block w-full pl-11 pr-11 py-3 text-body-md font-body-md rounded-lg border border-surface-container-high bg-white text-on-surface placeholder:text-outline focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all duration-150";
+      usernameError.classList.add('hidden');
+      passwordError.classList.add('hidden');
+      authErrorAlert.classList.add('hidden');
+      validIcon.classList.add('hidden');
+      btnSpinner.classList.add('hidden');
+      btnIcon.classList.remove('hidden');
+      btnText.textContent = "Masuk ke Portal";
+      submitBtn.disabled = false;
+
+      if (state === 'default') {
+        usernameInput.value = "mitra.krian@inbisco.co.id";
+        passwordInput.value = "••••••••••••";
+        statusBadge.textContent = "Default State";
+      } 
+      else if (state === 'validation') {
+        usernameInput.value = "format-salah-krian@";
+        passwordInput.value = "123";
+        usernameInput.className = "block w-full pl-11 pr-10 py-3 text-body-md font-body-md rounded-lg border-2 border-error bg-error-container/10 text-on-surface placeholder:text-outline focus:outline-none focus:border-error focus:ring-2 focus:ring-error/20 transition-all duration-150";
+        passwordInput.className = "block w-full pl-11 pr-11 py-3 text-body-md font-body-md rounded-lg border-2 border-error bg-error-container/10 text-on-surface placeholder:text-outline focus:outline-none focus:border-error focus:ring-2 focus:ring-error/20 transition-all duration-150";
+        usernameError.classList.remove('hidden');
+        passwordError.classList.remove('hidden');
+        statusBadge.textContent = "Validasi Error";
+      } 
+      else if (state === 'auth_error') {
+        usernameInput.value = "user.tidak.dikenal@inbisco.co.id";
+        passwordInput.value = "kuncirahasia99";
+        authErrorAlert.classList.remove('hidden');
+        statusBadge.textContent = "Gagal Autentikasi";
+      } 
+      else if (state === 'loading') {
+        usernameInput.value = "admin.krian@inbisco.co.id";
+        passwordInput.value = "••••••••••••";
+        btnIcon.classList.add('hidden');
+        btnSpinner.classList.remove('hidden');
+        btnText.textContent = "Memverifikasi Akses...";
+        submitBtn.disabled = true;
+        validIcon.classList.remove('hidden');
+        statusBadge.textContent = "Memproses...";
+      }
+    }
+
+    // Form submission handler
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      setFormState('loading');
+      setTimeout(() => {
+        alert('Simulasi Berhasil: Akses diverifikasi untuk Cabang Krian. Mengarahkan ke Dashboard Operasional...');
+        setFormState('default');
+      }, 1500);
+    }
+  </script>
+</body></html>

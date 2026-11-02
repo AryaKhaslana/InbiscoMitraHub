@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Button } from '../components/ui/button';
-import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
 import { useAuthRole } from '../context/AuthRoleContext';
@@ -11,11 +10,13 @@ import {
   ShieldCheck, 
   Lock, 
   ArrowRight, 
-  Sparkles, 
   AlertCircle,
   KeyRound,
   CheckCircle2,
-  ChevronRight
+  Sparkles,
+  Truck,
+  Store,
+  Layers
 } from 'lucide-react';
 
 export default function Login({ setActiveNav }) {
@@ -90,169 +91,226 @@ export default function Login({ setActiveNav }) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
-      {/* HEADER */}
-      <div className="text-center max-w-xl mx-auto space-y-2">
-        <Badge variant="tertiary" className="text-xs uppercase">Dual-Environment Portal</Badge>
-        <h1 className="text-3xl font-black text-on-surface tracking-tight">
-          Portal Operasional SupplySync & MitraHub
-        </h1>
-        <p className="text-xs sm:text-sm text-on-surface-variant">
-          Pilih lingkungan portal kerja sesuai peran wewenang Anda: Kantor Pusat Mayora (HQ) atau Depo Distribusi Mitra.
-        </p>
-      </div>
-
-      {/* QUICK ROLE SELECTOR FOR GTNIC PRESENTATION */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Role Option 1: HQ Admin */}
-        <div
-          onClick={() => handleRoleSelect('HQ_ADMIN')}
-          className={`p-5 rounded-2xl border-2 cursor-pointer transition-all ${
-            selectedRole === 'HQ_ADMIN'
-              ? 'border-primary bg-primary/5 shadow-md'
-              : 'border-outline/20 bg-surface-container-lowest hover:border-outline/40'
-          }`}
-        >
-          <div className="flex items-start justify-between">
-            <div className="h-10 w-10 rounded-xl bg-primary text-white flex items-center justify-center shadow-xs">
-              <Building2 className="h-5 w-5" />
-            </div>
-            {selectedRole === 'HQ_ADMIN' ? (
-              <Badge variant="default" className="text-[10px]">Aktif Dipilih</Badge>
-            ) : (
-              <span className="text-xs text-outline font-semibold">Klik untuk Pilih</span>
-            )}
-          </div>
-          <div className="mt-4 space-y-1">
-            <div className="text-xs font-bold text-primary uppercase tracking-wider">Level 1: Macro Intelligence</div>
-            <h3 className="font-black text-base text-on-surface">Mayora Admin (HQ Pusat)</h3>
-            <p className="text-xs text-on-surface-variant leading-relaxed">
-              Pengawasan agregat 28 distributor se-Jawa Timur, What-If restock simulator, deteksi stockout radar, dan batch PO approval.
-            </p>
-          </div>
-          <div className="mt-4 pt-3 border-t border-outline/10 flex items-center justify-between text-xs">
-            <span className="font-mono text-[11px] text-outline">User: ops.hq</span>
-            <Button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDirectDemoLogin('HQ_ADMIN');
+    <div className="w-full min-h-[calc(100vh-80px)] flex flex-col justify-center bg-surface">
+      <div className="w-full max-w-[1280px] mx-auto my-6 px-4 md:px-8">
+        <div className="bg-surface-container-lowest rounded-3xl border border-surface-container-high shadow-xl overflow-hidden flex flex-col lg:flex-row">
+          {/* ========================================================= */}
+          {/* LEFT PANEL: 45% Corporate Crimson Overlay & Bento Cards   */}
+          {/* ========================================================= */}
+          <section className="lg:w-[45%] relative bg-gradient-to-br from-primary-container via-[#a80000] to-primary p-8 sm:p-12 text-white flex flex-col justify-between overflow-hidden shadow-inner">
+            {/* Background Contextual Warehouse Logistics Image */}
+            <div 
+              className="absolute inset-0 bg-cover bg-center mix-blend-multiply opacity-25 pointer-events-none scale-105"
+              style={{
+                backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuDbPHvnZR4aUHaGjVWcgh4KMhwPD69ZUEWa3lhp5k1X5TrOBCl7HG3G-ff4sQh-I_hplbp6P8ypDDIJjDCeB1xxQ3Qbt_ht1Q1W5AIXJuPimbe5ScTUz61Eq9OJJv39MidFbAW7LoyqZ277KZVfhHWUkhYQTCJ4rgqde8KzHo4CGIreDB9Hrz9JY9E2tZ1sKXyDfHjYNAUO1e2lUP01ZoGm6QfGdkI7pcblu9Hykl8')`
               }}
-              size="sm"
-              className="gap-1 font-bold text-xs h-7"
-            >
-              <span>Quick Demo</span>
-              <ChevronRight className="h-3.5 w-3.5" />
-            </Button>
-          </div>
-        </div>
+            />
 
-        {/* Role Option 2: Distributor Ops */}
-        <div
-          onClick={() => handleRoleSelect('DISTRIBUTOR_DEPO')}
-          className={`p-5 rounded-2xl border-2 cursor-pointer transition-all ${
-            selectedRole === 'DISTRIBUTOR_DEPO'
-              ? 'border-primary bg-primary/5 shadow-md'
-              : 'border-outline/20 bg-surface-container-lowest hover:border-outline/40'
-          }`}
-        >
-          <div className="flex items-start justify-between">
-            <div className="h-10 w-10 rounded-xl bg-secondary text-white flex items-center justify-center shadow-xs">
-              <Warehouse className="h-5 w-5" />
+            {/* Top Content */}
+            <div className="relative z-10 space-y-6">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold tracking-wide shadow-xs">
+                <span className="material-symbols-outlined text-[15px] text-tertiary-container">verified_user</span>
+                <span>PORTAL OPERASIONAL & MITRA RESMI</span>
+              </div>
+
+              <div className="space-y-3">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-display tracking-tight text-white leading-tight">
+                  Satu Portal untuk Operasional yang Lebih Terarah.
+                </h1>
+                <p className="text-sm text-white/90 leading-relaxed">
+                  Akses sistem operasional terintegrasi untuk membantu percepatan pesanan, pemantauan stok gudang Krian secara real-time, dan verifikasi mitra ritel se-Sidoarjo.
+                </p>
+              </div>
+
+              {/* Bento Glass Cards */}
+              <div className="space-y-3 pt-2">
+                <div className="p-3.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-white/15 shrink-0 flex items-center justify-center text-tertiary-container">
+                    <Truck className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-sm font-bold font-display text-white">
+                      Pengelolaan Order & Delivery
+                    </h2>
+                    <p className="text-xs text-white/80 mt-0.5 leading-snug">
+                      Sinkronisasi otomatis Surat Jalan & DO harian ritel Krian, Balongbendo, dan sekitarnya.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-white/15 shrink-0 flex items-center justify-center text-tertiary-container">
+                    <Warehouse className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-sm font-bold font-display text-white">
+                      Kontrol Stok Gudang Krian
+                    </h2>
+                    <p className="text-xs text-white/80 mt-0.5 leading-snug">
+                      Manajemen rotasi FEFO ketat dan visibilitas buffer stock SKU Mayora (Roma, Torabika, Beng-Beng).
+                    </p>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-white/15 shrink-0 flex items-center justify-center text-tertiary-container">
+                    <Store className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-sm font-bold font-display text-white">
+                      Direktori Mitra Terverifikasi
+                    </h2>
+                    <p className="text-xs text-white/80 mt-0.5 leading-snug">
+                      Database terpadu toko kelontong, pedagang grosir, dan mitra warkop dengan limit kredit tempo (TOP).
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
-            {selectedRole === 'DISTRIBUTOR_DEPO' ? (
-              <Badge variant="secondary" className="text-[10px]">Aktif Dipilih</Badge>
-            ) : (
-              <span className="text-xs text-outline font-semibold">Klik untuk Pilih</span>
-            )}
-          </div>
-          <div className="mt-4 space-y-1">
-            <div className="text-xs font-bold text-secondary uppercase tracking-wider">Level 2: Micro Execution</div>
-            <h3 className="font-black text-base text-on-surface">Distributor Depo Krian (Mitra)</h3>
-            <p className="text-xs text-on-surface-variant leading-relaxed">
-              Eksekusi gudang lokal CV Surya Krian Logistik, rotasi FEFO, konfirmasi BAST armada inbound, dan cetak manifest pengiriman.
-            </p>
-          </div>
-          <div className="mt-4 pt-3 border-t border-outline/10 flex items-center justify-between text-xs">
-            <span className="font-mono text-[11px] text-outline">User: bambang.sudiro</span>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDirectDemoLogin('DISTRIBUTOR_DEPO');
-              }}
-              size="sm"
-              className="gap-1 font-bold text-xs h-7"
-            >
-              <span>Quick Demo</span>
-              <ChevronRight className="h-3.5 w-3.5" />
-            </Button>
-          </div>
+
+            {/* Bottom Security Notice */}
+            <div className="relative z-10 mt-8 pt-4 border-t border-white/20 flex items-center gap-2.5 text-xs text-white/85">
+              <Lock className="h-4 w-4 text-tertiary-container shrink-0" />
+              <span>
+                <strong>Akses Terbatas:</strong> Khusus personel internal PT Inbisco Niagatama Semesta dan tim juri kompetisi GTNIC 2026.
+              </span>
+            </div>
+          </section>
+
+          {/* ========================================================= */}
+          {/* RIGHT PANEL: 55% Authentication Canvas & Form Engine      */}
+          {/* ========================================================= */}
+          <section className="lg:w-[55%] bg-surface-container-lowest p-8 sm:p-12 flex flex-col justify-center">
+            <div className="max-w-[440px] w-full mx-auto space-y-6">
+              {/* Header Title */}
+              <div>
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container text-on-surface-variant text-[11px] font-bold uppercase mb-2">
+                  <span>SISTEM LOGIN TERINTEGRASI</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold font-display text-on-surface">
+                  Selamat Datang Kembali
+                </h2>
+                <p className="text-xs text-on-surface-variant mt-1 leading-relaxed">
+                  Pilih lingkungan otorisasi kerja Anda untuk membuka modul konsol yang sesuai.
+                </p>
+              </div>
+
+              {/* Role Switcher Selector */}
+              <div className="grid grid-cols-2 gap-3 p-1 rounded-xl bg-surface-container-low border border-surface-container-high">
+                <button
+                  type="button"
+                  onClick={() => handleRoleSelect('HQ_ADMIN')}
+                  className={`p-3 rounded-lg text-left transition-all ${
+                    selectedRole === 'HQ_ADMIN'
+                      ? 'bg-surface-container-lowest text-on-surface shadow-sm font-bold border border-surface-container-high'
+                      : 'text-on-surface-variant hover:text-on-surface'
+                  }`}
+                >
+                  <div className="flex items-center gap-1.5 text-xs text-primary font-bold mb-0.5">
+                    <Building2 className="h-3.5 w-3.5" />
+                    <span>SupplySync HQ</span>
+                  </div>
+                  <div className="text-[11px] text-outline">Macro Intelligence & Risk</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleRoleSelect('DISTRIBUTOR_DEPO')}
+                  className={`p-3 rounded-lg text-left transition-all ${
+                    selectedRole === 'DISTRIBUTOR_DEPO'
+                      ? 'bg-surface-container-lowest text-on-surface shadow-sm font-bold border border-surface-container-high'
+                      : 'text-on-surface-variant hover:text-on-surface'
+                  }`}
+                >
+                  <div className="flex items-center gap-1.5 text-xs text-emerald-700 font-bold mb-0.5">
+                    <Warehouse className="h-3.5 w-3.5" />
+                    <span>Depot Krian Hub</span>
+                  </div>
+                  <div className="text-[11px] text-outline">Distribusi & Sales Last-Mile</div>
+                </button>
+              </div>
+
+              {/* GTNIC Jury 1-Click Fast Login Ribbon */}
+              <div className="p-3.5 rounded-xl bg-primary/5 border border-primary/20 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-primary flex items-center gap-1.5">
+                    <Sparkles className="h-3.5 w-3.5 text-primary" />
+                    Jury 1-Click Fast Access:
+                  </span>
+                  <Badge variant="tertiary" className="text-[9px] uppercase">
+                    GTNIC Testing
+                  </Badge>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleDirectDemoLogin('HQ_ADMIN')}
+                    className="p-2 rounded-lg bg-surface-container-lowest border border-surface-container-high hover:border-primary text-xs font-semibold text-on-surface hover:text-primary transition-all text-left flex items-center justify-between group shadow-2xs"
+                  >
+                    <span>Masuk HQ Admin</span>
+                    <ArrowRight className="h-3.5 w-3.5 text-outline group-hover:text-primary group-hover:translate-x-0.5 transition-transform" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleDirectDemoLogin('DISTRIBUTOR_DEPO')}
+                    className="p-2 rounded-lg bg-surface-container-lowest border border-surface-container-high hover:border-primary text-xs font-semibold text-on-surface hover:text-primary transition-all text-left flex items-center justify-between group shadow-2xs"
+                  >
+                    <span>Masuk Depo Krian</span>
+                    <ArrowRight className="h-3.5 w-3.5 text-outline group-hover:text-primary group-hover:translate-x-0.5 transition-transform" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Form Input */}
+              {error && (
+                <div className="p-3 bg-error-container text-on-error-container text-xs rounded-lg flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4 text-error shrink-0" />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleFormSubmit} className="space-y-4">
+                <div>
+                  <label className="text-xs font-semibold text-on-surface block mb-1">
+                    ID Akun / Username
+                  </label>
+                  <Input
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Username personel"
+                    className="text-xs h-10 bg-surface-container-low"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-on-surface block mb-1">
+                    Kata Sandi (Password)
+                  </label>
+                  <Input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••••••"
+                    className="text-xs h-10 bg-surface-container-low"
+                    required
+                  />
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full text-xs font-bold py-2.5 gap-2 shadow-sm"
+                >
+                  <Lock className="h-4 w-4" />
+                  <span>{loading ? 'Memvalidasi Kredensial...' : 'Masuk ke Konsol Operasional'}</span>
+                </Button>
+              </form>
+            </div>
+          </section>
         </div>
       </div>
-
-      {/* LOGIN CREDENTIAL FORM */}
-      <Card className="max-w-md mx-auto border-outline/15 shadow-xl">
-        <CardContent className="p-6 sm:p-8 space-y-5">
-          <div className="flex items-center gap-2 border-b border-outline/10 pb-3">
-            <Lock className="h-4 w-4 text-primary" />
-            <h3 className="font-bold text-sm text-on-surface">
-              Autentikasi Kredensial: {selectedRole === 'HQ_ADMIN' ? 'Mayora HQ' : 'Depo Krian'}
-            </h3>
-          </div>
-
-          {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-700 flex items-start gap-2">
-              <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-red-600" />
-              <div>{error}</div>
-            </div>
-          )}
-
-          <form onSubmit={handleFormSubmit} className="space-y-4">
-            <div className="space-y-1">
-              <label className="text-xs font-semibold text-on-surface">Username / NIK Akun</label>
-              <Input
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Username"
-                className="font-mono text-xs"
-                required
-              />
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-xs font-semibold text-on-surface">Kata Sandi (Password)</label>
-              <Input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••••••"
-                className="text-xs"
-                required
-              />
-            </div>
-
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full font-bold gap-2 shadow-sm"
-            >
-              {loading ? 'Memverifikasi...' : 'Masuk ke Portal Kerja'}
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </form>
-
-          <div className="pt-2 text-center">
-            <button
-              onClick={() => setActiveNav('home')}
-              className="text-xs text-on-surface-variant hover:text-primary transition-colors"
-            >
-              ← Kembali ke Beranda MitraHub
-            </button>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

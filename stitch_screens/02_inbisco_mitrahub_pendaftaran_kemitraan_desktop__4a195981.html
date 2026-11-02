@@ -1,0 +1,643 @@
+<!DOCTYPE html><html lang="id" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Pendaftaran Mitra - Inbisco MitraHub | PT Inbisco Niagatama Semesta Cabang Krian</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary-fixed": "#ffdad4",
+            "on-error-container": "#93000a",
+            "secondary-fixed-dim": "#ffb3ac",
+            "primary-fixed-dim": "#ffb4a8",
+            "on-primary-fixed": "#410000",
+            "inverse-surface": "#303030",
+            "on-surface": "#1b1c1c",
+            "tertiary-fixed-dim": "#e9c349",
+            "secondary": "#b6171e",
+            "on-secondary": "#ffffff",
+            "inverse-on-surface": "#f3f0ef",
+            "surface-tint": "#c00402",
+            "surface-container-low": "#f6f3f2",
+            "on-tertiary-fixed-variant": "#574500",
+            "surface-container-high": "#eae7e7",
+            "on-primary": "#ffffff",
+            "tertiary": "#735c00",
+            "on-tertiary-container": "#4f3e00",
+            "error": "#ba1a1a",
+            "on-tertiary-fixed": "#241a00",
+            "on-primary-container": "#ffc9c1",
+            "on-tertiary": "#ffffff",
+            "surface": "#fcf9f8",
+            "on-surface-variant": "#5d3f3b",
+            "on-error": "#ffffff",
+            "background": "#fcf9f8",
+            "surface-dim": "#dcd9d9",
+            "error-container": "#ffdad6",
+            "on-primary-fixed-variant": "#930000",
+            "on-secondary-fixed": "#410003",
+            "surface-bright": "#fcf9f8",
+            "surface-variant": "#e5e2e1",
+            "primary": "#900000",
+            "on-secondary-fixed-variant": "#930010",
+            "surface-container": "#f0eded",
+            "inverse-primary": "#ffb4a8",
+            "surface-container-lowest": "#ffffff",
+            "tertiary-fixed": "#ffe088",
+            "secondary-container": "#da3433",
+            "on-background": "#1b1c1c",
+            "secondary-fixed": "#ffdad6",
+            "outline-variant": "#e7bdb6",
+            "primary-container": "#bd0000",
+            "on-secondary-container": "#fffbff",
+            "outline": "#926f69",
+            "surface-container-highest": "#e5e2e1",
+            "tertiary-container": "#cca830"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "gutter-sm": "1rem",
+            "space-3xl": "4rem",
+            "space-xl": "2rem",
+            "space-sm": "0.75rem",
+            "space-md": "1rem",
+            "margin-lg": "4rem",
+            "gutter": "1.5rem",
+            "space-xs": "0.5rem",
+            "margin": "1rem",
+            "gutter-lg": "2rem",
+            "space-2xs": "0.25rem",
+            "space-2xl": "3rem",
+            "space-lg": "1.5rem",
+            "margin-md": "2rem"
+          },
+          "fontFamily": {
+            "title-md": ["\"Inter, system-ui, sans-serif\""],
+            "display-hero": ["\"Inter, system-ui, sans-serif\""],
+            "headline-md": ["\"Inter, system-ui, sans-serif\""],
+            "body-lg": ["\"Inter, system-ui, sans-serif\""],
+            "label-md": ["\"Inter, system-ui, sans-serif\""],
+            "headline-sm": ["\"Inter, system-ui, sans-serif\""],
+            "headline-lg": ["\"Inter, system-ui, sans-serif\""],
+            "label-sm": ["\"Inter, system-ui, sans-serif\""],
+            "display-hero-mobile": ["\"Inter, system-ui, sans-serif\""],
+            "mono-sku": ["\"ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace\""],
+            "body-sm": ["\"Inter, system-ui, sans-serif\""],
+            "headline-lg-mobile": ["\"Inter, system-ui, sans-serif\""],
+            "body-md": ["\"Inter, system-ui, sans-serif\""]
+          },
+          "fontSize": {
+            "title-md": ["16px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "600" }],
+            "display-hero": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.025em", "fontWeight": "800" }],
+            "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "body-lg": ["18px", { "lineHeight": "28px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+            "display-hero-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "mono-sku": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "headline-lg-mobile": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }]
+          }
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-background text-on-surface antialiased min-h-screen flex flex-col font-body-md text-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TOP APP BAR (from Shared Components JSON: TopNavBar) -->
+<header class="bg-surface-container-lowest dark:bg-inverse-surface border-b border-surface-container-high dark:border-outline-variant shadow-sm dark:shadow-none docked full-width top-0 sticky z-50">
+<div class="h-[72px] max-w-[1280px] mx-auto px-4 md:px-8 flex items-center justify-between">
+<!-- Logo cluster -->
+<a class="flex items-center gap-3 group" href="#">
+<div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center text-on-primary shadow-sm group-hover:bg-secondary-container transition-colors">
+<span class="material-symbols-outlined text-[24px]">inventory_2</span>
+</div>
+<div class="flex flex-col">
+<span class="text-headline-sm font-headline-sm font-bold text-on-surface dark:text-inverse-on-surface tracking-tight leading-none">Inbisco MitraHub</span>
+<span class="text-body-sm font-body-sm text-outline dark:text-surface-dim font-medium tracking-tight mt-0.5">PT Inbisco Niagatama Semesta</span>
+</div>
+</a>
+<!-- Desktop Navigation Links -->
+<nav class="hidden md:flex items-center gap-6"><a class="text-on-surface-variant font-semibold hover:text-primary transition-colors text-label-md font-label-md" href="#">Beranda</a><a class="text-on-surface-variant font-semibold hover:text-primary transition-colors text-label-md font-label-md" href="#">Tentang Kami</a><a class="text-on-surface-variant font-semibold hover:text-primary transition-colors text-label-md font-label-md" href="#">Produk</a><a class="text-on-surface-variant font-semibold hover:text-primary transition-colors text-label-md font-label-md" href="#">Moments &amp; Jaringan</a><a class="text-primary font-bold border-b-2 border-primary pb-1 transition-colors text-label-md font-label-md" href="#">Daftar Kemitraan</a><a class="text-on-surface-variant font-semibold hover:text-primary transition-colors text-label-md font-label-md" href="#">Kontak</a></nav>
+<!-- Trailing Action Buttons -->
+<div class="flex items-center gap-3">
+<a class="px-4 py-2 rounded-lg border border-surface-container-high hover:border-outline text-on-surface text-label-md font-label-md font-semibold transition-all duration-200 active:scale-95 bg-surface-container-lowest" href="#">
+          Masuk Portal
+        </a>
+<a class="px-4 py-2 rounded-lg bg-primary-container hover:bg-primary text-on-primary text-label-md font-label-md font-semibold shadow-sm transition-all duration-200 active:scale-95 border-b-2 border-primary-container" href="#form-section">
+          Daftar Jadi Mitra
+        </a>
+</div>
+</div>
+</header>
+<!-- MAIN CANVAS -->
+<main class="flex-grow">
+<!-- HERO & BREADCRUMB SECTION -->
+<section class="bg-surface-container-lowest border-b border-surface-container-high py-10 md:py-14">
+<div class="max-w-[1280px] mx-auto px-4 md:px-8">
+<!-- Breadcrumb -->
+<nav class="flex items-center gap-2 text-body-sm font-body-sm text-outline mb-6">
+<a class="hover:text-primary transition-colors" href="#">Beranda</a>
+<span class="material-symbols-outlined text-[16px] text-surface-dim">chevron_right</span>
+<span class="text-on-surface font-semibold">Kemitraan</span>
+</nav>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<div class="lg:col-span-8"><div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high text-on-surface text-label-sm font-label-sm uppercase tracking-wider mb-4 border border-surface-variant"><span class="w-2 h-2 rounded-full bg-primary-container"></span>PENDAFTARAN MITRA · CABANG KRIAN</div><h1 class="text-headline-lg font-headline-lg text-on-surface tracking-tight mb-4 font-bold">Mulai Kemitraan Distribusi Bersama Inbisco.</h1><p class="text-body-lg font-body-lg text-on-surface-variant max-w-2xl mb-6 leading-relaxed">Lengkapi informasi usaha Anda untuk memulai proses pendaftaran sebagai mitra distribusi.</p><div class="p-4 rounded-xl bg-surface-container-low border border-surface-container-high flex items-start gap-3.5 mb-6"><span class="material-symbols-outlined text-tertiary text-[22px] flex-shrink-0 mt-0.5">verified_user</span><p class="text-body-sm font-body-sm text-on-surface-variant leading-relaxed"><strong class="text-on-surface font-semibold">Catatan Operasional Cabang:</strong> Pengajuan Anda akan ditinjau langsung oleh tim armada dan sales logistik cabang Krian sesuai jadwal rute pasokan berkala.</p></div><div class="flex flex-wrap items-center gap-4"><a class="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-primary-container text-on-primary font-semibold text-label-md font-label-md hover:bg-primary transition-all duration-200 active:scale-95 shadow-sm" href="#form-section"><span class="material-symbols-outlined text-[20px]">assignment</span>Mulai Formulir Kemitraan</a><a class="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-surface-container-high bg-surface-container-lowest text-on-surface font-semibold text-label-md font-label-md hover:bg-surface-container-low transition-all duration-200 active:scale-95" href="#"><span class="material-symbols-outlined text-[20px]">inventory</span>Katalog Produk FMCG</a></div></div>
+<!-- Depot Info Quick Pill -->
+<div class="lg:col-span-4 bg-surface-container-low p-5 rounded-xl border border-surface-container-high">
+<div class="flex items-center justify-between border-b border-surface-variant pb-3 mb-3">
+<span class="text-label-sm font-label-sm uppercase tracking-wider text-outline font-bold">Depot Penyalur</span>
+<span class="inline-flex items-center gap-1 text-label-sm font-label-sm text-primary font-semibold">
+<span class="w-2 h-2 rounded-full bg-secondary-container"></span>
+                Krian Hub Aktif
+              </span>
+</div>
+<div class="space-y-3 text-body-sm font-body-sm">
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-outline text-[18px]">location_on</span>
+<span class="text-on-surface-variant">Jl. Raya By Pass Krian KM 31, Sidomojo, Krian, Sidoarjo, Jawa Timur</span>
+</div>
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-outline text-[18px]">schedule</span>
+<span class="text-on-surface-variant">Jadwal Tinjauan: Senin – Sabtu, 08:00 – 16:30 WIB</span>
+</div>
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-outline text-[18px]">local_shipping</span>
+<span class="text-on-surface-variant">Armada: Pickup &amp; Truk Engkel Box Reguler</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- BENEFITS & EXPECTATIONS (3 Cards) -->
+<section class="py-12 bg-surface">
+<div class="max-w-[1280px] mx-auto px-4 md:px-8">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-surface-container-high shadow-sm hover:border-tertiary-container transition-all">
+<div class="w-12 h-12 rounded-lg bg-surface-container-low border border-surface-container-high flex items-center justify-center text-primary-container mb-4">
+<span class="material-symbols-outlined text-[26px]">category</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface mb-2">Informasi Produk</h3>
+<p class="text-body-md font-body-md text-on-surface-variant leading-relaxed">
+              Kenali pilihan produk FMCG resmi dan sampaikan kebutuhan usaha Anda dengan transparan.
+            </p>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-surface-container-high shadow-sm hover:border-tertiary-container transition-all">
+<div class="w-12 h-12 rounded-lg bg-surface-container-low border border-surface-container-high flex items-center justify-center text-tertiary mb-4">
+<span class="material-symbols-outlined text-[26px]">forum</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface mb-2">Komunikasi Bisnis Langsung</h3>
+<p class="text-body-md font-body-md text-on-surface-variant leading-relaxed">
+              Gunakan informasi yang Anda berikan untuk membantu perwakilan sales memahami lokasi dan pola pasokan toko.
+            </p>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-surface-container-high shadow-sm hover:border-tertiary-container transition-all">
+<div class="w-12 h-12 rounded-lg bg-surface-container-low border border-surface-container-high flex items-center justify-center text-primary-container mb-4">
+<span class="material-symbols-outlined text-[26px]">local_shipping</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface mb-2">Peninjauan Terencana</h3>
+<p class="text-body-md font-body-md text-on-surface-variant leading-relaxed">
+              Pengajuan ditinjau berkala sesuai rute armada dan ketentuan distribusi wilayah Krian &amp; sekitarnya.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- STEPPED REGISTRATION FORM CONTAINER -->
+<section class="py-12 bg-background border-t border-surface-container-high scroll-mt-20" id="form-section">
+<div class="max-w-[1280px] mx-auto px-4 md:px-8">
+<!-- Form Header & Simulation Bar -->
+<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+<div>
+<span class="text-label-sm font-label-sm font-bold text-primary tracking-wider uppercase">Langkah Pendaftaran</span>
+<h2 class="text-headline-md font-headline-md text-on-surface mt-1">Formulir Verifikasi Kemitraan Toko &amp; Warkop</h2>
+</div>
+<!-- Sandbox / Prototype Simulation Controls -->
+<div class="flex items-center gap-2 p-1.5 rounded-lg bg-surface-container border border-surface-container-high">
+<span class="text-body-sm font-body-sm text-outline px-2 hidden sm:inline">Simulasi Pengujian:</span>
+<button class="px-3 py-1.5 rounded-md text-label-sm font-label-sm font-semibold bg-surface-container-lowest text-on-surface border border-surface-container-high hover:border-outline transition-colors" id="btnSimulateSuccess" type="button">
+              Simulasi Sukses
+            </button>
+<button class="px-3 py-1.5 rounded-md text-label-sm font-label-sm font-semibold bg-surface-container-lowest text-error border border-error-container hover:bg-error-container transition-colors" id="btnSimulateError" type="button">
+              Simulasi Kendala
+            </button>
+</div>
+</div>
+<!-- Simulated Error Toast / Banner (Hidden by default) -->
+<div class="hidden mb-6 p-4 rounded-xl bg-error-container text-on-error-container border border-error flex items-start gap-3 transition-all duration-200" id="errorBanner"><span class="material-symbols-outlined text-error text-[24px] flex-shrink-0 mt-0.5">warning</span><div class="flex-grow"><div class="flex items-center gap-2"><h4 class="font-bold text-label-md font-label-md">Peringatan: Verifikasi Titik Lokasi &amp; Jalur Logistik</h4><span class="px-2 py-0.5 rounded text-[11px] font-bold bg-error text-on-error uppercase tracking-wider">Zona Khusus</span></div><p class="text-body-sm font-body-sm mt-1 leading-relaxed">Lokasi usaha atau koordinat terdeteksi di luar zona rute aktif armada harian Depot Krian (&gt;15 km), atau terdapat kolom wajib belum lengkap. Hubungi hotline armada logistik Krian di (031) 897-4001 untuk permohonan rute khusus.</p></div><button class="text-on-error-container hover:opacity-80 p-1" onclick="clearErrorSimulation()" type="button" aria-label="Tutup Pesan"><span class="material-symbols-outlined text-[20px]">close</span></button></div>
+<!-- Form Card Structure -->
+<div class="bg-surface-container-lowest rounded-xl border border-surface-container-high shadow-sm overflow-hidden">
+<!-- Stepper Indicator -->
+<div class="border-b border-surface-container-high bg-surface-container-low px-6 py-4">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4"><div class="flex items-center gap-3 text-primary font-bold cursor-pointer" id="step-nav-1" onclick="goToStep(1)"><div class="w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center text-label-sm font-label-sm font-bold">1</div><div class="flex flex-col"><span class="text-label-sm font-label-sm uppercase tracking-wider text-outline font-medium">Bagian 1</span><span class="text-body-md font-body-md text-on-surface font-semibold">Informasi Pribadi</span></div></div><div class="flex items-center gap-3 text-outline cursor-pointer opacity-70 hover:opacity-100" id="step-nav-2" onclick="goToStep(2)"><div class="w-8 h-8 rounded-full bg-surface-container text-outline flex items-center justify-center text-label-sm font-label-sm font-bold">2</div><div class="flex flex-col"><span class="text-label-sm font-label-sm uppercase tracking-wider text-outline font-medium">Bagian 2</span><span class="text-body-md font-body-md text-on-surface font-semibold">Informasi Usaha</span></div></div><div class="flex items-center gap-3 text-outline cursor-pointer opacity-70 hover:opacity-100" id="step-nav-3" onclick="goToStep(3)"><div class="w-8 h-8 rounded-full bg-surface-container text-outline flex items-center justify-center text-label-sm font-label-sm font-bold">3</div><div class="flex flex-col"><span class="text-label-sm font-label-sm uppercase tracking-wider text-outline font-medium">Bagian 3</span><span class="text-body-md font-body-md text-on-surface font-semibold">Kapasitas &amp; Fasilitas</span></div></div><div class="flex items-center gap-3 text-outline cursor-pointer opacity-70 hover:opacity-100" id="step-nav-4" onclick="goToStep(4)"><div class="w-8 h-8 rounded-full bg-surface-container text-outline flex items-center justify-center text-label-sm font-label-sm font-bold">4</div><div class="flex flex-col"><span class="text-label-sm font-label-sm uppercase tracking-wider text-outline font-medium">Bagian 4</span><span class="text-body-md font-body-md text-on-surface font-semibold">Ringkasan &amp; Kirim</span></div></div></div>
+</div>
+<!-- Multi-Step Form Wrapper -->
+<form class="p-6 md:p-10 space-y-8" id="partnerForm" onsubmit="event.preventDefault(); handleFormFinalSubmit();"><!-- STEP 1: INFORMASI PRIBADI (PIC) --><div class="step-content space-y-6" id="step-1"><div class="border-b border-surface-container-high pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"><div><h3 class="text-headline-sm font-headline-sm text-on-surface font-bold">Bagian 1: Informasi Pribadi (PIC)</h3><p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">Rincian kontak resmi penanggung jawab untuk verifikasi rute dan konfirmasi survei canvasser.</p></div><span class="px-2.5 py-1 rounded-full bg-surface-container-high text-primary font-bold text-label-sm font-label-sm w-fit">Langkah 1 dari 4</span></div><div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div class="space-y-2" id="fieldGroup-namaPIC"><label class="block text-label-md font-label-md text-on-surface font-semibold" for="namaPIC">Nama Lengkap PIC / Pemilik Usaha <span class="text-error">*</span></label><div class="relative"><input class="w-full h-[44px] px-3.5 pr-10 rounded-lg border border-surface-container-high bg-surface-container-lowest text-on-surface text-body-md font-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-fixed focus:outline-none transition-colors" id="namaPIC" oninput="validatePICField()" placeholder="Contoh: Bpk. Haryono Wijaya" required="" type="text" value="Bpk. Haryono Wijaya"><span class="material-symbols-outlined text-[20px] text-tertiary absolute right-3 top-3 pointer-events-none" id="iconValidNama">check_circle</span></div><p class="text-body-sm font-body-sm text-outline" id="helperNama">Nama lengkap sesuai KTP penanggung jawab operasional toko.</p></div><div class="space-y-2" id="fieldGroup-nomorWhatsapp"><label class="block text-label-md font-label-md text-on-surface font-semibold" for="nomorWhatsapp">Nomor Telepon / WhatsApp Aktif <span class="text-error">*</span></label><div class="flex"><span class="inline-flex items-center px-3.5 rounded-l-lg border border-r-0 border-surface-container-high bg-surface-container-low text-on-surface font-semibold text-body-md font-body-md">+62</span><input class="w-full h-[44px] px-3.5 rounded-r-lg border border-surface-container-high bg-surface-container-lowest text-on-surface text-body-md font-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-fixed focus:outline-none transition-colors" id="nomorWhatsapp" oninput="validatePhoneField()" placeholder="812-3456-7890" required="" type="tel" value="812-3456-7890"></div><p class="text-body-sm font-body-sm text-outline" id="helperWhatsapp">Notifikasi jadwal pasokan dan faktur DO dikirim via WhatsApp.</p></div><div class="space-y-2 md:col-span-2"><label class="block text-label-md font-label-md text-on-surface font-semibold" for="emailUsaha">Alamat Email <span class="text-outline font-normal">(Opsional untuk e-Faktur)</span></label><input class="w-full md:w-1/2 h-[44px] px-3.5 rounded-lg border border-surface-container-high bg-surface-container-lowest text-on-surface text-body-md font-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-fixed focus:outline-none transition-colors" id="emailUsaha" placeholder="mitra@tokoberkah.com" type="email" value="haryono@tokoberkah.com"><p class="text-body-sm font-body-sm text-outline">Digunakan untuk rekapitulasi order mingguan dan arsip nota digital.</p></div></div><div class="pt-4 border-t border-surface-container-high flex justify-end"><button class="px-6 py-2.5 rounded-lg bg-primary-container text-on-primary font-semibold text-label-md font-label-md hover:bg-primary transition-all flex items-center gap-2 active:scale-95 shadow-sm" onclick="goToStep(2)" type="button">Lanjut: Informasi Usaha<span class="material-symbols-outlined text-[18px]">arrow_forward</span></button></div></div><!-- STEP 2: INFORMASI USAHA & TITIK TOKO --><div class="step-content space-y-6 hidden" id="step-2"><div class="border-b border-surface-container-high pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"><div><h3 class="text-headline-sm font-headline-sm text-on-surface font-bold">Bagian 2: Informasi Usaha &amp; Titik Toko</h3><p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">Identitas fisik usaha, penentuan titik rute, dan alamat operasional toko.</p></div><span class="px-2.5 py-1 rounded-full bg-surface-container-high text-primary font-bold text-label-sm font-label-sm w-fit">Langkah 2 dari 4</span></div><div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div class="space-y-2"><label class="block text-label-md font-label-md text-on-surface font-semibold" for="namaUsaha">Nama Toko / Badan Usaha <span class="text-error">*</span></label><input class="w-full h-[44px] px-3.5 rounded-lg border border-surface-container-high bg-surface-container-lowest text-on-surface text-body-md font-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-fixed focus:outline-none transition-colors" id="namaUsaha" placeholder="Contoh: Toko Sembako Berkah Rejeki" required="" type="text" value="Toko Sembako Berkah Rejeki"><p class="text-body-sm font-body-sm text-outline">Nama usaha yang tertera pada plang fisik toko Anda.</p></div><div class="space-y-2"><label class="block text-label-md font-label-md text-on-surface font-semibold" for="jenisUsaha">Tipe / Klasifikasi Usaha <span class="text-error">*</span></label><select class="w-full h-[44px] px-3.5 rounded-lg border border-surface-container-high bg-surface-container-lowest text-on-surface text-body-md font-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-fixed focus:outline-none transition-colors" id="jenisUsaha" required=""><option value="Toko Kelontong / Sembako" selected="">Toko Kelontong / Sembako</option><option value="Warung Kopi Modern (Warkop/Kafe)">Warung Kopi Modern (Warkop / Kafe)</option><option value="Minimarket Mandiri">Minimarket Mandiri</option><option value="Sub-Agen Grosir Kartonan">Sub-Agen Grosir Kartonan</option></select></div><div class="space-y-2 md:col-span-2" id="fieldGroup-kecamatan"><label class="block text-label-md font-label-md text-on-surface font-semibold" for="kecamatan">Kecamatan / Jalur Rute Armada <span class="text-error">*</span></label><select class="w-full md:w-1/2 h-[44px] px-3.5 rounded-lg border border-surface-container-high bg-surface-container-lowest text-on-surface text-body-md font-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-fixed focus:outline-none transition-colors" id="kecamatan" onchange="updateCoverageCardSync()" required=""><option value="Kec. Krian" selected="">Kec. Krian (Hub Sentral Sidoarjo Barat)</option><option value="Kec. Balongbendo">Kec. Balongbendo (Rute Rutin Selasa &amp; Jumat)</option><option value="Kec. Tarik">Kec. Tarik (Rute Rutin Senin &amp; Kamis)</option><option value="Kec. Prambon">Kec. Prambon (Rute Rutin Rabu &amp; Sabtu)</option><option value="Kec. Wonoayu">Kec. Wonoayu (Sameday / H+1 Delivery)</option></select><p class="text-body-sm font-body-sm text-outline" id="helperKecamatan">Tip: Anda juga dapat mengeklik kartu 'Cakupan Jalur Reguler Depot Krian' di bawah formulir.</p></div><div class="space-y-2 md:col-span-2"><label class="block text-label-md font-label-md text-on-surface font-semibold" for="alamatLengkap">Alamat Toko Lengkap &amp; Patokan Rute <span class="text-error">*</span></label><textarea class="w-full p-3.5 rounded-lg border border-surface-container-high bg-surface-container-lowest text-on-surface text-body-md font-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-fixed focus:outline-none transition-colors" id="alamatLengkap" placeholder="Nama jalan, nomor, RT/RW, kelurahan/desa, serta patokan akses jalan armada pickup / truk engkel box" required="" rows="3">Jl. Raya Kyai Mojo No. 42, RT 03/RW 02, Jeruk Gamping, Krian (Dekat Pasar Krian)</textarea><p class="text-body-sm font-body-sm text-outline">Pastikan memuat patokan jelas agar tim armada dapat langsung menjadwalkan kunjungan.</p></div></div><div class="pt-4 border-t border-surface-container-high flex justify-between"><button class="px-5 py-2.5 rounded-lg border border-surface-container-high text-on-surface font-semibold text-label-md font-label-md hover:bg-surface-container-low transition-all" onclick="goToStep(1)" type="button">Sebelumnya</button><button class="px-6 py-2.5 rounded-lg bg-primary-container text-on-primary font-semibold text-label-md font-label-md hover:bg-primary transition-all flex items-center gap-2 active:scale-95 shadow-sm" onclick="goToStep(3)" type="button">Lanjut: Kapasitas &amp; Fasilitas<span class="material-symbols-outlined text-[18px]">arrow_forward</span></button></div></div><!-- STEP 3: KAPASITAS & FASILITAS DISTRIBUSI --><div class="step-content space-y-6 hidden" id="step-3"><div class="border-b border-surface-container-high pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"><div><h3 class="text-headline-sm font-headline-sm text-on-surface font-bold">Bagian 3: Kapasitas Distribusi &amp; Fasilitas</h3><p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">Kapasitas ruang simpan, armada toko, dan perkiraan kebutuhan kuota karton bulanan.</p></div><span class="px-2.5 py-1 rounded-full bg-surface-container-high text-primary font-bold text-label-sm font-label-sm w-fit">Langkah 3 dari 4</span></div><div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div class="space-y-2"><label class="block text-label-md font-label-md text-on-surface font-semibold" for="lamaBerusaha">Pengalaman Berusaha <span class="text-error">*</span></label><select class="w-full h-[44px] px-3.5 rounded-lg border border-surface-container-high bg-surface-container-lowest text-on-surface text-body-md font-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-fixed focus:outline-none transition-colors" id="lamaBerusaha" required=""><option value="Kurang dari 1 Tahun">Kurang dari 1 Tahun</option><option value="1 - 3 Tahun" selected="">1 - 3 Tahun</option><option value="3 - 5 Tahun">3 - 5 Tahun</option><option value="Lebih dari 5 Tahun">Lebih dari 5 Tahun</option></select></div><div class="space-y-2"><label class="block text-label-md font-label-md text-on-surface font-semibold" for="estimasiKarton">Estimasi Kebutuhan Pasokan (Karton / Bulan) <span class="text-error">*</span></label><select class="w-full h-[44px] px-3.5 rounded-lg border border-surface-container-high bg-surface-container-lowest text-on-surface text-body-md font-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-fixed focus:outline-none transition-colors" id="estimasiKarton" required=""><option value="10 - 50 Karton / Bulan">10 - 50 Karton / Bulan (Skala Toko / Warkop)</option><option value="50 - 150 Karton / Bulan" selected="">50 - 150 Karton / Bulan (Grosir Ringan / Minimarket)</option><option value="150 - 500 Karton / Bulan">150 - 500 Karton / Bulan (Grosir Reguler)</option><option value="Lebih dari 500 Karton / Bulan">&gt; 500 Karton / Bulan (Sub-Depot / Agen Utama)</option></select></div><div class="space-y-3 md:col-span-2"><label class="block text-label-md font-label-md text-on-surface font-semibold">Fasilitas &amp; Perlengkapan Toko yang Dimiliki <span class="text-error">*</span></label><div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1"><label class="flex items-center gap-3 p-3.5 rounded-lg border border-surface-container-high hover:border-outline cursor-pointer bg-surface-container-lowest transition-colors"><input checked="" class="w-4 h-4 rounded text-primary-container focus:ring-primary-container border-outline" name="facility_item" type="checkbox" value="Gudang Penyimpanan Terlindung"><span class="text-body-md font-body-md text-on-surface font-medium">Gudang Terlindung</span></label><label class="flex items-center gap-3 p-3.5 rounded-lg border border-surface-container-high hover:border-outline cursor-pointer bg-surface-container-lowest transition-colors"><input checked="" class="w-4 h-4 rounded text-primary-container focus:ring-primary-container border-outline" name="facility_item" type="checkbox" value="Kendaraan Operasional (Pickup/Roda Tiga)"><span class="text-body-md font-body-md text-on-surface font-medium">Kendaraan Operasional</span></label><label class="flex items-center gap-3 p-3.5 rounded-lg border border-surface-container-high hover:border-outline cursor-pointer bg-surface-container-lowest transition-colors"><input checked="" class="w-4 h-4 rounded text-primary-container focus:ring-primary-container border-outline" name="facility_item" type="checkbox" value="Etalase / Display Ritel FMCG Resmi"><span class="text-body-md font-body-md text-on-surface font-medium">Etalase Display Resmi</span></label></div></div><div class="space-y-2 md:col-span-2"><label class="block text-label-md font-label-md text-on-surface font-semibold" for="targetArea">Jangkauan Pelanggan / Target Wilayah Pasokan Sekitar</label><input class="w-full h-[44px] px-3.5 rounded-lg border border-surface-container-high bg-surface-container-lowest text-on-surface text-body-md font-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-fixed focus:outline-none transition-colors" id="targetArea" placeholder="Contoh: Radius 5-8 km sekitar Pasar Krian, Balongbendo, dan Wonoayu" type="text" value="Radius 5-8 km sekitar Krian, Balongbendo, dan Wonoayu"></div></div><div class="pt-4 border-t border-surface-container-high flex justify-between"><button class="px-5 py-2.5 rounded-lg border border-surface-container-high text-on-surface font-semibold text-label-md font-label-md hover:bg-surface-container-low transition-all" onclick="goToStep(2)" type="button">Sebelumnya</button><button class="px-6 py-2.5 rounded-lg bg-primary-container text-on-primary font-semibold text-label-md font-label-md hover:bg-primary transition-all flex items-center gap-2 active:scale-95 shadow-sm" onclick="goToStep(4)" type="button">Lanjut: Konfirmasi &amp; Persetujuan<span class="material-symbols-outlined text-[18px]">arrow_forward</span></button></div></div><!-- STEP 4: RINGKASAN & KONFIRMASI PENGATURAN --><div class="step-content space-y-6 hidden" id="step-4"><div class="border-b border-surface-container-high pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"><div><h3 class="text-headline-sm font-headline-sm text-on-surface font-bold">Bagian 4: Ringkasan &amp; Konfirmasi Pengajuan</h3><p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">Tinjau kelengkapan berkas kemitraan Anda sebelum diteruskan ke tim canvasser cabang Krian.</p></div><span class="px-2.5 py-1 rounded-full bg-surface-container-high text-primary font-bold text-label-sm font-label-sm w-fit">Langkah 4 dari 4</span></div><div class="p-5 rounded-xl bg-surface-container-low border border-surface-container-high space-y-4"><div class="flex items-center justify-between border-b border-surface-variant pb-2"><div class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-[20px]">fact_check</span><span class="text-title-md font-title-md text-on-surface font-bold">Ringkasan Berkas Calon Mitra</span></div><button class="text-label-sm font-label-sm text-primary font-semibold hover:underline flex items-center gap-1" onclick="goToStep(1)" type="button"><span class="material-symbols-outlined text-[16px]">edit</span>Ubah Data</button></div><div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-body-sm font-body-sm"><div class="bg-surface-container-lowest p-3 rounded-lg border border-surface-container-high"><span class="text-outline block text-[11px] uppercase tracking-wider font-bold mb-0.5">PIC / Pemilik</span><span class="font-bold text-on-surface" id="previewNamaUsaha">Bpk. Haryono Wijaya</span></div><div class="bg-surface-container-lowest p-3 rounded-lg border border-surface-container-high"><span class="text-outline block text-[11px] uppercase tracking-wider font-bold mb-0.5">Nama Toko</span><span class="font-bold text-on-surface" id="previewJenisUsaha">Toko Sembako Berkah Rejeki</span></div><div class="bg-surface-container-lowest p-3 rounded-lg border border-surface-container-high"><span class="text-outline block text-[11px] uppercase tracking-wider font-bold mb-0.5">WhatsApp Aktif</span><span class="font-bold text-on-surface" id="previewPemilikKontak">+62 812-3456-7890</span></div><div class="bg-surface-container-lowest p-3 rounded-lg border border-surface-container-high"><span class="text-outline block text-[11px] uppercase tracking-wider font-bold mb-0.5">Rute &amp; Kuota</span><span class="font-bold text-on-surface" id="previewWilayah">Kec. Krian (50-150 Karton)</span></div></div></div><div class="space-y-4 pt-1"><label class="flex items-start gap-3 cursor-pointer p-3.5 rounded-lg border border-surface-container-high hover:border-outline bg-surface-container-lowest transition-colors"><input checked="" class="w-4 h-4 mt-1 rounded text-primary-container focus:ring-primary-container border-outline" id="checkLegal" required="" type="checkbox"><span class="text-body-sm font-body-sm text-on-surface leading-relaxed">Saya menyatakan seluruh informasi di atas adalah benar dan menyetujui pemrosesan data calon mitra distribusi oleh PT Inbisco Niagatama Semesta Cabang Krian sesuai prosedur operasional resmi distribusi FMCG. <span class="text-error">*</span></span></label><div class="p-4 rounded-lg bg-surface-container border border-surface-container-high flex items-center gap-3"><span class="material-symbols-outlined text-outline text-[20px] flex-shrink-0">info</span><p class="text-body-sm font-body-sm text-outline">Pendaftaran kemitraan Inbisco MitraHub tidak memungut biaya pendaftaran apapun. Tim cabang akan mencocokkan jadwal rute canvasser terdekat.</p></div></div><div class="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-surface-container-high"><button class="w-full sm:w-auto px-5 py-2.5 rounded-lg border border-surface-container-high text-on-surface font-semibold text-label-md font-label-md hover:bg-surface-container-low transition-all" onclick="goToStep(3)" type="button">Sebelumnya</button><button class="w-full sm:w-auto px-8 py-3 rounded-lg bg-primary-container text-on-primary font-bold text-label-md font-label-md hover:bg-primary transition-all duration-200 active:scale-95 shadow-sm flex items-center justify-center gap-2" type="submit"><span class="material-symbols-outlined text-[20px]">send</span>Kirim Pendaftaran Kemitraan</button></div></div></form>
+</div>
+</div>
+</section>
+<!-- COVERAGE SUB-DISTRICT LOGISTICS INFO -->
+<section class="py-12 bg-surface border-t border-surface-container-high">
+<div class="max-w-[1280px] mx-auto px-4 md:px-8">
+<div class="mb-6">
+<span class="text-label-sm font-label-sm font-bold text-primary tracking-wider uppercase">Jalur Distribusi Aktif</span>
+<h3 class="text-headline-sm font-headline-sm text-on-surface mt-1">Cakupan Jalur Reguler Depot Krian</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4"><!-- Card 1 --><div class="bg-surface-container-lowest p-4 rounded-xl border border-surface-container-high border-l-[3px] border-l-tertiary-container shadow-sm hover:border-primary cursor-pointer transition-all active:scale-95 route-card" id="cardRoute-Krian" onclick="selectRouteFromCard('Kec. Krian')"><div class="flex items-center justify-between"><span class="text-label-md font-label-md text-on-surface font-bold block">Kec. Krian</span><span class="material-symbols-outlined text-primary text-[18px] opacity-0 check-indicator">check_circle</span></div><span class="text-body-sm font-body-sm text-outline block mt-0.5">Sameday / H+1 Delivery</span><span class="text-label-sm font-label-sm text-on-surface-variant font-semibold mt-2 block">Min. Order: 1 Karton</span><span class="text-[11px] text-primary font-semibold block mt-1">Klik untuk pilih rute</span></div><!-- Card 2 --><div class="bg-surface-container-lowest p-4 rounded-xl border border-surface-container-high border-l-[3px] border-l-tertiary-container shadow-sm hover:border-primary cursor-pointer transition-all active:scale-95 route-card" id="cardRoute-Balongbendo" onclick="selectRouteFromCard('Kec. Balongbendo')"><div class="flex items-center justify-between"><span class="text-label-md font-label-md text-on-surface font-bold block">Kec. Balongbendo</span><span class="material-symbols-outlined text-primary text-[18px] opacity-0 check-indicator">check_circle</span></div><span class="text-body-sm font-body-sm text-outline block mt-0.5">Rute Rutin Selasa &amp; Jumat</span><span class="text-label-sm font-label-sm text-on-surface-variant font-semibold mt-2 block">Min. Order: 1 Karton</span><span class="text-[11px] text-primary font-semibold block mt-1">Klik untuk pilih rute</span></div><!-- Card 3 --><div class="bg-surface-container-lowest p-4 rounded-xl border border-surface-container-high border-l-[3px] border-l-tertiary-container shadow-sm hover:border-primary cursor-pointer transition-all active:scale-95 route-card" id="cardRoute-Tarik" onclick="selectRouteFromCard('Kec. Tarik')"><div class="flex items-center justify-between"><span class="text-label-md font-label-md text-on-surface font-bold block">Kec. Tarik</span><span class="material-symbols-outlined text-primary text-[18px] opacity-0 check-indicator">check_circle</span></div><span class="text-body-sm font-body-sm text-outline block mt-0.5">Rute Rutin Senin &amp; Kamis</span><span class="text-label-sm font-label-sm text-on-surface-variant font-semibold mt-2 block">Min. Order: 2 Karton</span><span class="text-[11px] text-primary font-semibold block mt-1">Klik untuk pilih rute</span></div><!-- Card 4 --><div class="bg-surface-container-lowest p-4 rounded-xl border border-surface-container-high border-l-[3px] border-l-tertiary-container shadow-sm hover:border-primary cursor-pointer transition-all active:scale-95 route-card" id="cardRoute-Prambon" onclick="selectRouteFromCard('Kec. Prambon')"><div class="flex items-center justify-between"><span class="text-label-md font-label-md text-on-surface font-bold block">Kec. Prambon</span><span class="material-symbols-outlined text-primary text-[18px] opacity-0 check-indicator">check_circle</span></div><span class="text-body-sm font-body-sm text-outline block mt-0.5">Rute Rutin Rabu &amp; Sabtu</span><span class="text-label-sm font-label-sm text-on-surface-variant font-semibold mt-2 block">Min. Order: 2 Karton</span><span class="text-[11px] text-primary font-semibold block mt-1">Klik untuk pilih rute</span></div><!-- Card 5 --><div class="bg-surface-container-lowest p-4 rounded-xl border border-surface-container-high border-l-[3px] border-l-tertiary-container shadow-sm hover:border-primary cursor-pointer transition-all active:scale-95 route-card" id="cardRoute-Wonoayu" onclick="selectRouteFromCard('Kec. Wonoayu')"><div class="flex items-center justify-between"><span class="text-label-md font-label-md text-on-surface font-bold block">Kec. Wonoayu</span><span class="material-symbols-outlined text-primary text-[18px] opacity-0 check-indicator">check_circle</span></div><span class="text-body-sm font-body-sm text-outline block mt-0.5">Sameday / H+1 Delivery</span><span class="text-label-sm font-label-sm text-on-surface-variant font-semibold mt-2 block">Min. Order: 1 Karton</span><span class="text-[11px] text-primary font-semibold block mt-1">Klik untuk pilih rute</span></div></div>
+</div>
+</section>
+</main>
+<!-- REVIEW SUMMARY MODAL (Preview Before Final Submission) -->
+<div class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4" id="reviewModal">
+<div class="bg-surface-container-lowest rounded-xl max-w-lg w-full border border-surface-container-high shadow-2xl overflow-hidden animate-fade-in">
+<div class="px-6 py-4 border-b border-surface-container-high flex items-center justify-between bg-surface-container-low">
+<h4 class="text-title-md font-title-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container">verified</span>
+          Konfirmasi Data Pengajuan
+        </h4>
+<button class="text-outline hover:text-on-surface" onclick="closeReviewModal()" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="p-6 space-y-4 text-body-sm font-body-sm">
+<p class="text-on-surface-variant">Pastikan rincian usaha Anda di bawah ini sudah akurat untuk proses peninjauan cabang Krian:</p>
+<div class="space-y-2.5 bg-surface-container-low p-4 rounded-lg border border-surface-container-high">
+<div class="flex justify-between border-b border-surface-variant/50 pb-1.5">
+<span class="text-outline">Nama Usaha</span>
+<span class="font-bold text-on-surface" id="modalNamaUsaha">-</span>
+</div>
+<div class="flex justify-between border-b border-surface-variant/50 pb-1.5">
+<span class="text-outline">Jenis Usaha</span>
+<span class="font-bold text-on-surface" id="modalJenisUsaha">-</span>
+</div>
+<div class="flex justify-between border-b border-surface-variant/50 pb-1.5">
+<span class="text-outline">Nama Pemilik</span>
+<span class="font-bold text-on-surface" id="modalPemilik">-</span>
+</div>
+<div class="flex justify-between border-b border-surface-variant/50 pb-1.5">
+<span class="text-outline">Nomor WhatsApp</span>
+<span class="font-bold text-on-surface" id="modalWhatsapp">-</span>
+</div>
+<div class="flex justify-between border-b border-surface-variant/50 pb-1.5">
+<span class="text-outline">Kecamatan</span>
+<span class="font-bold text-on-surface" id="modalKecamatan">-</span>
+</div>
+<div class="flex justify-between pt-0.5">
+<span class="text-outline">Kebutuhan Produk</span>
+<span class="font-bold text-on-surface text-right" id="modalProduk">-</span>
+</div>
+</div>
+<p class="text-body-sm font-body-sm text-outline italic">
+          Data akan dikirimkan ke server Inbisco MitraHub Cabang Krian.
+        </p>
+</div>
+<div class="px-6 py-4 bg-surface-container-low border-t border-surface-container-high flex items-center justify-end gap-3">
+<button class="px-4 py-2 rounded-lg border border-surface-container-high text-on-surface text-label-md font-label-md font-semibold hover:bg-surface-container transition-colors" onclick="closeReviewModal()" type="button">
+          Perbaiki
+        </button>
+<button class="px-5 py-2 rounded-lg bg-primary-container text-on-primary text-label-md font-label-md font-bold hover:bg-primary transition-all" onclick="confirmFinalSubmission()" type="button">
+          Kirim Sekarang
+        </button>
+</div>
+</div>
+</div>
+<!-- SUCCESS CONFIRMATION MODAL -->
+<div class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4" id="successModal"><div class="bg-surface-container-lowest rounded-xl max-w-lg w-full border border-surface-container-high shadow-2xl overflow-hidden animate-fade-in"><div class="bg-primary-container text-on-primary px-6 py-5 flex items-center justify-between"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-on-primary/10 flex items-center justify-center"><span class="material-symbols-outlined text-[24px]">verified</span></div><div><h3 class="text-title-md font-title-md font-bold">Pendaftaran Kemitraan Diterima</h3><span class="text-body-sm font-body-sm opacity-90">PT Inbisco Niagatama Semesta (Depot Krian)</span></div></div><button class="text-on-primary hover:opacity-80 p-1" onclick="closeSuccessModal()" type="button" aria-label="Tutup"><span class="material-symbols-outlined text-[22px]">close</span></button></div><div class="p-6 space-y-5 text-body-sm font-body-sm"><div class="p-4 rounded-xl bg-surface-container-low border border-surface-container-high flex items-center justify-between"><div class="flex flex-col"><span class="text-outline text-[11px] uppercase tracking-wider font-bold">ID Registrasi Resmi</span><span class="text-title-md font-title-md font-bold text-primary font-mono">REG-KRN-2026-0891</span></div><span class="px-2.5 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-label-sm font-label-sm font-bold flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>Dalam Antrean Survei</span></div><div class="space-y-2 rounded-lg bg-surface-container p-3.5 border border-surface-container-high"><div class="flex justify-between border-b border-surface-variant/40 pb-1.5"><span class="text-outline">Nama Pemilik / PIC:</span><span class="font-semibold text-on-surface" id="successModalPIC">Bpk. Haryono Wijaya</span></div><div class="flex justify-between border-b border-surface-variant/40 pb-1.5"><span class="text-outline">Nama Usaha:</span><span class="font-semibold text-on-surface" id="successModalToko">Toko Sembako Berkah Rejeki</span></div><div class="flex justify-between border-b border-surface-variant/40 pb-1.5"><span class="text-outline">Jalur Armada Terdaftar:</span><span class="font-semibold text-on-surface" id="successModalWilayah">Kec. Krian (Hub Sentral)</span></div><div class="flex justify-between pt-0.5"><span class="text-outline">Target Respon Sales Canvasser:</span><span class="font-bold text-primary">Maksimal 1 x 24 Jam Kerja</span></div></div><div class="p-3.5 rounded-lg bg-surface-container-low border border-surface-container-high flex items-start gap-3"><span class="material-symbols-outlined text-outline text-[20px] flex-shrink-0 mt-0.5">calendar_month</span><p class="text-body-sm font-body-sm text-on-surface-variant">Tim armada Depot Krian akan menghubungi nomor WhatsApp terdaftar untuk mengonfirmasi rute pengiriman perdana &amp; penataan rak FMCG resmi.</p></div></div><div class="px-6 py-4 bg-surface-container-low border-t border-surface-container-high flex flex-col sm:flex-row items-center justify-between gap-3"><button class="w-full sm:w-auto px-4 py-2.5 rounded-lg border border-surface-container-high hover:border-outline bg-surface-container-lowest text-on-surface text-label-md font-label-md font-semibold flex items-center justify-center gap-2 transition-colors" onclick="downloadProofSimulated()" type="button"><span class="material-symbols-outlined text-[18px]">download</span>Unduh Lembar Bukti (PDF)</button><button class="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-primary-container text-on-primary text-label-md font-label-md font-bold hover:bg-primary transition-all active:scale-95 shadow-sm" onclick="closeSuccessModal()" type="button">Tutup / Selesai</button></div></div></div>
+<!-- FOOTER (from Shared Components JSON: Footer) -->
+<footer class="bg-inverse-surface dark:bg-inverse-surface border-t border-outline/20 dark:border-outline/40 flat no shadows docked full-width mt-auto">
+<div class="w-full py-12 px-4 md:px-8 max-w-[1280px] mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+<!-- Col 1: Corporate Wordmark & Info -->
+<div class="space-y-4">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[18px]">inventory_2</span>
+</div>
+<span class="text-headline-sm font-headline-sm font-bold text-surface-container-lowest dark:text-inverse-on-surface">Inbisco MitraHub</span>
+</div>
+<p class="text-body-sm font-body-sm text-surface-variant dark:text-surface-dim leading-relaxed">
+            Pusat operasional dan portal logistik PT Inbisco Niagatama Semesta (Cabang Krian). Menghubungkan jaringan ritel toko kelontong, warkop, dan grosir secara langsung dan terpercaya.
+          </p>
+</div>
+<!-- Col 2: Katalog FMCG Links -->
+<div class="space-y-3">
+<h4 class="text-label-md font-label-md font-bold text-surface-container-lowest uppercase tracking-wider">Katalog FMCG</h4>
+<ul class="space-y-2 text-body-sm font-body-sm">
+<li class=""><a class="text-surface-variant dark:text-surface-dim hover:text-surface-container-lowest transition-colors" href="#">Biskuit &amp; Wafer (Roma, Beng-Beng)</a></li>
+<li class=""><a class="text-surface-variant dark:text-surface-dim hover:text-surface-container-lowest transition-colors" href="#">Kopi Seduh &amp; RTD (Torabika)</a></li>
+<li class=""><a class="text-surface-variant dark:text-surface-dim hover:text-surface-container-lowest transition-colors" href="#">Sereal Nutrisi (Energen)</a></li>
+<li class=""><a class="text-surface-variant dark:text-surface-dim hover:text-surface-container-lowest transition-colors" href="#">Air Mineral &amp; Beverage (Le Minerale)</a></li>
+</ul>
+</div>
+<!-- Col 3: Layanan & Wilayah -->
+<div class="space-y-3">
+<h4 class="text-label-md font-label-md font-bold text-surface-container-lowest uppercase tracking-wider">Layanan Mitra</h4>
+<ul class="space-y-2 text-body-sm font-body-sm">
+<li class=""><a class="text-surface-variant dark:text-surface-dim hover:text-surface-container-lowest transition-colors" href="#">Promo Grosir Kartonan</a></li>
+<li class=""><a class="text-surface-variant dark:text-surface-dim hover:text-surface-container-lowest transition-colors" href="#">Cakupan Wilayah Krian</a></li>
+<li class=""><a class="text-surface-variant dark:text-surface-dim hover:text-surface-container-lowest transition-colors" href="#">Lacak Delivery Order</a></li>
+<li class=""><a class="text-surface-variant dark:text-surface-dim hover:text-surface-container-lowest transition-colors" href="#">Syarat &amp; Ketentuan Kemitraan</a></li>
+</ul>
+</div>
+<!-- Col 4: Kontak Logistik Depot Krian -->
+<div class="space-y-3">
+<h4 class="text-label-md font-label-md font-bold text-surface-container-lowest uppercase tracking-wider">Depot Krian</h4>
+<div class="space-y-2 text-body-sm font-body-sm text-surface-variant dark:text-surface-dim">
+<p class="">Jl. Raya By Pass Krian KM 31, Kab. Sidoarjo, Jawa Timur</p>
+<p class="">Hotline Logistik: (031) 897-4001</p>
+<p class="">WhatsApp Admin: +62 811-3200-456</p>
+<p class="">Email: krian.distribution@inbisco.co.id</p>
+</div>
+</div>
+</div>
+<!-- Bottom Bar -->
+<div class="pt-8 border-t border-outline/20 dark:border-outline/40 flex flex-col md:flex-row items-center justify-between gap-4">
+<p class="text-body-sm font-body-sm text-surface-variant dark:text-surface-dim text-center md:text-left">
+          © 2025 PT Inbisco Niagatama Semesta (Krian Branch). Hak Cipta Dilindungi Undang-Undang.
+        </p>
+<div class="flex flex-wrap items-center gap-6 text-body-sm font-body-sm">
+<a class="text-surface-variant dark:text-surface-dim hover:text-surface-container-lowest transition-colors" href="#">Kebijakan Privasi</a>
+<a class="text-surface-variant dark:text-surface-dim hover:text-surface-container-lowest transition-colors" href="#">Syarat &amp; Ketentuan Kemitraan</a>
+</div>
+</div>
+</div>
+</footer><script id="interactive-partner-form-logic">
+function goToStep(stepNum) {
+  if (stepNum < 1 || stepNum > 4) return;
+  for (let i = 1; i <= 4; i++) {
+    const stepEl = document.getElementById(`step-${i}`);
+    const navEl = document.getElementById(`step-nav-${i}`);
+    if (!stepEl || !navEl) continue;
+    if (i === stepNum) {
+      stepEl.classList.remove('hidden');
+      navEl.classList.remove('opacity-70', 'text-outline');
+      navEl.classList.add('text-primary', 'font-bold');
+      const badge = navEl.querySelector('div:first-child');
+      if (badge) badge.className = 'w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center text-label-sm font-label-sm font-bold';
+    } else {
+      stepEl.classList.add('hidden');
+      navEl.classList.add('opacity-70', 'text-outline');
+      navEl.classList.remove('text-primary', 'font-bold');
+      const badge = navEl.querySelector('div:first-child');
+      if (badge) badge.className = 'w-8 h-8 rounded-full bg-surface-container text-outline flex items-center justify-center text-label-sm font-label-sm font-bold';
+    }
+  }
+  syncFormLiveSummary();
+  const formSec = document.getElementById('form-section');
+  if (formSec) formSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function syncFormLiveSummary() {
+  const pic = document.getElementById('namaPIC') ? document.getElementById('namaPIC').value : 'Bpk. Haryono Wijaya';
+  const toko = document.getElementById('namaUsaha') ? document.getElementById('namaUsaha').value : 'Toko Sembako Berkah Rejeki';
+  const wa = document.getElementById('nomorWhatsapp') ? document.getElementById('nomorWhatsapp').value : '812-3456-7890';
+  const kec = document.getElementById('kecamatan') ? document.getElementById('kecamatan').value : 'Kec. Krian';
+  const kuota = document.getElementById('estimasiKarton') ? document.getElementById('estimasiKarton').value.split(' ')[0] : '50-150';
+  
+  const pNama = document.getElementById('previewNamaUsaha');
+  if (pNama) pNama.textContent = pic || '-';
+  const pJenis = document.getElementById('previewJenisUsaha');
+  if (pJenis) pJenis.textContent = toko || '-';
+  const pKontak = document.getElementById('previewPemilikKontak');
+  if (pKontak) pKontak.textContent = '+62 ' + wa;
+  const pWil = document.getElementById('previewWilayah');
+  if (pWil) pWil.textContent = `${kec} (${kuota} Karton)`;
+  
+  const sPic = document.getElementById('successModalPIC');
+  if (sPic) sPic.textContent = pic || 'Bpk. Haryono Wijaya';
+  const sToko = document.getElementById('successModalToko');
+  if (sToko) sToko.textContent = toko || 'Toko Sembako Berkah Rejeki';
+  const sWil = document.getElementById('successModalWilayah');
+  if (sWil) sWil.textContent = kec || 'Kec. Krian';
+}
+
+function validatePICField() {
+  const el = document.getElementById('namaPIC');
+  const icon = document.getElementById('iconValidNama');
+  if (!el || !icon) return;
+  if (el.value.trim().length >= 3) {
+    icon.classList.remove('hidden');
+    el.classList.remove('border-error');
+  } else {
+    icon.classList.add('hidden');
+  }
+}
+
+function validatePhoneField() {
+  const el = document.getElementById('nomorWhatsapp');
+  if (!el) return;
+  el.classList.remove('border-error');
+}
+
+function selectRouteFromCard(districtName) {
+  const kecSelect = document.getElementById('kecamatan');
+  if (kecSelect) {
+    kecSelect.value = districtName;
+  }
+  document.querySelectorAll('.route-card').forEach(card => {
+    card.classList.remove('border-primary', 'bg-surface-container-low', 'ring-2', 'ring-primary/20');
+    const ind = card.querySelector('.check-indicator');
+    if (ind) ind.classList.add('opacity-0');
+  });
+  let cardId = 'cardRoute-Krian';
+  if (districtName.includes('Balongbendo')) cardId = 'cardRoute-Balongbendo';
+  else if (districtName.includes('Tarik')) cardId = 'cardRoute-Tarik';
+  else if (districtName.includes('Prambon')) cardId = 'cardRoute-Prambon';
+  else if (districtName.includes('Wonoayu')) cardId = 'cardRoute-Wonoayu';
+  const targetCard = document.getElementById(cardId);
+  if (targetCard) {
+    targetCard.classList.add('border-primary', 'bg-surface-container-low', 'ring-2', 'ring-primary/20');
+    const ind = targetCard.querySelector('.check-indicator');
+    if (ind) ind.classList.remove('opacity-0');
+  }
+  goToStep(2);
+}
+
+function updateCoverageCardSync() {
+  const kecSelect = document.getElementById('kecamatan');
+  if (kecSelect) {
+    selectRouteFromCard(kecSelect.value);
+  }
+}
+
+function handleFormFinalSubmit() {
+  syncFormLiveSummary();
+  const successMod = document.getElementById('successModal');
+  if (successMod) successMod.classList.remove('hidden');
+}
+
+function closeSuccessModal() {
+  const successMod = document.getElementById('successModal');
+  if (successMod) successMod.classList.add('hidden');
+}
+
+function clearErrorSimulation() {
+  const banner = document.getElementById('errorBanner');
+  if (banner) banner.classList.add('hidden');
+  const elKec = document.getElementById('kecamatan');
+  if (elKec) elKec.classList.remove('border-error');
+  const hKec = document.getElementById('helperKecamatan');
+  if (hKec) {
+    hKec.className = 'text-body-sm font-body-sm text-outline';
+    hKec.textContent = 'Tip: Anda juga dapat mengeklik kartu Cakupan Jalur Reguler Depot Krian di bawah formulir.';
+  }
+}
+
+function downloadProofSimulated() {
+  alert('Mengunduh Lembar Registrasi Kemitraan (PDF)\nNo: REG-KRN-2026-0891\nCabang: PT Inbisco Niagatama Semesta (Depot Krian)');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const btnSimSuccess = document.getElementById('btnSimulateSuccess');
+  if (btnSimSuccess) {
+    btnSimSuccess.onclick = () => {
+      clearErrorSimulation();
+      handleFormFinalSubmit();
+    };
+  }
+  const btnSimError = document.getElementById('btnSimulateError');
+  if (btnSimError) {
+    btnSimError.onclick = () => {
+      const banner = document.getElementById('errorBanner');
+      if (banner) {
+        banner.classList.remove('hidden');
+        banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      goToStep(2);
+      const elKec = document.getElementById('kecamatan');
+      if (elKec) {
+        elKec.classList.add('border-error');
+      }
+      const hKec = document.getElementById('helperKecamatan');
+      if (hKec) {
+        hKec.className = 'text-body-sm font-body-sm text-error font-medium';
+        hKec.textContent = 'Perhatian: Radius titik toko terdeteksi melebihi batas reguler (>15 km dari rute aktif depot). Harap konfirmasi ke hotline logistik.';
+      }
+    };
+  }
+  syncFormLiveSummary();
+  const initialKec = document.getElementById('kecamatan');
+  if (initialKec) selectRouteFromCard(initialKec.value);
+});
+</script>
+<!-- SCRIPT FOR STEPPERS & MODALS INTERACTION -->
+<script>
+    let currentStep = 1;
+
+    function jumpToStep(stepNumber) {
+      if (stepNumber < 1 || stepNumber > 4) return;
+      
+      // Update form steps visibility
+      for (let i = 1; i <= 4; i++) {
+        const stepEl = document.getElementById(`step-${i}`);
+        const navEl = document.getElementById(`step-nav-${i}`);
+        
+        if (i === stepNumber) {
+          stepEl.classList.remove('hidden');
+          navEl.classList.remove('opacity-70', 'text-outline');
+          navEl.classList.add('text-primary', 'font-bold');
+          navEl.querySelector('div:first-child').className = 'w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center text-label-sm font-label-sm';
+        } else {
+          stepEl.classList.add('hidden');
+          navEl.classList.add('opacity-70', 'text-outline');
+          navEl.classList.remove('text-primary', 'font-bold');
+          navEl.querySelector('div:first-child').className = 'w-8 h-8 rounded-full bg-surface-container text-outline flex items-center justify-center text-label-sm font-label-sm';
+        }
+      }
+      currentStep = stepNumber;
+      syncLiveSummary();
+    }
+
+    function nextStep(target) {
+      jumpToStep(target);
+    }
+
+    function syncLiveSummary() {
+      const nama = document.getElementById('namaUsaha').value || 'Warung Berkah';
+      const jenis = document.getElementById('jenisUsaha').value || 'Toko Kelontong';
+      const pemilik = document.getElementById('namaPemilik').value || 'Bpk. Haryono';
+      const wa = document.getElementById('nomorWhatsapp').value || '812-3456-7890';
+      const kec = document.getElementById('kecamatan').value || 'Krian';
+
+      document.getElementById('previewNamaUsaha').textContent = nama;
+      document.getElementById('previewJenisUsaha').textContent = jenis;
+      document.getElementById('previewPemilikKontak').textContent = `${pemilik} (+62 ${wa})`;
+      document.getElementById('previewWilayah').textContent = `${kec}, Kab. Sidoarjo`;
+    }
+
+    function openReviewModal() {
+      // Gather selected categories
+      const checkedBoxes = document.querySelectorAll('input[name="product_cat"]:checked');
+      const cats = Array.from(checkedBoxes).map(cb => cb.value).join(', ') || 'Belum dipilih';
+
+      const nama = document.getElementById('namaUsaha').value || 'Toko Mitra';
+      const jenis = document.getElementById('jenisUsaha').value || '-';
+      const pemilik = document.getElementById('namaPemilik').value || '-';
+      const wa = document.getElementById('nomorWhatsapp').value || '-';
+      const kec = document.getElementById('kecamatan').value || '-';
+
+      document.getElementById('modalNamaUsaha').textContent = nama;
+      document.getElementById('modalJenisUsaha').textContent = jenis;
+      document.getElementById('modalPemilik').textContent = pemilik;
+      document.getElementById('modalWhatsapp').textContent = '+62 ' + wa;
+      document.getElementById('modalKecamatan').textContent = kec;
+      document.getElementById('modalProduk').textContent = cats;
+
+      document.getElementById('reviewModal').classList.remove('hidden');
+    }
+
+    function closeReviewModal() {
+      document.getElementById('reviewModal').classList.add('hidden');
+    }
+
+    function confirmFinalSubmission() {
+      closeReviewModal();
+      document.getElementById('successModal').classList.remove('hidden');
+    }
+
+    // Prototype Simulation Controls
+    document.getElementById('btnSimulateSuccess').addEventListener('click', function() {
+      document.getElementById('errorBanner').classList.add('hidden');
+      document.getElementById('successModal').classList.remove('hidden');
+    });
+
+    document.getElementById('btnSimulateError').addEventListener('click', function() {
+      const errorBanner = document.getElementById('errorBanner');
+      errorBanner.classList.remove('hidden');
+      errorBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+
+    // Populate placeholder initial values for smooth prototype experience
+    document.addEventListener('DOMContentLoaded', () => {
+      syncLiveSummary();
+    });
+  </script>
+
+
+
+
+
+
+
+
+</body></html>

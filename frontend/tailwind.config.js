@@ -67,6 +67,7 @@ export default {
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+        display: ["'Plus Jakarta Sans'", "Inter", "sans-serif"],
         mono: ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "monospace"],
       },
       spacing: {
@@ -91,3 +92,4 @@ export default {
   },
   plugins: [],
 }
+

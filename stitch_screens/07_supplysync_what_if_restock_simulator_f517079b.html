@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter,+system-ui,+sans-serif:wght@100..900&display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"on-error-container":"#93000a","surface-bright":"#fcf9f8","on-secondary-fixed":"#410003","tertiary":"#735c00","on-secondary":"#ffffff","secondary-fixed-dim":"#ffb3ac","inverse-on-surface":"#f3f0ef","on-secondary-container":"#fffbff","on-tertiary":"#ffffff","background":"#fcf9f8","error":"#ba1a1a","on-background":"#1b1c1c","on-error":"#ffffff","primary":"#900000","surface-container-lowest":"#ffffff","tertiary-fixed-dim":"#e9c349","on-tertiary-fixed":"#241a00","on-secondary-fixed-variant":"#930010","tertiary-fixed":"#ffe088","tertiary-container":"#cca830","on-primary":"#ffffff","surface-variant":"#e5e2e1","surface-dim":"#dcd9d9","secondary":"#b6171e","surface-container":"#f0eded","surface-container-low":"#f6f3f2","surface-tint":"#c00402","on-surface":"#1b1c1c","secondary-container":"#da3433","on-tertiary-fixed-variant":"#574500","secondary-fixed":"#ffdad6","surface-container-highest":"#e5e2e1","primary-container":"#bd0000","error-container":"#ffdad6","outline":"#926f69","primary-fixed-dim":"#ffb4a8","on-primary-fixed":"#410000","inverse-primary":"#ffb4a8","surface-container-high":"#eae7e7","surface":"#fcf9f8","outline-variant":"#e7bdb6","on-primary-fixed-variant":"#930000","on-primary-container":"#ffc9c1","primary-fixed":"#ffdad4","on-tertiary-container":"#4f3e00","inverse-surface":"#303030","on-surface-variant":"#5d3f3b"},"borderRadius":{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},"spacing":{"margin":"1rem","space-md":"1rem","margin-md":"2rem","space-2xl":"3rem","space-2xs":"0.25rem","gutter":"1.5rem","margin-lg":"4rem","gutter-lg":"2rem","gutter-sm":"1rem","space-3xl":"4rem","space-lg":"1.5rem","space-xs":"0.5rem","space-xl":"2rem"},"fontFamily":{"headline-sm":["\"Inter, system-ui, sans-serif\""],"label-md":["\"Inter, system-ui, sans-serif\""],"headline-lg-mobile":["\"Inter, system-ui, sans-serif\""],"display-hero-mobile":["\"Inter, system-ui, sans-serif\""],"body-sm":["\"Inter, system-ui, sans-serif\""],"body-md":["\"Inter, system-ui, sans-serif\""],"body-lg":["\"Inter, system-ui, sans-serif\""],"display-hero":["\"Inter, system-ui, sans-serif\""],"headline-md":["\"Inter, system-ui, sans-serif\""],"title-md":["\"Inter, system-ui, sans-serif\""],"label-sm":["\"Inter, system-ui, sans-serif\""],"mono-sku":["\"ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace\""],"headline-lg":["\"Inter, system-ui, sans-serif\""]},"fontSize":{"headline-sm":["20px",{"lineHeight":"28px","letterSpacing":"-0.01em","fontWeight":"600"}],"label-md":["14px",{"lineHeight":"20px","letterSpacing":"0.01em","fontWeight":"600"}],"headline-lg-mobile":["26px",{"lineHeight":"34px","letterSpacing":"-0.015em","fontWeight":"700"}],"display-hero-mobile":["32px",{"lineHeight":"40px","letterSpacing":"-0.02em","fontWeight":"800"}],"body-sm":["12px",{"lineHeight":"16px","letterSpacing":"0.01em","fontWeight":"400"}],"body-md":["14px",{"lineHeight":"20px","letterSpacing":"0em","fontWeight":"400"}],"body-lg":["18px",{"lineHeight":"28px","letterSpacing":"0em","fontWeight":"400"}],"display-hero":["48px",{"lineHeight":"56px","letterSpacing":"-0.025em","fontWeight":"800"}],"headline-md":["24px",{"lineHeight":"32px","letterSpacing":"-0.015em","fontWeight":"700"}],"title-md":["16px",{"lineHeight":"24px","letterSpacing":"0em","fontWeight":"600"}],"label-sm":["11px",{"lineHeight":"14px","letterSpacing":"0.05em","fontWeight":"700"}],"mono-sku":["12px",{"lineHeight":"16px","letterSpacing":"0.02em","fontWeight":"500"}],"headline-lg":["36px",{"lineHeight":"44px","letterSpacing":"-0.02em","fontWeight":"700"}]}}}}</script></head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between overflow-y-auto"><div class="flex flex-col"><div class="p-space-lg"><div class="flex items-center justify-between mb-space-xs"><div class="flex items-center gap-space-xs"><div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[20px]">hub</span></div><span class="font-headline-sm text-headline-sm font-bold text-on-surface tracking-tight">SupplySync</span></div><span class="font-label-sm text-label-sm uppercase bg-surface-container text-primary font-bold px-space-xs py-space-2xs rounded-full">GTNIC 2026</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Mayora Enterprise HQ Logistics</p><div class="mt-space-md p-space-xs bg-surface-container-low rounded-xl flex items-center justify-between"><div class="flex items-center gap-space-xs pl-space-xs"><span class="material-symbols-outlined text-primary text-[18px]">verified_user</span><div><p class="font-label-sm text-label-sm text-on-surface font-semibold leading-tight">Mayora Admin (HQ)</p><p class="font-mono-sku text-mono-sku text-on-surface-variant text-[10px]">Root Governance</p></div></div><button class="p-space-2xs rounded-lg hover:bg-surface-container hover:text-on-surface text-on-surface-variant transition-colors" title="Switch Operational Node"><span class="material-symbols-outlined text-[16px]">sync_alt</span></button></div></div><nav class="flex flex-col gap-space-xs px-space-md mt-space-xs" data-active-classes="bg-primary text-on-primary font-bold"><div class="px-space-xs pt-space-xs pb-space-2xs font-label-sm text-label-sm text-outline uppercase tracking-wider">Intelligence & Overview</div><a class="flex items-center justify-between px-space-sm py-space-xs rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="executive-overview" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">analytics</span><span class="font-label-md text-label-md">Executive Overview</span></div><span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span></a><a class="flex items-center justify-between px-space-sm py-space-xs rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="stockout-risk-analysis" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">warning</span><span class="font-label-md text-label-md">Stockout Risk Analysis</span></div><span class="font-label-sm text-label-sm bg-error-container text-on-error-container px-space-2xs py-0.5 rounded-full">3 Critical</span></a><a aria-current="page" class="flex items-center justify-between px-space-sm py-space-xs rounded-xl transition-all bg-primary text-on-primary font-bold" data-path="what-if-restock-simulator" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">model_training</span><span class="font-label-md text-label-md">What-if Simulator</span></div><span class="font-label-sm text-label-sm bg-tertiary-container text-on-tertiary-container px-space-2xs py-0.5 rounded-full uppercase tracking-wider">AI Innovation</span></a><div class="px-space-xs pt-space-md pb-space-2xs font-label-sm text-label-sm text-outline uppercase tracking-wider">Operations & Replenishment</div><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="smart-recommendations" href="#"><span class="material-symbols-outlined text-[20px]">auto_awesome</span><span class="font-label-md text-label-md">Smart Recommendations</span></a><a class="flex items-center justify-between px-space-sm py-space-xs rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="restock-requests" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">fact_check</span><span class="font-label-md text-label-md">Restock Requests</span></div><span class="font-label-sm text-label-sm bg-surface-container text-on-surface px-space-2xs py-0.5 rounded-full font-mono-sku">12 New</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="distribution-tracking" href="#"><span class="material-symbols-outlined text-[20px]">local_shipping</span><span class="font-label-md text-label-md">Distribution Tracking</span></a><div class="px-space-xs pt-space-md pb-space-2xs font-label-sm text-label-sm text-outline uppercase tracking-wider">Distribution Network</div><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="distributor-management" href="#"><span class="material-symbols-outlined text-[20px]">store</span><span class="font-label-md text-label-md">Distributor Management</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="central-inventory" href="#"><span class="material-symbols-outlined text-[20px]">inventory_2</span><span class="font-label-md text-label-md">Central Inventory</span></a></nav></div><div class="p-space-md flex flex-col gap-space-xs"><div class="p-space-sm bg-surface-container-low rounded-xl"><div class="flex items-center gap-space-xs mb-1"><span class="w-2 h-2 rounded-full bg-secondary-container animate-pulse"></span><span class="font-label-sm text-label-sm font-semibold text-on-surface">Simulasi B2B GTNIC 2026</span></div><p class="font-mono-sku text-mono-sku text-on-surface-variant text-[11px]">Connected: Mayora FMCG Core</p></div><div class="flex items-center justify-between p-space-xs"><div class="flex items-center gap-space-xs"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="flex flex-col"><span class="font-label-sm text-label-sm text-on-surface font-semibold leading-tight">SC Ops Admin</span><span class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">ops.hq@mayora.co.id</span></div></div><a class="p-space-2xs rounded-lg hover:bg-surface-container hover:text-on-surface text-on-surface-variant transition-colors" data-path="login" href="#" title="Sign Out"><span class="material-symbols-outlined text-[18px]">logout</span></a></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-lg"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs text-on-surface-variant font-label-md text-label-md"><span class="material-symbols-outlined text-[18px]">home</span><span>/</span><span class="text-on-surface font-semibold">Mayora Distribution HQ</span></div><div class="hidden xl:flex items-center gap-space-xs bg-surface-container-low px-space-sm py-space-2xs rounded-full"><span class="w-2 h-2 rounded-full bg-tertiary-container"></span><span class="font-label-sm text-label-sm text-on-surface font-medium">Network Health: 94.2% Optimal</span><span class="text-outline text-[12px]">·</span><span class="font-body-sm text-body-sm text-on-surface-variant">18 Depots Connected</span></div></div><div class="flex items-center gap-space-sm"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-space-xs text-on-surface-variant text-[18px]">search</span><input class="h-9 pl-8 pr-space-sm bg-surface-container-low text-on-surface font-body-sm text-body-sm rounded-lg focus:outline-none focus:bg-surface-container-lowest w-56 lg:w-72 transition-all" placeholder="Quick search SKU, batch, distributor..." type="text"/></div><button class="h-9 px-space-sm bg-surface-container-low hover:bg-surface-container hover:text-on-surface text-on-surface font-label-sm text-label-sm rounded-lg flex items-center gap-space-xs transition-colors"><span class="material-symbols-outlined text-primary text-[18px]">cloud_sync</span><span class="hidden md:inline font-semibold">Sync SAP</span></button><button class="relative w-9 h-9 flex items-center justify-center rounded-lg hover:bg-surface-container hover:text-on-surface text-on-surface-variant transition-colors" title="Operational Alerts"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary-container ring-2 ring-surface"></span></button><button class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-surface-container hover:text-on-surface text-on-surface-variant transition-colors" title="Documentation & Guidelines"><span class="material-symbols-outlined text-[20px]">help_outline</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><main class="w-full pt-16 bg-surface min-h-screen"><div class="flex flex-col w-full">
+<div class="p-space-lg space-y-space-xl max-w-7xl mx-auto w-full">
+<!-- Top Innovation Header & Scenario Bar -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col lg:flex-row lg:items-center lg:justify-between gap-space-lg">
+<div class="space-y-space-2xs max-w-3xl">
+<div class="flex items-center gap-space-xs">
+<span class="inline-flex items-center gap-1 font-label-sm text-label-sm uppercase bg-primary-fixed text-primary px-space-xs py-space-2xs rounded-full font-bold">
+<span class="material-symbols-outlined text-[14px]">psychology</span>
+            Fitur Inovasi GTNIC 2026 · Decision Support System
+          </span>
+<span class="font-label-sm text-label-sm bg-tertiary-fixed text-on-tertiary-fixed px-space-xs py-space-2xs rounded-full font-bold uppercase tracking-wider">
+            AI Replenishment Core
+          </span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface font-extrabold tracking-tight">
+          What-if Restock & Lead Time Simulator
+        </h1>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+          Uji skenario replenishment secara interaktif untuk memvalidasi alokasi stok, mengantisipasi lonjakan permintaan (<em class="italic">demand surge</em>), dan mencegah kerugian akibat stockout sebelum menerbitkan <span class="font-semibold text-on-surface">Delivery Order (DO)</span>.
+        </p>
+</div>
+<!-- Quick Preset & Export Toolbar -->
+<div class="flex flex-wrap items-center gap-space-xs lg:flex-col lg:items-end">
+<div class="flex items-center gap-space-xs bg-surface-container-low p-space-2xs rounded-lg w-full sm:w-auto">
+<span class="material-symbols-outlined text-outline text-[20px] pl-space-2xs">tune</span>
+<select class="bg-transparent font-label-md text-label-md text-on-surface font-semibold focus:outline-none cursor-pointer py-1 pr-space-xs" id="presetScenarioSelect">
+<option value="promo">Promo Hari Raya (+40% Demand Surge)</option>
+<option value="weather">Kendala Cuaca Ekspedisi (+3 Hari Lead Time)</option>
+<option selected="" value="custom">Custom Simulation (Default)</option>
+</select>
+</div>
+<div class="flex items-center gap-space-xs w-full sm:w-auto">
+<button class="flex-1 sm:flex-initial h-10 px-space-sm bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md rounded-lg flex items-center justify-center gap-space-2xs transition-colors" id="saveScenarioBtn">
+<span class="material-symbols-outlined text-[18px]">bookmark_add</span>
+<span>Simpan Skenario</span>
+</button>
+<button class="flex-1 sm:flex-initial h-10 px-space-sm bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md rounded-lg flex items-center justify-center gap-space-2xs transition-colors" id="exportReportBtn">
+<span class="material-symbols-outlined text-[18px]">ios_share</span>
+<span>Export Laporan</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Active Depot Context Banner -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[28px]">store</span>
+</div>
+<div class="min-w-0">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline block">Node Distribusi Sasaran</span>
+<span class="font-title-md text-title-md text-on-surface font-bold truncate block">CV Surya Krian Logistik</span>
+<span class="font-mono-sku text-mono-sku text-on-surface-variant block">ID: DST-SDA-042 · Sidoarjo Barat</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-tertiary shrink-0">
+<span class="material-symbols-outlined text-[28px]">inventory_2</span>
+</div>
+<div class="min-w-0">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline block">SKU Analisis Aktif</span>
+<span class="font-title-md text-title-md text-on-surface font-bold truncate block">Roma Kelapa 300g (Dus)</span>
+<span class="font-mono-sku text-mono-sku text-on-surface-variant block">SKU: MYR-RMK-01 · Fast Moving</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-primary-fixed flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[28px]">local_shipping</span>
+</div>
+<div class="min-w-0">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline block">Rute Pabrik Penyuplai</span>
+<span class="font-title-md text-title-md text-on-surface font-bold truncate block">DC Pasuruan → Hub Krian</span>
+<span class="font-mono-sku text-mono-sku text-primary font-semibold block">Kapasitas Truk Wingbox: 1.000 Dus</span>
+</div>
+</div>
+</div>
+<!-- Main Workspace Split 35% Controls : 65% Results -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- LEFT PANEL: Simulation Controls (5 cols ~38%) -->
+<div class="lg:col-span-5 bg-surface-container-lowest p-space-lg rounded-xl shadow-sm space-y-space-lg">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[22px]">tune</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Variabel Simulasi</h2>
+</div>
+<button class="text-on-surface-variant hover:text-primary font-label-sm text-label-sm flex items-center gap-1 font-semibold transition-colors" id="resetParamsBtn">
+<span class="material-symbols-outlined text-[16px]">restart_alt</span>
+            Reset Baseline
+          </button>
+</div>
+<form class="space-y-space-md" id="simulatorForm" onsubmit="event.preventDefault();">
+<!-- Selection Targets -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-xs">
+<div>
+<label class="font-label-sm text-label-sm text-on-surface-variant font-medium block mb-1">Distributor</label>
+<div class="h-11 bg-surface-container-low rounded-lg px-3 flex items-center">
+<select class="w-full bg-transparent font-body-sm text-body-sm font-semibold text-on-surface focus:outline-none cursor-pointer" id="distributorSelect">
+<option selected="">CV Surya Krian (Sidoarjo)</option>
+<option>PT Berkat Abadi (Gresik)</option>
+<option>UD Maju Jaya (Mojokerto)</option>
+</select>
+</div>
+</div>
+<div>
+<label class="font-label-sm text-label-sm text-on-surface-variant font-medium block mb-1">Pilih SKU Produk</label>
+<div class="h-11 bg-surface-container-low rounded-lg px-3 flex items-center">
+<select class="w-full bg-transparent font-body-sm text-body-sm font-semibold text-on-surface focus:outline-none cursor-pointer" id="skuSelect">
+<option selected="">Roma Kelapa 300g</option>
+<option>Beng-Beng Regular 20g</option>
+<option>Torabika Duo 25g</option>
+<option>Energen Cokelat 29g</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Parameter Slider 1: On-Hand Stock -->
+<div class="p-space-sm bg-surface-container-low rounded-xl space-y-space-2xs">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1" for="stockOnHand">
+<span class="material-symbols-outlined text-[18px] text-outline">warehouse</span>
+                1. On-Hand Stock Distributor
+              </label>
+<span class="font-mono-sku text-mono-sku bg-surface-container-lowest px-2 py-0.5 rounded text-on-surface font-bold" id="badgeStockOnHand">280 Dus</span>
+</div>
+<input class="w-full accent-primary h-2 bg-surface-container rounded-lg cursor-pointer" id="stockOnHand" max="800" min="50" step="10" type="range" value="280"/>
+<div class="flex justify-between font-mono-sku text-[10px] text-on-surface-variant">
+<span>50 Dus (Kritis)</span>
+<span>Baseline: 280 Dus</span>
+<span>800 Dus</span>
+</div>
+</div>
+<!-- Parameter Slider 2: ADS with Spike Modifier -->
+<div class="p-space-sm bg-surface-container-low rounded-xl space-y-space-2xs">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1" for="adsValue">
+<span class="material-symbols-outlined text-[18px] text-secondary">trending_up</span>
+                2. Average Daily Sales (ADS)
+              </label>
+<div class="flex items-center gap-1">
+<span class="font-label-sm text-[10px] bg-secondary-fixed text-on-secondary-fixed px-1.5 py-0.5 rounded font-bold" id="badgeDemandModifier">+25% Spike</span>
+<span class="font-mono-sku text-mono-sku bg-surface-container-lowest px-2 py-0.5 rounded text-on-surface font-bold" id="badgeAds">175 Dus/hari</span>
+</div>
+</div>
+<input class="w-full accent-primary h-2 bg-surface-container rounded-lg cursor-pointer" id="adsValue" max="300" min="50" step="5" type="range" value="175"/>
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-center gap-1">
+<button class="preset-surge-btn text-[11px] font-mono-sku px-2 py-0.5 bg-surface-container-lowest rounded text-on-surface-variant hover:text-on-surface" data-surge="0" type="button">Normal (140)</button>
+<button class="preset-surge-btn text-[11px] font-mono-sku px-2 py-0.5 bg-primary-fixed text-primary font-bold rounded" data-surge="25" type="button">+25% (175)</button>
+<button class="preset-surge-btn text-[11px] font-mono-sku px-2 py-0.5 bg-surface-container-lowest rounded text-on-surface-variant hover:text-on-surface" data-surge="50" type="button">+50% (210)</button>
+</div>
+<span class="font-mono-sku text-[11px] text-on-surface-variant">Base: 140/hari</span>
+</div>
+</div>
+<!-- Parameter Slider 3: Supplier Lead Time -->
+<div class="p-space-sm bg-surface-container-low rounded-xl space-y-space-2xs">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1" for="leadTime">
+<span class="material-symbols-outlined text-[18px] text-tertiary">schedule</span>
+                3. Lead Time Pengiriman (Hari)
+              </label>
+<span class="font-mono-sku text-mono-sku bg-tertiary-fixed text-on-tertiary-fixed px-2 py-0.5 rounded font-bold" id="badgeLeadTime">3 Hari</span>
+</div>
+<input class="w-full accent-tertiary h-2 bg-surface-container rounded-lg cursor-pointer" id="leadTime" max="10" min="1" step="1" type="range" value="3"/>
+<div class="flex justify-between font-mono-sku text-[10px] text-on-surface-variant">
+<span>1 Hari (Kilat)</span>
+<span>Standar Krian: 3 Hari</span>
+<span>10 Hari (Trouble Logistik)</span>
+</div>
+</div>
+<!-- Parameter Slider 4: Safety Stock Buffer -->
+<div class="p-space-sm bg-surface-container-low rounded-xl space-y-space-2xs">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1" for="safetyStock">
+<span class="material-symbols-outlined text-[18px] text-outline">shield</span>
+                4. Ambang Batas Safety Stock
+              </label>
+<span class="font-mono-sku text-mono-sku bg-surface-container-lowest px-2 py-0.5 rounded text-on-surface font-bold" id="badgeSafetyStock">200 Dus</span>
+</div>
+<input class="w-full accent-primary h-2 bg-surface-container rounded-lg cursor-pointer" id="safetyStock" max="500" min="50" step="25" type="range" value="200"/>
+<div class="flex justify-between font-mono-sku text-[10px] text-on-surface-variant">
+<span>50 Dus</span>
+<span>Target ISO: 200 Dus (SS = Z × σL × ADS)</span>
+<span>500 Dus</span>
+</div>
+</div>
+<!-- Parameter Slider 5: Proposed Restock Qty -->
+<div class="p-space-sm bg-primary-fixed/30 rounded-xl space-y-space-2xs">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface font-bold flex items-center gap-1" for="proposedRestock">
+<span class="material-symbols-outlined text-[18px] text-primary">add_shopping_cart</span>
+                5. Usulan Restock (Batch Order)
+              </label>
+<span class="font-mono-sku text-headline-sm text-primary font-black bg-surface-container-lowest px-3 py-0.5 rounded-lg shadow-sm" id="badgeRestockQty">850 Dus</span>
+</div>
+<input class="w-full accent-primary h-2.5 bg-surface-container rounded-lg cursor-pointer" id="proposedRestock" max="2000" min="0" step="50" type="range" value="850"/>
+<div class="flex justify-between font-mono-sku text-[10px] text-on-surface font-medium">
+<span>0 (Tanpa Restock)</span>
+<span>Optimum: 850 Dus</span>
+<span>2.000 Dus (Max Buffer)</span>
+</div>
+</div>
+<!-- Dispatch Fleet Configuration -->
+<div class="p-space-sm bg-surface-container-low rounded-xl space-y-space-2xs">
+<label class="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px] text-outline">forklift</span>
+              6. Frekuensi Pengiriman Armada
+            </label>
+<div class="grid grid-cols-2 gap-space-xs pt-1">
+<label class="flex items-center gap-2 p-2 bg-surface-container-lowest rounded-lg cursor-pointer">
+<input checked="" class="accent-primary" name="dispatchMode" type="radio" value="single"/>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">Single Batch (1x Kirim)</span>
+</label>
+<label class="flex items-center gap-2 p-2 bg-surface-container-lowest rounded-lg cursor-pointer">
+<input class="accent-primary" name="dispatchMode" type="radio" value="split"/>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">Split (2 Gelombang H+0 & H+3)</span>
+</label>
+</div>
+</div>
+<!-- Primary Simulation Trigger -->
+<button class="w-full h-12 bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md uppercase tracking-wider font-bold rounded-xl flex items-center justify-center gap-space-xs shadow-md transition-all active:scale-[0.99]" id="runSimulationBtn" type="button">
+<span class="material-symbols-outlined text-[20px]">play_circle</span>
+            Jalankan Komparasi Simulasi
+          </button>
+</form>
+</div>
+<!-- RIGHT PANEL: Comparative Outcomes & Trajectory (7 cols ~62%) -->
+<div class="lg:col-span-7 space-y-space-lg">
+<!-- BEFORE vs AFTER Comparison Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<!-- BEFORE CARD (Status Quo) -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm relative overflow-hidden flex flex-col justify-between">
+<div class="absolute top-0 left-0 right-0 h-1.5 bg-error"></div>
+<div>
+<div class="flex items-center justify-between mb-space-xs pt-1">
+<span class="font-label-sm text-label-sm uppercase font-bold text-error tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">dangerous</span>
+                  Status Quo (Tanpa Restock)
+                </span>
+<span class="font-label-sm text-label-sm bg-error-container text-on-error-container px-2 py-0.5 rounded-full font-bold">Kritis</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Proyeksi jika operasional mempertahankan stok saat ini (280 dus).</p>
+<div class="mt-space-md space-y-space-xs">
+<div class="p-space-xs bg-surface-container-low rounded-lg flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Ketahanan Stok (Runway)</span>
+<span class="font-mono-sku text-headline-sm text-error font-extrabold" id="metricBeforeRunway">1,6 Hari</span>
+</div>
+<div class="p-space-xs bg-surface-container-low rounded-lg flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Estimasi Depletion</span>
+<span class="font-mono-sku text-label-md text-error font-bold" id="metricBeforeDepletion">18 Mar 2026 (48 Jam)</span>
+</div>
+<div class="p-space-xs bg-surface-container-low rounded-lg flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Estimasi Lost Sales</span>
+<span class="font-mono-sku text-label-md text-on-surface font-bold" id="metricBeforeLostSales">Rp 38.500.000</span>
+</div>
+<div class="p-space-xs bg-error-container/40 rounded-lg flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-on-error-container font-medium">Tingkat Risiko Stockout</span>
+<span class="font-label-sm text-label-sm text-on-error-container font-black uppercase" id="metricBeforeRisk">94% Probabilitas</span>
+</div>
+</div>
+</div>
+<div class="mt-space-md pt-space-xs text-on-surface-variant text-[11px] font-body-sm flex items-center gap-1.5">
+<span class="material-symbols-outlined text-error text-[16px]">warning</span>
+              280 Toko Ritel Krian terancam tidak terlayani akhir minggu ini.
+            </div>
+</div>
+<!-- AFTER CARD (With Proposed Restock) -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm relative overflow-hidden flex flex-col justify-between">
+<div class="absolute top-0 left-0 right-0 h-1.5 bg-tertiary"></div>
+<div>
+<div class="flex items-center justify-between mb-space-xs pt-1">
+<span class="font-label-sm text-label-sm uppercase font-bold text-tertiary tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+                  Setelah Restock (+850 Dus)
+                </span>
+<span class="font-label-sm text-label-sm bg-tertiary-fixed text-on-tertiary-fixed px-2 py-0.5 rounded-full font-bold">Optimal</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Proyeksi jika batch 850 dus diberangkatkan via DC Pasuruan.</p>
+<div class="mt-space-md space-y-space-xs">
+<div class="p-space-xs bg-surface-container-low rounded-lg flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Ketahanan Stok Baru</span>
+<span class="font-mono-sku text-headline-sm text-tertiary font-extrabold" id="metricAfterRunway">6,4 Hari</span>
+</div>
+<div class="p-space-xs bg-surface-container-low rounded-lg flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Tanggal Depletion Baru</span>
+<span class="font-mono-sku text-label-md text-on-surface font-bold" id="metricAfterDepletion">24 Mar 2026</span>
+</div>
+<div class="p-space-xs bg-surface-container-low rounded-lg flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Revenue Terlindungi</span>
+<span class="font-mono-sku text-label-md text-tertiary font-black" id="metricAfterProtected">Rp 116.875.000</span>
+</div>
+<div class="p-space-xs bg-surface-container-high rounded-lg flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-on-surface font-medium">Status Kepatuhan Buffer</span>
+<span class="font-label-sm text-label-sm text-on-surface font-black uppercase" id="metricAfterRisk">100% Aman > SS</span>
+</div>
+</div>
+</div>
+<div class="mt-space-md pt-space-xs text-tertiary font-body-sm text-[11px] flex items-center gap-1.5 font-semibold">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+              Stok aman melampaui siklus pemesanan PO berikutnya (H+7).
+            </div>
+</div>
+</div>
+<!-- 14-Day Trajectory Projection Visualizer -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm space-y-space-md">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs">
+<div>
+<h3 class="font-title-md text-title-md text-on-surface font-bold">Proyeksi Trajektori Stok 14 Hari (Daily Depletion)</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Simulasi dinamika persediaan dengan titik kedatangan armada pengiriman pada Hari ke-3.</p>
+</div>
+<!-- Legend Indicators -->
+<div class="flex items-center gap-space-sm shrink-0">
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-0.5 bg-error inline-block"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Status Quo</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-1 bg-tertiary inline-block rounded-full"></span>
+<span class="font-label-sm text-label-sm text-on-surface font-bold">Setelah Restock</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-0.5 bg-outline inline-block stroke-dashed"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Safety Stock (200)</span>
+</div>
+</div>
+</div>
+<!-- Dynamic SVG Chart Canvas -->
+<div class="relative w-full bg-surface-container-low rounded-xl p-space-md overflow-hidden">
+<div class="h-64 w-full flex items-end">
+<svg class="w-full h-full overflow-visible" id="trajectoryChart" preserveaspectratio="none" viewbox="0 0 700 240">
+<!-- Background Guide Grids -->
+<line class="text-surface-variant" stroke="currentColor" stroke-width="1" x1="40" x2="680" y1="20" y2="20"></line>
+<line class="text-surface-variant" stroke="currentColor" stroke-width="1" x1="40" x2="680" y1="80" y2="80"></line>
+<line class="text-surface-variant" stroke="currentColor" stroke-width="1" x1="40" x2="680" y1="140" y2="140"></line>
+<line class="text-surface-variant" stroke="currentColor" stroke-width="1" x1="40" x2="680" y1="200" y2="200"></line>
+<!-- Critical Safety Stock Line (200 ktn threshold) at y=160 -->
+<line class="text-outline" id="safetyThresholdLine" stroke="currentColor" stroke-dasharray="4 4" stroke-width="1.5" x1="40" x2="680" y1="160" y2="160"></line>
+<text class="font-mono-sku text-[10px] fill-current text-outline font-semibold" text-anchor="end" x="675" y="155">Batas Kritis SS (200 Dus)</text>
+<!-- Stockout Zone Floor Shading -->
+<rect class="text-error/10" fill="currentColor" height="25" width="640" x="40" y="195"></rect>
+<text class="font-label-sm text-[10px] fill-current text-error font-bold uppercase tracking-wider" x="45" y="212">Zona Stockout / Kehilangan Penjualan</text>
+<!-- Delivery Inflow Vertical Marker at Day 3 (x ~ 177) -->
+<line class="text-tertiary/40" id="deliveryDayMarker" stroke="currentColor" stroke-dasharray="2 2" stroke-width="1.5" x1="177" x2="177" y1="20" y2="200"></line>
+<circle class="fill-tertiary" cx="177" cy="80" r="4"></circle>
+<text class="font-mono-sku text-[10px] fill-current text-tertiary font-bold" x="182" y="32">+850 Dus Tiba (Hari ke-3)</text>
+<!-- Path: Status Quo (Plunges quickly to 0) -->
+<path class="text-error" d="M 40,144 L 85,176 L 131,208 L 177,208 L 222,208 L 268,208 L 314,208 L 359,208 L 405,208 L 450,208 L 496,208 L 542,208 L 587,208 L 633,208 L 678,208" fill="none" id="statusQuoPath" stroke="currentColor" stroke-dasharray="4 2" stroke-width="2.5"></path>
+<!-- Path: Proposed Restock (Drops until Day 3, leaps, then glides safely) -->
+<path class="text-tertiary" d="M 40,144 L 85,176 L 131,192 L 177,55 L 222,76 L 268,97 L 314,118 L 359,139 L 405,160 L 450,175 L 496,190 L 542,198 L 587,205 L 633,208 L 678,208" fill="none" id="proposedPath" stroke="currentColor" stroke-linejoin="round" stroke-width="3.5"></path>
+<!-- Day Data Dots (Proposed trajectory) -->
+<circle class="fill-on-surface" cx="40" cy="144" r="3.5"></circle>
+<circle class="fill-tertiary" cx="177" cy="55" r="4.5"></circle>
+<circle class="fill-tertiary" cx="405" cy="160" r="3.5"></circle>
+</svg>
+</div>
+<!-- X-Axis Timeline Labels (Days 0 to 14) -->
+<div class="grid grid-cols-8 sm:grid-cols-15 text-center font-mono-sku text-[10px] text-on-surface-variant pt-2">
+<span>H+0</span>
+<span class="hidden sm:inline">H+1</span>
+<span>H+2</span>
+<span class="font-bold text-tertiary">H+3 (Inflow)</span>
+<span class="hidden sm:inline">H+4</span>
+<span>H+5</span>
+<span class="hidden sm:inline">H+6</span>
+<span>H+7</span>
+<span class="hidden sm:inline">H+8</span>
+<span>H+9</span>
+<span class="hidden sm:inline">H+10</span>
+<span>H+11</span>
+<span class="hidden sm:inline">H+12</span>
+<span>H+13</span>
+<span>H+14</span>
+</div>
+</div>
+<!-- Quick Analytic Readouts Footer -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-space-xs text-on-surface">
+<div class="bg-surface-container-low p-space-xs rounded-lg flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-outline text-[20px]">local_shipping</span>
+<div>
+<span class="font-label-sm text-[11px] text-on-surface-variant block">Utilisasi Wingbox Pasuruan</span>
+<span class="font-mono-sku text-label-md font-bold text-on-surface" id="metricTruckEfficiency">85,0% (850/1.000 Dus)</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-space-xs rounded-lg flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-outline text-[20px]">timer</span>
+<div>
+<span class="font-label-sm text-[11px] text-on-surface-variant block">Window Pemesanan Ulang</span>
+<span class="font-mono-sku text-label-md font-bold text-on-surface" id="metricReorderWindow">H+5 (21 Maret 2026)</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-space-xs rounded-lg flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-outline text-[20px]">safety_check</span>
+<div>
+<span class="font-label-sm text-[11px] text-on-surface-variant block">Service Level Krian (Cakupan)</span>
+<span class="font-mono-sku text-label-md font-bold text-tertiary">99,4% Terpenuhi</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- DECISION RECOMMENDATION & ONE-CLICK EXECUTION BANNER -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm space-y-space-md">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<!-- Explainable AI Summary -->
+<div class="space-y-space-2xs max-w-3xl">
+<div class="flex items-center gap-space-xs">
+<div class="w-6 h-6 rounded-full bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed">
+<span class="material-symbols-outlined text-[16px]">smart_toy</span>
+</div>
+<span class="font-label-sm text-label-sm uppercase font-bold text-on-surface tracking-wider">
+              AI Rekomendasi Preskriptif (GTNIC Optimization Engine)
+            </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface leading-relaxed" id="recommendationExplanationText">
+            Rekomendasi Sistem: Alokasi <span class="font-bold text-primary">850 karton Roma Kelapa 300g</span> dengan jadwal kirim <span class="font-semibold text-on-surface">Besok Pukul 08.00 WIB (DC Pasuruan)</span> mencegah potensi stockout selama lonjakan demand 25%. Tingkat efisiensi kapasitas armada wingbox mencapai <span class="font-bold text-tertiary">85%</span> dan mengamankan perputaran kas distributor hingga siklus pengiriman berikutnya.
+          </p>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-space-xs shrink-0">
+<button class="h-12 px-space-md bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md rounded-xl font-bold flex items-center justify-center gap-space-xs transition-colors" id="saveDraftBtn">
+<span class="material-symbols-outlined text-[20px]">save</span>
+<span>Simpan Skenario</span>
+</button>
+<button class="h-12 px-space-lg bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md rounded-xl font-bold flex items-center justify-center gap-space-xs shadow-md transition-all active:scale-[0.98]" id="applyOrderBtn">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+<span>Terapkan Hasil & Buat Delivery Order (DO)</span>
+</button>
+</div>
+</div>
+<!-- Quick Peer Comparison Link & Cross-SKU Navigation -->
+<div class="pt-space-xs flex flex-wrap items-center justify-between gap-space-xs text-on-surface-variant text-[12px] font-body-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-outline text-[16px]">compare_arrows</span>
+<span>Bandingkan simulasi cepat dengan SKU kritis lain:</span>
+<button class="sku-quick-switch text-primary font-semibold hover:underline" data-sku="Beng-Beng Regular 20g">Beng-Beng 20g (Runway 1.8 Hari)</button>
+<span>·</span>
+<button class="sku-quick-switch text-primary font-semibold hover:underline" data-sku="Torabika Duo 25g">Torabika Duo (Runway 3.2 Hari)</button>
+</div>
+<div class="flex items-center gap-1 font-mono-sku text-[11px] text-outline">
+<span class="w-2 h-2 rounded-full bg-tertiary inline-block"></span>
+<span>Status Sinkronisasi SAP R/3: Realtime Connected</span>
+</div>
+</div>
+</div>
+<!-- COMPETITION BADGE & METHODOLOGY DISCLAIMER FOOTNOTE -->
+<div class="p-space-md bg-surface-container-low rounded-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-space-md">
+<div class="flex items-start gap-space-sm max-w-4xl">
+<span class="material-symbols-outlined text-outline text-[22px] shrink-0 mt-0.5">menu_book</span>
+<div class="space-y-0.5">
+<h4 class="font-label-sm text-label-sm font-bold text-on-surface uppercase tracking-wider">
+            Metodologi Replenishment GTNIC 2026 · Mayora Enterprise Model
+          </h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-normal">
+            Kalkulasi simulator menggunakan perumusan stok dinamis: <span class="font-mono-sku text-[11px] text-on-surface font-semibold">SS = Z × σL × ADS</span> (dengan tingkat kepercayaan 95%, Z=1,65) yang disesuaikan dengan koefisien variabilitas lead time ekspedisi Jawa Timur. Model ini dirancang khusus untuk mempertahankan ketahanan stok tanpa membebani modal kerja distributor tradisional (*cash flow pressure*).
+          </p>
+</div>
+</div>
+<div class="shrink-0 flex items-center gap-space-xs font-mono-sku text-[11px] text-on-surface-variant bg-surface-container-lowest px-space-sm py-1.5 rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-primary text-[16px]">verified</span>
+<span>GTNIC-ALGO-V26.4</span>
+</div>
+</div>
+</div>
+</div>
+<script>
+  (function initWhatIfSimulator() {
+    // DOM Elements
+    const stockOnHandInput = document.getElementById('stockOnHand');
+    const adsValueInput = document.getElementById('adsValue');
+    const leadTimeInput = document.getElementById('leadTime');
+    const safetyStockInput = document.getElementById('safetyStock');
+    const proposedRestockInput = document.getElementById('proposedRestock');
+
+    const badgeStockOnHand = document.getElementById('badgeStockOnHand');
+    const badgeAds = document.getElementById('badgeAds');
+    const badgeLeadTime = document.getElementById('badgeLeadTime');
+    const badgeSafetyStock = document.getElementById('badgeSafetyStock');
+    const badgeRestockQty = document.getElementById('badgeRestockQty');
+    const badgeDemandModifier = document.getElementById('badgeDemandModifier');
+
+    // Metrics readouts
+    const metricBeforeRunway = document.getElementById('metricBeforeRunway');
+    const metricBeforeDepletion = document.getElementById('metricBeforeDepletion');
+    const metricBeforeLostSales = document.getElementById('metricBeforeLostSales');
+    const metricBeforeRisk = document.getElementById('metricBeforeRisk');
+
+    const metricAfterRunway = document.getElementById('metricAfterRunway');
+    const metricAfterDepletion = document.getElementById('metricAfterDepletion');
+    const metricAfterProtected = document.getElementById('metricAfterProtected');
+    const metricAfterRisk = document.getElementById('metricAfterRisk');
+
+    const metricTruckEfficiency = document.getElementById('metricTruckEfficiency');
+    const metricReorderWindow = document.getElementById('metricReorderWindow');
+    const recommendationExplanationText = document.getElementById('recommendationExplanationText');
+
+    // Chart Paths
+    const statusQuoPath = document.getElementById('statusQuoPath');
+    const proposedPath = document.getElementById('proposedPath');
+    const deliveryDayMarker = document.getElementById('deliveryDayMarker');
+
+    // Preset Buttons
+    const presetScenarioSelect = document.getElementById('presetScenarioSelect');
+    const presetSurgeButtons = document.querySelectorAll('.preset-surge-btn');
+    const resetParamsBtn = document.getElementById('resetParamsBtn');
+    const runSimulationBtn = document.getElementById('runSimulationBtn');
+    const applyOrderBtn = document.getElementById('applyOrderBtn');
+
+    // Calculation Engine
+    function calculateSim() {
+      const stock = parseFloat(stockOnHandInput.value) || 280;
+      const ads = parseFloat(adsValueInput.value) || 175;
+      const leadTime = parseFloat(leadTimeInput.value) || 3;
+      const safetyStock = parseFloat(safetyStockInput.value) || 200;
+      const restock = parseFloat(proposedRestockInput.value) || 850;
+
+      // Update Slider Badges
+      badgeStockOnHand.textContent = `${stock} Dus`;
+      badgeAds.textContent = `${ads} Dus/hari`;
+      badgeLeadTime.textContent = `${leadTime} Hari`;
+      badgeSafetyStock.textContent = `${safetyStock} Dus`;
+      badgeRestockQty.textContent = `${restock} Dus`;
+
+      const baseAds = 140;
+      const surgePercent = Math.round(((ads - baseAds) / baseAds) * 100);
+      if (surgePercent > 0) {
+        badgeDemandModifier.textContent = `+${surgePercent}% Spike`;
+        badgeDemandModifier.className = 'font-label-sm text-[10px] bg-secondary-fixed text-on-secondary-fixed px-1.5 py-0.5 rounded font-bold';
+      } else if (surgePercent === 0) {
+        badgeDemandModifier.textContent = 'Normal';
+        badgeDemandModifier.className = 'font-label-sm text-[10px] bg-surface-container-high text-on-surface-variant px-1.5 py-0.5 rounded font-medium';
+      } else {
+        badgeDemandModifier.textContent = `${surgePercent}% Lambat`;
+        badgeDemandModifier.className = 'font-label-sm text-[10px] bg-surface-container text-on-surface-variant px-1.5 py-0.5 rounded font-medium';
+      }
+
+      // 1. BEFORE Metrics
+      const beforeDays = Math.max(0, (stock / ads)).toFixed(1);
+      metricBeforeRunway.textContent = `${beforeDays.replace('.', ',')} Hari`;
+
+      const today = new Date(2026, 2, 16); // GTNIC 2026 anchor date: 16 March 2026
+      const depletionDateBefore = new Date(today);
+      depletionDateBefore.setDate(today.getDate() + Math.floor(stock / ads));
+      const hoursLeft = Math.round((stock / ads) * 24);
+      metricBeforeDepletion.textContent = `${depletionDateBefore.getDate()} Mar 2026 (${hoursLeft} Jam)`;
+
+      // Lost Sales Calculation (Value: Rp 137.500 per dus average wholesale Roma Kelapa)
+      const unitValue = 137500;
+      const lostQuantityEst = Math.max(0, Math.round((14 * ads) - stock));
+      const lostSalesBefore = lostQuantityEst * unitValue;
+      metricBeforeLostSales.textContent = `Rp ${(lostSalesBefore > 100000000 ? (lostSalesBefore / 1000000).toFixed(1) + ' Jt' : lostSalesBefore.toLocaleString('id-ID'))}`;
+
+      const riskProb = Math.min(99, Math.max(10, Math.round(98 - (stock / (ads * leadTime)) * 40)));
+      metricBeforeRisk.textContent = `${riskProb}% Probabilitas`;
+
+      // 2. AFTER Metrics
+      const afterDays = ((stock + restock) / ads).toFixed(1);
+      metricAfterRunway.textContent = `${afterDays.replace('.', ',')} Hari`;
+
+      const depletionDateAfter = new Date(today);
+      depletionDateAfter.setDate(today.getDate() + Math.floor((stock + restock) / ads));
+      metricAfterDepletion.textContent = `${depletionDateAfter.getDate()} Mar 2026`;
+
+      const protectedRev = restock * unitValue;
+      metricAfterProtected.textContent = `Rp ${protectedRev.toLocaleString('id-ID')}`;
+
+      // Check whether remaining stock drops below safety stock during lead time
+      const stockAtArrival = stock - (ads * leadTime);
+      if (stockAtArrival >= safetyStock) {
+        metricAfterRisk.textContent = '100% AMAN > SS BUFFER';
+      } else if (stockAtArrival > 0) {
+        metricAfterRisk.textContent = 'WASPADA (MENDEKATI BUFFER)';
+      } else {
+        metricAfterRisk.textContent = 'STOCKOUT SESAAT SAAT LEAD TIME';
+      }
+
+      // Fleet Efficiency (Truk Wingbox standard capacity = 1000 dus)
+      const truckCap = 1000;
+      const efficiency = ((restock / truckCap) * 100).toFixed(1);
+      metricTruckEfficiency.textContent = `${efficiency.replace('.', ',')}% (${restock}/${truckCap} Dus)`;
+
+      // Reorder Window
+      const reorderDay = Math.max(1, Math.floor(stockAtArrival > 0 ? (stock + restock - safetyStock) / ads : 2));
+      const reorderDate = new Date(today);
+      reorderDate.setDate(today.getDate() + reorderDay);
+      metricReorderWindow.textContent = `H+${reorderDay} (${reorderDate.getDate()} Maret 2026)`;
+
+      // Explainable Summary Update
+      recommendationExplanationText.innerHTML = `Rekomendasi Sistem: Alokasi <span class="font-bold text-primary">${restock} karton Roma Kelapa 300g</span> dengan jadwal kirim <span class="font-semibold text-on-surface">Besok Pukul 08.00 WIB (DC Pasuruan)</span> mencegah potensi stockout selama lonjakan demand ${surgePercent > 0 ? surgePercent : 0}%. Tingkat efisiensi kapasitas armada wingbox mencapai <span class="font-bold text-tertiary">${efficiency}%</span> dan mengamankan perputaran kas distributor hingga siklus pengiriman berikutnya.`;
+
+      // 3. Dynamic Chart Trajectory Generation
+      renderChart(stock, ads, leadTime, safetyStock, restock);
+    }
+
+    function renderChart(stock, ads, leadTime, safetyStock, restock) {
+      // 14 days simulation, SVG dimensions: x in [40, 680], y in [20, 208]
+      // Max inventory range mapping ~ 1600 units to y=20, 0 units to y=208
+      const maxUnits = 1600;
+      const chartHeight = 188; // 208 - 20
+      const startX = 40;
+      const endX = 680;
+      const stepX = (endX - startX) / 14;
+
+      function toY(units) {
+        const clamped = Math.max(0, Math.min(maxUnits, units));
+        return Math.round(208 - ((clamped / maxUnits) * chartHeight));
+      }
+
+      // Safety Line
+      const safetyLine = document.getElementById('safetyThresholdLine');
+      if (safetyLine) {
+        safetyLine.setAttribute('y1', toY(safetyStock));
+        safetyLine.setAttribute('y2', toY(safetyStock));
+      }
+
+      // Inflow marker
+      if (deliveryDayMarker) {
+        const arrivalX = Math.round(startX + (leadTime * stepX));
+        deliveryDayMarker.setAttribute('x1', arrivalX);
+        deliveryDayMarker.setAttribute('x2', arrivalX);
+      }
+
+      // Path Status Quo
+      let dBefore = `M ${startX},${toY(stock)}`;
+      let currentStockBefore = stock;
+      for (let day = 1; day <= 14; day++) {
+        currentStockBefore = Math.max(0, currentStockBefore - ads);
+        const x = Math.round(startX + (day * stepX));
+        const y = toY(currentStockBefore);
+        dBefore += ` L ${x},${y}`;
+      }
+      statusQuoPath.setAttribute('d', dBefore);
+
+      // Path Proposed Restock
+      let dAfter = `M ${startX},${toY(stock)}`;
+      let currentStockAfter = stock;
+      for (let day = 1; day <= 14; day++) {
+        currentStockAfter = currentStockAfter - ads;
+        if (day === Math.round(leadTime)) {
+          currentStockAfter += restock; // Stock Arrival
+        }
+        currentStockAfter = Math.max(0, currentStockAfter);
+        const x = Math.round(startX + (day * stepX));
+        const y = toY(currentStockAfter);
+        dAfter += ` L ${x},${y}`;
+      }
+      proposedPath.setAttribute('d', dAfter);
+    }
+
+    // Event Listeners for Live Reactive Sliders
+    [stockOnHandInput, adsValueInput, leadTimeInput, safetyStockInput, proposedRestockInput].forEach(elem => {
+      elem.addEventListener('input', calculateSim);
+    });
+
+    // Preset Surge Buttons
+    presetSurgeButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const surge = parseInt(btn.dataset.surge, 10);
+        presetSurgeButtons.forEach(b => {
+          b.className = 'preset-surge-btn text-[11px] font-mono-sku px-2 py-0.5 bg-surface-container-lowest rounded text-on-surface-variant hover:text-on-surface';
+        });
+        btn.className = 'preset-surge-btn text-[11px] font-mono-sku px-2 py-0.5 bg-primary-fixed text-primary font-bold rounded';
+
+        const baseAds = 140;
+        adsValueInput.value = Math.round(baseAds * (1 + (surge / 100)));
+        calculateSim();
+      });
+    });
+
+    // Scenario Template Switcher
+    presetScenarioSelect.addEventListener('change', (e) => {
+      const mode = e.target.value;
+      if (mode === 'promo') {
+        adsValueInput.value = 196; // +40%
+        leadTimeInput.value = 3;
+        proposedRestockInput.value = 1100;
+        safetyStockInput.value = 250;
+      } else if (mode === 'weather') {
+        adsValueInput.value = 140; // normal
+        leadTimeInput.value = 6; // delay
+        proposedRestockInput.value = 950;
+        safetyStockInput.value = 280;
+      } else {
+        // default baseline
+        stockOnHandInput.value = 280;
+        adsValueInput.value = 175;
+        leadTimeInput.value = 3;
+        safetyStockInput.value = 200;
+        proposedRestockInput.value = 850;
+      }
+      calculateSim();
+    });
+
+    // Reset Button
+    resetParamsBtn.addEventListener('click', () => {
+      presetScenarioSelect.value = 'custom';
+      stockOnHandInput.value = 280;
+      adsValueInput.value = 175;
+      leadTimeInput.value = 3;
+      safetyStockInput.value = 200;
+      proposedRestockInput.value = 850;
+      calculateSim();
+    });
+
+    runSimulationBtn.addEventListener('click', () => {
+      calculateSim();
+      runSimulationBtn.classList.add('scale-[0.98]');
+      setTimeout(() => runSimulationBtn.classList.remove('scale-[0.98]'), 150);
+    });
+
+    // Action Confirmation CTAs
+    applyOrderBtn.addEventListener('click', () => {
+      const qty = proposedRestockInput.value;
+      alert(`[SIMULASI TERVALIDASI]\nDelivery Order (DO) untuk 850 dus Roma Kelapa 300g berhasil disiapkan untuk CV Surya Krian Logistik.\nStatus: Diteruskan ke Dispatcher DC Pasuruan.`);
+    });
+
+    // Peer SKU switchers
+    document.querySelectorAll('.sku-quick-switch').forEach(el => {
+      el.addEventListener('click', (e) => {
+        const sku = e.target.dataset.sku;
+        document.getElementById('skuSelect').value = sku;
+        if (sku.includes('Beng-Beng')) {
+          stockOnHandInput.value = 190;
+          adsValueInput.value = 110;
+          proposedRestockInput.value = 600;
+        } else {
+          stockOnHandInput.value = 320;
+          adsValueInput.value = 100;
+          proposedRestockInput.value = 500;
+        }
+        calculateSim();
+      });
+    });
+
+    // Initial Trigger
+    calculateSim();
+  })();
+</script></main></div></body></html>

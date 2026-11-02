@@ -12,3 +12,4 @@ export function formatRupiah(amount) {
     maximumFractionDigits: 0,
   }).format(amount || 0);
 }
+

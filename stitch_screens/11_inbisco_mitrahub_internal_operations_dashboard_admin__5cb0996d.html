@@ -1,0 +1,1961 @@
+<!DOCTYPE html><html lang="id"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Inbisco MitraHub - Portal Operasional Cabang Krian</title>
+<!-- Inter Font -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS CDN with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-container": "#ffc9c1",
+            "inverse-primary": "#ffb4a8",
+            "secondary": "#b6171e",
+            "inverse-on-surface": "#f3f0ef",
+            "on-tertiary": "#ffffff",
+            "on-error-container": "#93000a",
+            "on-tertiary-fixed": "#241a00",
+            "surface-container": "#f0eded",
+            "background": "#fcf9f8",
+            "error": "#ba1a1a",
+            "on-primary": "#ffffff",
+            "surface-container-high": "#eae7e7",
+            "surface-bright": "#fcf9f8",
+            "secondary-container": "#da3433",
+            "on-error": "#ffffff",
+            "primary": "#900000",
+            "surface-container-lowest": "#ffffff",
+            "primary-fixed": "#ffdad4",
+            "tertiary-fixed-dim": "#e9c349",
+            "surface-tint": "#c00402",
+            "on-tertiary-fixed-variant": "#574500",
+            "primary-fixed-dim": "#ffb4a8",
+            "secondary-fixed": "#ffdad6",
+            "tertiary": "#735c00",
+            "inverse-surface": "#303030",
+            "tertiary-container": "#cca830",
+            "tertiary-fixed": "#ffe088",
+            "surface-variant": "#e5e2e1",
+            "surface-container-highest": "#e5e2e1",
+            "on-primary-fixed-variant": "#930000",
+            "on-secondary-container": "#fffbff",
+            "on-secondary-fixed": "#410003",
+            "on-secondary-fixed-variant": "#930010",
+            "on-surface-variant": "#5d3f3b",
+            "on-primary-fixed": "#410000",
+            "surface-dim": "#dcd9d9",
+            "on-secondary": "#ffffff",
+            "error-container": "#ffdad6",
+            "outline-variant": "#e7bdb6",
+            "surface": "#fcf9f8",
+            "surface-container-low": "#f6f3f2",
+            "on-tertiary-container": "#4f3e00",
+            "outline": "#926f69",
+            "secondary-fixed-dim": "#ffb3ac",
+            "primary-container": "#bd0000",
+            "on-background": "#1b1c1c",
+            "on-surface": "#1b1c1c"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "margin-md": "2rem",
+            "gutter": "1.5rem",
+            "gutter-sm": "1rem",
+            "space-xl": "2rem",
+            "space-2xs": "0.25rem",
+            "gutter-lg": "2rem",
+            "space-xs": "0.5rem",
+            "space-3xl": "4rem",
+            "margin": "1rem",
+            "space-lg": "1.5rem",
+            "space-sm": "0.75rem",
+            "space-md": "1rem",
+            "space-2xl": "3rem",
+            "margin-lg": "4rem"
+          },
+          "fontFamily": {
+            "headline-sm": ["\"Inter, system-ui, sans-serif\""],
+            "headline-lg": ["\"Inter, system-ui, sans-serif\""],
+            "headline-lg-mobile": ["\"Inter, system-ui, sans-serif\""],
+            "body-md": ["\"Inter, system-ui, sans-serif\""],
+            "display-hero": ["\"Inter, system-ui, sans-serif\""],
+            "label-sm": ["\"Inter, system-ui, sans-serif\""],
+            "headline-md": ["\"Inter, system-ui, sans-serif\""],
+            "body-sm": ["\"Inter, system-ui, sans-serif\""],
+            "title-md": ["\"Inter, system-ui, sans-serif\""],
+            "display-hero-mobile": ["\"Inter, system-ui, sans-serif\""],
+            "mono-sku": ["\"ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace\""],
+            "body-lg": ["\"Inter, system-ui, sans-serif\""],
+            "label-md": ["\"Inter, system-ui, sans-serif\""]
+          },
+          "fontSize": {
+            "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "headline-lg-mobile": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "display-hero": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.025em", "fontWeight": "800" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+            "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "title-md": ["16px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "600" }],
+            "display-hero-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "mono-sku": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "body-lg": ["18px", { "lineHeight": "28px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #d4d4d8;
+      border-radius: 3px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #a1a1aa;
+    }
+  </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased flex h-screen overflow-hidden selection:bg-primary-container selection:text-white">
+<!-- ========================================================================= -->
+<!-- SIDE NAVIGATION (Shared Component: SideNavBar)                            -->
+<!-- ========================================================================= -->
+<aside class="fixed top-0 left-0 h-screen w-64 flex flex-col justify-between bg-surface-container-lowest border-r border-surface-variant z-40 select-none shadow-sm">
+<div class="h-full flex flex-col justify-between p-4">
+<!-- Top Brand Cluster -->
+<div class="space-y-4">
+<div class="flex items-center gap-3 px-1 pb-3 border-b border-surface-variant">
+<div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center text-white shadow-sm font-black text-xl tracking-tighter shrink-0">
+            IM
+          </div>
+<div class="flex flex-col min-w-0">
+<span class="text-title-md font-title-md font-bold text-primary-container tracking-tight truncate">Inbisco MitraHub</span>
+<span class="text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider truncate">Krian Distribution Hub</span>
+</div>
+</div>
+<!-- Simulation Notice Pill -->
+<div class="bg-surface-container-low border border-surface-variant rounded-lg p-2.5 flex items-start gap-2">
+<span class="material-symbols-outlined text-primary-container text-sm mt-0.5" data-icon="info">info</span>
+<div class="flex-1 leading-tight">
+<p class="text-[11px] font-bold text-on-surface">PORTAL OPERASIONAL</p>
+<p class="text-[10px] text-on-surface-variant">PT Inbisco Niagatama Semesta</p>
+</div>
+</div>
+<!-- Action: Buka Shift Baru -->
+<button class="w-full flex items-center justify-center gap-2 py-2 px-3 bg-surface-container-high hover:bg-surface-variant text-on-surface rounded-lg text-label-sm font-label-sm font-semibold transition-colors duration-150 active:scale-[0.99] border border-surface-variant" onclick="triggerToast('Shift Pagi (07.30 - 16.00 WIB) telah aktif dan tersinkronisasi SAP.')">
+<span class="material-symbols-outlined text-base text-primary-container" data-icon="add_circle">add_circle</span>
+<span class="">Buka Shift Baru</span>
+</button>
+<!-- Navigation Tabs (Exact 3 JSON tab_labels) -->
+<nav class="space-y-1 pt-1" id="sidebar-nav">
+<!-- Tab 1: Overview & Dispatch Pesanan -->
+<button class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg bg-surface-container-low text-primary-container font-title-md font-semibold border-l-4 border-primary-container text-left transition-all duration-150" id="nav-btn-dispatch" onclick="switchTab('dispatch')">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-xl" data-icon="local_shipping">local_shipping</span>
+<span class="text-label-md font-label-md">Overview &amp; Dispatch Pesanan</span>
+</div>
+<span class="px-1.5 py-0.5 rounded bg-primary-container text-white text-[11px] font-bold" id="badge-dispatch">18</span>
+</button>
+<!-- Tab 2: Kontrol Stok Gudang (FEFO) -->
+<button class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-label-md transition-colors duration-150 text-left" id="nav-btn-inventory" onclick="switchTab('inventory')">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-xl" data-icon="inventory_2">inventory_2</span>
+<span class="text-label-md font-label-md">Kontrol Stok Gudang (FEFO)</span>
+</div>
+<span class="px-1.5 py-0.5 rounded bg-error text-white text-[11px] font-bold" id="badge-inventory">3 Kritis</span>
+</button>
+<!-- Tab 3: Database Toko Mitra -->
+<button class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface font-label-md transition-colors duration-150 text-left" id="nav-btn-partners" onclick="switchTab('partners')">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-xl" data-icon="storefront">storefront</span>
+<span class="text-label-md font-label-md">Database Toko Mitra</span>
+</div>
+<span class="px-1.5 py-0.5 rounded bg-tertiary-container text-on-tertiary-fixed font-bold text-[11px]" id="badge-partners">34 Baru</span>
+</button>
+</nav>
+</div>
+<!-- Bottom Cluster & User Identity -->
+<div class="pt-4 border-t border-surface-variant space-y-3">
+<!-- Secondary Navigation (JSON footer_tab_labels) -->
+<div class="space-y-1">
+<button class="w-full flex items-center gap-3 px-3 py-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface text-label-md transition-colors" onclick="triggerToast('Modul Pengaturan Sistem: Versi v2.4 (Branch Krian)')">
+<span class="material-symbols-outlined text-lg" data-icon="settings">settings</span>
+<span class="text-xs font-medium">Pengaturan Sistem</span>
+</button>
+<button class="w-full flex items-center gap-3 px-3 py-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface text-label-md transition-colors" onclick="triggerToast('Pusat Bantuan Logistik Krian: Ext. 4022 / Radio Ch. 4')">
+<span class="material-symbols-outlined text-lg" data-icon="help">help</span>
+<span class="text-xs font-medium">Pusat Bantuan</span>
+</button>
+</div>
+<!-- Administrator Profile Card -->
+<div class="bg-surface-container-low rounded-lg p-2.5 flex items-center justify-between border border-surface-variant">
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="relative w-8 h-8 rounded-full bg-primary-container text-white flex items-center justify-center font-bold text-xs shrink-0">
+              AG
+              <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></span>
+</div>
+<div class="truncate">
+<p class="text-xs font-bold text-on-surface truncate">Admin Gudang Krian</p>
+<p class="text-[10px] text-on-surface-variant truncate">Shift Pagi • Online</p>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-error p-1 rounded transition-colors" onclick="toggleLogoutModal()" title="Keluar Akun">
+<span class="material-symbols-outlined text-lg" data-icon="logout">logout</span>
+</button>
+</div>
+<div class="px-1 text-center">
+<span class="text-[10px] text-outline font-mono-sku">Sistem Operasional Inbisco v2.4 (Simulasi B2B)</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- ========================================================================= -->
+<!-- MAIN WORKSPACE CONTAINER                                                  -->
+<!-- ========================================================================= -->
+<div class="ml-64 flex-1 flex flex-col h-screen overflow-hidden bg-surface">
+<!-- Top Sticky Corporate Bar (Shared Component: TopNavBar) -->
+<header class="h-[72px] bg-surface-container-lowest border-b border-surface-variant px-6 flex items-center justify-between shrink-0 z-30 shadow-sm">
+<!-- Left: Breadcrumb + Search -->
+<div class="flex items-center gap-6">
+<div>
+<div class="flex items-center gap-1.5 text-xs text-on-surface-variant font-medium">
+<span class="">Portal Operasional</span>
+<span class="material-symbols-outlined text-xs" data-icon="chevron_right">chevron_right</span>
+<span class="text-primary font-semibold" id="breadcrumb-current">Overview &amp; Dispatch Pesanan</span>
+</div>
+<h1 class="text-headline-sm font-headline-sm text-on-surface tracking-tight" id="page-title">Dashboard Operasional Cabang Krian</h1>
+</div>
+<!-- Search Bar (on_left as per TopNavBar JSON) -->
+<div class="relative w-72 hidden xl:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg" data-icon="search">search</span>
+<input class="w-full h-9 pl-9 pr-3 text-xs bg-surface-container-low border border-surface-variant rounded-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container placeholder:text-outline outline-none" id="global-search" onkeyup="filterUniversal(this.value)" placeholder="Cari resi, SKU, atau mitra..." type="text">
+</div>
+</div>
+<!-- Right: Operational Actions Cluster -->
+<div class="flex items-center gap-3">
+<!-- Live Shift Indicator Pill -->
+<div class="hidden md:flex items-center gap-2 px-2.5 py-1 bg-surface-container-low border border-surface-variant rounded-md">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+<span class="text-xs font-medium text-on-surface">Shift Pagi: 07.30 - 16.00 WIB</span>
+<span class="text-[10px] bg-surface-variant text-on-surface-variant font-bold px-1 rounded">Aktif</span>
+</div>
+<!-- Primary Action: Sinkronisasi SAP (Trailing Primary from JSON) -->
+<button class="flex items-center gap-1.5 h-9 px-3.5 bg-primary-container hover:bg-secondary text-white rounded-md text-xs font-semibold shadow-sm transition-all active:scale-95" onclick="syncSAP()">
+<span class="material-symbols-outlined text-base" data-icon="sync">sync</span>
+<span class="">Sinkronisasi SAP</span>
+</button>
+<!-- Secondary Action: Cetak Manifest Harian (Trailing Secondary from JSON) -->
+<button class="flex items-center gap-1.5 h-9 px-3 bg-surface-container-lowest border border-surface-variant hover:bg-surface-container-low text-on-surface rounded-md text-xs font-medium transition-colors" onclick="printManifest()">
+<span class="material-symbols-outlined text-base text-on-surface-variant" data-icon="print">print</span>
+<span class="hidden sm:inline">Cetak Manifest Harian</span>
+</button>
+<!-- Icon Actions: notifications, history, account_circle (JSON) -->
+<div class="flex items-center border-l border-surface-variant pl-3 gap-1">
+<button class="relative p-2 rounded-md hover:bg-surface-container-low text-on-surface-variant" onclick="toggleNotificationPanel()" title="Notifikasi">
+<span class="material-symbols-outlined text-xl" data-icon="notifications">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-primary-container rounded-full ring-2 ring-white"></span>
+</button>
+<button class="p-2 rounded-md hover:bg-surface-container-low text-on-surface-variant" onclick="triggerToast('Log Aktivitas: Terakhir sinkron 4 menit lalu oleh Tim Dispatch')" title="Riwayat">
+<span class="material-symbols-outlined text-xl" data-icon="history">history</span>
+</button>
+<button class="p-1 rounded-md hover:bg-surface-container-low text-on-surface-variant ml-1" title="Profil Admin">
+<span class="material-symbols-outlined text-2xl text-primary" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Operational Banner Notice -->
+<div class="bg-surface-container-low border-b border-surface-variant px-6 py-1.5 flex items-center justify-between text-xs text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span class="inline-block px-1.5 py-0.5 bg-tertiary-container/30 text-tertiary font-bold text-[10px] rounded uppercase tracking-wider">Depot Krian Resmi</span>
+<span class="font-medium">Cakupan Wilayah Aktif: Sidoarjo Barat (Krian, Balongbendo, Tarik, Prambon, Wonoayu)</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-[11px] font-mono-sku">Kondisi Cuaca Rute: Cerah Berawan • Armada: 6 Truk Siap</span>
+<span class="text-outline">|</span>
+<span class="text-[10px] font-semibold text-primary">DATA SIMULASI RESMI KOMPETISI B2B</span>
+</div>
+</div>
+<!-- Scrollable Workspace Body -->
+<main class="flex-1 overflow-y-auto custom-scroll p-6 bg-surface">
+<!-- ================================================================= -->
+<!-- TAB 1: OVERVIEW & DISPATCH PESANAN (DEFAULT ACTIVE VIEW)          -->
+<!-- ================================================================= -->
+<section class="space-y-6" id="view-dispatch">
+<!-- 4 KPI Metrics Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"><!-- Card 1 -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-xl p-5 shadow-sm relative overflow-hidden flex flex-col justify-between h-full">
+  <div>
+    <div class="flex items-center justify-between">
+      <span class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Estimasi Omzet Grosir</span>
+      <div class="w-9 h-9 rounded-lg bg-primary-fixed flex items-center justify-center text-primary shrink-0">
+        <span class="material-symbols-outlined text-lg" data-icon="account_balance_wallet">account_balance_wallet</span>
+      </div>
+    </div>
+    <div class="mt-3">
+      <div class="text-2xl font-bold text-on-surface tracking-tight">Rp 24.850.000</div>
+      <p class="text-xs text-outline mt-1 font-normal">Akumulasi nilai pesanan masuk hari ini</p>
+    </div>
+  </div>
+  <div class="mt-4 pt-3 border-t border-surface-variant flex items-center gap-1.5 text-xs text-emerald-700 font-medium">
+    <span class="material-symbols-outlined text-base font-bold" data-icon="trending_up">trending_up</span>
+    <span class="">+14.2% dibanding kemarin</span>
+  </div>
+  <div class="absolute top-0 left-0 right-0 h-1 bg-primary-container"></div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-xl p-5 shadow-sm relative overflow-hidden flex flex-col justify-between h-full">
+  <div>
+    <div class="flex items-center justify-between">
+      <span class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Total Pesanan Masuk</span>
+      <div class="w-9 h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-on-surface shrink-0">
+        <span class="material-symbols-outlined text-lg" data-icon="assignment">assignment</span>
+      </div>
+    </div>
+    <div class="mt-3">
+      <div class="text-2xl font-bold text-on-surface tracking-tight">128 <span class="text-sm font-medium text-on-surface-variant">DO</span></div>
+      <p class="text-xs text-outline mt-1 font-normal">Pesanan grosir ritel tercatat</p>
+    </div>
+  </div>
+  <div class="mt-4 pt-3 border-t border-surface-variant flex items-center gap-1.5 text-xs text-on-surface-variant font-medium">
+    <span class="material-symbols-outlined text-base text-emerald-600" data-icon="check_circle">check_circle</span>
+    <span class="">110 DO telah terverifikasi</span>
+  </div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-xl p-5 shadow-sm relative overflow-hidden flex flex-col justify-between h-full">
+  <div>
+    <div class="flex items-center justify-between">
+      <span class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Antrean Kirim</span>
+      <div class="w-9 h-9 rounded-lg bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed shrink-0">
+        <span class="material-symbols-outlined text-lg" data-icon="local_shipping">local_shipping</span>
+      </div>
+    </div>
+    <div class="mt-3">
+      <div class="text-2xl font-bold text-tertiary tracking-tight">18 <span class="text-sm font-medium text-on-surface-variant">DO</span></div>
+      <p class="text-xs text-outline mt-1 font-normal">Menunggu packing &amp; dispatch armada</p>
+    </div>
+  </div>
+  <div class="mt-4 pt-3 border-t border-surface-variant flex items-center gap-1.5 text-xs text-tertiary font-medium">
+    <span class="w-2 h-2 rounded-full bg-tertiary-container animate-pulse"></span>
+    <span class="">Gelombang 2 siap muat pukul 13.00</span>
+  </div>
+  <div class="absolute top-0 left-0 right-0 h-1 bg-tertiary-container"></div>
+</div>
+<!-- Card 4 -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-xl p-5 shadow-sm relative overflow-hidden flex flex-col justify-between h-full">
+  <div>
+    <div class="flex items-center justify-between">
+      <span class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Toko Mitra Aktif</span>
+      <div class="w-9 h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-on-surface shrink-0">
+        <span class="material-symbols-outlined text-lg" data-icon="store">store</span>
+      </div>
+    </div>
+    <div class="mt-3">
+      <div class="text-2xl font-bold text-on-surface tracking-tight">86 <span class="text-sm font-medium text-on-surface-variant">Mitra</span></div>
+      <p class="text-xs text-outline mt-1 font-normal">Toko kelontong &amp; warkop terverifikasi</p>
+    </div>
+  </div>
+  <div class="mt-4 pt-3 border-t border-surface-variant flex items-center gap-1.5 text-xs text-primary font-medium">
+    <span class="material-symbols-outlined text-base" data-icon="fiber_new">fiber_new</span>
+    <span class="">+34 pendaftar baru verifikasi</span>
+  </div>
+</div></div>
+<!-- 5 Produk Mayora Terlaris Hari Ini -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-lg p-4 shadow-sm"><div class="flex items-center justify-between mb-4">
+  <div class="flex items-center gap-2.5">
+    <div class="w-8 h-8 rounded-lg bg-primary-fixed flex items-center justify-center text-primary shrink-0">
+      <span class="material-symbols-outlined text-lg" data-icon="hotel_class">hotel_class</span>
+    </div>
+    <div>
+      <h2 class="text-base font-bold text-on-surface tracking-tight">5 Produk Mayora Terlaris Hari Ini</h2>
+      <p class="text-xs text-outline font-normal">Volume muat harian gudang distribusi Krian</p>
+    </div>
+  </div>
+  <button class="text-xs font-semibold text-primary hover:text-secondary flex items-center gap-1 px-3 py-1.5 rounded-lg hover:bg-surface-container-low transition-colors" onclick="triggerToast('Katalog Mayora Lengkap: 148 SKU aktif')">
+    <span class="">Lihat Analisis Lengkap</span>
+    <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+  </button>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-5 gap-3.5">
+  <!-- Item 1 -->
+  <div class="bg-surface-container-low border border-surface-variant rounded-xl p-3.5 flex flex-col justify-between hover:border-outline-variant transition-colors h-36">
+    <div>
+      <div class="flex items-center justify-between">
+        <span class="px-2 py-0.5 bg-surface-container-lowest rounded text-[10px] font-bold text-primary font-mono-sku border border-surface-variant">ROMA</span>
+        <span class="text-[11px] font-bold text-on-surface-variant">#1</span>
+      </div>
+      <div class="mt-2.5">
+        <p class="text-xs font-bold text-on-surface truncate">Roma Kelapa 300g</p>
+        <p class="text-[11px] text-outline font-mono-sku mt-0.5">MYR-RMK-01</p>
+      </div>
+    </div>
+    <div class="pt-2 border-t border-surface-variant flex items-baseline justify-between">
+      <span class="text-xl font-bold text-primary">420</span>
+      <span class="text-[11px] font-medium text-on-surface-variant">Karton</span>
+    </div>
+  </div>
+  <!-- Item 2 -->
+  <div class="bg-surface-container-low border border-surface-variant rounded-xl p-3.5 flex flex-col justify-between hover:border-outline-variant transition-colors h-36">
+    <div>
+      <div class="flex items-center justify-between">
+        <span class="px-2 py-0.5 bg-surface-container-lowest rounded text-[10px] font-bold text-primary font-mono-sku border border-surface-variant">WAFER</span>
+        <span class="text-[11px] font-bold text-on-surface-variant">#2</span>
+      </div>
+      <div class="mt-2.5">
+        <p class="text-xs font-bold text-on-surface truncate">Beng-Beng 20g</p>
+        <p class="text-[11px] text-outline font-mono-sku mt-0.5">MYR-BBG-02</p>
+      </div>
+    </div>
+    <div class="pt-2 border-t border-surface-variant flex items-baseline justify-between">
+      <span class="text-xl font-bold text-primary">380</span>
+      <span class="text-[11px] font-medium text-on-surface-variant">Karton</span>
+    </div>
+  </div>
+  <!-- Item 3 -->
+  <div class="bg-surface-container-low border border-surface-variant rounded-xl p-3.5 flex flex-col justify-between hover:border-outline-variant transition-colors h-36">
+    <div>
+      <div class="flex items-center justify-between">
+        <span class="px-2 py-0.5 bg-surface-container-lowest rounded text-[10px] font-bold text-primary font-mono-sku border border-surface-variant">KOPI</span>
+        <span class="text-[11px] font-bold text-on-surface-variant">#3</span>
+      </div>
+      <div class="mt-2.5">
+        <p class="text-xs font-bold text-on-surface truncate">Torabika Duo Renceng</p>
+        <p class="text-[11px] text-outline font-mono-sku mt-0.5">MYR-TRB-01</p>
+      </div>
+    </div>
+    <div class="pt-2 border-t border-surface-variant flex items-baseline justify-between">
+      <span class="text-xl font-bold text-primary">310</span>
+      <span class="text-[11px] font-medium text-on-surface-variant">Karton</span>
+    </div>
+  </div>
+  <!-- Item 4 -->
+  <div class="bg-surface-container-low border border-surface-variant rounded-xl p-3.5 flex flex-col justify-between hover:border-outline-variant transition-colors h-36">
+    <div>
+      <div class="flex items-center justify-between">
+        <span class="px-2 py-0.5 bg-surface-container-lowest rounded text-[10px] font-bold text-primary font-mono-sku border border-surface-variant">SEREAL</span>
+        <span class="text-[11px] font-bold text-on-surface-variant">#4</span>
+      </div>
+      <div class="mt-2.5">
+        <p class="text-xs font-bold text-on-surface truncate">Energen Cokelat Bag</p>
+        <p class="text-[11px] text-outline font-mono-sku mt-0.5">MYR-ENG-03</p>
+      </div>
+    </div>
+    <div class="pt-2 border-t border-surface-variant flex items-baseline justify-between">
+      <span class="text-xl font-bold text-primary">260</span>
+      <span class="text-[11px] font-medium text-on-surface-variant">Karton</span>
+    </div>
+  </div>
+  <!-- Item 5 -->
+  <div class="bg-surface-container-low border border-surface-variant rounded-xl p-3.5 flex flex-col justify-between hover:border-outline-variant transition-colors h-36">
+    <div>
+      <div class="flex items-center justify-between">
+        <span class="px-2 py-0.5 bg-surface-container-lowest rounded text-[10px] font-bold text-primary font-mono-sku border border-surface-variant">AIR</span>
+        <span class="text-[11px] font-bold text-on-surface-variant">#5</span>
+      </div>
+      <div class="mt-2.5">
+        <p class="text-xs font-bold text-on-surface truncate">Le Minerale 600ml</p>
+        <p class="text-[11px] text-outline font-mono-sku mt-0.5">MYR-LMN-01</p>
+      </div>
+    </div>
+    <div class="pt-2 border-t border-surface-variant flex items-baseline justify-between">
+      <span class="text-xl font-bold text-primary">240</span>
+      <span class="text-[11px] font-medium text-on-surface-variant">Karton</span>
+    </div>
+  </div>
+</div></div>
+<!-- Section: Dispatch Pesanan Table -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-lg shadow-sm overflow-hidden">
+<!-- Table Header & Controls -->
+<div class="p-4 border-b border-surface-variant space-y-3"><div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+  <div>
+    <h2 class="text-base font-bold text-on-surface tracking-tight">Dispatch Pesanan Harian</h2>
+    <p class="text-xs text-outline mt-0.5">Kelola pesanan restock toko mitra dan pantau perkembangan pengiriman armada harian.</p>
+  </div>
+  <div class="flex items-center gap-2">
+    <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-surface-container-low text-xs font-semibold text-on-surface-variant rounded-lg border border-surface-variant">
+      <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+      Armada Krian: 6 Unit Operasional
+    </span>
+  </div>
+</div>
+<!-- Filter Toolbar -->
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 pt-1">
+  <!-- Kecamatan Dropdown -->
+  <div>
+    <label class="block text-[11px] font-semibold text-on-surface-variant mb-1">Filter Wilayah</label>
+    <select class="w-full h-9 text-xs bg-surface border border-surface-variant rounded-lg text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none transition-colors px-2.5" id="filter-dispatch-kecamatan" onchange="applyDispatchFilters()">
+      <option value="Semua">Semua Kecamatan</option>
+      <option value="Krian">Krian</option>
+      <option value="Balongbendo">Balongbendo</option>
+      <option value="Prambon">Prambon</option>
+      <option value="Tarik">Tarik</option>
+      <option value="Wonoayu">Wonoayu</option>
+      <option value="Taman">Taman</option>
+      <option value="Waru">Waru</option>
+      <option value="Sukodono">Sukodono</option>
+      <option value="Sidoarjo">Sidoarjo Kota</option>
+    </select>
+  </div>
+  <!-- Status Dropdown -->
+  <div>
+    <label class="block text-[11px] font-semibold text-on-surface-variant mb-1">Status Pengiriman</label>
+    <select class="w-full h-9 text-xs bg-surface border border-surface-variant rounded-lg text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none transition-colors px-2.5" id="filter-dispatch-status" onchange="applyDispatchFilters()">
+      <option value="Semua">Semua Status</option>
+      <option value="Pending">Pending (Baru)</option>
+      <option value="Confirmed">Confirmed</option>
+      <option value="Packing">Packing (Gudang)</option>
+      <option value="Dispatched">Dispatched (Jalan)</option>
+      <option value="Completed">Completed (Selesai)</option>
+    </select>
+  </div>
+  <!-- Search Resi / Warung -->
+  <div class="lg:col-span-2">
+    <label class="block text-[11px] font-semibold text-on-surface-variant mb-1">Pencarian Cepat</label>
+    <div class="relative">
+      <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-outline text-base" data-icon="search">search</span>
+      <input class="w-full h-9 pl-8 pr-3 text-xs bg-surface border border-surface-variant rounded-lg text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container placeholder:text-outline outline-none transition-colors" id="filter-dispatch-search" onkeyup="applyDispatchFilters()" placeholder="Cari nomor resi atau nama warung..." type="text">
+    </div>
+  </div>
+  <!-- Action: Reset -->
+  <div class="flex items-end">
+    <button class="w-full h-9 flex items-center justify-center gap-1.5 px-3 bg-surface-container-low hover:bg-surface-variant text-on-surface-variant rounded-lg text-xs font-semibold border border-surface-variant transition-colors" onclick="resetDispatchFilters()">
+      <span class="material-symbols-outlined text-base" data-icon="refresh">refresh</span>
+      <span class="">Reset Filter</span>
+    </button>
+  </div>
+</div></div>
+<!-- Table Container -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse" id="dispatch-table">
+<thead>
+<tr class="bg-surface-container-low border-b border-surface-variant text-on-surface-variant text-[11px] uppercase tracking-wider font-semibold">
+<th class="py-3 px-4">Kode Resi</th>
+<th class="py-3 px-4">Nama Warung &amp; Kecamatan</th>
+<th class="py-3 px-4">Detail Item (Kartonan)</th>
+<th class="py-3 px-4">Total Tagihan</th>
+<th class="py-3 px-4">Pembayaran</th>
+<th class="py-3 px-4">Status Pengiriman</th>
+<th class="py-3 px-4 text-right">Aksi Operasional</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-variant text-xs" id="dispatch-table-body"><tr class="hover:bg-surface-container-low transition-colors">
+          <td class="py-3 px-4 font-mono-sku font-bold text-primary">INB-2610-KR01</td>
+          <td class="py-3 px-4">
+            <span class="font-bold text-on-surface block">Warkop Berkah</span>
+            <span class="text-outline text-[11px]">Krian</span>
+          </td>
+          <td class="py-3 px-4 text-on-surface truncate max-w-xs" title="5 Karton Roma Kelapa, 2 Karton Torabika">5 Karton Roma Kelapa, 2 Karton Torabika</td>
+          <td class="py-3 px-4 font-bold text-on-surface">Rp 850.000</td>
+          <td class="py-3 px-4"><span class="px-1.5 py-0.5 rounded bg-surface-container-high text-on-surface text-[10px] font-bold">COD TUNAI</span></td>
+          <td class="py-3 px-4">
+            <span class="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-tertiary-container/30 text-tertiary border border-tertiary-container">Packing</span>
+          </td>
+          <td class="py-3 px-4 text-right space-x-1 whitespace-nowrap">
+            <button onclick="progressStatus('INB-2610-KR01', 'Dispatched')" class="px-2.5 py-1 bg-purple-700 text-white rounded text-[11px] font-semibold hover:bg-purple-800">Kirim Armada</button>
+            <button onclick="openOrderDetail('INB-2610-KR01')" class="px-2 py-1 bg-surface-container-lowest border border-surface-variant text-on-surface-variant hover:text-on-surface rounded text-[11px] font-medium" title="Detail Lengkap">
+              Lihat Detail
+            </button>
+          </td>
+        </tr><tr class="hover:bg-surface-container-low transition-colors">
+          <td class="py-3 px-4 font-mono-sku font-bold text-primary">INB-2610-KR02</td>
+          <td class="py-3 px-4">
+            <span class="font-bold text-on-surface block">Toko Sumber Rejeki</span>
+            <span class="text-outline text-[11px]">Balongbendo</span>
+          </td>
+          <td class="py-3 px-4 text-on-surface truncate max-w-xs" title="10 Karton Beng-Beng, 4 Karton Energen">10 Karton Beng-Beng, 4 Karton Energen</td>
+          <td class="py-3 px-4 font-bold text-on-surface">Rp 1.620.000</td>
+          <td class="py-3 px-4"><span class="px-1.5 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-bold">TEMPO 7 HARI</span></td>
+          <td class="py-3 px-4">
+            <span class="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-purple-100 text-purple-800 border border-purple-200">Dispatched</span>
+          </td>
+          <td class="py-3 px-4 text-right space-x-1 whitespace-nowrap">
+            <button onclick="progressStatus('INB-2610-KR02', 'Completed')" class="px-2.5 py-1 bg-emerald-700 text-white rounded text-[11px] font-semibold hover:bg-emerald-800">Tandai Selesai</button>
+            <button onclick="openOrderDetail('INB-2610-KR02')" class="px-2 py-1 bg-surface-container-lowest border border-surface-variant text-on-surface-variant hover:text-on-surface rounded text-[11px] font-medium" title="Detail Lengkap">
+              Lihat Detail
+            </button>
+          </td>
+        </tr><tr class="hover:bg-surface-container-low transition-colors">
+          <td class="py-3 px-4 font-mono-sku font-bold text-primary">INB-2610-KR03</td>
+          <td class="py-3 px-4">
+            <span class="font-bold text-on-surface block">Warkop Sentosa</span>
+            <span class="text-outline text-[11px]">Prambon</span>
+          </td>
+          <td class="py-3 px-4 text-on-surface truncate max-w-xs" title="3 Karton Torabika, 2 Karton Roma Sari Gandum">3 Karton Torabika, 2 Karton Roma Sari Gandum</td>
+          <td class="py-3 px-4 font-bold text-on-surface">Rp 580.000</td>
+          <td class="py-3 px-4"><span class="px-1.5 py-0.5 rounded bg-surface-container-high text-on-surface text-[10px] font-bold">COD TUNAI</span></td>
+          <td class="py-3 px-4">
+            <span class="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-surface-variant text-on-surface-variant">Pending</span>
+          </td>
+          <td class="py-3 px-4 text-right space-x-1 whitespace-nowrap">
+            <button onclick="progressStatus('INB-2610-KR03', 'Confirmed')" class="px-2.5 py-1 bg-primary-container text-white rounded text-[11px] font-semibold hover:bg-secondary">Terima Order</button>
+            <button onclick="openOrderDetail('INB-2610-KR03')" class="px-2 py-1 bg-surface-container-lowest border border-surface-variant text-on-surface-variant hover:text-on-surface rounded text-[11px] font-medium" title="Detail Lengkap">
+              Lihat Detail
+            </button>
+          </td>
+        </tr><tr class="hover:bg-surface-container-low transition-colors">
+          <td class="py-3 px-4 font-mono-sku font-bold text-primary">INB-2610-KR04</td>
+          <td class="py-3 px-4">
+            <span class="font-bold text-on-surface block">Toko Murah Jaya</span>
+            <span class="text-outline text-[11px]">Tarik</span>
+          </td>
+          <td class="py-3 px-4 text-on-surface truncate max-w-xs" title="8 Karton Le Minerale 600ml, 4 Karton Roma Malkist">8 Karton Le Minerale 600ml, 4 Karton Roma Malkist</td>
+          <td class="py-3 px-4 font-bold text-on-surface">Rp 1.150.000</td>
+          <td class="py-3 px-4"><span class="px-1.5 py-0.5 rounded bg-surface-container-high text-on-surface text-[10px] font-bold">COD TUNAI</span></td>
+          <td class="py-3 px-4">
+            <span class="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-blue-100 text-blue-800 border border-blue-200">Confirmed</span>
+          </td>
+          <td class="py-3 px-4 text-right space-x-1 whitespace-nowrap">
+            <button onclick="progressStatus('INB-2610-KR04', 'Packing')" class="px-2.5 py-1 bg-tertiary-container text-on-tertiary-fixed rounded text-[11px] font-semibold hover:opacity-90">Mulai Packing</button>
+            <button onclick="openOrderDetail('INB-2610-KR04')" class="px-2 py-1 bg-surface-container-lowest border border-surface-variant text-on-surface-variant hover:text-on-surface rounded text-[11px] font-medium" title="Detail Lengkap">
+              Lihat Detail
+            </button>
+          </td>
+        </tr><tr class="hover:bg-surface-container-low transition-colors">
+          <td class="py-3 px-4 font-mono-sku font-bold text-primary">INB-2610-KR05</td>
+          <td class="py-3 px-4">
+            <span class="font-bold text-on-surface block">Minimarket Barokah</span>
+            <span class="text-outline text-[11px]">Wonoayu</span>
+          </td>
+          <td class="py-3 px-4 text-on-surface truncate max-w-xs" title="15 Karton Roma Kelapa, 6 Karton Beng-Beng">15 Karton Roma Kelapa, 6 Karton Beng-Beng</td>
+          <td class="py-3 px-4 font-bold text-on-surface">Rp 2.450.000</td>
+          <td class="py-3 px-4"><span class="px-1.5 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-bold">TEMPO 7 HARI</span></td>
+          <td class="py-3 px-4">
+            <span class="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">Completed</span>
+          </td>
+          <td class="py-3 px-4 text-right space-x-1 whitespace-nowrap">
+            <span class="text-xs text-emerald-700 font-semibold flex items-center justify-end gap-1"><span class="material-symbols-outlined text-sm" data-icon="done_all">done_all</span> Tuntas</span>
+            <button onclick="openOrderDetail('INB-2610-KR05')" class="px-2 py-1 bg-surface-container-lowest border border-surface-variant text-on-surface-variant hover:text-on-surface rounded text-[11px] font-medium" title="Detail Lengkap">
+              Lihat Detail
+            </button>
+          </td>
+        </tr><tr class="hover:bg-surface-container-low transition-colors">
+          <td class="py-3 px-4 font-mono-sku font-bold text-primary">INB-2610-KR06</td>
+          <td class="py-3 px-4">
+            <span class="font-bold text-on-surface block">Toko Makmur</span>
+            <span class="text-outline text-[11px]">Krian</span>
+          </td>
+          <td class="py-3 px-4 text-on-surface truncate max-w-xs" title="4 Karton Energen Vanilla, 2 Karton Kopiko 78">4 Karton Energen Vanilla, 2 Karton Kopiko 78</td>
+          <td class="py-3 px-4 font-bold text-on-surface">Rp 640.000</td>
+          <td class="py-3 px-4"><span class="px-1.5 py-0.5 rounded bg-surface-container-high text-on-surface text-[10px] font-bold">COD TUNAI</span></td>
+          <td class="py-3 px-4">
+            <span class="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-surface-variant text-on-surface-variant">Pending</span>
+          </td>
+          <td class="py-3 px-4 text-right space-x-1 whitespace-nowrap">
+            <button onclick="progressStatus('INB-2610-KR06', 'Confirmed')" class="px-2.5 py-1 bg-primary-container text-white rounded text-[11px] font-semibold hover:bg-secondary">Terima Order</button>
+            <button onclick="openOrderDetail('INB-2610-KR06')" class="px-2 py-1 bg-surface-container-lowest border border-surface-variant text-on-surface-variant hover:text-on-surface rounded text-[11px] font-medium" title="Detail Lengkap">
+              Lihat Detail
+            </button>
+          </td>
+        </tr></tbody>
+</table>
+</div>
+<!-- Pagination Footer -->
+<div class="p-3 bg-surface-container-low border-t border-surface-variant flex items-center justify-between text-xs text-on-surface-variant">
+<span class="">Menampilkan <strong class="text-on-surface" id="dispatch-count">6</strong> pesanan aktif hari ini</span>
+<div class="flex items-center gap-1">
+<button class="px-2.5 py-1 bg-surface-container-lowest border border-surface-variant rounded text-xs hover:bg-surface-variant disabled:opacity-50" disabled="">Sebelumnya</button>
+<button class="px-2.5 py-1 bg-primary-container text-white rounded text-xs font-bold">1</button>
+<button class="px-2.5 py-1 bg-surface-container-lowest border border-surface-variant rounded text-xs hover:bg-surface-variant">2</button>
+<button class="px-2.5 py-1 bg-surface-container-lowest border border-surface-variant rounded text-xs hover:bg-surface-variant">Selanjutnya</button>
+</div>
+</div>
+</div>
+</section>
+<!-- ================================================================= -->
+<!-- TAB 2: KONTROL STOK GUDANG (FEFO)                                 -->
+<!-- ================================================================= -->
+<section class="space-y-6 hidden" id="view-inventory">
+<!-- FEFO 3 KPI Metric Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+<div class="bg-surface-container-lowest border border-surface-variant rounded-lg p-4 shadow-sm flex items-center justify-between">
+<div>
+<p class="text-xs font-semibold text-on-surface-variant uppercase">Total Produk Aktif</p>
+<p class="text-headline-md font-headline-md font-bold text-on-surface mt-1">42 <span class="text-sm font-normal text-on-surface-variant">SKU Terdaftar</span></p>
+<p class="text-xs text-outline mt-0.5">Kategori Mayora B2B Resmi</p>
+</div>
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined text-2xl" data-icon="inventory_2">inventory_2</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-surface-variant rounded-lg p-4 shadow-sm flex items-center justify-between">
+<div>
+<p class="text-xs font-semibold text-tertiary uppercase">Stok Perlu Perhatian (FEFO)</p>
+<p class="text-headline-md font-headline-md font-bold text-tertiary mt-1">8 <span class="text-sm font-normal text-on-surface-variant">Batch</span></p>
+<p class="text-xs text-outline mt-0.5">Masa kedaluwarsa 3-6 bulan ke depan</p>
+</div>
+<div class="w-10 h-10 rounded-lg bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed">
+<span class="material-symbols-outlined text-2xl" data-icon="warning">warning</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-surface-variant rounded-lg p-4 shadow-sm flex items-center justify-between">
+<div>
+<p class="text-xs font-semibold text-error uppercase">Batch Mendekati Kedaluwarsa</p>
+<p class="text-headline-md font-headline-md font-bold text-error mt-1">3 <span class="text-sm font-normal text-on-surface-variant">Batch Kritis</span></p>
+<p class="text-xs text-error mt-0.5">&lt; 3 bulan: Wajib FEFO Dispatch Segera</p>
+</div>
+<div class="w-10 h-10 rounded-lg bg-error-container flex items-center justify-center text-error">
+<span class="material-symbols-outlined text-2xl" data-icon="crisis_alert">crisis_alert</span>
+</div>
+</div>
+</div>
+<!-- Inventory FEFO Table Container -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-lg shadow-sm overflow-hidden">
+<!-- Inventory Controls -->
+<div class="p-4 border-b border-surface-variant space-y-3">
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+<div>
+<div class="flex items-center gap-2">
+<h2 class="text-headline-sm font-headline-sm font-bold text-on-surface">Kontrol Stok Gudang (FEFO Priority)</h2>
+<span class="px-2 py-0.5 bg-primary-container text-white text-[10px] font-bold rounded">First Expired, First Out</span>
+</div>
+<p class="text-body-sm font-body-sm text-outline">Daftar inventaris disusun otomatis berdasarkan tanggal kedaluwarsa paling awal untuk meminimalkan risiko retur.</p>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-1.5 h-9 px-3.5 bg-primary-container hover:bg-secondary text-white rounded text-xs font-semibold shadow-sm transition-all" onclick="openAddStockModal()">
+<span class="material-symbols-outlined text-base" data-icon="add_box">add_box</span>
+<span class="">+ Tambah Stok Batch</span>
+</button>
+</div>
+</div>
+<!-- Filters -->
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 pt-1">
+<div>
+<label class="block text-[11px] font-semibold text-on-surface-variant mb-1">Kategori Produk</label>
+<select class="w-full h-9 text-xs bg-surface border border-surface-variant rounded text-on-surface focus:border-primary-container focus:ring-0" id="filter-inventory-category" onchange="applyInventoryFilters()">
+<option value="Semua">Semua Kategori</option>
+<option value="Biskuit">Biskuit</option>
+<option value="Wafer">Wafer</option>
+<option value="Kopi">Kopi</option>
+<option value="Sereal">Sereal</option>
+<option value="Air Mineral">Air Mineral</option>
+</select>
+</div>
+<div>
+<label class="block text-[11px] font-semibold text-on-surface-variant mb-1">Status FEFO</label>
+<select class="w-full h-9 text-xs bg-surface border border-surface-variant rounded text-on-surface focus:border-primary-container focus:ring-0" id="filter-inventory-status" onchange="applyInventoryFilters()">
+<option value="Semua">Semua Kondisi</option>
+<option value="DANGER">DANGER (&lt; 60 Hari)</option>
+<option value="WARNING">WARNING (2-6 Bulan)</option>
+<option value="SAFE">SAFE (&gt; 6 Bulan)</option>
+</select>
+</div>
+<div class="md:col-span-2">
+<label class="block text-[11px] font-semibold text-on-surface-variant mb-1">Cari Produk atau SKU</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-outline text-base" data-icon="search">search</span>
+<input class="w-full h-9 pl-8 pr-3 text-xs bg-surface border border-surface-variant rounded text-on-surface focus:border-primary-container focus:ring-0 placeholder:text-outline" id="filter-inventory-search" onkeyup="applyInventoryFilters()" placeholder="Cari nama produk, SKU, nomor batch..." type="text">
+</div>
+</div>
+</div>
+</div>
+<!-- Inventory Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse" id="inventory-table">
+<thead>
+<tr class="bg-surface-container-low border-b border-surface-variant text-on-surface-variant text-[11px] uppercase tracking-wider font-semibold">
+<th class="py-3 px-4">Produk &amp; SKU</th>
+<th class="py-3 px-4">Kategori</th>
+<th class="py-3 px-4">Nomor Batch</th>
+<th class="py-3 px-4 text-center">Sisa Stok (Karton)</th>
+<th class="py-3 px-4">Tanggal Expired</th>
+<th class="py-3 px-4">Sisa Hari</th>
+<th class="py-3 px-4">Prioritas FEFO</th>
+<th class="py-3 px-4 text-right">Aksi</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-variant text-xs" id="inventory-table-body"><tr class="hover:bg-surface-container-low transition-colors">
+          <td class="py-3 px-4">
+            <span class="font-bold text-on-surface block">Roma Kelapa 300g</span>
+            <span class="font-mono-sku text-[11px] text-outline">MYR-RMK-01</span>
+          </td>
+          <td class="py-3 px-4 text-on-surface-variant">Biskuit</td>
+          <td class="py-3 px-4 font-mono-sku text-on-surface">BTC-2026-04A</td>
+          <td class="py-3 px-4 text-center font-bold text-on-surface">28</td>
+          <td class="py-3 px-4 font-mono-sku">2026-04-18</td>
+          <td class="py-3 px-4 font-semibold text-error">
+            ~35 hari
+          </td>
+          <td class="py-3 px-4">
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold border bg-red-100 text-error border-red-200">
+              <span class="material-symbols-outlined text-xs" data-icon="priority_high">
+                priority_high
+              </span>
+              DANGER - Segera Prioritaskan
+            </span>
+          </td>
+          <td class="py-3 px-4 text-right space-x-1 whitespace-nowrap">
+            <button onclick="openStockEditModal('MYR-RMK-01')" class="px-2.5 py-1 bg-surface-container-lowest border border-surface-variant hover:bg-surface-variant text-on-surface rounded text-[11px] font-medium">Edit Stok</button>
+            <button onclick="triggerToast('Informasi Lokasi: Rak Gudang Krian Zona B-4A')" class="px-2 py-1 text-on-surface-variant hover:text-on-surface rounded text-[11px]">Detail</button>
+          </td>
+        </tr><tr class="hover:bg-surface-container-low transition-colors">
+          <td class="py-3 px-4">
+            <span class="font-bold text-on-surface block">Beng-Beng Regular 20g</span>
+            <span class="font-mono-sku text-[11px] text-outline">MYR-BBG-02</span>
+          </td>
+          <td class="py-3 px-4 text-on-surface-variant">Wafer</td>
+          <td class="py-3 px-4 font-mono-sku text-on-surface">BTC-2026-05C</td>
+          <td class="py-3 px-4 text-center font-bold text-on-surface">45</td>
+          <td class="py-3 px-4 font-mono-sku">2026-05-12</td>
+          <td class="py-3 px-4 font-semibold text-error">
+            ~59 hari
+          </td>
+          <td class="py-3 px-4">
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold border bg-red-100 text-error border-red-200">
+              <span class="material-symbols-outlined text-xs" data-icon="priority_high">
+                priority_high
+              </span>
+              DANGER - Segera Prioritaskan
+            </span>
+          </td>
+          <td class="py-3 px-4 text-right space-x-1 whitespace-nowrap">
+            <button onclick="openStockEditModal('MYR-BBG-02')" class="px-2.5 py-1 bg-surface-container-lowest border border-surface-variant hover:bg-surface-variant text-on-surface rounded text-[11px] font-medium">Edit Stok</button>
+            <button onclick="triggerToast('Informasi Lokasi: Rak Gudang Krian Zona B-5C')" class="px-2 py-1 text-on-surface-variant hover:text-on-surface rounded text-[11px]">Detail</button>
+          </td>
+        </tr><tr class="hover:bg-surface-container-low transition-colors">
+          <td class="py-3 px-4">
+            <span class="font-bold text-on-surface block">Torabika Duo Renceng</span>
+            <span class="font-mono-sku text-[11px] text-outline">MYR-TRB-01</span>
+          </td>
+          <td class="py-3 px-4 text-on-surface-variant">Kopi</td>
+          <td class="py-3 px-4 font-mono-sku text-on-surface">BTC-2026-07B</td>
+          <td class="py-3 px-4 text-center font-bold text-on-surface">82</td>
+          <td class="py-3 px-4 font-mono-sku">2026-07-24</td>
+          <td class="py-3 px-4 font-semibold text-on-surface">
+            ~132 hari
+          </td>
+          <td class="py-3 px-4">
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold border bg-amber-100 text-tertiary border-amber-200">
+              <span class="material-symbols-outlined text-xs" data-icon="warning">
+                warning
+              </span>
+              WARNING - Perlu Perhatian
+            </span>
+          </td>
+          <td class="py-3 px-4 text-right space-x-1 whitespace-nowrap">
+            <button onclick="openStockEditModal('MYR-TRB-01')" class="px-2.5 py-1 bg-surface-container-lowest border border-surface-variant hover:bg-surface-variant text-on-surface rounded text-[11px] font-medium">Edit Stok</button>
+            <button onclick="triggerToast('Informasi Lokasi: Rak Gudang Krian Zona B-7B')" class="px-2 py-1 text-on-surface-variant hover:text-on-surface rounded text-[11px]">Detail</button>
+          </td>
+        </tr><tr class="hover:bg-surface-container-low transition-colors">
+          <td class="py-3 px-4">
+            <span class="font-bold text-on-surface block">Energen Cokelat Bag</span>
+            <span class="font-mono-sku text-[11px] text-outline">MYR-ENG-03</span>
+          </td>
+          <td class="py-3 px-4 text-on-surface-variant">Sereal</td>
+          <td class="py-3 px-4 font-mono-sku text-on-surface">BTC-2026-09A</td>
+          <td class="py-3 px-4 text-center font-bold text-on-surface">110</td>
+          <td class="py-3 px-4 font-mono-sku">2026-09-15</td>
+          <td class="py-3 px-4 font-semibold text-on-surface">
+            ~185 hari
+          </td>
+          <td class="py-3 px-4">
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold border bg-amber-100 text-tertiary border-amber-200">
+              <span class="material-symbols-outlined text-xs" data-icon="warning">
+                warning
+              </span>
+              WARNING - Perlu Perhatian
+            </span>
+          </td>
+          <td class="py-3 px-4 text-right space-x-1 whitespace-nowrap">
+            <button onclick="openStockEditModal('MYR-ENG-03')" class="px-2.5 py-1 bg-surface-container-lowest border border-surface-variant hover:bg-surface-variant text-on-surface rounded text-[11px] font-medium">Edit Stok</button>
+            <button onclick="triggerToast('Informasi Lokasi: Rak Gudang Krian Zona B-9A')" class="px-2 py-1 text-on-surface-variant hover:text-on-surface rounded text-[11px]">Detail</button>
+          </td>
+        </tr><tr class="hover:bg-surface-container-low transition-colors">
+          <td class="py-3 px-4">
+            <span class="font-bold text-on-surface block">Le Minerale 600ml</span>
+            <span class="font-mono-sku text-[11px] text-outline">MYR-LMN-01</span>
+          </td>
+          <td class="py-3 px-4 text-on-surface-variant">Air Mineral</td>
+          <td class="py-3 px-4 font-mono-sku text-on-surface">BTC-2027-02A</td>
+          <td class="py-3 px-4 text-center font-bold text-on-surface">250</td>
+          <td class="py-3 px-4 font-mono-sku">2027-02-10</td>
+          <td class="py-3 px-4 font-semibold text-on-surface">
+            ~330 hari
+          </td>
+          <td class="py-3 px-4">
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold border bg-emerald-100 text-emerald-800 border-emerald-200">
+              <span class="material-symbols-outlined text-xs" data-icon="check">
+                check
+              </span>
+              SAFE - Aman
+            </span>
+          </td>
+          <td class="py-3 px-4 text-right space-x-1 whitespace-nowrap">
+            <button onclick="openStockEditModal('MYR-LMN-01')" class="px-2.5 py-1 bg-surface-container-lowest border border-surface-variant hover:bg-surface-variant text-on-surface rounded text-[11px] font-medium">Edit Stok</button>
+            <button onclick="triggerToast('Informasi Lokasi: Rak Gudang Krian Zona B-2A')" class="px-2 py-1 text-on-surface-variant hover:text-on-surface rounded text-[11px]">Detail</button>
+          </td>
+        </tr><tr class="hover:bg-surface-container-low transition-colors">
+          <td class="py-3 px-4">
+            <span class="font-bold text-on-surface block">Roma Sari Gandum 240g</span>
+            <span class="font-mono-sku text-[11px] text-outline">MYR-RSG-02</span>
+          </td>
+          <td class="py-3 px-4 text-on-surface-variant">Biskuit</td>
+          <td class="py-3 px-4 font-mono-sku text-on-surface">BTC-2027-03B</td>
+          <td class="py-3 px-4 text-center font-bold text-on-surface">95</td>
+          <td class="py-3 px-4 font-mono-sku">2027-03-22</td>
+          <td class="py-3 px-4 font-semibold text-on-surface">
+            ~370 hari
+          </td>
+          <td class="py-3 px-4">
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold border bg-emerald-100 text-emerald-800 border-emerald-200">
+              <span class="material-symbols-outlined text-xs" data-icon="check">
+                check
+              </span>
+              SAFE - Aman
+            </span>
+          </td>
+          <td class="py-3 px-4 text-right space-x-1 whitespace-nowrap">
+            <button onclick="openStockEditModal('MYR-RSG-02')" class="px-2.5 py-1 bg-surface-container-lowest border border-surface-variant hover:bg-surface-variant text-on-surface rounded text-[11px] font-medium">Edit Stok</button>
+            <button onclick="triggerToast('Informasi Lokasi: Rak Gudang Krian Zona B-3B')" class="px-2 py-1 text-on-surface-variant hover:text-on-surface rounded text-[11px]">Detail</button>
+          </td>
+        </tr></tbody>
+</table>
+</div>
+<div class="p-3 bg-surface-container-low border-t border-surface-variant flex items-center justify-between text-xs text-on-surface-variant">
+<span class="">Menampilkan data FEFO terurut otomatis: Prioritas kadaluwarsa terdekat berada di posisi teratas.</span>
+<span class="font-mono-sku text-[11px]">Audit Batch Terakhir: Hari ini 07:15 WIB</span>
+</div>
+</div>
+</section>
+<!-- ================================================================= -->
+<!-- TAB 3: DATABASE TOKO MITRA                                        -->
+<!-- ================================================================= -->
+<section class="space-y-6 hidden" id="view-partners">
+<!-- Partner Summary 3 KPI Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+<div class="bg-surface-container-lowest border border-surface-variant rounded-lg p-4 shadow-sm flex items-center justify-between">
+<div>
+<p class="text-xs font-semibold text-on-surface-variant uppercase">Total Pengajuan Mitra</p>
+<p class="text-headline-md font-headline-md font-bold text-on-surface mt-1">120 <span class="text-sm font-normal text-on-surface-variant">Mitra Terdata</span></p>
+<p class="text-xs text-outline mt-0.5">Sidoarjo Barat &amp; Sekitarnya</p>
+</div>
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined text-2xl" data-icon="storefront">storefront</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-surface-variant rounded-lg p-4 shadow-sm flex items-center justify-between">
+<div>
+<p class="text-xs font-semibold text-emerald-700 uppercase">Toko Terverifikasi</p>
+<p class="text-headline-md font-headline-md font-bold text-emerald-700 mt-1">86 <span class="text-sm font-normal text-on-surface-variant">Toko/Warkop</span></p>
+<p class="text-xs text-emerald-800 mt-0.5">Aktif order pasokan resmi Mayora</p>
+</div>
+<div class="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-700">
+<span class="material-symbols-outlined text-2xl" data-icon="verified">verified</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-surface-variant rounded-lg p-4 shadow-sm flex items-center justify-between">
+<div>
+<p class="text-xs font-semibold text-tertiary uppercase">Menunggu Verifikasi</p>
+<p class="text-headline-md font-headline-md font-bold text-tertiary mt-1" id="kpi-unverified">34 <span class="text-sm font-normal text-on-surface-variant">Pengajuan</span></p>
+<p class="text-xs text-outline mt-0.5">Menunggu verifikasi sales lapangan</p>
+</div>
+<div class="w-10 h-10 rounded-lg bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed">
+<span class="material-symbols-outlined text-2xl" data-icon="pending_actions">pending_actions</span>
+</div>
+</div>
+</div>
+<!-- Partner Database Table -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-lg shadow-sm overflow-hidden">
+<!-- Controls -->
+<div class="p-4 border-b border-surface-variant space-y-3">
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+<div>
+<h2 class="text-headline-sm font-headline-sm font-bold text-on-surface">Database Toko Mitra Ritel</h2>
+<p class="text-body-sm font-body-sm text-outline">Kelola jaringan toko kelontong, warkop, dan toko grosir rekanan resmi Inbisco Krian.</p>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-1.5 h-9 px-3 bg-surface-container-low border border-surface-variant hover:bg-surface-variant text-on-surface rounded text-xs font-semibold transition-colors" onclick="triggerToast('Ekspor data mitra ke format XLS/CSV sedang diproses...')">
+<span class="material-symbols-outlined text-base" data-icon="download">download</span>
+<span class="">Ekspor Data Mitra</span>
+</button>
+</div>
+</div>
+<!-- Filters -->
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 pt-1">
+<div>
+<label class="block text-[11px] font-semibold text-on-surface-variant mb-1">Status Verifikasi</label>
+<select class="w-full h-9 text-xs bg-surface border border-surface-variant rounded text-on-surface focus:border-primary-container focus:ring-0" id="filter-partner-status" onchange="applyPartnerFilters()">
+<option value="Semua">Semua Status</option>
+<option value="Menunggu Verifikasi">Menunggu Verifikasi (Pending)</option>
+<option value="Verified">Verified (Aktif)</option>
+</select>
+</div>
+<div>
+<label class="block text-[11px] font-semibold text-on-surface-variant mb-1">Jenis Usaha</label>
+<select class="w-full h-9 text-xs bg-surface border border-surface-variant rounded text-on-surface focus:border-primary-container focus:ring-0" id="filter-partner-type" onchange="applyPartnerFilters()">
+<option value="Semua">Semua Jenis Usaha</option>
+<option value="Warkop">Warkop</option>
+<option value="Toko Kelontong">Toko Kelontong</option>
+<option value="Toko Grosir">Toko Grosir</option>
+<option value="Minimarket">Minimarket</option>
+</select>
+</div>
+<div class="md:col-span-2">
+<label class="block text-[11px] font-semibold text-on-surface-variant mb-1">Cari Toko atau Pemilik</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-outline text-base" data-icon="search">search</span>
+<input class="w-full h-9 pl-8 pr-3 text-xs bg-surface border border-surface-variant rounded text-on-surface focus:border-primary-container focus:ring-0 placeholder:text-outline" id="filter-partner-search" onkeyup="applyPartnerFilters()" placeholder="Cari nama warung, nama pemilik, nomor WhatsApp..." type="text">
+</div>
+</div>
+</div>
+</div>
+<!-- Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse" id="partner-table">
+<thead>
+<tr class="bg-surface-container-low border-b border-surface-variant text-on-surface-variant text-[11px] uppercase tracking-wider font-semibold">
+<th class="py-3 px-4">Nama Toko / Warkop</th>
+<th class="py-3 px-4">Nama Pemilik</th>
+<th class="py-3 px-4">Wilayah &amp; Alamat Ringkas</th>
+<th class="py-3 px-4">Nomor WhatsApp</th>
+<th class="py-3 px-4">Jenis Usaha</th>
+<th class="py-3 px-4">Status Verifikasi</th>
+<th class="py-3 px-4">Pengajuan</th>
+<th class="py-3 px-4 text-right">Aksi</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-variant text-xs" id="partner-table-body"><tr class="hover:bg-surface-container-low transition-colors">
+          <td class="py-3 px-4 font-bold text-on-surface">Warung Berkah</td>
+          <td class="py-3 px-4 text-on-surface">Budi Santoso</td>
+          <td class="py-3 px-4">
+            <span class="block text-on-surface font-medium">Krian</span>
+            <span class="text-outline text-[11px] truncate max-w-xs block">Jl. Raya Krian KM 32</span>
+          </td>
+          <td class="py-3 px-4 font-mono-sku text-on-surface">0812-3456-7890</td>
+          <td class="py-3 px-4 text-on-surface-variant font-medium">Warkop</td>
+          <td class="py-3 px-4"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-tertiary-container/30 text-tertiary border border-tertiary-container text-[10px] font-bold"><span class="material-symbols-outlined text-xs" data-icon="schedule">schedule</span> Menunggu Verifikasi</span></td>
+          <td class="py-3 px-4 text-outline font-mono-sku text-[11px]">12 Mar 2026</td>
+          <td class="py-3 px-4 text-right space-x-1 whitespace-nowrap">
+            <button onclick="openPartnerVerifyModal(1)" class="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded text-[11px] font-bold">Verifikasi Toko</button>
+            <button onclick="triggerToast('Profil Mitra: Warung Berkah — Plafon Kredit Standar Rp 3.000.000')" class="px-2 py-1 text-on-surface-variant hover:text-on-surface text-[11px]">Lihat</button>
+          </td>
+        </tr><tr class="hover:bg-surface-container-low transition-colors">
+          <td class="py-3 px-4 font-bold text-on-surface">Toko Sumber Rejeki</td>
+          <td class="py-3 px-4 text-on-surface">Ibu Haryati</td>
+          <td class="py-3 px-4">
+            <span class="block text-on-surface font-medium">Balongbendo</span>
+            <span class="text-outline text-[11px] truncate max-w-xs block">Pasar Suwaluh</span>
+          </td>
+          <td class="py-3 px-4 font-mono-sku text-on-surface">0813-9876-5432</td>
+          <td class="py-3 px-4 text-on-surface-variant font-medium">Toko Kelontong</td>
+          <td class="py-3 px-4"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-200 text-[10px] font-bold"><span class="material-symbols-outlined text-xs" data-icon="check_circle">check_circle</span> Verified</span></td>
+          <td class="py-3 px-4 text-outline font-mono-sku text-[11px]">02 Feb 2026</td>
+          <td class="py-3 px-4 text-right space-x-1 whitespace-nowrap">
+            <button onclick="triggerToast('Menghubungi WA Ibu Haryati (0813-9876-5432)...')" class="px-2 py-1 bg-surface-container-low hover:bg-surface-variant text-on-surface rounded text-[11px] font-medium">Hubungi WA</button>
+            <button onclick="triggerToast('Profil Mitra: Toko Sumber Rejeki — Plafon Kredit Standar Rp 3.000.000')" class="px-2 py-1 text-on-surface-variant hover:text-on-surface text-[11px]">Lihat</button>
+          </td>
+        </tr><tr class="hover:bg-surface-container-low transition-colors">
+          <td class="py-3 px-4 font-bold text-on-surface">Warkop Sentosa</td>
+          <td class="py-3 px-4 text-on-surface">Slamet Riyadi</td>
+          <td class="py-3 px-4">
+            <span class="block text-on-surface font-medium">Prambon</span>
+            <span class="text-outline text-[11px] truncate max-w-xs block">Simpang Tiga Prambon</span>
+          </td>
+          <td class="py-3 px-4 font-mono-sku text-on-surface">0821-4455-6677</td>
+          <td class="py-3 px-4 text-on-surface-variant font-medium">Warkop</td>
+          <td class="py-3 px-4"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-tertiary-container/30 text-tertiary border border-tertiary-container text-[10px] font-bold"><span class="material-symbols-outlined text-xs" data-icon="schedule">schedule</span> Menunggu Verifikasi</span></td>
+          <td class="py-3 px-4 text-outline font-mono-sku text-[11px]">14 Mar 2026</td>
+          <td class="py-3 px-4 text-right space-x-1 whitespace-nowrap">
+            <button onclick="openPartnerVerifyModal(3)" class="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded text-[11px] font-bold">Verifikasi Toko</button>
+            <button onclick="triggerToast('Profil Mitra: Warkop Sentosa — Plafon Kredit Standar Rp 3.000.000')" class="px-2 py-1 text-on-surface-variant hover:text-on-surface text-[11px]">Lihat</button>
+          </td>
+        </tr><tr class="hover:bg-surface-container-low transition-colors">
+          <td class="py-3 px-4 font-bold text-on-surface">Toko Sembako Jaya</td>
+          <td class="py-3 px-4 text-on-surface">H. Mulyono</td>
+          <td class="py-3 px-4">
+            <span class="block text-on-surface font-medium">Tarik</span>
+            <span class="text-outline text-[11px] truncate max-w-xs block">Dekat Stasiun Tarik</span>
+          </td>
+          <td class="py-3 px-4 font-mono-sku text-on-surface">0815-7788-9900</td>
+          <td class="py-3 px-4 text-on-surface-variant font-medium">Toko Grosir</td>
+          <td class="py-3 px-4"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-200 text-[10px] font-bold"><span class="material-symbols-outlined text-xs" data-icon="check_circle">check_circle</span> Verified</span></td>
+          <td class="py-3 px-4 text-outline font-mono-sku text-[11px]">20 Jan 2026</td>
+          <td class="py-3 px-4 text-right space-x-1 whitespace-nowrap">
+            <button onclick="triggerToast('Menghubungi WA H. Mulyono (0815-7788-9900)...')" class="px-2 py-1 bg-surface-container-low hover:bg-surface-variant text-on-surface rounded text-[11px] font-medium">Hubungi WA</button>
+            <button onclick="triggerToast('Profil Mitra: Toko Sembako Jaya — Plafon Kredit Standar Rp 3.000.000')" class="px-2 py-1 text-on-surface-variant hover:text-on-surface text-[11px]">Lihat</button>
+          </td>
+        </tr><tr class="hover:bg-surface-container-low transition-colors">
+          <td class="py-3 px-4 font-bold text-on-surface">Kios Kopi Mas Bro</td>
+          <td class="py-3 px-4 text-on-surface">Andri Kurniawan</td>
+          <td class="py-3 px-4">
+            <span class="block text-on-surface font-medium">Wonoayu</span>
+            <span class="text-outline text-[11px] truncate max-w-xs block">Perum Griya Wonoayu</span>
+          </td>
+          <td class="py-3 px-4 font-mono-sku text-on-surface">0857-1122-3344</td>
+          <td class="py-3 px-4 text-on-surface-variant font-medium">Warkop</td>
+          <td class="py-3 px-4"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-tertiary-container/30 text-tertiary border border-tertiary-container text-[10px] font-bold"><span class="material-symbols-outlined text-xs" data-icon="schedule">schedule</span> Menunggu Verifikasi</span></td>
+          <td class="py-3 px-4 text-outline font-mono-sku text-[11px]">15 Mar 2026</td>
+          <td class="py-3 px-4 text-right space-x-1 whitespace-nowrap">
+            <button onclick="openPartnerVerifyModal(5)" class="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded text-[11px] font-bold">Verifikasi Toko</button>
+            <button onclick="triggerToast('Profil Mitra: Kios Kopi Mas Bro — Plafon Kredit Standar Rp 3.000.000')" class="px-2 py-1 text-on-surface-variant hover:text-on-surface text-[11px]">Lihat</button>
+          </td>
+        </tr></tbody>
+</table>
+</div>
+<div class="p-3 bg-surface-container-low border-t border-surface-variant flex items-center justify-between text-xs text-on-surface-variant">
+<span class="">Verifikasi toko dilakukan via inspeksi lokasi salesman atau bukti fisik foto warung.</span>
+<span class="font-semibold text-primary">Krian Hub Territory v2.4</span>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- ========================================================================= -->
+<!-- SLIDE-OVER DRAWER: ORDER DETAIL                                           -->
+<!-- ========================================================================= -->
+<div aria-labelledby="slide-over-title" aria-modal="true" class="fixed inset-0 z-50 overflow-hidden hidden" id="drawer-order" role="dialog">
+<!-- Backdrop -->
+<div class="absolute inset-0 bg-black/40 backdrop-blur-xs transition-opacity" onclick="closeOrderDrawer()"></div>
+<div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
+<div class="w-screen max-w-md bg-surface-container-lowest border-l border-surface-variant shadow-2xl flex flex-col justify-between">
+<!-- Drawer Header -->
+<div class="p-5 border-b border-surface-variant flex items-center justify-between bg-surface-container-low">
+<div>
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 bg-primary-container text-white text-[10px] font-bold rounded" id="drawer-resi">INB-2610-KR01</span>
+<span class="text-xs text-outline font-mono-sku">FMCG RESTOCK</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm font-bold text-on-surface mt-1" id="drawer-store-title">Warkop Berkah, Krian</h3>
+</div>
+<button class="p-1 rounded-md text-on-surface-variant hover:bg-surface-variant" onclick="closeOrderDrawer()">
+<span class="material-symbols-outlined text-2xl" data-icon="close">close</span>
+</button>
+</div>
+<!-- Drawer Content -->
+<div class="flex-1 overflow-y-auto p-5 space-y-6 custom-scroll">
+<!-- Delivery 5-Step Timeline -->
+<div>
+<h4 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-3">Pelacakan Alur Dispatch</h4>
+<div class="space-y-3 relative pl-4 border-l-2 border-surface-variant">
+<!-- Step 1 -->
+<div class="relative">
+<span class="absolute -left-[21px] top-0 w-3.5 h-3.5 rounded-full bg-emerald-600 border-2 border-white"></span>
+<p class="text-xs font-bold text-on-surface">1. Pesanan Diterima Sistem</p>
+<p class="text-[11px] text-on-surface-variant">Hari ini, 06.45 WIB • Masuk via MitraHub Apps</p>
+</div>
+<!-- Step 2 -->
+<div class="relative">
+<span class="absolute -left-[21px] top-0 w-3.5 h-3.5 rounded-full bg-emerald-600 border-2 border-white"></span>
+<p class="text-xs font-bold text-on-surface">2. Terkonfirmasi &amp; Lolos Kredit</p>
+<p class="text-[11px] text-on-surface-variant">Hari ini, 07.15 WIB • Oleh Admin Dispatch</p>
+</div>
+<!-- Step 3 (Current) -->
+<div class="relative" id="timeline-step-3">
+<span class="absolute -left-[21px] top-0 w-3.5 h-3.5 rounded-full bg-tertiary-container border-2 border-white ring-2 ring-tertiary-container/30"></span>
+<p class="text-xs font-bold text-tertiary">3. Packing Gudang Krian (Sedang Berjalan)</p>
+<p class="text-[11px] text-on-surface-variant">Petugas: Bpk. Joko W. (Gudang Zone A2)</p>
+</div>
+<!-- Step 4 -->
+<div class="relative opacity-60">
+<span class="absolute -left-[21px] top-0 w-3.5 h-3.5 rounded-full bg-surface-dim border-2 border-white"></span>
+<p class="text-xs font-semibold text-on-surface">4. Dalam Pengiriman Armada</p>
+<p class="text-[11px] text-outline">Estimasi Truk: KR-04 (Driver: Bpk. Tono)</p>
+</div>
+<!-- Step 5 -->
+<div class="relative opacity-60">
+<span class="absolute -left-[21px] top-0 w-3.5 h-3.5 rounded-full bg-surface-dim border-2 border-white"></span>
+<p class="text-xs font-semibold text-on-surface">5. Pesanan Diterima Mitra</p>
+<p class="text-[11px] text-outline">Penerimaan fisik &amp; cap faktur asli</p>
+</div>
+</div>
+</div>
+<!-- Items Breakdown -->
+<div class="border-t border-surface-variant pt-4">
+<h4 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-2">Rincian Barang (Kartonan)</h4>
+<div class="bg-surface-container-low rounded-lg p-3 space-y-2 border border-surface-variant">
+<div class="flex items-center justify-between text-xs pb-1 border-b border-surface-variant">
+<div>
+<span class="font-bold text-on-surface">Roma Kelapa 300g</span>
+<span class="block text-[11px] text-outline">5 Karton @ Rp 120.000</span>
+</div>
+<span class="font-bold text-on-surface">Rp 600.000</span>
+</div>
+<div class="flex items-center justify-between text-xs">
+<div>
+<span class="font-bold text-on-surface">Torabika Duo Renceng</span>
+<span class="block text-[11px] text-outline">2 Karton @ Rp 125.000</span>
+</div>
+<span class="font-bold text-on-surface">Rp 250.000</span>
+</div>
+</div>
+</div>
+<!-- Payment & Terms -->
+<div class="border-t border-surface-variant pt-4 space-y-2">
+<h4 class="text-xs font-bold text-on-surface uppercase tracking-wider">Ketentuan Transaksi</h4>
+<div class="flex items-center justify-between text-xs">
+<span class="text-on-surface-variant">Metode Pembayaran:</span>
+<span class="font-bold text-on-surface px-2 py-0.5 rounded bg-surface-container-high" id="drawer-payment">COD (Bayar Tunai ke Kurir)</span>
+</div>
+<div class="flex items-center justify-between text-xs">
+<span class="text-on-surface-variant">Subtotal Tagihan:</span>
+<span class="font-bold text-headline-sm font-headline-sm text-primary" id="drawer-total">Rp 850.000</span>
+</div>
+</div>
+<!-- Destination Info -->
+<div class="border-t border-surface-variant pt-4">
+<h4 class="text-xs font-bold text-on-surface uppercase tracking-wider mb-2">Alamat Pengiriman</h4>
+<div class="bg-surface-container-low rounded p-3 text-xs text-on-surface-variant border border-surface-variant">
+<p class="font-bold text-on-surface" id="drawer-store-name">Warkop Berkah (Budi Santoso)</p>
+<p class="mt-0.5">Jl. Raya Krian KM 32, Depan Pom Bensin Krian</p>
+<p class="text-primary font-medium mt-1">Telp: 0812-3456-7890</p>
+</div>
+</div>
+</div>
+<!-- Drawer Footer -->
+<div class="p-4 border-t border-surface-variant bg-surface-container-low flex items-center gap-2">
+<button class="flex-1 flex items-center justify-center gap-1.5 h-10 bg-primary-container hover:bg-secondary text-white rounded text-xs font-bold transition-colors" onclick="printSuratJalan()">
+<span class="material-symbols-outlined text-base" data-icon="description">description</span>
+<span class="">Cetak Surat Jalan &amp; DO</span>
+</button>
+<button class="h-10 px-4 bg-surface-container-lowest border border-surface-variant text-on-surface rounded text-xs font-semibold hover:bg-surface-variant" onclick="closeOrderDrawer()">
+            Tutup
+          </button>
+</div>
+</div>
+</div>
+</div>
+<!-- ========================================================================= -->
+<!-- MODAL: STOCK EDIT / TAMBAH BATCH                                          -->
+<!-- ========================================================================= -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs hidden" id="modal-stock">
+<div class="bg-surface-container-lowest border border-surface-variant rounded-lg max-w-md w-full shadow-2xl overflow-hidden animate-scale-up">
+<div class="p-4 border-b border-surface-variant bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container" data-icon="inventory">inventory</span>
+<h3 class="text-title-md font-title-md font-bold text-on-surface" id="modal-stock-title">Penyesuaian Stok Batch</h3>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface" onclick="closeStockModal()">
+<span class="material-symbols-outlined text-xl" data-icon="close">close</span>
+</button>
+</div>
+<div class="p-5 space-y-4 text-xs">
+<div>
+<label class="block font-semibold text-on-surface-variant mb-1">Nama Produk SKU</label>
+<input class="w-full h-9 bg-surface-container-low border border-surface-variant rounded px-3 text-on-surface font-semibold" id="modal-stock-product" readonly="" type="text" value="Roma Kelapa (MYR-RMK-01)">
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="block font-semibold text-on-surface-variant mb-1">Nomor Batch Baru</label>
+<input class="w-full h-9 border border-surface-variant rounded px-3 text-on-surface font-mono-sku uppercase" id="modal-stock-batch" type="text" value="BTC-2026-04A">
+</div>
+<div>
+<label class="block font-semibold text-on-surface-variant mb-1">Tanggal Expired</label>
+<input class="w-full h-9 border border-surface-variant rounded px-3 text-on-surface" id="modal-stock-date" type="date" value="2026-04-18">
+</div>
+</div>
+<div>
+<label class="block font-semibold text-on-surface-variant mb-1">Jumlah Stok Masuk (Karton)</label>
+<div class="flex items-center gap-2">
+<button class="w-9 h-9 border border-surface-variant rounded bg-surface-container-low font-bold hover:bg-surface-variant" onclick="adjustModalQty(-5)">-5</button>
+<input class="flex-1 h-9 border border-surface-variant rounded px-3 text-center font-bold text-base text-primary" id="modal-stock-qty" type="number" value="28">
+<button class="w-9 h-9 border border-surface-variant rounded bg-surface-container-low font-bold hover:bg-surface-variant" onclick="adjustModalQty(5)">+5</button>
+</div>
+</div>
+<div>
+<label class="block font-semibold text-on-surface-variant mb-1">Catatan Dokumen / PO Pabrik</label>
+<textarea class="w-full border border-surface-variant rounded p-2 text-xs" id="modal-stock-note" placeholder="Nomor PO Masuk Mayora Pasuruan..." rows="2"></textarea>
+</div>
+</div>
+<div class="p-4 border-t border-surface-variant bg-surface-container-low flex items-center justify-end gap-2">
+<button class="px-3 py-2 bg-surface-container-lowest border border-surface-variant text-on-surface rounded text-xs font-semibold hover:bg-surface-variant" onclick="closeStockModal()">Batal</button>
+<button class="px-4 py-2 bg-primary-container hover:bg-secondary text-white rounded text-xs font-bold shadow-sm" onclick="saveStockAdjustment()">Simpan Batch Gudang</button>
+</div>
+</div>
+</div>
+<!-- ========================================================================= -->
+<!-- MODAL: PARTNER VERIFICATION CONFIRMATION                                  -->
+<!-- ========================================================================= -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs hidden" id="modal-partner">
+<div class="bg-surface-container-lowest border border-surface-variant rounded-lg max-w-sm w-full shadow-2xl p-5 text-center">
+<div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto mb-3">
+<span class="material-symbols-outlined text-3xl" data-icon="verified">verified</span>
+</div>
+<h3 class="text-title-md font-title-md font-bold text-on-surface">Verifikasi Toko Mitra Resmi?</h3>
+<p class="text-xs text-on-surface-variant mt-2" id="modal-partner-desc">
+        Apakah Anda yakin memvalidasi <strong class="text-on-surface" id="modal-partner-name">Warung Berkah</strong> untuk mendapatkan harga grosir resmi Mayora dan plafon tempo?
+      </p>
+<div class="mt-5 flex items-center justify-center gap-2">
+<button class="flex-1 py-2 bg-surface-container-low border border-surface-variant text-on-surface rounded text-xs font-semibold hover:bg-surface-variant" onclick="closePartnerModal()">Batal</button>
+<button class="flex-1 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded text-xs font-bold" onclick="confirmPartnerVerification()">Ya, Verifikasi</button>
+</div>
+</div>
+</div>
+<!-- ========================================================================= -->
+<!-- MODAL: LOGOUT CONFIRMATION                                                -->
+<!-- ========================================================================= -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs hidden" id="modal-logout">
+<div class="bg-surface-container-lowest border border-surface-variant rounded-lg max-w-xs w-full shadow-2xl p-5 text-center">
+<div class="w-10 h-10 rounded-full bg-error-container text-error flex items-center justify-center mx-auto mb-3">
+<span class="material-symbols-outlined text-2xl" data-icon="logout">logout</span>
+</div>
+<h3 class="text-title-md font-title-md font-bold text-on-surface">Keluar dari Sesi?</h3>
+<p class="text-xs text-on-surface-variant mt-1">Sesi shift kerja Anda akan disimpan dan disinkronkan ke server pusat Krian.</p>
+<div class="mt-4 flex items-center justify-center gap-2">
+<button class="flex-1 py-2 bg-surface-container-low border border-surface-variant text-on-surface rounded text-xs font-semibold" onclick="toggleLogoutModal()">Batal</button>
+<button class="flex-1 py-2 bg-primary-container hover:bg-secondary text-white rounded text-xs font-bold" onclick="executeLogout()">Keluar Portal</button>
+</div>
+</div>
+</div>
+<!-- ========================================================================= -->
+<!-- TOAST NOTIFICATION CONTAINER                                              -->
+<!-- ========================================================================= -->
+<div class="fixed bottom-5 right-5 z-50 bg-inverse-surface text-inverse-on-surface px-4 py-3 rounded-lg shadow-xl text-xs flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none" id="toast">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-lg" data-icon="info">info</span>
+<span class="font-medium" id="toast-message">Pemberitahuan Sistem Operasional</span>
+</div>
+<!-- ========================================================================= -->
+<!-- CLIENT JAVASCRIPT: DATA & INTERACTIVITY ENGINE                            -->
+<!-- ========================================================================= -->
+<script>
+    // --- 1. DATA REPOSITORY ---
+    const dispatchOrders = [
+      {
+        resi: "INB-2610-KR01",
+        store: "Warkop Berkah",
+        district: "Krian",
+        address: "Jl. Raya Krian KM 32",
+        items: "5 Karton Roma Kelapa, 2 Karton Torabika",
+        total: 850000,
+        payment: "COD",
+        status: "Packing"
+      },
+      {
+        resi: "INB-2610-KR02",
+        store: "Toko Sumber Rejeki",
+        district: "Balongbendo",
+        address: "Pasar Suwaluh Balongbendo",
+        items: "10 Karton Beng-Beng, 4 Karton Energen",
+        total: 1620000,
+        payment: "TEMPO 7 HARI",
+        status: "Dispatched"
+      },
+      {
+        resi: "INB-2610-KR03",
+        store: "Warkop Sentosa",
+        district: "Prambon",
+        address: "Simpang Tiga Prambon Kulon",
+        items: "3 Karton Torabika, 2 Karton Roma Sari Gandum",
+        total: 580000,
+        payment: "COD",
+        status: "Pending"
+      },
+      {
+        resi: "INB-2610-KR04",
+        store: "Toko Murah Jaya",
+        district: "Tarik",
+        address: "Dekat Stasiun Kereta Api Tarik",
+        items: "8 Karton Le Minerale 600ml, 4 Karton Roma Malkist",
+        total: 1150000,
+        payment: "COD",
+        status: "Confirmed"
+      },
+      {
+        resi: "INB-2610-KR05",
+        store: "Minimarket Barokah",
+        district: "Wonoayu",
+        address: "Ruko Jl. Raya Tanggul Wonoayu",
+        items: "15 Karton Roma Kelapa, 6 Karton Beng-Beng",
+        total: 2450000,
+        payment: "TEMPO 7 HARI",
+        status: "Completed"
+      },
+      {
+        resi: "INB-2610-KR06",
+        store: "Toko Makmur",
+        district: "Krian",
+        address: "Krian Kota, Pasar Baru",
+        items: "4 Karton Energen Vanilla, 2 Karton Kopiko 78",
+        total: 640000,
+        payment: "COD",
+        status: "Pending"
+      }
+    ];
+
+    const inventoryStock = [
+      {
+        name: "Roma Kelapa 300g",
+        sku: "MYR-RMK-01",
+        category: "Biskuit",
+        batch: "BTC-2026-04A",
+        stock: 28,
+        expDate: "2026-04-18",
+        daysRemaining: 35,
+        priority: "DANGER",
+        label: "Segera Prioritaskan"
+      },
+      {
+        name: "Beng-Beng Regular 20g",
+        sku: "MYR-BBG-02",
+        category: "Wafer",
+        batch: "BTC-2026-05C",
+        stock: 45,
+        expDate: "2026-05-12",
+        daysRemaining: 59,
+        priority: "DANGER",
+        label: "Segera Prioritaskan"
+      },
+      {
+        name: "Torabika Duo Renceng",
+        sku: "MYR-TRB-01",
+        category: "Kopi",
+        batch: "BTC-2026-07B",
+        stock: 82,
+        expDate: "2026-07-24",
+        daysRemaining: 132,
+        priority: "WARNING",
+        label: "Perlu Perhatian"
+      },
+      {
+        name: "Energen Cokelat Bag",
+        sku: "MYR-ENG-03",
+        category: "Sereal",
+        batch: "BTC-2026-09A",
+        stock: 110,
+        expDate: "2026-09-15",
+        daysRemaining: 185,
+        priority: "WARNING",
+        label: "Perlu Perhatian"
+      },
+      {
+        name: "Le Minerale 600ml",
+        sku: "MYR-LMN-01",
+        category: "Air Mineral",
+        batch: "BTC-2027-02A",
+        stock: 250,
+        expDate: "2027-02-10",
+        daysRemaining: 330,
+        priority: "SAFE",
+        label: "Aman"
+      },
+      {
+        name: "Roma Sari Gandum 240g",
+        sku: "MYR-RSG-02",
+        category: "Biskuit",
+        batch: "BTC-2027-03B",
+        stock: 95,
+        expDate: "2027-03-22",
+        daysRemaining: 370,
+        priority: "SAFE",
+        label: "Aman"
+      }
+    ];
+
+    const partnersDatabase = [
+      {
+        id: 1,
+        store: "Warung Berkah",
+        owner: "Budi Santoso",
+        district: "Krian",
+        address: "Jl. Raya Krian KM 32",
+        phone: "0812-3456-7890",
+        type: "Warkop",
+        status: "Menunggu Verifikasi",
+        applied: "12 Mar 2026"
+      },
+      {
+        id: 2,
+        store: "Toko Sumber Rejeki",
+        owner: "Ibu Haryati",
+        district: "Balongbendo",
+        address: "Pasar Suwaluh",
+        phone: "0813-9876-5432",
+        type: "Toko Kelontong",
+        status: "Verified",
+        applied: "02 Feb 2026"
+      },
+      {
+        id: 3,
+        store: "Warkop Sentosa",
+        owner: "Slamet Riyadi",
+        district: "Prambon",
+        address: "Simpang Tiga Prambon",
+        phone: "0821-4455-6677",
+        type: "Warkop",
+        status: "Menunggu Verifikasi",
+        applied: "14 Mar 2026"
+      },
+      {
+        id: 4,
+        store: "Toko Sembako Jaya",
+        owner: "H. Mulyono",
+        district: "Tarik",
+        address: "Dekat Stasiun Tarik",
+        phone: "0815-7788-9900",
+        type: "Toko Grosir",
+        status: "Verified",
+        applied: "20 Jan 2026"
+      },
+      {
+        id: 5,
+        store: "Kios Kopi Mas Bro",
+        owner: "Andri Kurniawan",
+        district: "Wonoayu",
+        address: "Perum Griya Wonoayu",
+        phone: "0857-1122-3344",
+        type: "Warkop",
+        status: "Menunggu Verifikasi",
+        applied: "15 Mar 2026"
+      }
+    ];
+
+    // Helper: format Rupiah
+    function formatRupiah(num) {
+      return "Rp " + num.toLocaleString("id-ID");
+    }
+
+    // --- 2. RENDER FUNCTIONS ---
+
+    function renderDispatchTable(data) {
+      const tbody = document.getElementById("dispatch-table-body");
+      tbody.innerHTML = "";
+
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-outline">Tidak ada pesanan dispatch yang sesuai filter.</td></tr>`;
+        document.getElementById("dispatch-count").innerText = "0";
+        return;
+      }
+
+      data.forEach((item, index) => {
+        // Status Badge Style
+        let badgeStyle = "bg-surface-variant text-on-surface-variant";
+        if (item.status === "Pending") badgeStyle = "bg-surface-variant text-on-surface-variant";
+        if (item.status === "Confirmed") badgeStyle = "bg-blue-100 text-blue-800 border border-blue-200";
+        if (item.status === "Packing") badgeStyle = "bg-tertiary-container/30 text-tertiary border border-tertiary-container";
+        if (item.status === "Dispatched") badgeStyle = "bg-purple-100 text-purple-800 border border-purple-200";
+        if (item.status === "Completed") badgeStyle = "bg-emerald-100 text-emerald-800 border border-emerald-200";
+
+        // Payment Badge
+        const paymentBadge = item.payment.includes("TEMPO") 
+          ? `<span class="px-1.5 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-bold">TEMPO 7 HARI</span>`
+          : `<span class="px-1.5 py-0.5 rounded bg-surface-container-high text-on-surface text-[10px] font-bold">COD TUNAI</span>`;
+
+        // Contextual 1-click status progression action
+        let actionBtn = "";
+        if (item.status === "Pending") {
+          actionBtn = `<button onclick="progressStatus('${item.resi}', 'Confirmed')" class="px-2.5 py-1 bg-primary-container text-white rounded text-[11px] font-semibold hover:bg-secondary">Terima Order</button>`;
+        } else if (item.status === "Confirmed") {
+          actionBtn = `<button onclick="progressStatus('${item.resi}', 'Packing')" class="px-2.5 py-1 bg-tertiary-container text-on-tertiary-fixed rounded text-[11px] font-semibold hover:opacity-90">Mulai Packing</button>`;
+        } else if (item.status === "Packing") {
+          actionBtn = `<button onclick="progressStatus('${item.resi}', 'Dispatched')" class="px-2.5 py-1 bg-purple-700 text-white rounded text-[11px] font-semibold hover:bg-purple-800">Kirim Armada</button>`;
+        } else if (item.status === "Dispatched") {
+          actionBtn = `<button onclick="progressStatus('${item.resi}', 'Completed')" class="px-2.5 py-1 bg-emerald-700 text-white rounded text-[11px] font-semibold hover:bg-emerald-800">Tandai Selesai</button>`;
+        } else {
+          actionBtn = `<span class="text-xs text-emerald-700 font-semibold flex items-center justify-end gap-1"><span class="material-symbols-outlined text-sm" data-icon="done_all">done_all</span> Tuntas</span>`;
+        }
+
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-surface-container-low transition-colors";
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-mono-sku font-bold text-primary">${item.resi}</td>
+          <td class="py-3 px-4">
+            <span class="font-bold text-on-surface block">${item.store}</span>
+            <span class="text-outline text-[11px]">${item.district}</span>
+          </td>
+          <td class="py-3 px-4 text-on-surface truncate max-w-xs" title="${item.items}">${item.items}</td>
+          <td class="py-3 px-4 font-bold text-on-surface">${formatRupiah(item.total)}</td>
+          <td class="py-3 px-4">${paymentBadge}</td>
+          <td class="py-3 px-4">
+            <span class="inline-block px-2 py-0.5 rounded text-[11px] font-bold ${badgeStyle}">${item.status}</span>
+          </td>
+          <td class="py-3 px-4 text-right space-x-1 whitespace-nowrap">
+            ${actionBtn}
+            <button onclick="openOrderDetail('${item.resi}')" class="px-2 py-1 bg-surface-container-lowest border border-surface-variant text-on-surface-variant hover:text-on-surface rounded text-[11px] font-medium" title="Detail Lengkap">
+              Lihat Detail
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById("dispatch-count").innerText = data.length;
+    }
+
+    function renderInventoryTable(data) {
+      const tbody = document.getElementById("inventory-table-body");
+      tbody.innerHTML = "";
+
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-outline">Tidak ada batch FEFO yang sesuai kriteria pencarian.</td></tr>`;
+        return;
+      }
+
+      data.forEach(item => {
+        let badgeColor = "bg-emerald-100 text-emerald-800 border-emerald-200";
+        if (item.priority === "DANGER") badgeColor = "bg-red-100 text-error border-red-200";
+        if (item.priority === "WARNING") badgeColor = "bg-amber-100 text-tertiary border-amber-200";
+
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-surface-container-low transition-colors";
+        tr.innerHTML = `
+          <td class="py-3 px-4">
+            <span class="font-bold text-on-surface block">${item.name}</span>
+            <span class="font-mono-sku text-[11px] text-outline">${item.sku}</span>
+          </td>
+          <td class="py-3 px-4 text-on-surface-variant">${item.category}</td>
+          <td class="py-3 px-4 font-mono-sku text-on-surface">${item.batch}</td>
+          <td class="py-3 px-4 text-center font-bold text-on-surface">${item.stock}</td>
+          <td class="py-3 px-4 font-mono-sku">${item.expDate}</td>
+          <td class="py-3 px-4 font-semibold ${item.daysRemaining <= 60 ? 'text-error' : 'text-on-surface'}">
+            ~${item.daysRemaining} hari
+          </td>
+          <td class="py-3 px-4">
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold border ${badgeColor}">
+              <span class="material-symbols-outlined text-xs" data-icon="${item.priority === 'DANGER' ? 'priority_high' : (item.priority === 'WARNING' ? 'warning' : 'check')}">
+                ${item.priority === 'DANGER' ? 'priority_high' : (item.priority === 'WARNING' ? 'warning' : 'check')}
+              </span>
+              ${item.priority} - ${item.label}
+            </span>
+          </td>
+          <td class="py-3 px-4 text-right space-x-1 whitespace-nowrap">
+            <button onclick="openStockEditModal('${item.sku}')" class="px-2.5 py-1 bg-surface-container-lowest border border-surface-variant hover:bg-surface-variant text-on-surface rounded text-[11px] font-medium">Edit Stok</button>
+            <button onclick="triggerToast('Informasi Lokasi: Rak Gudang Krian Zona B-${item.batch.slice(-2)}')" class="px-2 py-1 text-on-surface-variant hover:text-on-surface rounded text-[11px]">Detail</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderPartnersTable(data) {
+      const tbody = document.getElementById("partner-table-body");
+      tbody.innerHTML = "";
+
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-outline">Tidak ada toko mitra ditemukan.</td></tr>`;
+        return;
+      }
+
+      data.forEach(item => {
+        const isVerified = item.status === "Verified";
+        const badge = isVerified
+          ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-200 text-[10px] font-bold"><span class="material-symbols-outlined text-xs" data-icon="check_circle">check_circle</span> Verified</span>`
+          : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-tertiary-container/30 text-tertiary border border-tertiary-container text-[10px] font-bold"><span class="material-symbols-outlined text-xs" data-icon="schedule">schedule</span> Menunggu Verifikasi</span>`;
+
+        const action = isVerified
+          ? `<button onclick="triggerToast('Menghubungi WA ${item.owner} (${item.phone})...')" class="px-2 py-1 bg-surface-container-low hover:bg-surface-variant text-on-surface rounded text-[11px] font-medium">Hubungi WA</button>`
+          : `<button onclick="openPartnerVerifyModal(${item.id})" class="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded text-[11px] font-bold">Verifikasi Toko</button>`;
+
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-surface-container-low transition-colors";
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-on-surface">${item.store}</td>
+          <td class="py-3 px-4 text-on-surface">${item.owner}</td>
+          <td class="py-3 px-4">
+            <span class="block text-on-surface font-medium">${item.district}</span>
+            <span class="text-outline text-[11px] truncate max-w-xs block">${item.address}</span>
+          </td>
+          <td class="py-3 px-4 font-mono-sku text-on-surface">${item.phone}</td>
+          <td class="py-3 px-4 text-on-surface-variant font-medium">${item.type}</td>
+          <td class="py-3 px-4">${badge}</td>
+          <td class="py-3 px-4 text-outline font-mono-sku text-[11px]">${item.applied}</td>
+          <td class="py-3 px-4 text-right space-x-1 whitespace-nowrap">
+            ${action}
+            <button onclick="triggerToast('Profil Mitra: ${item.store} — Plafon Kredit Standar Rp 3.000.000')" class="px-2 py-1 text-on-surface-variant hover:text-on-surface text-[11px]">Lihat</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // --- 3. TAB SWITCHING (Exact JSON Navigation Alignment) ---
+    function switchTab(target) {
+      // Hide all views
+      document.getElementById("view-dispatch").classList.add("hidden");
+      document.getElementById("view-inventory").classList.add("hidden");
+      document.getElementById("view-partners").classList.add("hidden");
+
+      // Reset sidebar nav styles
+      const activeNavClasses = ["bg-surface-container-low", "text-primary-container", "font-title-md", "font-semibold", "border-l-4", "border-primary-container"];
+      const inactiveNavClasses = ["text-on-surface-variant", "font-label-md"];
+
+      const btnDispatch = document.getElementById("nav-btn-dispatch");
+      const btnInventory = document.getElementById("nav-btn-inventory");
+      const btnPartners = document.getElementById("nav-btn-partners");
+
+      [btnDispatch, btnInventory, btnPartners].forEach(btn => {
+        btn.classList.remove(...activeNavClasses);
+        btn.classList.add(...inactiveNavClasses);
+      });
+
+      const breadcrumb = document.getElementById("breadcrumb-current");
+      const pageTitle = document.getElementById("page-title");
+
+      if (target === "dispatch") {
+        document.getElementById("view-dispatch").classList.remove("hidden");
+        btnDispatch.classList.add(...activeNavClasses);
+        btnDispatch.classList.remove(...inactiveNavClasses);
+        breadcrumb.innerText = "Overview & Dispatch Pesanan";
+        pageTitle.innerText = "Dashboard Operasional Cabang Krian";
+      } else if (target === "inventory") {
+        document.getElementById("view-inventory").classList.remove("hidden");
+        btnInventory.classList.add(...activeNavClasses);
+        btnInventory.classList.remove(...inactiveNavClasses);
+        breadcrumb.innerText = "Kontrol Stok Gudang (FEFO)";
+        pageTitle.innerText = "Kontrol Inventaris Gudang FEFO (Krian)";
+      } else if (target === "partners") {
+        document.getElementById("view-partners").classList.remove("hidden");
+        btnPartners.classList.add(...activeNavClasses);
+        btnPartners.classList.remove(...inactiveNavClasses);
+        breadcrumb.innerText = "Database Toko Mitra";
+        pageTitle.innerText = "Database Toko Mitra Ritel (Sidoarjo Barat)";
+      }
+    }
+
+    // --- 4. FILTERING LOGIC ---
+    function applyDispatchFilters() {
+      const kec = document.getElementById("filter-dispatch-kecamatan").value;
+      const status = document.getElementById("filter-dispatch-status").value;
+      const query = document.getElementById("filter-dispatch-search").value.toLowerCase();
+
+      const filtered = dispatchOrders.filter(item => {
+        const matchKec = kec === "Semua" || item.district === kec;
+        const matchStatus = status === "Semua" || item.status === status;
+        const matchQuery = item.resi.toLowerCase().includes(query) || item.store.toLowerCase().includes(query);
+        return matchKec && matchStatus && matchQuery;
+      });
+
+      renderDispatchTable(filtered);
+    }
+
+    function resetDispatchFilters() {
+      document.getElementById("filter-dispatch-kecamatan").value = "Semua";
+      document.getElementById("filter-dispatch-status").value = "Semua";
+      document.getElementById("filter-dispatch-search").value = "";
+      renderDispatchTable(dispatchOrders);
+      triggerToast("Filter dispatch telah direset.");
+    }
+
+    function applyInventoryFilters() {
+      const cat = document.getElementById("filter-inventory-category").value;
+      const stat = document.getElementById("filter-inventory-status").value;
+      const query = document.getElementById("filter-inventory-search").value.toLowerCase();
+
+      const filtered = inventoryStock.filter(item => {
+        const matchCat = cat === "Semua" || item.category === cat;
+        const matchStat = stat === "Semua" || item.priority === stat;
+        const matchQuery = item.name.toLowerCase().includes(query) || item.sku.toLowerCase().includes(query) || item.batch.toLowerCase().includes(query);
+        return matchCat && matchStat && matchQuery;
+      });
+
+      renderInventoryTable(filtered);
+    }
+
+    function applyPartnerFilters() {
+      const stat = document.getElementById("filter-partner-status").value;
+      const type = document.getElementById("filter-partner-type").value;
+      const query = document.getElementById("filter-partner-search").value.toLowerCase();
+
+      const filtered = partnersDatabase.filter(item => {
+        const matchStat = stat === "Semua" || item.status === stat;
+        const matchType = type === "Semua" || item.type === type;
+        const matchQuery = item.store.toLowerCase().includes(query) || item.owner.toLowerCase().includes(query) || item.phone.includes(query);
+        return matchStat && matchType && matchQuery;
+      });
+
+      renderPartnersTable(filtered);
+    }
+
+    function filterUniversal(val) {
+      val = val.trim().toLowerCase();
+      if (!val) {
+        renderDispatchTable(dispatchOrders);
+        return;
+      }
+      // Auto filter the active tab
+      const filteredDispatch = dispatchOrders.filter(d => d.resi.toLowerCase().includes(val) || d.store.toLowerCase().includes(val) || d.items.toLowerCase().includes(val));
+      renderDispatchTable(filteredDispatch);
+    }
+
+    // --- 5. PROGRESSION & ACTIONS ---
+    function progressStatus(resi, newStatus) {
+      const order = dispatchOrders.find(o => o.resi === resi);
+      if (order) {
+        order.status = newStatus;
+        applyDispatchFilters();
+        triggerToast(`Status resi ${resi} diperbarui ke "${newStatus}".`);
+      }
+    }
+
+    // --- 6. DRAWER DETAIL MODAL ---
+    function openOrderDetail(resi) {
+      const order = dispatchOrders.find(o => o.resi === resi);
+      if (!order) return;
+
+      document.getElementById("drawer-resi").innerText = order.resi;
+      document.getElementById("drawer-store-title").innerText = `${order.store}, ${order.district}`;
+      document.getElementById("drawer-store-name").innerText = `${order.store} (Pelanggan Grosir)`;
+      document.getElementById("drawer-total").innerText = formatRupiah(order.total);
+      document.getElementById("drawer-payment").innerText = order.payment;
+
+      document.getElementById("drawer-order").classList.remove("hidden");
+    }
+
+    function closeOrderDrawer() {
+      document.getElementById("drawer-order").classList.add("hidden");
+    }
+
+    function printSuratJalan() {
+      triggerToast("Surat Jalan & Faktur Resmi Cabang Krian telah dikirim ke printer thermal!");
+      setTimeout(closeOrderDrawer, 700);
+    }
+
+    // --- 7. STOCK MODAL ---
+    let currentEditSku = null;
+    function openStockEditModal(sku) {
+      currentEditSku = sku;
+      const item = inventoryStock.find(i => i.sku === sku);
+      if (item) {
+        document.getElementById("modal-stock-title").innerText = "Penyesuaian Stok: " + item.sku;
+        document.getElementById("modal-stock-product").value = `${item.name} (${item.sku})`;
+        document.getElementById("modal-stock-batch").value = item.batch;
+        document.getElementById("modal-stock-date").value = item.expDate;
+        document.getElementById("modal-stock-qty").value = item.stock;
+        document.getElementById("modal-stock").classList.remove("hidden");
+      }
+    }
+
+    function openAddStockModal() {
+      currentEditSku = null;
+      document.getElementById("modal-stock-title").innerText = "+ Tambah Batch Gudang Baru";
+      document.getElementById("modal-stock-product").value = "Pilih Produk Mayora (Baru)";
+      document.getElementById("modal-stock-batch").value = "BTC-2026-10A";
+      document.getElementById("modal-stock-date").value = "2026-10-30";
+      document.getElementById("modal-stock-qty").value = 50;
+      document.getElementById("modal-stock").classList.remove("hidden");
+    }
+
+    function closeStockModal() {
+      document.getElementById("modal-stock").classList.add("hidden");
+    }
+
+    function adjustModalQty(delta) {
+      const input = document.getElementById("modal-stock-qty");
+      let val = parseInt(input.value) || 0;
+      val = Math.max(0, val + delta);
+      input.value = val;
+    }
+
+    function saveStockAdjustment() {
+      const qty = parseInt(document.getElementById("modal-stock-qty").value);
+      if (currentEditSku) {
+        const item = inventoryStock.find(i => i.sku === currentEditSku);
+        if (item) item.stock = qty;
+        triggerToast(`Stok ${currentEditSku} berhasil diperbarui menjadi ${qty} karton.`);
+      } else {
+        triggerToast("Batch baru berhasil dicatat dan masuk ke sistem FEFO Gudang Krian.");
+      }
+      closeStockModal();
+      applyInventoryFilters();
+    }
+
+    // --- 8. PARTNER VERIFICATION MODAL ---
+    let pendingPartnerId = null;
+    function openPartnerVerifyModal(id) {
+      pendingPartnerId = id;
+      const partner = partnersDatabase.find(p => p.id === id);
+      if (partner) {
+        document.getElementById("modal-partner-name").innerText = partner.store;
+        document.getElementById("modal-partner").classList.remove("hidden");
+      }
+    }
+
+    function closePartnerModal() {
+      document.getElementById("modal-partner").classList.add("hidden");
+    }
+
+    function confirmPartnerVerification() {
+      const partner = partnersDatabase.find(p => p.id === pendingPartnerId);
+      if (partner) {
+        partner.status = "Verified";
+        applyPartnerFilters();
+        
+        // update sidebar badge counter
+        const unverifiedCount = partnersDatabase.filter(p => p.status === "Menunggu Verifikasi").length;
+        document.getElementById("badge-partners").innerText = unverifiedCount + " Baru";
+        document.getElementById("kpi-unverified").innerHTML = `${unverifiedCount} <span class="text-sm font-normal text-on-surface-variant">Pengajuan</span>`;
+        
+        triggerToast(`${partner.store} kini terverifikasi sebagai Mitra Resmi Inbisco Krian!`);
+      }
+      closePartnerModal();
+    }
+
+    // --- 9. TOP TOOLBAR ACTIONS ---
+    function syncSAP() {
+      triggerToast("Memulai sinkronisasi SAP B2B Pusat...");
+      setTimeout(() => {
+        triggerToast("Sinkronisasi SAP sukses! 148 SKU terkalibrasi dengan Gudang Krian.");
+      }, 1200);
+    }
+
+    function printManifest() {
+      triggerToast("Mencetak Manifest Pengiriman Harian (Armada Gelombang Pagi Krian)...");
+    }
+
+    function toggleNotificationPanel() {
+      triggerToast("3 Notifikasi Baru: 1) Truk KR-02 tiba di gudang. 2) Restock Roma Kelapa disetujui. 3) 5 toko baru mengajukan.");
+    }
+
+    function toggleLogoutModal() {
+      const modal = document.getElementById("modal-logout");
+      modal.classList.toggle("hidden");
+    }
+
+    function executeLogout() {
+      toggleLogoutModal();
+      triggerToast("Sesi operasional ditutup. Mengalihkan ke login...");
+    }
+
+    // --- 10. SYSTEM TOAST ENGINE ---
+    let toastTimeout;
+    function triggerToast(message) {
+      const toast = document.getElementById("toast");
+      const msg = document.getElementById("toast-message");
+      msg.innerText = message;
+      
+      toast.classList.remove("translate-y-20", "opacity-0");
+      toast.classList.add("translate-y-0", "opacity-100");
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.add("translate-y-20", "opacity-0");
+        toast.classList.remove("translate-y-0", "opacity-100");
+      }, 3500);
+    }
+
+    // --- INITIALIZATION ---
+    document.addEventListener("DOMContentLoaded", () => {
+      renderDispatchTable(dispatchOrders);
+      renderInventoryTable(inventoryStock);
+      renderPartnersTable(partnersDatabase);
+    });
+  </script>
+
+
+</body></html>

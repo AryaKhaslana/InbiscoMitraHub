@@ -1,0 +1,923 @@
+<!DOCTYPE html><html lang="id"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Aktivitas &amp; Jaringan Distribusi — Inbisco MitraHub Krian</title>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-tertiary": "#ffffff",
+            "inverse-surface": "#303030",
+            "tertiary-container": "#cca830",
+            "on-secondary-container": "#fffbff",
+            "outline": "#926f69",
+            "on-background": "#1b1c1c",
+            "on-tertiary-fixed": "#241a00",
+            "on-primary-container": "#ffc9c1",
+            "on-primary": "#ffffff",
+            "secondary-container": "#da3433",
+            "primary-fixed-dim": "#ffb4a8",
+            "surface-bright": "#fcf9f8",
+            "tertiary-fixed": "#ffe088",
+            "primary": "#900000",
+            "on-tertiary-fixed-variant": "#574500",
+            "on-secondary-fixed": "#410003",
+            "on-primary-fixed": "#410000",
+            "on-surface": "#1b1c1c",
+            "on-error": "#ffffff",
+            "on-surface-variant": "#5d3f3b",
+            "surface-tint": "#c00402",
+            "surface-variant": "#e5e2e1",
+            "primary-container": "#bd0000",
+            "surface": "#fcf9f8",
+            "on-secondary": "#ffffff",
+            "inverse-primary": "#ffb4a8",
+            "surface-container-high": "#eae7e7",
+            "on-secondary-fixed-variant": "#930010",
+            "tertiary": "#735c00",
+            "on-tertiary-container": "#4f3e00",
+            "error-container": "#ffdad6",
+            "surface-container-low": "#f6f3f2",
+            "inverse-on-surface": "#f3f0ef",
+            "surface-container-lowest": "#ffffff",
+            "background": "#fcf9f8",
+            "secondary": "#b6171e",
+            "primary-fixed": "#ffdad4",
+            "tertiary-fixed-dim": "#e9c349",
+            "surface-container-highest": "#e5e2e1",
+            "on-error-container": "#93000a",
+            "secondary-fixed-dim": "#ffb3ac",
+            "error": "#ba1a1a",
+            "secondary-fixed": "#ffdad6",
+            "surface-dim": "#dcd9d9",
+            "surface-container": "#f0eded",
+            "outline-variant": "#e7bdb6",
+            "on-primary-fixed-variant": "#930000"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-3xl": "4rem",
+            "gutter-sm": "1rem",
+            "space-sm": "0.75rem",
+            "space-xl": "2rem",
+            "space-md": "1rem",
+            "space-2xs": "0.25rem",
+            "margin": "1rem",
+            "space-2xl": "3rem",
+            "margin-md": "2rem",
+            "gutter": "1.5rem",
+            "space-xs": "0.5rem",
+            "gutter-lg": "2rem",
+            "margin-lg": "4rem",
+            "space-lg": "1.5rem"
+          },
+          "fontFamily": {
+            "headline-sm": ["\"Inter, system-ui, sans-serif\""],
+            "body-lg": ["\"Inter, system-ui, sans-serif\""],
+            "headline-lg": ["\"Inter, system-ui, sans-serif\""],
+            "title-md": ["\"Inter, system-ui, sans-serif\""],
+            "body-md": ["\"Inter, system-ui, sans-serif\""],
+            "mono-sku": ["\"ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace\""],
+            "body-sm": ["\"Inter, system-ui, sans-serif\""],
+            "display-hero": ["\"Inter, system-ui, sans-serif\""],
+            "headline-lg-mobile": ["\"Inter, system-ui, sans-serif\""],
+            "headline-md": ["\"Inter, system-ui, sans-serif\""],
+            "label-sm": ["\"Inter, system-ui, sans-serif\""],
+            "display-hero-mobile": ["\"Inter, system-ui, sans-serif\""],
+            "label-md": ["\"Inter, system-ui, sans-serif\""]
+          },
+          "fontSize": {
+            "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "body-lg": ["18px", { "lineHeight": "28px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "headline-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "title-md": ["16px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "mono-sku": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "display-hero": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.025em", "fontWeight": "800" }],
+            "headline-lg-mobile": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+            "display-hero-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-outlined.fill-icon {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased min-h-screen flex flex-col selection:bg-primary-fixed selection:text-primary">
+<!-- TOP APP BAR / NAVBAR -->
+<header class="docked full-width top-0 sticky z-50 bg-surface-container-lowest dark:bg-inverse-surface border-b border-surface-container-high dark:border-outline-variant shadow-sm dark:shadow-none transition-all duration-200">
+<div class="h-[72px] max-w-[1280px] mx-auto px-4 md:px-8 flex items-center justify-between">
+<!-- Brand Logo Cluster -->
+<a class="flex items-center gap-3 group text-decoration-none" href="#">
+<div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center text-on-primary shadow-sm group-hover:scale-105 transition-transform duration-200">
+<span class="material-symbols-outlined text-headline-sm fill-icon">local_shipping</span>
+</div>
+<div class="flex flex-col">
+<span class="text-headline-sm font-headline-sm font-bold text-on-surface dark:text-inverse-on-surface tracking-tight leading-tight">Inbisco MitraHub</span>
+<span class="text-label-sm font-label-sm text-outline dark:text-outline-variant font-medium tracking-wide">PT Inbisco Niagatama Semesta</span>
+</div>
+</a>
+<!-- Desktop Navigation Links -->
+<nav class="hidden md:flex items-center gap-8"><a class="text-on-surface dark:text-inverse-on-surface font-semibold hover:text-primary dark:hover:text-inverse-primary pb-1 transition-colors text-label-md font-label-md" href="#">Beranda</a>
+<a class="text-on-surface dark:text-inverse-on-surface font-semibold hover:text-primary dark:hover:text-inverse-primary pb-1 transition-colors text-label-md font-label-md" href="#">Tentang Kami</a>
+<div class="relative group cursor-pointer">
+<a class="flex items-center gap-1 text-on-surface dark:text-inverse-on-surface font-semibold hover:text-primary dark:hover:text-inverse-primary pb-1 transition-colors text-label-md font-label-md" href="#">
+<span class="">Produk</span>
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+</a>
+</div>
+<a class="border-b-2 border-primary-container text-primary font-bold dark:border-inverse-primary dark:text-inverse-primary pb-1 text-label-md font-label-md" href="#">Aktivitas &amp; Jaringan</a>
+<a class="text-on-surface dark:text-inverse-on-surface font-semibold hover:text-primary dark:hover:text-inverse-primary pb-1 transition-colors text-label-md font-label-md" href="https://app-companion-430619.appspot.com/contact">Contact &amp; Kemitraan</a></nav>
+<!-- Trailing Action Buttons -->
+<div class="flex items-center gap-3">
+<a class="hidden sm:inline-flex items-center justify-center px-4 py-2 border border-surface-variant text-on-surface hover:text-primary hover:border-primary text-label-md font-label-md rounded-xl transition-all duration-150" href="#">
+          Masuk Portal
+        </a>
+<a class="inline-flex items-center justify-center px-5 py-2.5 bg-primary-container hover:bg-primary text-on-primary text-label-md font-label-md font-semibold rounded-xl shadow-sm transition-all duration-200 active:scale-95" href="#">
+          Daftar Jadi Mitra
+        </a>
+</div>
+</div>
+</header>
+<!-- MAIN CANVAS -->
+<main class="flex-grow">
+<!-- BREADCRUMB SECTION -->
+<div class="max-w-[1280px] mx-auto px-4 md:px-8 pt-6 pb-2">
+<nav class="flex items-center gap-2 text-body-sm font-body-sm text-outline">
+<a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">home</span>
+<span class="">Beranda</span>
+</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-on-surface font-semibold">Aktivitas &amp; Jaringan Distribusi</span>
+</nav>
+</div>
+<!-- HERO SECTION -->
+<section class="max-w-[1280px] mx-auto px-4 md:px-8 pt-4 pb-12">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+<!-- Left Hero Content -->
+<div class="lg:col-span-6 flex flex-col space-y-6">
+<div class="inline-flex items-center gap-2.5">
+<span class="h-1.5 w-6 bg-tertiary-container rounded-full"></span>
+<span class="text-label-sm font-label-sm uppercase tracking-wider text-primary font-bold">MOMENTS &amp; JARINGAN DISTRIBUSI</span>
+</div>
+<h1 class="text-display-hero-mobile md:text-display-hero font-display-hero text-on-surface tracking-tight leading-tight">
+            Lebih Dekat dengan Aktivitas Distribusi Kami
+          </h1>
+<p class="text-body-lg font-body-lg text-outline leading-relaxed max-w-xl">Melihat lebih dekat proses distribusi, aktivitas operasional, dan kemitraan yang mendukung kebutuhan usaha toko kelontong, agen grosir, dan retail di Jawa Timur.</p>
+<div class="flex flex-wrap items-center gap-4 pt-2">
+<a class="inline-flex items-center gap-2 px-6 py-3.5 bg-primary-container hover:bg-primary text-on-primary font-semibold text-label-md font-label-md rounded-xl shadow-sm transition-all duration-200 active:scale-95" href="#">
+<span class="">Jelajahi Produk</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+<a class="inline-flex items-center gap-2 px-6 py-3.5 bg-surface-container-lowest border-2 border-primary-container text-primary-container hover:bg-surface-container-low font-semibold text-label-md font-label-md rounded-xl transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[18px]">handshake</span>
+<span class="">Daftar Jadi Mitra</span>
+</a>
+</div>
+<!-- Quick Metrics Bar -->
+<div class="pt-6 border-t border-surface-container-high grid grid-cols-3 gap-4">
+<div>
+<p class="text-headline-md font-headline-md text-primary font-bold">100%</p>
+<p class="text-body-sm font-body-sm text-outline">Kesiapan Armada</p>
+</div>
+<div>
+<p class="text-headline-md font-headline-md text-primary font-bold">24 Jam</p>
+<p class="text-body-sm font-body-sm text-outline">Siklus Lead Time</p>
+</div>
+<div>
+<p class="text-headline-md font-headline-md text-tertiary font-bold">6+ Rute</p>
+<p class="text-body-sm font-body-sm text-outline">Cakupan Krian Hub</p>
+</div>
+</div>
+</div>
+<!-- Right Hero Visual -->
+<div class="lg:col-span-6 relative">
+<div class="relative rounded-2xl overflow-hidden shadow-lg border border-surface-container-high bg-surface-container-lowest aspect-[4/3]">
+<img class="w-full h-full object-cover" data-alt="A brightly lit, clean modern FMCG distribution warehouse depot in East Java during morning logistics operations. Fleet trucks are neatly positioned along elevated loading docks while palletized cartons of consumer goods are lined with industrial precision. The scene is illuminated by crisp daylight and high-bay warehouse lamps, characterized by corporate deep reds, subtle warm gold accents, and clean concrete neutral tones with professional logistics personnel supervising shipment readiness." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDV6axDOqGpqmsKGJKCvcFohyDtxf0TwuD3_kQcPo6BdVe3kBXI_C2YM4S_hP-fqUfjrc_5C4lzsSYzidlrtqW67O2WNX0DpeRG4dX6hY20ON93t7DLD0LdX2SZcNEfSdOeS7iZ00eSi-n9axZv_0baxk7SzSh6po35o0YZ-ppXqvCrlouKT6FyEtFJ2EMLKRMYPluF1PU4kC0Yih8FlXQxTK40PLJ0xrunQMzryjc">
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent to-transparent"></div>
+<!-- Operational Floating Badge -->
+<div class="absolute bottom-5 left-5 right-5 bg-surface-container-lowest/95 backdrop-blur-md p-4 rounded-xl border border-surface-container-high shadow-md flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[24px]">warehouse</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+<h4 class="text-title-md font-title-md text-on-surface">Depot Logistik Krian</h4>
+</div>
+<p class="text-body-sm font-body-sm text-outline">Distribusi &amp; Armada Aktif • Jalur Utama Sidoarjo Barat</p>
+</div>
+</div>
+<span class="hidden sm:inline-flex px-3 py-1 bg-surface-container text-on-surface text-label-sm font-label-sm rounded-full font-semibold">
+                Hub H-1 Ready
+              </span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION D: INTRODUCTION ("Di Balik Perjalanan Distribusi") -->
+<section class="bg-surface-container-lowest py-16 border-y border-surface-container-high">
+<div class="max-w-[1280px] mx-auto px-4 md:px-8">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+<!-- Narrative & Capabilities -->
+<div class="lg:col-span-6 space-y-6">
+<div class="inline-flex items-center gap-2">
+<span class="h-1 w-4 bg-primary-container rounded-full"></span>
+<span class="text-label-sm font-label-sm uppercase tracking-wider text-outline font-bold">MANAJEMEN RANTAI PASOK</span>
+</div>
+<h2 class="text-headline-lg-mobile md:text-headline-lg font-headline-lg text-on-surface">
+              Di Balik Perjalanan Distribusi
+            </h2>
+<p class="text-body-lg font-body-lg text-outline leading-relaxed">
+              Setiap proses distribusi melibatkan koordinasi ketat, pengelolaan produk terjadwal, dan pelayanan yang terarah. Melalui sistem terpadu Inbisco MitraHub, kami memastikan keaslian barang serta kecepatan pengiriman ke seluruh toko dan grosir mitra di wilayah Krian dan sekitarnya.
+            </p>
+<!-- Key Capability Badges Bento -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
+<div class="p-4 rounded-xl border border-surface-container-high bg-surface-bright flex flex-col justify-between">
+<div class="w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary mb-3">
+<span class="material-symbols-outlined text-[20px]">shelves</span>
+</div>
+<h4 class="text-title-md font-title-md text-on-surface leading-snug">Gudang Terorganisir</h4>
+<p class="text-body-sm font-body-sm text-outline mt-1">Sistem racking SKU teratur dan proteksi cuaca.</p>
+</div>
+<div class="p-4 rounded-xl border border-surface-container-high bg-surface-bright flex flex-col justify-between">
+<div class="w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center text-tertiary mb-3">
+<span class="material-symbols-outlined text-[20px]">verified</span>
+</div>
+<h4 class="text-title-md font-title-md text-on-surface leading-snug">Standar Kebersihan</h4>
+<p class="text-body-sm font-body-sm text-outline mt-1">Kerapian karton dan kontrol higienitas produk.</p>
+</div>
+<div class="p-4 rounded-xl border border-surface-container-high bg-surface-bright flex flex-col justify-between">
+<div class="w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary mb-3">
+<span class="material-symbols-outlined text-[20px]">local_shipping</span>
+</div>
+<h4 class="text-title-md font-title-md text-on-surface leading-snug">Kesiapan Armada</h4>
+<p class="text-body-sm font-body-sm text-outline mt-1">Kendaraan terawat siap kirim ke rute terjadwal.</p>
+</div>
+</div>
+</div>
+<!-- Highlight Photo Card -->
+<div class="lg:col-span-6">
+<div class="relative rounded-2xl overflow-hidden border border-surface-container-high shadow-sm bg-surface">
+<img class="w-full h-[400px] object-cover" data-alt="Modern indoor FMCG distribution warehouse environment showing professional logistics inventory management. Stacked corrugated boxes of biscuits, confectioneries, and instant beverages are neatly organized on heavy-duty industrial shelving. Uniformed warehouse personnel wearing high-visibility corporate gear are performing digital barcode stock verification under bright, crisp high-key interior lighting. The palette incorporates deep enterprise reds, neutral concrete grays, and warm packaging tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfjEkutFjqcy1co3RbG3pUySevcPnq-syf8CIPm9vMIZmGai3JXF1-m-M9Sewn6vOOAInAUhI7NSIGnjt0aZpinjkZuuBwgEUr1R-6HctNVr6ynM48tJlT5YHf_xozY9527pFVEwAtlLVAS8qZJW8wYD6zEE_OalSiz630EKX1byBWpJ7Fch2uoVsUr6ChPJTa-O21zeX_kCj1UONCmpEYju8_pyTUx0bCcQiYV3Q">
+<div class="p-6 bg-surface-container-lowest border-t border-surface-container-high flex items-center justify-between">
+<div>
+<h3 class="text-title-md font-title-md text-on-surface">Pusat Pergudangan &amp; Staging Krian</h3>
+<p class="text-body-sm font-body-sm text-outline">Kapasitas penyimpanan puluhan ribu karton FMCG berkala</p>
+</div>
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant font-mono-sku text-[12px] rounded-lg">
+                  ISO &amp; SOP Verified
+                </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION E & F: PHOTO GALLERY WITH INTERACTIVE CATEGORY FILTERS ("Galeri Aktivitas") -->
+<section class="max-w-[1280px] mx-auto px-4 md:px-8 py-16" id="editorial-gallery">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4 border-b border-surface-container-high pb-6">
+<div>
+<div class="inline-flex items-center gap-2 mb-2">
+<span class="h-1.5 w-6 bg-primary-container rounded-full"></span>
+<span class="text-label-sm font-label-sm uppercase tracking-wider text-primary font-bold">GALERI CERITA &amp; DOKUMENTASI RESMI</span>
+</div>
+<h2 class="text-headline-lg-mobile md:text-headline-lg font-headline-lg text-on-surface">
+Dokumentasi Lapangan &amp; Ekosistem Kemitraan
+</h2>
+<p class="text-body-md font-body-md text-outline mt-1 max-w-2xl">
+Sorotan visual terstruktur atas pilar operasional gudang, pergerakan armada, serta interaksi nyata bersama mitra toko dan warkop di wilayah Krian dan Sidoarjo Barat.
+</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-3 py-1 bg-surface-container text-outline font-mono-sku text-[12px] rounded-lg">4 PILAR AKTIVITAS RESMI</span>
+</div>
+</div>
+
+<div class="space-y-16">
+<!-- Story 1: Operasional Gudang & QA -->
+<div class="space-y-6">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-primary-container flex items-center justify-center text-on-primary font-bold text-title-md">
+1
+</div>
+<div>
+<h3 class="text-headline-sm font-headline-sm font-bold text-on-surface">Operasional Gudang &amp; QA</h3>
+<p class="text-body-sm font-body-sm text-outline">Manajemen tata letak FIFO, verifikasi mutu karton, dan sanitasi berkala Depot Krian</p>
+</div>
+</div>
+<span class="text-label-sm font-label-sm text-outline-variant font-mono-sku uppercase">Pilar 01 • Gudang &amp; QC</span>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<article class="group bg-surface-container-lowest rounded-2xl overflow-hidden border border-surface-container-high hover:border-tertiary-container shadow-sm hover:shadow-md transition-all flex flex-col">
+<div class="relative aspect-[16/10] overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Interior of FMCG distribution warehouse" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBroTnMuwdXUqbeg6Vhh3zQth34AT0mJXS4CCQ0s5EZrDZFWoL73aW5kH8QPAQOD_9fc90v54hvZq6qzXKX5szk4gnX71SJXUKbCb0hd7l1LCuIYXpk9CRwEn9ISMpEK4LqpldCzRcU2cG4RPC_DynB6P1XAhRAUa9eWM-WkP9cYtSZgkyDN5Ybd6_Lm_LLGwcLcKUbuhL0VNSNHQsVCkE6CbZ5shQa5hFMTAk2UDw">
+<span class="absolute top-3 left-3 bg-surface-container-lowest/90 backdrop-blur-sm text-on-surface text-label-sm font-label-sm px-3 py-1 rounded-full border border-surface-container-high font-semibold">Racking Berjenjang</span>
+</div>
+<div class="p-5 flex-1 flex flex-col justify-between">
+<div>
+<h4 class="text-title-md font-title-md text-on-surface group-hover:text-primary transition-colors">Sistem Racking &amp; Rotasi FIFO Berkala</h4>
+<p class="text-body-sm font-body-sm text-outline mt-1.5 leading-relaxed">Penyusunan palet multi-tingkat dengan standarisasi rotasi masuk-keluar menjaga kondisi kemasan produk konsisten segar saat diterima pembeli ritel.</p>
+</div>
+<div class="mt-4 pt-3 border-t border-surface-container-high flex items-center justify-between text-body-sm font-body-sm text-outline">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">shelves</span> Zona Blok A1-B3</span>
+<span class="font-mono-sku">SOP-FIFO-VERIFIED</span>
+</div>
+</div>
+</article>
+
+<article class="group bg-surface-container-lowest rounded-2xl overflow-hidden border border-surface-container-high hover:border-tertiary-container shadow-sm hover:shadow-md transition-all flex flex-col">
+<div class="relative aspect-[16/10] overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Quality check on delivery order and goods" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAipvIbSWt7I6qT5QX2RLK9e3pPMp2AdIL9cuuWDi8SWiHZ5dVp8BD7jhls42S820taCuUYF4qsAqbKW8eeLB5Vc80BR4HFpDczg97zJeppirRDbhytmpVC1dch7GyZ4zU6_w-m7D73v6M9WgN0RL5uBcqG6thol5RXj7tIsodxUA-1bDiRwUnjIvLvuf7j8vsa0t8lHEgyfHtVPEGoPwzMepGN1DDRQjnNjJ-N5po">
+<span class="absolute top-3 left-3 bg-surface-container-lowest/90 backdrop-blur-sm text-on-surface text-label-sm font-label-sm px-3 py-1 rounded-full border border-surface-container-high font-semibold">Audit Mutu Barcode</span>
+</div>
+<div class="p-5 flex-1 flex flex-col justify-between">
+<div>
+<h4 class="text-title-md font-title-md text-on-surface group-hover:text-primary transition-colors">Verifikasi Mutu Karton &amp; Surat Jalan (DO)</h4>
+<p class="text-body-sm font-body-sm text-outline mt-1.5 leading-relaxed">Pengecekan barcode dan segel master-box sebelum pengemasan memastikan nol selisih fisik antara delivery order dengan stok gudang.</p>
+</div>
+<div class="mt-4 pt-3 border-t border-surface-container-high flex items-center justify-between text-body-sm font-body-sm text-outline">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">fact_check</span> Meja Audit Dispatch</span>
+<span class="font-mono-sku">ACCURACY-100%</span>
+</div>
+</div>
+</article>
+</div>
+</div>
+
+<!-- Story 2: Armada Distribusi Regional -->
+<div class="space-y-6">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-primary-container flex items-center justify-center text-on-primary font-bold text-title-md">
+2
+</div>
+<div>
+<h3 class="text-headline-sm font-headline-sm font-bold text-on-surface">Armada Distribusi Regional</h3>
+<p class="text-body-sm font-body-sm text-outline">Kendaraan boks tertutup dengan rute terjadwal menjangkau seluruh koridor Krian &amp; sekitarnya</p>
+</div>
+</div>
+<span class="text-label-sm font-label-sm text-outline-variant font-mono-sku uppercase">Pilar 02 • Armada &amp; Rute</span>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<article class="group bg-surface-container-lowest rounded-2xl overflow-hidden border border-surface-container-high hover:border-tertiary-container shadow-sm hover:shadow-md transition-all flex flex-col">
+<div class="relative aspect-[16/10] overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Fleet trucks ready for route dispatch" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCApWYxyidMmztwvul_jytCS6lZf2xTOWItVdA3QanTdfV74t4dqXzM2I0rPO8U-Hne481lMtUf4PBsqhxHsJHaXaCGSuL-7eYCcL_HEKVlk56jrLZLzxnYroDbZHPb00YOTT8gQUM0yk94Gb1lyPxZiMx0591DH9xENzPqkLgQ_aNxv2jBShwM4LiGZo59kYG0-yyCiFbq0p_x_d0kVL8jWEMNITWR9fOfcK1f-Vg">
+<span class="absolute top-3 left-3 bg-surface-container-lowest/90 backdrop-blur-sm text-on-surface text-label-sm font-label-sm px-3 py-1 rounded-full border border-surface-container-high font-semibold">Kesiapan Pagi</span>
+</div>
+<div class="p-5 flex-1 flex flex-col justify-between">
+<div>
+<h4 class="text-title-md font-title-md text-on-surface group-hover:text-primary transition-colors">Inspeksi Armada Boks Tertutup Harian</h4>
+<p class="text-body-sm font-body-sm text-outline mt-1.5 leading-relaxed">Pemeriksaan kelaikan rem, ban, dan proteksi bak tertutup memastikan perjalanan aman dari risiko panas maupun hujan lebat di jalur pantura.</p>
+</div>
+<div class="mt-4 pt-3 border-t border-surface-container-high flex items-center justify-between text-body-sm font-body-sm text-outline">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">local_shipping</span> 12 Armada Box Aktif</span>
+<span class="font-mono-sku">DAILY-CHECK-OK</span>
+</div>
+</div>
+</article>
+
+<article class="group bg-surface-container-lowest rounded-2xl overflow-hidden border border-surface-container-high hover:border-tertiary-container shadow-sm hover:shadow-md transition-all flex flex-col">
+<div class="relative aspect-[16/10] overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Loading bay fast lane loading" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgWUp1qz5YiLoORDgMqsuwWro3KERt-ey4Ul4-67Bd_EcMkta3e8N-MSTRtgJM8OuFs7Exzs8IqapvPnUXwhcbqPwWaJhjjmtPmgyF72FGRDa2nTwBHPgIiUnvLdhvH_52sgQv9C167k3ywkjtPjnBCTcsVaRSkFRCRJdQOjqBNawxpqlS-LWI4_m7pz7M9FOkPIni6MLxnxqnqGvtQVqaOOVWubKsTKqgUHtQZsE">
+<span class="absolute top-3 left-3 bg-surface-container-lowest/90 backdrop-blur-sm text-on-surface text-label-sm font-label-sm px-3 py-1 rounded-full border border-surface-container-high font-semibold">Docking Cepat</span>
+</div>
+<div class="p-5 flex-1 flex flex-col justify-between">
+<div>
+<h4 class="text-title-md font-title-md text-on-surface group-hover:text-primary transition-colors">Proses Staging &amp; Muat Cepat di Loading Bay</h4>
+<p class="text-body-sm font-body-sm text-outline mt-1.5 leading-relaxed">Pengelompokan pesanan berdasarkan klaster rute memudahkan kru driver memuat karton tanpa hambatan dan berangkat sesuai jadwal pagi.</p>
+</div>
+<div class="mt-4 pt-3 border-t border-surface-container-high flex items-center justify-between text-body-sm font-body-sm text-outline">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">schedule</span> 06.00 - 08.30 WIB</span>
+<span class="font-mono-sku">BAY-DOCK-1-4</span>
+</div>
+</div>
+</article>
+</div>
+</div>
+
+<!-- Story 3: Kemitraan Toko Kelontong & Warkop -->
+<div class="space-y-6">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-primary-container flex items-center justify-center text-on-primary font-bold text-title-md">
+3
+</div>
+<div>
+<h3 class="text-headline-sm font-headline-sm font-bold text-on-surface">Kemitraan Toko Kelontong &amp; Warkop</h3>
+<p class="text-body-sm font-body-sm text-outline">Penyaluran langsung produk biskuit, wafer, permen, dan kopi renceng ke warung mitra</p>
+</div>
+</div>
+<span class="text-label-sm font-label-sm text-outline-variant font-mono-sku uppercase">Pilar 03 • Toko &amp; Retail</span>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<article class="group bg-surface-container-lowest rounded-2xl overflow-hidden border border-surface-container-high hover:border-tertiary-container shadow-sm hover:shadow-md transition-all flex flex-col">
+<div class="relative aspect-[16/10] overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Staging area for retail store order pallets" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAy4U9GMcSM4ZgS6AGIUnL2zn6e8EjcvYxD6o21b1UmV6RyqWafVDINHRBIadBnE9fMS8QAnPdt2YyWeBH_Ull32wzjOsk072OP5poQEGO1RmUfsQeSLl34f62KBYdQ7MYKv9dDvqB8DMEHirBcxC0oUhYaHW-503XFiMrFL6HLWpRS5d-TdWqJkxPnFHXGDTUo9HNz9Ubwqf53xRCznQJwKcKtkvGR-GvzSZ-83Rs">
+<span class="absolute top-3 left-3 bg-surface-container-lowest/90 backdrop-blur-sm text-on-surface text-label-sm font-label-sm px-3 py-1 rounded-full border border-surface-container-high font-semibold">Pemilahan Ritel</span>
+</div>
+<div class="p-5 flex-1 flex flex-col justify-between">
+<div>
+<h4 class="text-title-md font-title-md text-on-surface group-hover:text-primary transition-colors">Paket Suplai Toko Kelontong &amp; Grosir Pasar</h4>
+<p class="text-body-sm font-body-sm text-outline mt-1.5 leading-relaxed">Alokasi pesanan kartonan reguler untuk toko kelontong di kawasan pemukiman, menjamin ketersediaan stok dagangan pedagang kecil tanpa jeda.</p>
+</div>
+<div class="mt-4 pt-3 border-t border-surface-container-high flex items-center justify-between text-body-sm font-body-sm text-outline">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">storefront</span> 450+ Toko Mitra Aktif</span>
+<span class="font-mono-sku">RETAIL-CLUSTER</span>
+</div>
+</div>
+</article>
+
+<article class="group bg-surface-container-lowest rounded-2xl overflow-hidden border border-surface-container-high hover:border-tertiary-container shadow-sm hover:shadow-md transition-all flex flex-col">
+<div class="relative aspect-[16/10] overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Master-box display of coffee sachets and snacks" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFYBCDSZFMk9-zSWL5b_vD-I7PC8DQx_EnTapADyANnwBCZoififCxZcSRSEA-bMKo7pDW6Z-W6q-BjOPc4DdLVbZ7fqNb7CZF6FzLA7R_modDTc-XqCrd0yQgl4_MOmsIPFyip6VglQ3PpefJzDaVPmnSnJDUSAtNCaEh5oZ_R7Er0un_m7ibd-cLrfCTPOpRpAsjdwd6dvBvwKEKEWc87GcSUQBfQNEARUCCkJk">
+<span class="absolute top-3 left-3 bg-surface-container-lowest/90 backdrop-blur-sm text-on-surface text-label-sm font-label-sm px-3 py-1 rounded-full border border-surface-container-high font-semibold">SKU Fast Moving</span>
+</div>
+<div class="p-5 flex-1 flex flex-col justify-between">
+<div>
+<h4 class="text-title-md font-title-md text-on-surface group-hover:text-primary transition-colors">Kebutuhan Renceng &amp; Sachet Mitra Warkop</h4>
+<p class="text-body-sm font-body-sm text-outline mt-1.5 leading-relaxed">Suplai kopi sachet, wafer, dan snack renyah favorit pelanggan warkop Jawa Timur dengan keaslian formula langsung dari pabrik utama.</p>
+</div>
+<div class="mt-4 pt-3 border-t border-surface-container-high flex items-center justify-between text-body-sm font-body-sm text-outline">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">coffee</span> Segmen Warung Kopi</span>
+<span class="font-mono-sku">WARKOP-LINEUP</span>
+</div>
+</div>
+</article>
+</div>
+</div>
+
+<!-- Story 4: Event & Temu Mitra Retail -->
+<div class="space-y-6">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-primary-container flex items-center justify-center text-on-primary font-bold text-title-md">
+4
+</div>
+<div>
+<h3 class="text-headline-sm font-headline-sm font-bold text-on-surface">Event &amp; Temu Mitra Retail</h3>
+<p class="text-body-sm font-body-sm text-outline">Sesi briefing berkala, pengenalan varian produk baru, dan edukasi margin grosir</p>
+</div>
+</div>
+<span class="text-label-sm font-label-sm text-outline-variant font-mono-sku uppercase">Pilar 04 • Komunitas &amp; Event</span>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<article class="group bg-surface-container-lowest rounded-2xl overflow-hidden border border-surface-container-high hover:border-tertiary-container shadow-sm hover:shadow-md transition-all flex flex-col">
+<div class="relative aspect-[16/10] overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Logistics training and warehouse operations briefing" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfjEkutFjqcy1co3RbG3pUySevcPnq-syf8CIPm9vMIZmGai3JXF1-m-M9Sewn6vOOAInAUhI7NSIGnjt0aZpinjkZuuBwgEUr1R-6HctNVr6ynM48tJlT5YHf_xozY9527pFVEwAtlLVAS8qZJW8wYD6zEE_OalSiz630EKX1byBWpJ7Fch2uoVsUr6ChPJTa-O21zeX_kCj1UONCmpEYju8_pyTUx0bCcQiYV3Q">
+<span class="absolute top-3 left-3 bg-surface-container-lowest/90 backdrop-blur-sm text-on-surface text-label-sm font-label-sm px-3 py-1 rounded-full border border-surface-container-high font-semibold">Konsolidasi Mitra</span>
+</div>
+<div class="p-5 flex-1 flex flex-col justify-between">
+<div>
+<h4 class="text-title-md font-title-md text-on-surface group-hover:text-primary transition-colors">Pertemuan Rutin Agen &amp; Pemilik Toko Grosir</h4>
+<p class="text-body-sm font-body-sm text-outline mt-1.5 leading-relaxed">Forum komunikasi terbuka antara perwakilan cabang Krian dan para pedagang grosir untuk menyelaraskan kuota dan jadwal pengiriman puncak musim.</p>
+</div>
+<div class="mt-4 pt-3 border-t border-surface-container-high flex items-center justify-between text-body-sm font-body-sm text-outline">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">groups</span> Forum Triwulan</span>
+<span class="font-mono-sku">COMMUNITY-MEET</span>
+</div>
+</div>
+</article>
+
+<article class="group bg-surface-container-lowest rounded-2xl overflow-hidden border border-surface-container-high hover:border-tertiary-container shadow-sm hover:shadow-md transition-all flex flex-col">
+<div class="relative aspect-[16/10] overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Morning operations logistics depot view" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDV6axDOqGpqmsKGJKCvcFohyDtxf0TwuD3_kQcPo6BdVe3kBXI_C2YM4S_hP-fqUfjrc_5C4lzsSYzidlrtqW67O2WNX0DpeRG4dX6hY20ON93t7DLD0LdX2SZcNEfSdOeS7iZ00eSi-n9axZv_0baxk7SzSh6po35o0YZ-ppXqvCrlouKT6FyEtFJ2EMLKRMYPluF1PU4kC0Yih8FlXQxTK40PLJ0xrunQMzryjc">
+<span class="absolute top-3 left-3 bg-surface-container-lowest/90 backdrop-blur-sm text-on-surface text-label-sm font-label-sm px-3 py-1 rounded-full border border-surface-container-high font-semibold">Apresiasi Toko</span>
+</div>
+<div class="p-5 flex-1 flex flex-col justify-between">
+<div>
+<h4 class="text-title-md font-title-md text-on-surface group-hover:text-primary transition-colors">Sosialisasi Skema Reward &amp; Promo Grosir Baru</h4>
+<p class="text-body-sm font-body-sm text-outline mt-1.5 leading-relaxed">Penyampaian paket diskon tiering kuota dan fasilitas tempo pembayaran resmi untuk membantu ekspansi permodalan toko langganan.</p>
+</div>
+<div class="mt-4 pt-3 border-t border-surface-container-high flex items-center justify-between text-body-sm font-body-sm text-outline">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">redeem</span> Program Kemitraan</span>
+<span class="font-mono-sku">REWARD-2025</span>
+</div>
+</div>
+</article>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION G: DISTRIBUTION PROCESS ("Bagaimana Proses Distribusi Berjalan?") -->
+<section class="bg-surface-container-lowest py-16 border-t border-surface-container-high" id="distribution-roadmap">
+<div class="max-w-[1280px] mx-auto px-4 md:px-8">
+<div class="text-center max-w-2xl mx-auto mb-12">
+<div class="inline-flex items-center gap-2 mb-2">
+<span class="h-1.5 w-6 bg-tertiary-container rounded-full"></span>
+<span class="text-label-sm font-label-sm uppercase tracking-wider text-primary font-bold">ROADMAP DISTRIBUSI RESMI</span>
+</div>
+<h2 class="text-headline-lg-mobile md:text-headline-lg font-headline-lg text-on-surface">
+Alur Perjalanan Produk FMCG
+</h2>
+<p class="text-body-md font-body-md text-outline mt-2">
+Siklus pasokan terintegrasi mulai dari Distribution Center Pabrik (DC Pasuruan), transit Depot Logistik Krian, hingga serah terima di toko mitra retail.
+</p>
+</div>
+
+<!-- 3-Stage Connected Roadmap -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+<!-- Stage 1: DC Pasuruan -->
+<div class="p-6 rounded-2xl bg-surface border border-surface-container-high relative flex flex-col justify-between hover:border-primary-container transition-colors shadow-sm">
+<div>
+<div class="flex items-center justify-between mb-4">
+<div class="w-12 h-12 rounded-xl bg-surface-container-lowest border border-surface-container-high flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-[26px]">factory</span>
+</div>
+<span class="text-headline-sm font-headline-sm font-mono-sku text-outline-variant font-bold">01</span>
+</div>
+<div class="inline-flex items-center gap-2 mb-2">
+<span class="px-2.5 py-0.5 rounded-full text-label-sm font-label-sm bg-primary-fixed text-on-primary-fixed font-bold">Origin Inbound</span>
+</div>
+<h3 class="text-title-md font-title-md text-on-surface mb-2">DC Pasuruan (Pusat Manufaktur)</h3>
+<p class="text-body-sm font-body-sm text-outline leading-relaxed">
+Produk FMCG Mayora &amp; Inbisco diproduksi dan dimuat langsung dari Distribution Center Pasuruan dalam kontainer segel resmi dengan sertifikasi mutu pabrik.
+</p>
+</div>
+<div class="mt-6 pt-3 border-t border-surface-container-high/60 flex items-center justify-between text-label-sm font-label-sm text-tertiary font-bold">
+<span class="">Pengiriman Inter-Depot</span>
+<span class="font-mono-sku text-outline font-normal">DC-PSR → KRN</span>
+</div>
+</div>
+
+<!-- Stage 2: Hub Krian -->
+<div class="p-6 rounded-2xl bg-surface border-2 border-primary-container relative flex flex-col justify-between shadow-md">
+<div>
+<div class="flex items-center justify-between mb-4">
+<div class="w-12 h-12 rounded-xl bg-primary-container flex items-center justify-center text-on-primary shadow-sm">
+<span class="material-symbols-outlined text-[26px]">warehouse</span>
+</div>
+<span class="text-headline-sm font-headline-sm font-mono-sku text-primary font-bold">02</span>
+</div>
+<div class="inline-flex items-center gap-2 mb-2">
+<span class="px-2.5 py-0.5 rounded-full text-label-sm font-label-sm bg-primary-container text-on-primary font-bold">Hub Inti Sidoarjo Barat</span>
+</div>
+<h3 class="text-title-md font-title-md text-on-surface mb-2">Hub Logistik Cabang Krian</h3>
+<p class="text-body-sm font-body-sm text-outline leading-relaxed">
+Penerimaan barang inbound, sortir SKU cepat, penyimpanan buffer stock FIFO, serta pemilahan pesanan berdasarkan rute kecamatan toko mitra.
+</p>
+</div>
+<div class="mt-6 pt-3 border-t border-surface-container-high/60 flex items-center justify-between text-label-sm font-label-sm text-primary font-bold">
+<span class="">Staging &amp; Muat Armada H-1</span>
+<span class="font-mono-sku text-outline font-normal">KRIAN-DEPOT</span>
+</div>
+</div>
+
+<!-- Stage 3: Retail Stores -->
+<div class="p-6 rounded-2xl bg-surface border border-surface-container-high relative flex flex-col justify-between hover:border-primary-container transition-colors shadow-sm">
+<div>
+<div class="flex items-center justify-between mb-4">
+<div class="w-12 h-12 rounded-xl bg-surface-container-lowest border border-surface-container-high flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-[26px]">store</span>
+</div>
+<span class="text-headline-sm font-headline-sm font-mono-sku text-outline-variant font-bold">03</span>
+</div>
+<div class="inline-flex items-center gap-2 mb-2">
+<span class="px-2.5 py-0.5 rounded-full text-label-sm font-label-sm bg-tertiary-fixed text-on-tertiary-fixed font-bold">Titik Serah Terima</span>
+</div>
+<h3 class="text-title-md font-title-md text-on-surface mb-2">Toko Kelontong &amp; Retail Mitra</h3>
+<p class="text-body-sm font-body-sm text-outline leading-relaxed">
+Armada boks menurunkan karton pesanan langsung di toko, pengecekan fisik bersama pemilik toko, serta penandatanganan Berita Acara Serah Terima (BAST).
+</p>
+</div>
+<div class="mt-6 pt-3 border-t border-surface-container-high/60 flex items-center justify-between text-label-sm font-label-sm text-tertiary font-bold">
+<span class="">Selesai &amp; Siap Jual</span>
+<span class="font-mono-sku text-outline font-normal">BAST-SIGNED</span>
+</div>
+</div>
+</div>
+
+<p class="text-center text-body-sm font-body-sm text-outline mt-8 italic">
+*Seluruh jalur distribusi didukung sistem monitoring DO terpadu untuk memastikan pasokan tiba tepat waktu dalam kondisi tersegel pabrik.
+</p>
+</div>
+</section>
+<!-- SECTION H: REGIONAL SERVICE AREA ("Mengenal Area Layanan") -->
+<section class="max-w-[1280px] mx-auto px-4 md:px-8 py-16">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+<div>
+<div class="inline-flex items-center gap-2 mb-2">
+<span class="h-1.5 w-6 bg-tertiary-container rounded-full"></span>
+<span class="text-label-sm font-label-sm uppercase tracking-wider text-primary font-bold">ZONASI PENGIRIMAN CABANG</span>
+</div>
+<h2 class="text-headline-lg-mobile md:text-headline-lg font-headline-lg text-on-surface">
+            Mengenal Area Layanan
+          </h2>
+<p class="text-body-md font-body-md text-outline mt-1 max-w-2xl">
+            Hubungi tim Inbisco untuk memperoleh informasi mengenai ketersediaan dan jadwal kunjungan armada berdasarkan koordinat toko Anda.
+          </p>
+</div>
+<div>
+<a class="inline-flex items-center gap-2 px-5 py-2.5 bg-surface-container-lowest border border-surface-container-high hover:border-primary text-on-surface hover:text-primary rounded-xl text-label-md font-label-md font-semibold transition-all" href="#">
+<span class="material-symbols-outlined text-[18px]">support_agent</span>
+<span class="">Tanyakan Cakupan Layanan</span>
+</a>
+</div>
+</div>
+<!-- Regional Coverage Cards Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+<!-- Coverage 1: Krian Kota -->
+<div class="p-5 rounded-xl border border-surface-container-high bg-surface-container-lowest shadow-sm hover:shadow-md transition-all flex flex-col justify-between border-l-4 border-l-tertiary-container">
+<div>
+<div class="flex items-center justify-between mb-2">
+<h3 class="text-headline-sm font-headline-sm text-on-surface font-bold">Krian Kota</h3>
+<span class="px-2.5 py-0.5 rounded-full text-label-sm font-label-sm bg-primary-fixed text-on-primary-fixed font-bold">Pusat Hub</span>
+</div>
+<p class="text-body-sm font-body-sm text-outline leading-relaxed">
+              Meliputi area pasar induk Krian, pertokoan jalan raya utama, perumahan sentral, dan lingkar luar bypass.
+            </p>
+</div>
+<div class="mt-4 pt-3 border-t border-surface-container-high flex items-center justify-between text-body-sm font-body-sm">
+<span class="text-outline">Lead-time kirim:</span>
+<span class="font-semibold text-primary">Sameday / H+1 Pagi</span>
+</div>
+</div>
+<!-- Coverage 2: Balongbendo -->
+<div class="p-5 rounded-xl border border-surface-container-high bg-surface-container-lowest shadow-sm hover:shadow-md transition-all flex flex-col justify-between border-l-4 border-l-tertiary-container">
+<div>
+<div class="flex items-center justify-between mb-2">
+<h3 class="text-headline-sm font-headline-sm text-on-surface font-bold">Balongbendo</h3>
+<span class="px-2.5 py-0.5 rounded-full text-label-sm font-label-sm bg-surface-container text-on-surface font-semibold">Reguler</span>
+</div>
+<p class="text-body-sm font-body-sm text-outline leading-relaxed">
+              Jalur koridor industri dan grosir pemukiman penyangga jalur barat arah Mojokerto.
+            </p>
+</div>
+<div class="mt-4 pt-3 border-t border-surface-container-high flex items-center justify-between text-body-sm font-body-sm">
+<span class="text-outline">Lead-time kirim:</span>
+<span class="font-semibold text-on-surface">Jadwal H+1</span>
+</div>
+</div>
+<!-- Coverage 3: Tarik -->
+<div class="p-5 rounded-xl border border-surface-container-high bg-surface-container-lowest shadow-sm hover:shadow-md transition-all flex flex-col justify-between border-l-4 border-l-tertiary-container">
+<div>
+<div class="flex items-center justify-between mb-2">
+<h3 class="text-headline-sm font-headline-sm text-on-surface font-bold">Tarik</h3>
+<span class="px-2.5 py-0.5 rounded-full text-label-sm font-label-sm bg-surface-container text-on-surface font-semibold">Reguler</span>
+</div>
+<p class="text-body-sm font-body-sm text-outline leading-relaxed">
+              Jaringan agen ritel kawasan stasiun, sentra pertanian dan pertokoan kelontong pedesaan.
+            </p>
+</div>
+<div class="mt-4 pt-3 border-t border-surface-container-high flex items-center justify-between text-body-sm font-body-sm">
+<span class="text-outline">Lead-time kirim:</span>
+<span class="font-semibold text-on-surface">Jadwal H+1</span>
+</div>
+</div>
+<!-- Coverage 4: Prambon -->
+<div class="p-5 rounded-xl border border-surface-container-high bg-surface-container-lowest shadow-sm hover:shadow-md transition-all flex flex-col justify-between border-l-4 border-l-tertiary-container">
+<div>
+<div class="flex items-center justify-between mb-2">
+<h3 class="text-headline-sm font-headline-sm text-on-surface font-bold">Prambon</h3>
+<span class="px-2.5 py-0.5 rounded-full text-label-sm font-label-sm bg-surface-container text-on-surface font-semibold">Reguler</span>
+</div>
+<p class="text-body-sm font-body-sm text-outline leading-relaxed">
+              Jalur penghubung Krian menuju Tulangan &amp; Mojosari dengan konsentrasi warung grosir aktif.
+            </p>
+</div>
+<div class="mt-4 pt-3 border-t border-surface-container-high flex items-center justify-between text-body-sm font-body-sm">
+<span class="text-outline">Lead-time kirim:</span>
+<span class="font-semibold text-on-surface">Jadwal H+1</span>
+</div>
+</div>
+<!-- Coverage 5: Wonoayu -->
+<div class="p-5 rounded-xl border border-surface-container-high bg-surface-container-lowest shadow-sm hover:shadow-md transition-all flex flex-col justify-between border-l-4 border-l-tertiary-container">
+<div>
+<div class="flex items-center justify-between mb-2">
+<h3 class="text-headline-sm font-headline-sm text-on-surface font-bold">Wonoayu</h3>
+<span class="px-2.5 py-0.5 rounded-full text-label-sm font-label-sm bg-surface-container text-on-surface font-semibold">Reguler</span>
+</div>
+<p class="text-body-sm font-body-sm text-outline leading-relaxed">
+              Area pemukiman padat berkembang dan minimarket tradisional sepanjang koridor Krian-Sidoarjo kota.
+            </p>
+</div>
+<div class="mt-4 pt-3 border-t border-surface-container-high flex items-center justify-between text-body-sm font-body-sm">
+<span class="text-outline">Lead-time kirim:</span>
+<span class="font-semibold text-on-surface">Jadwal H+1</span>
+</div>
+</div>
+<!-- Coverage 6: Sidoarjo Barat -->
+<div class="p-5 rounded-xl border border-surface-container-high bg-surface-container-lowest shadow-sm hover:shadow-md transition-all flex flex-col justify-between border-l-4 border-l-tertiary-container">
+<div>
+<div class="flex items-center justify-between mb-2">
+<h3 class="text-headline-sm font-headline-sm text-on-surface font-bold">Sidoarjo Barat (Sub-Rute)</h3>
+<span class="px-2.5 py-0.5 rounded-full text-label-sm font-label-sm bg-tertiary-fixed text-on-tertiary-fixed font-bold">Jadwal Khusus</span>
+</div>
+<p class="text-body-sm font-body-sm text-outline leading-relaxed">
+              Wilayah perbatasan lingkar barat, rute fleksibel sesuai kuota volume karton per DO order.
+            </p>
+</div>
+<div class="mt-4 pt-3 border-t border-surface-container-high flex items-center justify-between text-body-sm font-body-sm">
+<span class="text-outline">Lead-time kirim:</span>
+<span class="font-semibold text-on-surface">Konfirmasi Sales</span>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION I: PARTNERSHIP CTA BANNER -->
+<section class="max-w-[1280px] mx-auto px-4 md:px-8 pb-16">
+<div class="bg-primary-container text-on-primary rounded-3xl p-8 md:p-12 shadow-xl relative overflow-hidden">
+<!-- Decorative Ambient Graphic -->
+<div class="absolute -right-16 -bottom-16 w-96 h-96 rounded-full bg-secondary-container/40 pointer-events-none blur-3xl"></div>
+<div class="absolute top-0 right-1/4 w-64 h-64 rounded-full bg-tertiary-container/20 pointer-events-none blur-2xl"></div>
+<div class="relative z-10 max-w-3xl">
+<div class="inline-flex items-center gap-2 mb-3 bg-on-primary/10 px-3.5 py-1 rounded-full text-label-sm font-label-sm font-semibold tracking-wide">
+<span class="material-symbols-outlined text-[16px] fill-icon">handshake</span>
+<span class="">KEMITRAAN BISNIS FMCG TERPERCAYA</span>
+</div>
+<h2 class="text-display-hero-mobile md:text-headline-lg font-headline-lg font-bold text-on-primary leading-tight mb-4">
+            Jadi Bagian dari Jaringan Mitra Kami
+          </h2>
+<p class="text-body-lg font-body-lg text-on-primary-container leading-relaxed mb-8 max-w-2xl">
+            Jelajahi produk yang tersedia dan hubungi tim Inbisco Krian untuk mendiskusikan kebutuhan pasokan grosir toko Anda dengan harga kompetitif dan pasokan terjamin.
+          </p>
+<div class="flex flex-wrap items-center gap-4">
+<a class="px-7 py-3.5 bg-surface-container-lowest text-primary hover:bg-surface-container-low font-bold text-label-md font-label-md rounded-xl shadow-md transition-all active:scale-95 flex items-center gap-2" href="#">
+<span class="material-symbols-outlined text-[20px]">how_to_reg</span>
+<span class="">Daftar Jadi Mitra</span>
+</a>
+<a class="px-7 py-3.5 border-2 border-on-primary text-on-primary hover:bg-on-primary/10 font-bold text-label-md font-label-md rounded-xl transition-all flex items-center gap-2" href="#">
+<span class="material-symbols-outlined text-[20px]">grid_view</span>
+<span class="">Lihat Katalog Produk</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- GLOBAL FOOTER (docked full-width, 4-column layout) -->
+<footer class="docked full-width bg-inverse-surface dark:bg-inverse-surface border-t border-outline/20 dark:border-outline/40 flat no shadows text-inverse-on-surface">
+<div class="w-full py-12 px-4 md:px-8 max-w-[1280px] mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-12 border-b border-white/10">
+<!-- Column 1: Brand & Profil (lg:col-span-4) -->
+<div class="lg:col-span-4 space-y-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[24px] fill-icon">local_shipping</span>
+</div>
+<div>
+<span class="text-headline-sm font-headline-sm font-bold text-surface-container-lowest tracking-tight">Inbisco MitraHub</span>
+<p class="text-label-sm font-label-sm text-surface-variant">Cabang Krian, Sidoarjo</p>
+</div>
+</div>
+<p class="text-body-sm font-body-sm text-surface-variant leading-relaxed">
+Pusat distribusi FMCG resmi PT Inbisco Niagatama Semesta melayani pasokan grosir toko kelontong, retail, dan sub-distributor di kawasan Sidoarjo Barat dan sekitarnya.
+</p>
+<div class="pt-2 flex items-center gap-3">
+<span class="px-3 py-1 rounded bg-white/5 text-surface-variant font-mono-sku text-[11px] border border-white/10">
+DEPOT CODE: SUB-KRN-01
+</span>
+</div>
+</div>
+<!-- Column 2: Navigasi (lg:col-span-2) -->
+<div class="lg:col-span-2 space-y-3">
+<h4 class="text-label-md font-label-md font-bold text-surface-container-lowest uppercase tracking-wider">Navigasi</h4>
+<ul class="space-y-2 text-body-sm font-body-sm">
+<li class=""><a class="text-surface-variant hover:text-surface-container-lowest transition-colors" href="#">Beranda</a></li>
+<li class=""><a class="text-surface-variant hover:text-surface-container-lowest transition-colors" href="#">Tentang Kami</a></li>
+<li class=""><a class="text-surface-container-lowest font-semibold" href="#">Aktivitas &amp; Jaringan</a></li>
+<li class=""><a class="text-surface-variant hover:text-surface-container-lowest transition-colors" href="https://app-companion-430619.appspot.com/contact">Contact &amp; Kemitraan</a></li>
+<li class=""><a class="text-surface-variant hover:text-surface-container-lowest transition-colors" href="#">Lacak Delivery Order</a></li>
+</ul>
+</div>
+<!-- Column 3: Produk FMCG (lg:col-span-3) -->
+<div class="lg:col-span-3 space-y-3">
+<h4 class="text-label-md font-label-md font-bold text-surface-container-lowest uppercase tracking-wider">Kategori Produk</h4>
+<ul class="space-y-2 text-body-sm font-body-sm">
+<li class=""><a class="text-surface-variant hover:text-surface-container-lowest transition-colors" href="#">Biskuit &amp; Roti Kemasan</a></li>
+<li class=""><a class="text-surface-variant hover:text-surface-container-lowest transition-colors" href="#">Wafer &amp; Cokelat Confectionery</a></li>
+<li class=""><a class="text-surface-variant hover:text-surface-container-lowest transition-colors" href="#">Kopi Bubuk &amp; Kopi Instan Sachet</a></li>
+<li class=""><a class="text-surface-variant hover:text-surface-container-lowest transition-colors" href="#">Sereal Sarapan &amp; Nutrisi</a></li>
+<li class=""><a class="text-surface-variant hover:text-surface-container-lowest transition-colors" href="#">Air Mineral &amp; Minuman Siap Minum</a></li>
+</ul>
+</div>
+<!-- Column 4: Kontak & Depot (lg:col-span-3) -->
+<div class="lg:col-span-3 space-y-3">
+<h4 class="text-label-md font-label-md font-bold text-surface-container-lowest uppercase tracking-wider">Kantor &amp; Kontak</h4>
+<div class="space-y-2.5 text-body-sm font-body-sm text-surface-variant">
+<p class="flex items-start gap-2">
+<span class="material-symbols-outlined text-[18px] text-tertiary-container shrink-0 mt-0.5">location_on</span>
+<span class="">Jl. Raya Krian KM 28, Krian, Kec. Krian, Kab. Sidoarjo, Jawa Timur 61262</span>
+</p>
+<p class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-tertiary-container shrink-0">call</span>
+<span class="">(031) 897-1234 / WhatsApp Cabang</span>
+</p>
+<p class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-tertiary-container shrink-0">schedule</span>
+<span class="">Senin - Sabtu: 08.00 - 17.00 WIB</span>
+</p>
+</div>
+</div>
+</div>
+<!-- Footer Sub-bar -->
+<div class="pt-8 flex flex-col md:flex-row items-center justify-between text-body-sm font-body-sm text-surface-variant gap-4">
+<div class="">
+© 2025 PT Inbisco Niagatama Semesta (Krian Branch). Hak Cipta Dilindungi Undang-Undang.
+</div>
+<div class="flex items-center gap-6">
+<a class="hover:text-surface-container-lowest transition-colors" href="#">Kebijakan Privasi</a>
+<a class="hover:text-surface-container-lowest transition-colors" href="#">Syarat &amp; Ketentuan Kemitraan</a>
+<a class="hover:text-surface-container-lowest transition-colors" href="#">Pusat Bantuan Mitra</a>
+</div>
+</div>
+</div>
+</footer>
+<!-- JAVASCRIPT FOR DYNAMIC CATEGORY FILTERING -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const filterTabs = document.querySelectorAll('.gallery-tab');
+      const galleryItems = document.querySelectorAll('.gallery-item');
+      const emptyState = document.getElementById('gallery-empty-state');
+      const resetBtn = document.getElementById('reset-filter-btn');
+
+      function filterGallery(filterValue) {
+        let visibleCount = 0;
+
+        galleryItems.forEach(item => {
+          const itemCategory = item.getAttribute('data-category');
+          if (filterValue === 'all' || itemCategory === filterValue) {
+            item.classList.remove('hidden');
+            item.classList.add('flex');
+            visibleCount++;
+          } else {
+            item.classList.add('hidden');
+            item.classList.remove('flex');
+          }
+        });
+
+        // Toggle Empty State
+        if (visibleCount === 0) {
+          emptyState.classList.remove('hidden');
+        } else {
+          emptyState.classList.add('hidden');
+        }
+
+        // Update Tab Active Styling
+        filterTabs.forEach(tab => {
+          const isSelected = tab.getAttribute('data-filter') === filterValue;
+          if (isSelected) {
+            tab.className = 'gallery-tab active-tab px-5 py-2 rounded-full text-label-md font-label-md bg-primary-container text-on-primary font-semibold transition-all duration-200 shadow-sm';
+          } else {
+            tab.className = 'gallery-tab px-5 py-2 rounded-full text-label-md font-label-md bg-surface-container-lowest border border-surface-container-high text-outline hover:text-on-surface hover:bg-surface-container-low transition-all duration-200';
+          }
+        });
+      }
+
+      filterTabs.forEach(tab => {
+        tab.addEventListener('click', function () {
+          const filter = this.getAttribute('data-filter');
+          filterGallery(filter);
+        });
+      });
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', function () {
+          filterGallery('all');
+        });
+      }
+    });
+  </script>
+
+
+
+
+</body></html>
