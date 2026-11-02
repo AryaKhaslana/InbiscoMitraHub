@@ -39,13 +39,13 @@ function AppContent() {
     return (
       <div className="min-h-screen flex flex-col bg-surface text-on-surface antialiased">
         <PublicHeader activeNav={publicNav} setActiveNav={setPublicNav} />
-        <main className="flex-1">
+        <main key={publicNav} className="flex-1 anim-fade-in">
           {publicNav === 'home' && <Home setActiveNav={setPublicNav} />}
           {publicNav === 'products' && <Products setActiveNav={setPublicNav} />}
           {publicNav === 'partnership' && <Partnership setActiveNav={setPublicNav} />}
-          {publicNav === 'moments' && <Moments />}
-          {publicNav === 'about' && <About />}
-          {publicNav === 'contact' && <Contact />}
+          {publicNav === 'moments' && <Moments setActiveNav={setPublicNav} />}
+          {publicNav === 'about' && <About setActiveNav={setPublicNav} />}
+          {publicNav === 'contact' && <Contact setActiveNav={setPublicNav} />}
           {publicNav === 'login' && <Login setActiveNav={setPublicNav} />}
         </main>
         <PublicFooter setActiveNav={setPublicNav} />

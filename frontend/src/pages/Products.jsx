@@ -425,240 +425,185 @@ export default function Products({ setActiveNav }) {
       {/* ========================================================= */}
       {drawerProduct && (
         <div className="fixed inset-0 z-50 overflow-hidden">
-          {/* Backdrop */}
-          <div 
-            onClick={() => setDrawerProduct(null)} 
-            className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in"
+          <div
+            onClick={() => setDrawerProduct(null)}
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs anim-backdrop"
           />
 
           <div className="fixed inset-y-0 right-0 max-w-full flex pl-6">
-            <div className="w-screen max-w-xl bg-surface-container-lowest shadow-2xl flex flex-col justify-between border-l border-surface-container-high animate-in slide-in-from-right duration-300">
-              {/* Drawer Header */}
-              <div className="p-6 border-b border-surface-container-high flex items-center justify-between">
-                <div>
-                  <nav className="flex items-center space-x-1.5 text-xs text-outline mb-1">
-                    <span>Katalog FMCG</span>
-                    <span>/</span>
-                    <span className="text-on-surface font-semibold">{drawerProduct.category}</span>
-                  </nav>
-                  <h2 className="text-xl font-bold font-display text-on-surface">
+            <form
+              onSubmit={handleSubmitOrder}
+              className="w-screen max-w-md bg-surface-container-lowest shadow-2xl flex flex-col border-l border-surface-container-high rounded-l-2xl overflow-hidden anim-slide-right"
+            >
+              <div className="px-5 py-4 border-b border-surface-container-high flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <span className="text-[11px] text-outline">{drawerProduct.category}</span>
+                  <h2 className="text-lg font-bold font-display text-on-surface leading-snug">
                     {drawerProduct.name}
                   </h2>
                 </div>
                 <button
+                  type="button"
                   onClick={() => setDrawerProduct(null)}
-                  className="p-2 text-outline hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors"
+                  className="p-2 text-outline hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors shrink-0"
+                  aria-label="Tutup"
                 >
                   <X className="h-5 w-5" />
                 </button>
               </div>
 
-              {/* Drawer Scrollable Content */}
-              <div className="p-6 overflow-y-auto space-y-6 flex-1">
-                {/* Product Image Showcase */}
-                <div className="w-full h-56 bg-surface-container-low rounded-xl border border-surface-container-high flex items-center justify-center p-6 relative">
-                  <img
-                    src={drawerProduct.image}
-                    alt={drawerProduct.name}
-                    className="max-h-full max-w-full object-contain mix-blend-multiply"
-                  />
-                  <span className="absolute top-3 left-3 px-2.5 py-1 bg-surface-container-lowest text-[10px] font-bold text-tertiary rounded border border-tertiary-container shadow-xs">
-                    Distribusi Resmi Cabang Krian
-                  </span>
-                </div>
-
-                {/* Deskripsi & Mutu Produk */}
-                <div>
-                  <h4 className="text-xs font-bold text-on-surface uppercase tracking-wider mb-1.5">
-                    Deskripsi & Mutu Produk
-                  </h4>
-                  <p className="text-xs text-on-surface-variant leading-relaxed">
-                    {drawerProduct.description}
-                  </p>
-                </div>
-
-                {/* Logistics & Packing Specifications Table */}
-                <div>
-                  <h4 className="text-xs font-bold text-on-surface uppercase tracking-wider mb-2">
-                    Spesifikasi Logistik & Kemasan
-                  </h4>
-                  <div className="border border-surface-container-high rounded-xl overflow-hidden">
-                    <table className="w-full text-left text-xs">
-                      <tbody className="divide-y divide-surface-container">
-                        <tr className="bg-surface-container-lowest">
-                          <td className="py-2.5 px-4 text-outline font-medium w-1/3">Merek Prinsipal</td>
-                          <td className="py-2.5 px-4 text-on-surface font-semibold">{drawerProduct.brand}</td>
-                        </tr>
-                        <tr className="bg-surface-container-low/40">
-                          <td className="py-2.5 px-4 text-outline font-medium">Format Master Dus</td>
-                          <td className="py-2.5 px-4 text-on-surface">{drawerProduct.packSpec}</td>
-                        </tr>
-                        <tr className="bg-surface-container-lowest">
-                          <td className="py-2.5 px-4 text-outline font-medium">Dimensi Karton</td>
-                          <td className="py-2.5 px-4 text-on-surface">{drawerProduct.dimensions}</td>
-                        </tr>
-                        <tr className="bg-surface-container-low/40">
-                          <td className="py-2.5 px-4 text-outline font-medium">Masa Simpan (Shelf Life)</td>
-                          <td className="py-2.5 px-4 text-on-surface font-semibold text-primary">{drawerProduct.shelfLife}</td>
-                        </tr>
-                        <tr className="bg-surface-container-lowest">
-                          <td className="py-2.5 px-4 text-outline font-medium">Sertifikasi & Mutu</td>
-                          <td className="py-2.5 px-4 text-on-surface flex items-center gap-1.5">
-                            <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                            <span>BPOM RI MD & Sertifikasi Halal Resmi</span>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+              {orderSuccess ? (
+                <div className="p-5 flex-1 overflow-y-auto">
+                  <div className="p-4 bg-emerald-50 text-emerald-900 rounded-xl border border-emerald-200 space-y-2">
+                    <div className="flex items-center gap-2 font-bold text-sm">
+                      <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0" />
+                      <span>Pesanan berhasil dibuat</span>
+                    </div>
+                    <p className="text-xs text-emerald-800">
+                      Nomor pesanan: <strong className="font-mono text-emerald-950">{orderSuccess.trackingCode || orderSuccess.orderNumber || orderSuccess.id}</strong>. Sales kami akan menghubungi WhatsApp Anda untuk konfirmasi jadwal pengiriman.
+                    </p>
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        setOrderSuccess(null);
+                        setDrawerProduct(null);
+                      }}
+                      size="sm"
+                      className="w-full text-xs font-bold mt-2"
+                    >
+                      Tutup
+                    </Button>
                   </div>
                 </div>
-
-                {/* Benefits for Retailers */}
-                <div>
-                  <h4 className="text-xs font-bold text-on-surface uppercase tracking-wider mb-2">
-                    Keuntungan untuk Mitra Toko & Ritel
-                  </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    <div className="p-3 bg-surface-container-low rounded-lg border border-surface-container-high">
-                      <div className="flex items-center gap-1.5 text-primary font-bold text-xs mb-1">
-                        <TrendingUp className="h-4 w-4" />
-                        <span>Perputaran Cepat</span>
+              ) : (
+                <>
+                  <div className="p-5 flex-1 overflow-y-auto space-y-5">
+                    <div className="flex items-center gap-4">
+                      <div className="w-20 h-20 rounded-xl bg-surface-container-low border border-surface-container-high flex items-center justify-center p-2 shrink-0">
+                        <img
+                          src={drawerProduct.image}
+                          alt={drawerProduct.name}
+                          className="max-h-full max-w-full object-contain mix-blend-multiply"
+                        />
                       </div>
-                      <p className="text-[11px] text-on-surface-variant">
-                        Demand harian stabil, stok tidak mengendap di etalase toko.
-                      </p>
-                    </div>
-                    <div className="p-3 bg-surface-container-low rounded-lg border border-surface-container-high">
-                      <div className="flex items-center gap-1.5 text-primary font-bold text-xs mb-1">
-                        <ShieldCheck className="h-4 w-4" />
-                        <span>Margin Terjamin</span>
+                      <div>
+                        <div className="text-lg font-bold font-display text-primary">
+                          {formatRupiah(drawerProduct.price)}
+                          <span className="text-xs font-medium text-outline"> / karton</span>
+                        </div>
+                        <div className="text-xs text-on-surface-variant">{drawerProduct.packSpec}</div>
                       </div>
-                      <p className="text-[11px] text-on-surface-variant">
-                        Struktur harga distributor pabrik dengan margin retail sehat.
-                      </p>
                     </div>
-                  </div>
-                </div>
 
-                {/* LIVE ORDER CREATION FORM */}
-                <div className="pt-2 border-t border-surface-container-high">
-                  <h4 className="text-sm font-bold font-display text-on-surface mb-3 flex items-center gap-2">
-                    <ShoppingBag className="h-4 w-4 text-primary" />
-                    <span>Pesan Langsung Grosir Depo Krian</span>
-                  </h4>
-
-                  {orderSuccess ? (
-                    <div className="p-4 bg-emerald-50 text-emerald-900 rounded-xl border border-emerald-200 space-y-2">
-                      <div className="flex items-center gap-2 font-bold text-sm">
-                        <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0" />
-                        <span>Pesanan B2B Berhasil Dibuat!</span>
-                      </div>
-                      <p className="text-xs text-emerald-800">
-                        Nomor Pesanan: <strong className="font-mono text-emerald-950">{orderSuccess.orderNumber || orderSuccess.id}</strong>. Sales representatif kami akan segera menghubungi nomor WhatsApp Anda untuk konfirmasi jadwal armada.
-                      </p>
-                      <Button
-                        onClick={() => {
-                          setOrderSuccess(null);
-                          setDrawerProduct(null);
-                        }}
-                        size="sm"
-                        className="w-full text-xs font-bold mt-2"
-                      >
-                        Selesai & Tutup
-                      </Button>
-                    </div>
-                  ) : (
-                    <form onSubmit={handleSubmitOrder} className="space-y-3.5 bg-surface-container-low p-4 rounded-xl border border-surface-container-high">
+                    <div className="space-y-3.5">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs text-on-surface font-semibold">Jumlah Karton:</span>
+                        <span className="text-sm text-on-surface font-semibold">Jumlah karton</span>
                         <div className="flex items-center gap-2">
                           <button
                             type="button"
                             onClick={() => setOrderQuantity(Math.max(1, orderQuantity - 1))}
-                            className="w-7 h-7 rounded border border-surface-variant bg-surface-container-lowest flex items-center justify-center text-on-surface hover:bg-surface-container font-bold"
+                            className="w-8 h-8 rounded-lg border border-surface-variant flex items-center justify-center hover:bg-surface-container"
+                            aria-label="Kurangi"
                           >
-                            <Minus className="h-3 w-3" />
+                            <Minus className="h-3.5 w-3.5" />
                           </button>
-                          <span className="w-10 text-center font-bold font-mono text-sm">
-                            {orderQuantity}
-                          </span>
+                          <span className="w-10 text-center font-bold font-mono">{orderQuantity}</span>
                           <button
                             type="button"
                             onClick={() => setOrderQuantity(orderQuantity + 1)}
-                            className="w-7 h-7 rounded border border-surface-variant bg-surface-container-lowest flex items-center justify-center text-on-surface hover:bg-surface-container font-bold"
+                            className="w-8 h-8 rounded-lg border border-surface-variant flex items-center justify-center hover:bg-surface-container"
+                            aria-label="Tambah"
                           >
-                            <Plus className="h-3 w-3" />
+                            <Plus className="h-3.5 w-3.5" />
                           </button>
                         </div>
                       </div>
 
-                      <div className="flex justify-between items-center text-xs font-bold pt-2 border-t border-surface-container-high">
-                        <span>Estimasi Total:</span>
-                        <span className="text-primary text-base font-display">
-                          {formatRupiah(drawerProduct.price * orderQuantity)}
-                        </span>
-                      </div>
-
                       <div>
                         <label className="text-xs font-semibold text-on-surface block mb-1">
-                          Nomor WhatsApp Toko <span className="text-error">*</span>
+                          Nomor WhatsApp toko <span className="text-error">*</span>
                         </label>
                         <Input
                           value={storePhone}
                           onChange={(e) => setStorePhone(e.target.value)}
                           placeholder="081234567890"
-                          className="text-xs h-9 bg-surface-container-lowest"
+                          className="text-sm h-10"
                           required
                         />
                       </div>
 
                       <div>
                         <label className="text-xs font-semibold text-on-surface block mb-1">
-                          Nama Toko / Warkop (Opsional)
+                          Nama toko (opsional)
                         </label>
                         <Input
                           value={storeName}
                           onChange={(e) => setStoreName(e.target.value)}
                           placeholder="Cth: Toko Barokah Krian"
-                          className="text-xs h-9 bg-surface-container-lowest"
+                          className="text-sm h-10"
                         />
                       </div>
 
                       <div>
                         <label className="text-xs font-semibold text-on-surface block mb-1">
-                          Metode Pembayaran
+                          Pembayaran
                         </label>
                         <select
                           value={paymentMethod}
                           onChange={(e) => setPaymentMethod(e.target.value)}
-                          className="w-full text-xs h-9 rounded-md border border-input bg-surface-container-lowest px-3 py-1 font-medium"
+                          className="w-full text-sm h-10 rounded-md border border-input bg-surface-container-lowest px-3"
                         >
-                          <option value="CASH_ON_DELIVERY">Cash on Delivery (Bayar Saat Barang Tiba)</option>
-                          <option value="TRANSFER_BANK">Transfer Bank Virtual Account</option>
-                          <option value="TOP_14_DAYS">Tempo Pembayaran Mitra (TOP 14 Hari)</option>
+                          <option value="CASH_ON_DELIVERY">Bayar saat barang tiba (COD)</option>
+                          <option value="TOP_14_DAYS">Tempo mitra</option>
                         </select>
                       </div>
 
                       {orderError && (
                         <div className="text-xs text-error flex items-center gap-1.5">
-                          <AlertCircle className="h-3.5 w-3.5" />
+                          <AlertCircle className="h-3.5 w-3.5 shrink-0" />
                           <span>{orderError}</span>
                         </div>
                       )}
+                    </div>
 
-                      <Button
-                        type="submit"
-                        disabled={submittingOrder}
-                        className="w-full text-xs font-bold py-2.5 gap-2 shadow-sm"
-                      >
-                        <ShoppingBag className="h-4 w-4" />
-                        <span>{submittingOrder ? 'Memproses PO...' : 'Konfirmasi Pesanan Grosir'}</span>
-                      </Button>
-                    </form>
-                  )}
-                </div>
-              </div>
-            </div>
+                    <details className="group rounded-xl border border-surface-container-high">
+                      <summary className="cursor-pointer list-none px-4 py-3 text-xs font-bold text-on-surface flex items-center justify-between">
+                        Detail produk
+                        <span className="material-symbols-outlined text-[18px] text-outline group-open:rotate-180 transition-transform">expand_more</span>
+                      </summary>
+                      <div className="px-4 pb-4 space-y-3 text-xs">
+                        <p className="text-on-surface-variant leading-relaxed">{drawerProduct.description}</p>
+                        <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5">
+                          <dt className="text-outline">Merek</dt>
+                          <dd className="text-on-surface font-medium">{drawerProduct.brand}</dd>
+                          <dt className="text-outline">Dimensi</dt>
+                          <dd className="text-on-surface font-medium">{drawerProduct.dimensions}</dd>
+                          <dt className="text-outline">Masa simpan</dt>
+                          <dd className="text-on-surface font-medium">{drawerProduct.shelfLife}</dd>
+                        </dl>
+                      </div>
+                    </details>
+                  </div>
+
+                  <div className="px-5 py-4 border-t border-surface-container-high bg-surface-container-lowest space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-on-surface-variant">Estimasi total</span>
+                      <span className="text-lg font-bold font-display text-primary">
+                        {formatRupiah(drawerProduct.price * orderQuantity)}
+                      </span>
+                    </div>
+                    <Button
+                      type="submit"
+                      disabled={submittingOrder}
+                      className="w-full text-sm font-bold py-2.5 gap-2"
+                    >
+                      <ShoppingBag className="h-4 w-4" />
+                      <span>{submittingOrder ? 'Memproses...' : 'Pesan Sekarang'}</span>
+                    </Button>
+                  </div>
+                </>
+              )}
+            </form>
           </div>
         </div>
       )}

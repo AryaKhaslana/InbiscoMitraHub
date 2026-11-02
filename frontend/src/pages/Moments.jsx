@@ -17,7 +17,6 @@ import {
 } from 'lucide-react';
 
 export default function Moments({ setActiveNav }) {
-  const [selectedCategory, setSelectedCategory] = useState('Semua');
   const [activePhotoModal, setActivePhotoModal] = useState(null);
 
   const galleryItems = [
@@ -96,11 +95,6 @@ export default function Moments({ setActiveNav }) {
     { title: 'Sidoarjo Barat (Sub-Rute)', desc: 'Perimeter koridor Sukodono dan jalur lingkar industri pergudangan.' },
   ];
 
-  const categories = ['Semua', 'Gudang & QA', 'Armada & Logistik', 'Mitra & Toko', 'Event & Edukasi'];
-
-  const filteredItems = galleryItems.filter((item) =>
-    selectedCategory === 'Semua' ? true : item.category === selectedCategory
-  );
 
   return (
     <div className="w-full bg-surface pb-16">
@@ -201,27 +195,11 @@ export default function Moments({ setActiveNav }) {
               </h2>
             </div>
 
-            {/* Filter Pills */}
-            <div className="flex flex-wrap gap-2">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors ${
-                    selectedCategory === cat
-                      ? 'bg-primary-container text-white shadow-xs'
-                      : 'bg-surface-container-lowest text-on-surface border border-surface-container-high hover:bg-surface-container'
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
           </div>
 
           {/* Photos Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredItems.map((item) => (
+            {galleryItems.map((item) => (
               <div
                 key={item.id}
                 onClick={() => setActivePhotoModal(item)}
@@ -234,9 +212,6 @@ export default function Moments({ setActiveNav }) {
                       alt={item.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-surface-container-lowest/90 backdrop-blur-xs text-[10px] font-bold text-on-surface">
-                      {item.badge}
-                    </span>
                   </div>
 
                   <div className="p-4 space-y-1.5">
@@ -250,11 +225,6 @@ export default function Moments({ setActiveNav }) {
                       {item.subtitle}
                     </p>
                   </div>
-                </div>
-
-                <div className="px-4 pb-3.5 pt-1 text-[11px] font-bold text-primary flex items-center gap-1 group-hover:underline">
-                  <Eye className="h-3.5 w-3.5" />
-                  <span>Lihat Foto Penuh</span>
                 </div>
               </div>
             ))}
@@ -289,9 +259,6 @@ export default function Moments({ setActiveNav }) {
                   <h4 className="text-base font-bold font-display text-on-surface">
                     {r.title}
                   </h4>
-                  <span className="text-[10px] font-mono font-bold text-primary-container bg-primary-container/10 px-2 py-0.5 rounded">
-                    RUTE TETAP
-                  </span>
                 </div>
                 <p className="text-xs text-on-surface-variant leading-relaxed">
                   {r.desc}
@@ -307,7 +274,7 @@ export default function Moments({ setActiveNav }) {
       {/* ========================================================= */}
       {activePhotoModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs">
-          <div className="bg-surface-container-lowest max-w-2xl w-full rounded-2xl border border-surface-container-high overflow-hidden shadow-2xl space-y-4 animate-in zoom-in-95">
+          <div className="bg-surface-container-lowest max-w-2xl w-full rounded-2xl border border-surface-container-high overflow-hidden shadow-2xl space-y-4 anim-fade-in">
             <div className="relative h-72 sm:h-96 w-full bg-black">
               <img
                 src={activePhotoModal.image}
