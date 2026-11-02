@@ -1,0 +1,31 @@
+{
+  "name": "Inbisco MitraHub — B2B FMCG Supply Chain & Logistics Engine",
+  "short_name": "Inbisco MitraHub",
+  "description": "Platform B2B Rantai Pasok Resmi Mayora FMCG Kabupaten Sidoarjo & Jawa Timur.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fcf9f8",
+  "theme_color": "#990000",
+  "icons": [
+    {
+      "src": "/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

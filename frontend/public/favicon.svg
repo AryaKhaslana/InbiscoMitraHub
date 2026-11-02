@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="inbiscoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#dc2626"/>
+      <stop offset="48%" stop-color="#990000"/>
+      <stop offset="100%" stop-color="#5a0000"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fde047"/>
+      <stop offset="100%" stop-color="#ea580c"/>
+    </linearGradient>
+    <filter id="hubShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.38"/>
+    </filter>
+  </defs>
+
+  <!-- Squircle Base with Mayora Crimson & Subtle Edge Highlight -->
+  <rect x="24" y="24" width="464" height="464" rx="116" fill="url(#inbiscoGrad)" stroke="#ff7a7a" stroke-width="8" stroke-opacity="0.45"/>
+
+  <!-- Upper Ambient Curve Light -->
+  <path d="M 140 28 H 372 Q 484 28 484 140 V 170 Q 256 110 28 170 V 140 Q 28 28 140 28 Z" fill="#ffffff" opacity="0.12"/>
+
+  <!-- Monogram & Logistics Hub Gateway -->
+  <g filter="url(#hubShadow)">
+    <!-- Bold Corporate "M" Architecture -->
+    <path d="
+      M 94,390 
+      V 152 
+      C 94,134 108,120 126,120 
+      C 139,120 150,128 156,138 
+      L 256,268 
+      L 356,138 
+      C 362,128 373,120 386,120 
+      C 404,120 418,134 418,152 
+      V 390 
+      C 418,404 407,414 393,414 
+      C 379,414 368,404 368,390 
+      V 200 
+      L 274,324 
+      C 265,336 247,336 238,324 
+      L 144,200 
+      V 390 
+      C 144,404 133,414 119,414 
+      C 105,414 94,404 94,390 
+      Z
+    " fill="#ffffff"/>
+
+    <!-- Central FMCG Logistics Diamond / Mitra Hub Node -->
+    <rect x="228" y="328" width="56" height="56" rx="12" transform="rotate(45 256 356)" fill="url(#goldGrad)" stroke="#ffffff" stroke-width="5"/>
+    <circle cx="256" cy="356" r="7" fill="#78350f"/>
+  </g>
+</svg>
