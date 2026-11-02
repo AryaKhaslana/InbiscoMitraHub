@@ -49,13 +49,13 @@ export default function Partnership({ setActiveNav }) {
   const [successData, setSuccessData] = useState(null);
 
   const [formData, setFormData] = useState({
-    name: 'Toko Berkah Barokah',
-    ownerName: 'Haji Ahmad Fauzi',
-    phone: '081234567890',
-    nik: '3515082103850002',
-    address: 'Jl. Raya Krian KM 29 No. 45, Krian',
+    name: '',
+    ownerName: '',
+    phone: '',
+    nik: '',
+    address: '',
     district: 'Krian',
-    postalCode: '61262',
+    postalCode: '',
     storeType: 'GROSIR',
     estimatedMonthlyTurnover: '18500000',
     operationalYears: '5 Tahun',
@@ -114,24 +114,6 @@ export default function Partnership({ setActiveNav }) {
     }
   };
 
-  const handleSimulateFill = () => {
-    setFormData({
-      name: 'Grosir Rejeki Bersama',
-      ownerName: 'Budi Santoso',
-      phone: '081398765432',
-      nik: '3515081204890001',
-      address: 'Jl. Raya Tropodo No. 12, Waru',
-      district: 'Waru',
-      postalCode: '61256',
-      storeType: 'GROSIR',
-      estimatedMonthlyTurnover: '25000000',
-      operationalYears: '4 Tahun',
-      storageCapacity: '100-250 Karton',
-      preferredVisitDays: 'Selasa & Jumat',
-    });
-    setError(null);
-  };
-
   return (
     <div className="w-full bg-surface pb-16">
       {/* ========================================================= */}
@@ -149,10 +131,9 @@ export default function Partnership({ setActiveNav }) {
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             <div className="lg:col-span-8">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high text-on-surface text-xs font-bold uppercase tracking-wider mb-4 border border-surface-variant">
-                <span className="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
-                <span>PENDAFTARAN MITRA · CABANG KRIAN</span>
-              </div>
+              <span className="text-xs font-bold text-primary uppercase tracking-wider block mb-2">
+                Pendaftaran Mitra Resmi · Cabang Krian
+              </span>
               <h1 className="text-3xl sm:text-4xl font-bold font-display text-on-surface tracking-tight mb-4">
                 Mulai Kemitraan Distribusi Bersama Inbisco.
               </h1>
@@ -244,7 +225,7 @@ export default function Partnership({ setActiveNav }) {
       {/* ========================================================= */}
       <section className="py-12 bg-surface-container-low border-t border-surface-container-high" id="form-section">
         <div className="max-w-[1280px] mx-auto px-4 md:px-8">
-          {/* Header & Jury Simulation Bar */}
+          {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
             <div>
               <span className="text-xs font-bold text-primary tracking-wider uppercase">
@@ -254,18 +235,7 @@ export default function Partnership({ setActiveNav }) {
                 Formulir Verifikasi Kemitraan Toko & Warkop
               </h2>
             </div>
-            {/* Quick autofill for GTNIC Jury */}
-            <div className="flex items-center gap-2 p-1.5 rounded-lg bg-surface-container-lowest border border-surface-container-high self-start md:self-auto">
-              <span className="text-xs text-outline font-medium px-2 hidden sm:inline">Jury Sandbox:</span>
-              <button
-                type="button"
-                onClick={handleSimulateFill}
-                className="px-3 py-1.5 rounded text-xs font-bold bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors"
-              >
-                Auto-Fill Data Uji
-              </button>
-            </div>
-          </div>
+</div>
 
           {/* Stepper Progress Bar */}
           <div className="grid grid-cols-4 gap-2 mb-8">

@@ -1,131 +1,154 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
+import { api } from '../../services/api';
 import { 
   Sliders, 
-  Sparkles, 
-  TrendingDown, 
-  TrendingUp, 
-  AlertTriangle, 
-  CheckCircle2, 
-  RotateCcw, 
-  Truck, 
-  Package, 
   ArrowRight,
-  ShieldCheck,
-  Zap
+  Zap,
+  RefreshCw,
+  Boxes,
+  Truck
 } from 'lucide-react';
 import { formatRupiah } from '../../lib/utils';
 
 export default function WhatIfSimulator({ setCurrentScreen }) {
-  // Simulator inputs
-  const [stockOnHand, setStockOnHand] = useState(280);
-  const [adsValue, setAdsValue] = useState(175);
+  const [products, setProducts] = useState([]);
+  const [selectedProductId, setSelectedProductId] = useState('');
+  const [stockOnHand, setStockOnHand] = useState(140);
+  const [adsValue, setAdsValue] = useState(140);
   const [leadTime, setLeadTime] = useState(3);
-  const [safetyStock, setSafetyStock] = useState(200);
+  const [safetyStock, setSafetyStock] = useState(196);
   const [proposedRestock, setProposedRestock] = useState(850);
-  const [dispatchMode, setDispatchMode] = useState('single'); // single | split
+  const [dispatchMode, setDispatchMode] = useState('SINGLE'); // SINGLE | SPLIT
+  const [simResult, setSimResult] = useState(null);
+  const [loadingSim, setLoadingSim] = useState(false);
 
-  // Scenario presets
-  const handleApplyPreset = (preset) => {
-    if (preset === 'normal') {
-      setStockOnHand(280);
-      setAdsValue(175);
-      setLeadTime(3);
-      setSafetyStock(200);
-      setProposedRestock(850);
-    } else if (preset === 'surge') {
-      setStockOnHand(280);
-      setAdsValue(260); // +48% demand surge
-      setLeadTime(3);
-      setSafetyStock(250);
-      setProposedRestock(1200);
-    } else if (preset === 'delay') {
-      setStockOnHand(280);
-      setAdsValue(175);
-      setLeadTime(6); // severe logistics delay
-      setSafetyStock(250);
-      setProposedRestock(1000);
+  // Load real products from Supabase on mount
+  useEffect(() => {
+    let preselected = null;
+    try {
+      const raw = sessionStorage.getItem('supplysync_sim_sku');
+      if (raw) {
+        preselected = JSON.parse(raw);
+        sessionStorage.removeItem('supplysync_sim_sku');
+      }
+    } catch {}
+
+    api.getProducts()
+      .then((res) => {
+        const list = Array.isArray(res) ? res : res?.products || [];
+        setProducts(list);
+        if (preselected && preselected.productId) {
+          setSelectedProductId(preselected.productId);
+          setStockOnHand(preselected.stockOnHand ?? 140);
+          setAdsValue(preselected.ads ?? 140);
+          setSafetyStock(preselected.safetyStock ?? 196);
+          setProposedRestock(preselected.proposedRestockQty ?? 850);
+        } else if (list.length > 0) {
+          const roma = list.find((p) => p.sku?.includes('ROMA')) || list[0];
+          setSelectedProductId(roma.id);
+          setStockOnHand(roma.stockCartons ?? 140);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const currentProduct = useMemo(() => {
+    return products.find((p) => p.id === selectedProductId) || products[0] || null;
+  }, [products, selectedProductId]);
+
+  const handleSelectProduct = (id) => {
+    setSelectedProductId(id);
+    const prod = products.find((p) => p.id === id);
+    if (prod) {
+      setStockOnHand(prod.stockCartons);
     }
   };
 
-  // Calculations
-  const results = useMemo(() => {
-    // 14 days simulation points
-    const pointsStatusQuo = [];
-    const pointsWithRestock = [];
+  // Run backend simulation engine whenever parameters change (debounced 180ms)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoadingSim(true);
+      api.runWhatIfSimulation({
+        productId: currentProduct?.id,
+        sku: currentProduct?.sku || 'MYR-BIS-ROMAKELAPA-300',
+        stockOnHand,
+        ads: adsValue,
+        baseAds: 140,
+        leadTimeDays: leadTime,
+        safetyStock,
+        proposedRestockQty: proposedRestock,
+        unitPrice: currentProduct?.cartonPrice || 215000,
+        dispatchMode,
+      })
+        .then((res) => setSimResult(res))
+        .catch((err) => console.error('WhatIfSimulation error:', err))
+        .finally(() => setLoadingSim(false));
+    }, 180);
 
-    let currentSq = stockOnHand;
-    let currentRestock = stockOnHand;
+    return () => clearTimeout(timer);
+  }, [currentProduct, stockOnHand, adsValue, leadTime, safetyStock, proposedRestock, dispatchMode]);
 
-    let stockoutDaySq = -1;
-    let stockoutDayRestock = -1;
-    let minTroughStock = stockOnHand;
-
-    for (let day = 0; day <= 14; day++) {
-      if (day > 0) {
-        currentSq = Math.max(0, currentSq - adsValue);
-        
-        // At day === leadTime, arrival of restock
-        if (day === leadTime) {
-          currentRestock = currentRestock - adsValue + proposedRestock;
-        } else {
-          currentRestock = Math.max(0, currentRestock - adsValue);
-        }
-      }
-
-      if (currentSq === 0 && stockoutDaySq === -1 && day > 0) {
-        stockoutDaySq = day;
-      }
-      if (currentRestock === 0 && stockoutDayRestock === -1 && day > 0) {
-        stockoutDayRestock = day;
-      }
-
-      if (day <= leadTime && currentRestock < minTroughStock) {
-        minTroughStock = currentRestock;
-      }
-
-      pointsStatusQuo.push({ day, stock: currentSq });
-      pointsWithRestock.push({ day, stock: currentRestock });
+  const handleApplyPreset = (preset) => {
+    const realStock = currentProduct ? currentProduct.stockCartons : 140;
+    if (preset === 'normal') {
+      setStockOnHand(realStock);
+      setAdsValue(140);
+      setLeadTime(3);
+      setSafetyStock(196);
+      setProposedRestock(850);
+      setDispatchMode('SINGLE');
+    } else if (preset === 'surge') {
+      setStockOnHand(realStock);
+      setAdsValue(240);
+      setLeadTime(3);
+      setSafetyStock(280);
+      setProposedRestock(1200);
+      setDispatchMode('SINGLE');
+    } else if (preset === 'delay') {
+      setStockOnHand(realStock);
+      setAdsValue(160);
+      setLeadTime(6);
+      setSafetyStock(250);
+      setProposedRestock(1000);
+      setDispatchMode('SPLIT');
     }
+  };
 
-    const runwayDaysSq = (stockOnHand / adsValue).toFixed(1);
-    const stockoutRisk = minTroughStock <= 0 ? 'CRITICAL' : minTroughStock < safetyStock ? 'WARNING' : 'SAFE';
-    
-    // Revenue at risk if stockout occurs before arrival
-    const daysLost = minTroughStock < 0 ? Math.abs(minTroughStock) / adsValue : 0;
-    const revenueLoss = Math.round(daysLost * adsValue * 215000);
+  // Trajectory points from backend response (or fallback instant math while debouncing)
+  const trajectory = useMemo(() => {
+    if (simResult?.trajectory?.length) {
+      return simResult.trajectory;
+    }
+    const pts = [];
+    for (let day = 0; day <= 14; day++) {
+      const sq = Math.max(0, Math.round(stockOnHand - day * adsValue));
+      const arrived = day >= leadTime ? proposedRestock : 0;
+      const prop = Math.max(0, Math.round(stockOnHand + arrived - day * adsValue));
+      pts.push({ day, statusQuoStock: sq, proposedStock: prop });
+    }
+    return pts;
+  }, [simResult, stockOnHand, adsValue, leadTime, proposedRestock]);
 
-    const serviceLevel = minTroughStock > safetyStock ? 99.4 : minTroughStock > 0 ? 94.2 : 78.5;
-
-    return {
-      pointsStatusQuo,
-      pointsWithRestock,
-      runwayDaysSq,
-      stockoutDaySq: stockoutDaySq > 0 ? stockoutDaySq : '>14 Hari',
-      stockoutDayRestock: stockoutDayRestock > 0 ? stockoutDayRestock : '>14 Hari',
-      minTroughStock,
-      stockoutRisk,
-      revenueLoss,
-      serviceLevel,
-      finalStock: pointsWithRestock[14]?.stock || 0
-    };
-  }, [stockOnHand, adsValue, leadTime, safetyStock, proposedRestock]);
-
-  // Max value for SVG chart scaling
   const maxChartStock = Math.max(1200, stockOnHand + proposedRestock);
-
   const getSvgCoordinates = (day, stock) => {
     const x = 50 + (day / 14) * 600;
-    const y = 200 - (stock / maxChartStock) * 160;
+    const y = 200 - (Math.min(maxChartStock, stock) / maxChartStock) * 160;
     return `${x},${y}`;
   };
 
-  const pathStatusQuo = results.pointsStatusQuo.map(p => getSvgCoordinates(p.day, p.stock)).join(' L ');
-  const pathRestock = results.pointsWithRestock.map(p => getSvgCoordinates(p.day, p.stock)).join(' L ');
+  const pathStatusQuo = trajectory.map((p) => getSvgCoordinates(p.day, p.statusQuoStock)).join(' L ');
+  const pathRestock = trajectory.map((p) => getSvgCoordinates(p.day, p.proposedStock)).join(' L ');
   const ySafety = 200 - (safetyStock / maxChartStock) * 160;
   const xDelivery = 50 + (leadTime / 14) * 600;
+
+  const beforeRunway = simResult?.beforeMetrics?.runwayDays ?? (stockOnHand / adsValue).toFixed(1);
+  const afterRunway = simResult?.afterMetrics?.runwayDays ?? ((stockOnHand + proposedRestock) / adsValue).toFixed(1);
+  const stockAtArrival = simResult?.afterMetrics?.stockAtArrival ?? stockOnHand - adsValue * leadTime;
+  const ftlPct = simResult?.logistics?.ftlUtilizationPct ?? ((proposedRestock / 1000) * 100).toFixed(1);
+  const revenueProtected = simResult?.afterMetrics?.revenueProtectedIDR ?? proposedRestock * (currentProduct?.cartonPrice || 215000);
 
   return (
     <div className="flex flex-col w-full pb-16 space-y-6">
@@ -134,24 +157,24 @@ export default function WhatIfSimulator({ setCurrentScreen }) {
         <div>
           <div className="flex items-center gap-2 text-primary font-mono text-xs uppercase tracking-wider mb-1">
             <Sliders className="h-4 w-4" />
-            <span>Interactive Supply Chain Sandbox • Model Preskriptif GTNIC 2026</span>
+            <span>Interactive Supply Chain Sandbox • Live Backend Simulation Engine</span>
           </div>
           <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-on-surface">
             What-if Restock &amp; Lead Time Simulator
           </h1>
           <p className="text-sm text-on-surface-variant mt-1">
-            Uji ketahanan inventori gudang terhadap lonjakan permintaan retail, keterlambatan armada logistik, dan ukuran alokasi pabrik.
+            Uji ketahanan inventori gudang terhadap lonjakan permintaan retail, keterlambatan armada logistik, dan ukuran alokasi pabrik via endpoint <code>/api/v1/simulation/what-if</code>.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 self-start lg:self-auto">
+        <div className="flex items-center gap-2 self-start lg:self-auto flex-wrap">
           <Button
             onClick={() => handleApplyPreset('normal')}
             variant="outline"
             size="sm"
             className="text-xs h-8"
           >
-            Normal Baseline
+            Reset ke Stok Riil DB
           </Button>
           <Button
             onClick={() => handleApplyPreset('surge')}
@@ -160,7 +183,7 @@ export default function WhatIfSimulator({ setCurrentScreen }) {
             className="text-xs h-8 text-primary border-primary/30"
           >
             <Zap className="h-3.5 w-3.5 mr-1" />
-            Lonjakan Demand (+48%)
+            Lonjakan Demand (+70%)
           </Button>
           <Button
             onClick={() => handleApplyPreset('delay')}
@@ -178,24 +201,46 @@ export default function WhatIfSimulator({ setCurrentScreen }) {
         {/* Left: Interactive Controls (5 cols) */}
         <div className="lg:col-span-5 space-y-5">
           <Card className="border border-outline/10 shadow-xs bg-surface-container-lowest">
-            <CardContent className="p-5 space-y-5">
+            <CardContent className="p-5 space-y-4">
               <div className="flex items-center justify-between border-b border-outline/10 pb-3">
                 <span className="font-bold text-xs text-on-surface flex items-center gap-1.5">
                   <Sliders className="h-4 w-4 text-primary" />
                   Parameter Simulasi Dinamis
                 </span>
-                <span className="text-[10px] text-on-surface-variant font-mono">Live Recalculation</span>
+                <span className="text-[10px] text-on-surface-variant font-mono flex items-center gap-1">
+                  {loadingSim && <RefreshCw className="h-3 w-3 animate-spin text-primary" />}
+                  {loadingSim ? 'Menghitung...' : 'Synced Backend'}
+                </span>
+              </div>
+
+              {/* SKU Selector from Real DB */}
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-on-surface flex items-center gap-1.5">
+                  <Boxes className="h-3.5 w-3.5 text-primary" />
+                  <span>Pilih SKU Produk dari Database</span>
+                </label>
+                <select
+                  value={selectedProductId}
+                  onChange={(e) => handleSelectProduct(e.target.value)}
+                  className="w-full h-9 px-2.5 text-xs bg-surface-container-low border border-outline/20 rounded-lg font-semibold"
+                >
+                  {products.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name.split('(')[0].trim()} (Stok DB: {p.stockCartons} Dus)
+                    </option>
+                  ))}
+                </select>
               </div>
 
               {/* Slider 1: Stock on Hand */}
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <label className="text-on-surface font-semibold">Stok Fisik Awal (Gudang Krian)</label>
                   <span className="font-mono font-bold text-primary">{stockOnHand} Dus</span>
                 </div>
                 <input
                   type="range"
-                  min="50"
+                  min="20"
                   max="800"
                   step="10"
                   value={stockOnHand}
@@ -203,34 +248,31 @@ export default function WhatIfSimulator({ setCurrentScreen }) {
                   className="w-full accent-primary h-2 bg-surface-container rounded-lg cursor-pointer"
                 />
                 <div className="flex justify-between text-[10px] text-on-surface-variant">
-                  <span>50 Dus (Kritis)</span>
-                  <span>800 Dus (Penuh)</span>
+                  <span>20 Dus (Kritis)</span>
+                  <span>Stok DB: {currentProduct?.stockCartons ?? 140} Dus</span>
+                  <span>800 Dus</span>
                 </div>
               </div>
 
               {/* Slider 2: Average Daily Sales (ADS) */}
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <label className="text-on-surface font-semibold">Laju Penjualan Harian (ADS)</label>
                   <span className="font-mono font-bold text-on-surface">{adsValue} Dus / Hari</span>
                 </div>
                 <input
                   type="range"
-                  min="50"
-                  max="300"
+                  min="40"
+                  max="320"
                   step="5"
                   value={adsValue}
                   onChange={(e) => setAdsValue(Number(e.target.value))}
                   className="w-full accent-primary h-2 bg-surface-container rounded-lg cursor-pointer"
                 />
-                <div className="flex justify-between text-[10px] text-on-surface-variant">
-                  <span>50 Dus (Tenang)</span>
-                  <span>300 Dus (Puncak Ramadhan/Event)</span>
-                </div>
               </div>
 
               {/* Slider 3: Lead Time */}
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <label className="text-on-surface font-semibold">Waktu Tempuh &amp; Dispatch (Lead Time)</label>
                   <span className="font-mono font-bold text-amber-700">{leadTime} Hari Kerja</span>
@@ -244,14 +286,10 @@ export default function WhatIfSimulator({ setCurrentScreen }) {
                   onChange={(e) => setLeadTime(Number(e.target.value))}
                   className="w-full accent-amber-600 h-2 bg-surface-container rounded-lg cursor-pointer"
                 />
-                <div className="flex justify-between text-[10px] text-on-surface-variant">
-                  <span>1 Hari (Expedited Pasuruan)</span>
-                  <span>8 Hari (Jalur Macet / Bottleneck)</span>
-                </div>
               </div>
 
               {/* Slider 4: Safety Stock */}
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <label className="text-on-surface font-semibold">Ambang Batas Stok Aman (Safety Stock)</label>
                   <span className="font-mono font-bold text-emerald-700">{safetyStock} Dus</span>
@@ -260,19 +298,15 @@ export default function WhatIfSimulator({ setCurrentScreen }) {
                   type="range"
                   min="50"
                   max="400"
-                  step="25"
+                  step="10"
                   value={safetyStock}
                   onChange={(e) => setSafetyStock(Number(e.target.value))}
                   className="w-full accent-emerald-600 h-2 bg-surface-container rounded-lg cursor-pointer"
                 />
-                <div className="flex justify-between text-[10px] text-on-surface-variant">
-                  <span>50 Dus</span>
-                  <span>400 Dus (Buffer Tebal)</span>
-                </div>
               </div>
 
               {/* Slider 5: Proposed Restock Volume */}
-              <div className="space-y-1.5 pt-2 border-t border-outline/10">
+              <div className="space-y-1 pt-2 border-t border-outline/10">
                 <div className="flex justify-between text-xs">
                   <label className="text-on-surface font-bold text-primary">Volume Restock Diajukan</label>
                   <span className="font-mono font-extrabold text-base text-primary">{proposedRestock} Dus</span>
@@ -286,16 +320,49 @@ export default function WhatIfSimulator({ setCurrentScreen }) {
                   onChange={(e) => setProposedRestock(Number(e.target.value))}
                   className="w-full accent-primary h-2.5 bg-surface-container rounded-lg cursor-pointer"
                 />
-                <div className="flex justify-between text-[10px] text-on-surface-variant">
-                  <span>0 Dus (Tanpa Restock)</span>
-                  <span>850 (1 Wingbox)</span>
-                  <span>1.600 (2 Wingbox)</span>
+              </div>
+
+              {/* Dispatch Mode Radio */}
+              <div className="flex items-center justify-between pt-1 text-xs">
+                <span className="font-semibold text-on-surface flex items-center gap-1">
+                  <Truck className="h-3.5 w-3.5 text-primary" />
+                  Metode Pengiriman:
+                </span>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setDispatchMode('SINGLE')}
+                    className={`px-2.5 py-1 rounded font-bold text-[11px] ${
+                      dispatchMode === 'SINGLE' ? 'bg-primary text-white' : 'bg-surface-container text-on-surface-variant'
+                    }`}
+                  >
+                    Single Drop
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDispatchMode('SPLIT')}
+                    className={`px-2.5 py-1 rounded font-bold text-[11px] ${
+                      dispatchMode === 'SPLIT' ? 'bg-primary text-white' : 'bg-surface-container text-on-surface-variant'
+                    }`}
+                  >
+                    Split 2 Gelombang
+                  </button>
                 </div>
               </div>
 
               {/* Apply to Restock Request Button */}
               <Button
-                onClick={() => setCurrentScreen && setCurrentScreen('restock-request')}
+                onClick={() => {
+                  sessionStorage.setItem(
+                    'supplysync_sim_restock',
+                    JSON.stringify({
+                      productId: currentProduct?.id,
+                      sku: currentProduct?.sku,
+                      quantityCartons: proposedRestock,
+                    })
+                  );
+                  setCurrentScreen && setCurrentScreen('restock-request');
+                }}
                 className="w-full bg-primary text-white text-xs font-bold py-2.5 hover:bg-primary-container shadow-xs flex items-center justify-center gap-1.5 mt-2"
               >
                 <span>Terapkan Nilai {proposedRestock} Dus ke Pengajuan PO</span>
@@ -310,29 +377,21 @@ export default function WhatIfSimulator({ setCurrentScreen }) {
           {/* Key Simulation KPIs */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="p-3 bg-surface-container-lowest rounded-xl border border-outline/10 text-center">
-              <span className="text-[10px] text-on-surface-variant block">Runway Tanpa Restock</span>
-              <span className="text-lg font-extrabold font-mono text-red-600 block mt-0.5">{results.runwayDaysSq} Hari</span>
+              <span className="text-[10px] text-on-surface-variant block">Runway Status Quo</span>
+              <span className="text-lg font-extrabold font-mono text-red-600 block mt-0.5">{beforeRunway} Hari</span>
             </div>
             <div className="p-3 bg-surface-container-lowest rounded-xl border border-outline/10 text-center">
-              <span className="text-[10px] text-on-surface-variant block">Titik Nadir Sebelum Tiba</span>
-              <span className={`text-lg font-extrabold font-mono block mt-0.5 ${results.minTroughStock <= 0 ? 'text-red-600' : 'text-emerald-700'}`}>
-                {results.minTroughStock} Dus
-              </span>
+              <span className="text-[10px] text-on-surface-variant block">Runway Setelah Restock</span>
+              <span className="text-lg font-extrabold font-mono text-emerald-700 block mt-0.5">{afterRunway} Hari</span>
             </div>
             <div className="p-3 bg-surface-container-lowest rounded-xl border border-outline/10 text-center">
-              <span className="text-[10px] text-on-surface-variant block">Service Level (Fill-Rate)</span>
-              <span className="text-lg font-extrabold font-mono text-on-surface block mt-0.5">{results.serviceLevel}%</span>
+              <span className="text-[10px] text-on-surface-variant block">Utilisasi Armada FTL</span>
+              <span className="text-lg font-extrabold font-mono text-on-surface block mt-0.5">{ftlPct}%</span>
             </div>
             <div className="p-3 bg-surface-container-lowest rounded-xl border border-outline/10 text-center">
-              <span className="text-[10px] text-on-surface-variant block">Status Mitigasi</span>
-              <span className={`text-xs font-bold px-2 py-0.5 rounded-full inline-block mt-1 ${
-                results.stockoutRisk === 'SAFE' 
-                  ? 'bg-emerald-100 text-emerald-800' 
-                  : results.stockoutRisk === 'WARNING' 
-                  ? 'bg-amber-100 text-amber-800' 
-                  : 'bg-red-100 text-red-800'
-              }`}>
-                {results.stockoutRisk === 'SAFE' ? 'Aman Terlindungi' : results.stockoutRisk === 'WARNING' ? 'Dekat Buffer' : 'Beresiko Stockout'}
+              <span className="text-[10px] text-on-surface-variant block">Omzet Terlindungi</span>
+              <span className="text-xs font-extrabold font-mono text-primary block mt-1.5">
+                {formatRupiah(revenueProtected)}
               </span>
             </div>
           </div>
@@ -342,8 +401,12 @@ export default function WhatIfSimulator({ setCurrentScreen }) {
             <CardContent className="p-5 space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
-                  <h3 className="text-sm font-bold text-on-surface">Proyeksi Trajektori Stok 14 Hari (Daily Depletion)</h3>
-                  <p className="text-xs text-on-surface-variant">Simulasi dinamika persediaan dengan titik kedatangan armada pada Hari ke-{leadTime}.</p>
+                  <h3 className="text-sm font-bold text-on-surface">
+                    Proyeksi Trajektori Stok 14 Hari — {currentProduct?.name?.split('(')[0] || 'Roma Kelapa'}
+                  </h3>
+                  <p className="text-xs text-on-surface-variant">
+                    Kedatangan armada pada Hari ke-{leadTime} ({dispatchMode === 'SPLIT' ? 'Split 2 Batch' : 'Single Drop'}).
+                  </p>
                 </div>
 
                 <div className="flex items-center gap-3 text-xs">
@@ -365,7 +428,6 @@ export default function WhatIfSimulator({ setCurrentScreen }) {
               {/* Chart SVG */}
               <div className="relative w-full bg-surface-container-low rounded-xl p-3 overflow-hidden">
                 <svg className="w-full h-56 overflow-visible" viewBox="0 0 700 220">
-                  {/* Grid Lines */}
                   <line x1="50" y1="40" x2="650" y2="40" stroke="#e5e2e1" strokeWidth="1" />
                   <line x1="50" y1="90" x2="650" y2="90" stroke="#e5e2e1" strokeWidth="1" />
                   <line x1="50" y1="140" x2="650" y2="140" stroke="#e5e2e1" strokeWidth="1" />
@@ -373,14 +435,14 @@ export default function WhatIfSimulator({ setCurrentScreen }) {
 
                   {/* Safety threshold line */}
                   <line x1="50" y1={ySafety} x2="650" y2={ySafety} stroke="#735c00" strokeDasharray="4 4" strokeWidth="1.5" />
-                  <text x="645" y={ySafety - 4} textAnchor="end" className="text-[10px] font-mono fill-tertiary">
+                  <text x="645" y={Math.max(15, ySafety - 4)} textAnchor="end" className="text-[10px] font-mono fill-tertiary">
                     Safety Stock ({safetyStock} Dus)
                   </text>
 
                   {/* Delivery Day vertical line */}
                   <line x1={xDelivery} y1="20" x2={xDelivery} y2="200" stroke="#900000" strokeDasharray="3 3" strokeWidth="1.5" />
                   <text x={xDelivery} y="15" textAnchor="middle" className="text-[10px] font-bold fill-primary">
-                    Truk Tiba (H-{leadTime})
+                    Truk Tiba (H+{leadTime})
                   </text>
 
                   {/* Status Quo Path (Red) */}
@@ -390,27 +452,27 @@ export default function WhatIfSimulator({ setCurrentScreen }) {
                   <path d={`M ${pathRestock}`} fill="none" stroke="#cca830" strokeWidth="3" />
 
                   {/* Day Markers */}
-                  {[0, 2, 4, 6, 8, 10, 12, 14].map(d => (
+                  {[0, 2, 4, 6, 8, 10, 12, 14].map((d) => (
                     <text key={d} x={50 + (d / 14) * 600} y="215" textAnchor="middle" className="text-[10px] font-mono fill-gray-500">
-                      H-{d}
+                      H+{d}
                     </text>
                   ))}
                 </svg>
               </div>
 
-              {/* Explanatory note */}
+              {/* Explanatory note from Backend Simulation Engine */}
               <div className="p-3 bg-surface-container-low rounded-lg text-xs space-y-1">
-                <div className="font-bold text-on-surface">Analisis Hasil Simulasi:</div>
+                <div className="font-bold text-on-surface flex items-center justify-between">
+                  <span>Kesimpulan Engine Simulasi Backend:</span>
+                  <Badge variant="surface" className="font-mono text-[10px]">
+                    {simResult?.afterMetrics?.riskStatus || 'TERKALKULASI'}
+                  </Badge>
+                </div>
                 <p className="text-on-surface-variant leading-relaxed">
-                  {results.minTroughStock <= 0 ? (
-                    <span className="text-red-700">
-                      ⚠️ <strong>Terjadi kekosongan stok ({Math.abs(results.minTroughStock)} dus)!</strong> Pengiriman pada Hari ke-{leadTime} terlambat untuk mencegah stockout. Disarankan mempercepat dispatch pabrik atau mengambil pasokan lintas depot.
-                    </span>
-                  ) : (
-                    <span className="text-emerald-800">
-                      ✅ <strong>Stok aman terjaga!</strong> Titik terendah ({results.minTroughStock} dus) masih berada di atas ambang batas. Pengiriman {proposedRestock} dus pada Hari ke-{leadTime} berhasil memulihkan saldo inventori hingga {results.finalStock} dus di akhir periode.
-                    </span>
-                  )}
+                  {simResult?.explanation ||
+                    (stockAtArrival <= 0
+                      ? `Peringatan: Terjadi defisit ${Math.abs(stockAtArrival)} dus sebelum truk tiba pada Hari ke-${leadTime}. Disarankan mempercepat lead time atau mengambil Cross-Depot Rebalancing.`
+                      : `Stok saat truk tiba masih tersisa ${stockAtArrival} dus. Alokasi ${proposedRestock} dus mengamankan pasokan hingga ${afterRunway} hari ke depan.`)}
                 </p>
               </div>
             </CardContent>

@@ -29,3 +29,18 @@ export async function lookupStore(req, res, next) {
   }
 }
 
+export async function submitContactInquiry(req, res, next) {
+  try {
+    const result = await storesService.createContactInquiry(req.body);
+
+    return sendSuccess(res, {
+      statusCode: 201,
+      message: result.message,
+      data: result,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+

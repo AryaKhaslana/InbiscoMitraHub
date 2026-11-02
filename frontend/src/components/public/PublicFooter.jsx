@@ -1,6 +1,8 @@
 import React from 'react';
 
 export default function PublicFooter({ setActiveNav }) {
+  const currentYear = new Date().getFullYear();
+
   const handleNav = (id) => {
     if (setActiveNav) {
       setActiveNav(id);
@@ -9,129 +11,144 @@ export default function PublicFooter({ setActiveNav }) {
   };
 
   return (
-    <footer className="w-full bg-[#1a1414] text-white/90 border-t border-[#362f2f] pt-14 pb-8" id="kontak">
+    <footer className="w-full bg-[#181313] text-white/90 border-t border-[#332b2b] pt-14 pb-8" id="kontak">
       <div className="w-full max-w-[1280px] mx-auto px-4 md:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 mb-12">
-          {/* Brand Info */}
-          <div className="lg:col-span-4 space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1.3fr_1.4fr] gap-x-10 gap-y-10 items-start mb-12">
+          {/* Brand & Corporate Profile */}
+          <div className="space-y-4">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center text-white">
+              <div className="w-9 h-9 rounded-lg bg-primary-container flex items-center justify-center text-white shadow-xs">
                 <span className="material-symbols-outlined text-[20px]">corporate_fare</span>
               </div>
-              <span className="text-xl font-bold font-display text-white tracking-tight">
-                Inbisco MitraHub
-              </span>
+              <div>
+                <span className="text-xl font-bold font-display text-white tracking-tight block leading-tight">
+                  Inbisco MitraHub
+                </span>
+                <span className="text-[11px] text-[#a0908e] tracking-wide block">
+                  Distribusi Resmi Mayora Group
+                </span>
+              </div>
             </div>
             <p className="text-sm text-[#b0a2a0] leading-relaxed">
-              PT Inbisco Niagatama Semesta — Cabang Krian adalah unit distribusi regional resmi untuk produk Fast-Moving Consumer Goods (FMCG) terkemuka Mayora di wilayah Sidoarjo dan perimeter Jawa Timur.
+              PT Inbisco Niagatama Semesta — Cabang Krian adalah pusat distribusi logistik resmi FMCG Mayora Group untuk wilayah Kabupaten Sidoarjo dan sekitarnya. Melayani kemitraan pasokan toko kelontong, warkop, ritel modern, dan grosir secara langsung dan terpercaya.
             </p>
-            <div className="pt-1 flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#bd0000]/20 text-[11px] font-mono text-tertiary-container border border-tertiary-container/30">
-                <span className="w-1.5 h-1.5 rounded-full bg-tertiary-container animate-pulse"></span>
-                DEPOT KRIAN OPERASIONAL
-              </span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-white/10 text-[11px] font-mono text-white/80">
-                GTNIC 2026 INOVASI
-              </span>
+            <div className="pt-1 text-xs text-[#b0a2a0] space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-[#e2d5d3] font-medium">Cakupan Wilayah:</span>
+                <span>18 Kecamatan di Kabupaten Sidoarjo</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[#e2d5d3] font-medium">Standar Distribusi:</span>
+                <span>GDP & Kepatuhan Keamanan Pangan</span>
+              </div>
             </div>
           </div>
 
-          {/* Navigasi */}
-          <div className="lg:col-span-2 space-y-3">
+          {/* Navigasi Layanan */}
+          <div className="space-y-3">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">
-              Navigasi
+              Navigasi Layanan
             </h4>
-            <ul className="space-y-2 text-sm text-[#b0a2a0]">
+            <ul className="space-y-2.5 text-sm text-[#b0a2a0]">
               <li>
-                <button onClick={() => handleNav('home')} className="hover:text-white transition-colors">
+                <button type="button" onClick={() => handleNav('home')} className="hover:text-white transition-colors text-left cursor-pointer">
                   Beranda
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNav('about')} className="hover:text-white transition-colors">
-                  Tentang Kami
+                <button type="button" onClick={() => handleNav('about')} className="hover:text-white transition-colors text-left cursor-pointer">
+                  Profil & Cabang
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNav('moments')} className="hover:text-white transition-colors">
+                <button type="button" onClick={() => handleNav('products')} className="hover:text-white transition-colors text-left cursor-pointer">
+                  Katalog Produk FMCG
+                </button>
+              </li>
+              <li>
+                <button type="button" onClick={() => handleNav('moments')} className="hover:text-white transition-colors text-left cursor-pointer">
                   Aktivitas & Jaringan
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNav('partnership')} className="hover:text-white transition-colors">
-                  Peluang Kemitraan
+                <button type="button" onClick={() => handleNav('partnership')} className="hover:text-white transition-colors text-left cursor-pointer">
+                  Pendaftaran Mitra Toko
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNav('contact')} className="hover:text-white transition-colors">
-                  Kontak Cabang
+                <button type="button" onClick={() => handleNav('contact')} className="hover:text-white transition-colors text-left cursor-pointer">
+                  Kontak Cabang & FAQ
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Kategori Produk */}
-          <div className="lg:col-span-3 space-y-3">
+          {/* Kategori Pasokan Utama */}
+          <div className="space-y-3">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">
-              Kategori Produk
+              Pasokan Produk Utama
             </h4>
-            <ul className="space-y-2 text-sm text-[#b0a2a0]">
+            <ul className="space-y-2.5 text-sm text-[#b0a2a0]">
               <li>
-                <button onClick={() => handleNav('products')} className="hover:text-white transition-colors">
-                  Semua Produk FMCG
+                <button type="button" onClick={() => handleNav('products')} className="hover:text-white transition-colors text-left cursor-pointer">
+                  Biskuit & Roti (Roma Kelapa, Sari Gandum)
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNav('products')} className="hover:text-white transition-colors">
-                  Biskuit Roma Kelapa
+                <button type="button" onClick={() => handleNav('products')} className="hover:text-white transition-colors text-left cursor-pointer">
+                  Wafer & Cokelat (Beng-Beng, Malkist)
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNav('products')} className="hover:text-white transition-colors">
-                  Wafer & Cokelat Beng-Beng
+                <button type="button" onClick={() => handleNav('products')} className="hover:text-white transition-colors text-left cursor-pointer">
+                  Kopi Olahan (Torabika Duo, Creamy Latte)
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNav('products')} className="hover:text-white transition-colors">
-                  Kopi Torabika & Kopiko Candy
+                <button type="button" onClick={() => handleNav('products')} className="hover:text-white transition-colors text-left cursor-pointer">
+                  Sereal Bergizi (Energen Cokelat & Vanila)
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNav('products')} className="hover:text-white transition-colors">
-                  Sereal Cokelat Energen
+                <button type="button" onClick={() => handleNav('products')} className="hover:text-white transition-colors text-left cursor-pointer">
+                  Kembang Gula (Kopiko, Kis Mint)
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNav('products')} className="hover:text-white transition-colors">
-                  Air Mineral Le Minerale
+                <button type="button" onClick={() => handleNav('products')} className="hover:text-white transition-colors text-left cursor-pointer">
+                  Air Mineral Pegunungan (Le Minerale)
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Hubungi Kantor Cabang */}
-          <div className="lg:col-span-3 space-y-3">
+          {/* Hubungi Kantor Cabang & Jam Operasional */}
+          <div className="space-y-3">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">
-              Hubungi Kantor Cabang
+              Kantor & Depot Distribusi
             </h4>
             <div className="space-y-2.5 text-sm text-[#b0a2a0]">
               <div className="flex items-start gap-2">
-                <span className="material-symbols-outlined text-[18px] text-tertiary-container shrink-0 mt-0.5">location_on</span>
-                <span>Jl. Raya Krian KM 29, Krian, Sidoarjo, Jawa Timur 61262</span>
+                <span className="material-symbols-outlined text-[18px] text-primary shrink-0 mt-0.5">location_on</span>
+                <span>Jl. Raya Krian KM 29, Krian, Kabupaten Sidoarjo, Jawa Timur 61262</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px] text-tertiary-container shrink-0">call</span>
+                <span className="material-symbols-outlined text-[18px] text-primary shrink-0">call</span>
                 <span>WhatsApp: +62 812-3456-7890</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px] text-tertiary-container shrink-0">mail</span>
+                <span className="material-symbols-outlined text-[18px] text-primary shrink-0">mail</span>
                 <span>mitrahub.krian@inbisco.co.id</span>
               </div>
-              <div className="pt-2 flex flex-col gap-1.5 text-xs font-bold">
-                <button onClick={() => handleNav('partnership')} className="text-white hover:underline text-left">
+              <div className="flex items-start gap-2">
+                <span className="material-symbols-outlined text-[18px] text-primary shrink-0 mt-0.5">schedule</span>
+                <span>Senin – Sabtu: 07:00 – 17:00 WIB</span>
+              </div>
+              <div className="pt-2 flex flex-col gap-1.5 text-xs font-semibold">
+                <button type="button" onClick={() => handleNav('partnership')} className="text-white hover:underline text-left">
                   Daftar Kemitraan Toko →
                 </button>
-                <button onClick={() => handleNav('login')} className="text-white hover:underline text-left">
+                <button type="button" onClick={() => handleNav('login')} className="text-[#d0c0be] hover:text-white hover:underline text-left">
                   Portal Masuk B2B Operasional →
                 </button>
               </div>
@@ -139,18 +156,23 @@ export default function PublicFooter({ setActiveNav }) {
           </div>
         </div>
 
-        {/* GTNIC Team Credential & Copyright */}
-        <div className="pt-6 border-t border-[#362f2f] flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[#a0908e]">
+        {/* Corporate Legal & Copyright */}
+        <div className="pt-6 border-t border-[#332b2b] flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[#a0908e]">
           <div>
-            © 2026 PT Inbisco Niagatama Semesta — Cabang Krian. Inovasi Garda Tech National Innovation Competition (GTNIC) 2026.
+            © {currentYear} PT Inbisco Niagatama Semesta — Cabang Krian. Seluruh hak cipta dilindungi undang-undang.
           </div>
-          <div className="flex items-center gap-3">
-            <span className="font-semibold text-white/90">SMK Telkom Sidoarjo:</span>
-            <span>Raka Al-islami</span>
+          <div className="flex items-center gap-4 text-[#b0a2a0]">
+            <button type="button" onClick={() => handleNav('contact')} className="hover:text-white transition-colors text-left cursor-pointer">
+              Pusat Bantuan & FAQ
+            </button>
             <span>•</span>
-            <span>Arya Chaka Braja Wisesa</span>
+            <button type="button" onClick={() => handleNav('about')} className="hover:text-white transition-colors text-left cursor-pointer">
+              SOP Logistik & Retur
+            </button>
             <span>•</span>
-            <span>Allifa Qurrota Ayunina</span>
+            <button type="button" onClick={() => handleNav('partnership')} className="hover:text-white transition-colors text-left cursor-pointer">
+              Syarat Kemitraan
+            </button>
           </div>
         </div>
       </div>

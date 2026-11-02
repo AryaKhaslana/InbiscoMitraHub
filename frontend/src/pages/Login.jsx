@@ -107,11 +107,10 @@ export default function Login({ setActiveNav }) {
             />
 
             {/* Top Content */}
-            <div className="relative z-10 space-y-6">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold tracking-wide shadow-xs">
-                <span className="material-symbols-outlined text-[15px] text-tertiary-container">verified_user</span>
-                <span>PORTAL OPERASIONAL & MITRA RESMI</span>
-              </div>
+            <div className="relative z-10 space-y-4">
+              <span className="text-xs font-bold text-tertiary-container uppercase tracking-wider block">
+                Portal Operasional & Distribusi B2B · Cabang Krian
+              </span>
 
               <div className="space-y-3">
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-display tracking-tight text-white leading-tight">
@@ -172,7 +171,7 @@ export default function Login({ setActiveNav }) {
             <div className="relative z-10 mt-8 pt-4 border-t border-white/20 flex items-center gap-2.5 text-xs text-white/85">
               <Lock className="h-4 w-4 text-tertiary-container shrink-0" />
               <span>
-                <strong>Akses Terbatas:</strong> Khusus personel internal PT Inbisco Niagatama Semesta dan tim juri kompetisi GTNIC 2026.
+                <strong>Akses Terbatas:</strong> Khusus personel internal PT Inbisco Niagatama Semesta.
               </span>
             </div>
           </section>
@@ -235,11 +234,8 @@ export default function Login({ setActiveNav }) {
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-primary flex items-center gap-1.5">
                     <Sparkles className="h-3.5 w-3.5 text-primary" />
-                    Jury 1-Click Fast Access:
+                    Akses Cepat Demo:
                   </span>
-                  <Badge variant="tertiary" className="text-[9px] uppercase">
-                    GTNIC Testing
-                  </Badge>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <button

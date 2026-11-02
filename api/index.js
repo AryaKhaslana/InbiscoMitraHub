@@ -128,6 +128,7 @@ app.use(devopsRoutes);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/products', productsRoutes);
 app.use('/api/v1/stores', storesRoutes);
+app.use('/api/v1', storesRoutes); // Direct public aliases (/api/v1/register, /api/v1/contact)
 app.use('/api/v1/orders', ordersRoutes);
 app.use('/api/v1/simulation', simulationRouter);
 app.use('/api/v1/distributor', distributorRouter);

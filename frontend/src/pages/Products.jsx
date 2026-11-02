@@ -229,11 +229,9 @@ export default function Products({ setActiveNav }) {
       <div className="max-w-[1280px] mx-auto px-4 md:px-8">
         {/* Title & Eyebrow */}
         <div className="mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container border border-surface-container-high text-xs font-bold text-primary mb-2">
-            <span>KATALOG DISTRIBUTOR RESMI</span>
-            <span>•</span>
-            <span className="font-mono">CABANG KRIAN SIDOARJO</span>
-          </div>
+          <span className="text-xs font-bold text-primary uppercase tracking-wider block mb-1.5">
+            Katalog Distributor Resmi · Cabang Krian Sidoarjo
+          </span>
           <h1 className="text-3xl sm:text-4xl font-bold font-display text-on-surface tracking-tight">
             Katalog Produk FMCG Mayora
           </h1>

@@ -1,10 +1,10 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
+import { api } from '../../services/api';
 import { 
   AlertTriangle, 
-  ArrowRight, 
   ShieldAlert, 
   DollarSign, 
   Clock, 
@@ -12,135 +12,106 @@ import {
   CheckCircle2, 
   Sliders, 
   Sparkles,
-  MapPin,
-  RefreshCw,
   Layers,
-  ArrowRightLeft
+  ArrowRightLeft,
+  RefreshCw
 } from 'lucide-react';
 import { formatRupiah } from '../../lib/utils';
 import confetti from 'canvas-confetti';
 
 export default function StockoutRiskAnalysis({ setCurrentScreen }) {
-  const [selectedRegion, setSelectedRegion] = useState('ALL');
+  const [riskData, setRiskData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [selectedSeverity, setSelectedSeverity] = useState('ALL');
-  const [transferAuthorized, setTransferAuthorized] = useState(false);
+  const [selectedTransferSku, setSelectedTransferSku] = useState(null);
   const [isAuthorizing, setIsAuthorizing] = useState(false);
+  const [lastTransferReceipt, setLastTransferReceipt] = useState(null);
 
-  const initialItems = [
-    {
-      id: 'RISK-01',
-      sku: 'Roma Kelapa 300g',
-      category: 'Biskuit',
-      skuCode: 'MYR-BIS-001',
-      depot: 'CV Surya Krian Logistik',
-      region: 'SDA',
-      stockReal: 120,
-      buffer: 350,
-      doi: 0.8,
-      doiLabel: '0.8 Hari',
-      revenueAtRisk: 182750000,
-      severity: 'CRITICAL',
-      severityLabel: 'Kritis (<1 Hari)',
-      severityColor: 'bg-red-100 text-red-800 border-red-200',
-      fillPercent: 34,
-      barColor: 'bg-red-600',
-      actionType: 'RESTOCK_DISPATCH'
-    },
-    {
-      id: 'RISK-02',
-      sku: 'Beng-Beng Regular 20g',
-      category: 'Cokelat',
-      skuCode: 'MYR-WFR-002',
-      depot: 'PT Sidoarjo Niaga Makmur',
-      region: 'SDA',
-      stockReal: 210,
-      buffer: 400,
-      doi: 1.4,
-      doiLabel: '1.4 Hari',
-      revenueAtRisk: 86000000,
-      severity: 'CRITICAL',
-      severityLabel: 'Kritis (<2 Hari)',
-      severityColor: 'bg-red-100 text-red-800 border-red-200',
-      fillPercent: 52,
-      barColor: 'bg-red-600',
-      actionType: 'CROSS_DEPOT'
-    },
-    {
-      id: 'RISK-03',
-      sku: 'Torabika Duo 25g',
-      category: 'Kopi',
-      skuCode: 'MYR-KOP-003',
-      depot: 'Depot Malang Barat (Singosari)',
-      region: 'MLG',
-      stockReal: 180,
-      buffer: 350,
-      doi: 1.8,
-      doiLabel: '1.8 Hari',
-      revenueAtRisk: 66800000,
-      severity: 'CRITICAL',
-      severityLabel: 'Kritis (<2 Hari)',
-      severityColor: 'bg-red-100 text-red-800 border-red-200',
-      fillPercent: 51,
-      barColor: 'bg-red-600',
-      actionType: 'FACTORY_EXPEDITE'
-    },
-    {
-      id: 'RISK-04',
-      sku: 'Energen Cokelat 34g',
-      category: 'Sarapan',
-      skuCode: 'MYR-SER-004',
-      depot: 'Depo Surabaya Rungkut',
-      region: 'SBY',
-      stockReal: 390,
-      buffer: 300,
-      doi: 3.2,
-      doiLabel: '3.2 Hari',
-      revenueAtRisk: 42000000,
-      severity: 'WARNING',
-      severityLabel: 'Waspada (3 Hari)',
-      severityColor: 'bg-amber-100 text-amber-800 border-amber-200',
-      fillPercent: 75,
-      barColor: 'bg-amber-500',
-      actionType: 'MONITOR'
-    },
-    {
-      id: 'RISK-05',
-      sku: 'Le Minerale 600ml Galon Mini',
-      category: 'Air Mineral',
-      skuCode: 'MYR-AIR-005',
-      depot: 'CV Surya Krian Logistik',
-      region: 'SDA',
-      stockReal: 580,
-      buffer: 250,
-      doi: 7.5,
-      doiLabel: '7.5 Hari',
-      revenueAtRisk: 0,
-      severity: 'SAFE',
-      severityLabel: 'Aman (>5 Hari)',
-      severityColor: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-      fillPercent: 95,
-      barColor: 'bg-emerald-600',
-      actionType: 'NONE'
+  const fetchRiskAnalysis = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await api.getStockoutRisk();
+      setRiskData(res);
+      if (res?.items?.length > 0) {
+        setSelectedTransferSku((prev) => {
+          const stillExists = prev && res.items.find((i) => i.productId === prev.productId);
+          return stillExists || res.items[0];
+        });
+      }
+    } catch (err) {
+      console.error('StockoutRiskAnalysis fetch error:', err);
+    } finally {
+      setLoading(false);
     }
-  ];
+  }, []);
+
+  useEffect(() => {
+    fetchRiskAnalysis();
+    const onRefresh = () => fetchRiskAnalysis();
+    window.addEventListener('supplysync:refresh', onRefresh);
+    return () => window.removeEventListener('supplysync:refresh', onRefresh);
+  }, [fetchRiskAnalysis]);
+
+  const rawItems = riskData?.items || [];
+
+  const categories = useMemo(() => {
+    return Array.from(new Set(rawItems.map((i) => i.category).filter(Boolean)));
+  }, [rawItems]);
 
   const filteredItems = useMemo(() => {
-    return initialItems.filter(item => {
-      if (selectedRegion !== 'ALL' && item.region !== selectedRegion) return false;
+    return rawItems.filter((item) => {
       if (selectedCategory !== 'ALL' && item.category !== selectedCategory) return false;
-      if (selectedSeverity !== 'ALL' && item.severity !== selectedSeverity) return false;
+      if (selectedSeverity !== 'ALL' && item.riskLevel !== selectedSeverity) return false;
       return true;
     });
-  }, [selectedRegion, selectedCategory, selectedSeverity]);
+  }, [rawItems, selectedCategory, selectedSeverity]);
 
-  const handleAuthorizeTransfer = () => {
+  const activeTransferTarget = selectedTransferSku || rawItems[0];
+
+  const handleAuthorizeTransfer = async () => {
+    if (!activeTransferTarget) return;
     setIsAuthorizing(true);
-    setTimeout(() => {
-      setIsAuthorizing(false);
-      setTransferAuthorized(true);
+    setLastTransferReceipt(null);
+    try {
+      const rec = activeTransferTarget.crossDepotRecommendation || {};
+      const qty = rec.suggestedTransferCartons || 200;
+      const result = await api.crossDepotTransfer({
+        productId: activeTransferTarget.productId,
+        sku: activeTransferTarget.sku,
+        sourceDepot: rec.donorDepot || 'Depo Mojokerto (Surplus)',
+        targetDepot: rec.targetDepot || 'CV Surya Krian Logistik (Hub Jatim 1)',
+        quantityCartons: qty,
+        notes: `Cross-depot emergency rebalancing untuk ${activeTransferTarget.name}`,
+      });
+      setLastTransferReceipt(result);
       confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 } });
-    }, 700);
+      await fetchRiskAnalysis();
+    } catch (err) {
+      alert(err.message || 'Gagal mengeksekusi transfer antar-depot');
+    } finally {
+      setIsAuthorizing(false);
+    }
+  };
+
+  const criticalCount = riskData?.summary?.criticalSkuCount ?? 0;
+  const totalRevAtRisk = riskData?.summary?.totalRevenueAtRiskIDR ?? 0;
+  const avgRunway =
+    rawItems.length > 0
+      ? (rawItems.reduce((sum, i) => sum + Number(i.runwayDays || 0), 0) / rawItems.length).toFixed(1)
+      : '2.4';
+
+  const getSeverityBadge = (level) => {
+    if (level === 'CRITICAL') {
+      return { label: 'Kritis (<2 Hari)', color: 'bg-red-100 text-red-800 border-red-200' };
+    }
+    if (level === 'HIGH') {
+      return { label: 'Siaga Tinggi (2-4 Hari)', color: 'bg-amber-100 text-amber-800 border-amber-200' };
+    }
+    if (level === 'MODERATE') {
+      return { label: 'Waspada (4-6 Hari)', color: 'bg-blue-100 text-blue-800 border-blue-200' };
+    }
+    return { label: 'Optimal (>6.5 Hari)', color: 'bg-emerald-100 text-emerald-800 border-emerald-200' };
   };
 
   return (
@@ -150,21 +121,28 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
         <div>
           <div className="flex items-center gap-2 text-primary font-mono text-xs uppercase tracking-wider mb-1">
             <ShieldAlert className="h-4 w-4" />
-            <span>HQ Early Warning Radar • Resilience Engine GTNIC 2026</span>
+            <span>HQ Early Warning Radar • Live Supabase Stock Telemetry</span>
           </div>
           <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-on-surface">
             Pusat Peringatan Dini &amp; Kerentanan Stok
           </h1>
           <p className="text-sm text-on-surface-variant mt-1">
-            Deteksi dini probabilitas kelangkaan pasokan (stockout) sebelum berdampak pada ketiadaan produk di warung &amp; ritel Jawa Timur.
+            Deteksi dini probabilitas kelangkaan pasokan (stockout) secara real-time berdasarkan saldo gudang aktual di Supabase.
           </p>
         </div>
         <div className="flex items-center gap-2.5">
-          <Badge variant="destructive" className="text-xs font-bold animate-pulse">3 SKU Kritis Terdeteksi</Badge>
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-high text-xs font-semibold text-on-surface">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>Realtime Telemetry Active</span>
-          </div>
+          <Badge variant="destructive" className="text-xs font-bold animate-pulse">
+            {criticalCount} SKU Kritis / Siaga
+          </Badge>
+          <Button
+            onClick={fetchRiskAnalysis}
+            variant="outline"
+            size="sm"
+            className="h-8 text-xs gap-1.5"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin text-primary' : ''}`} />
+            <span>Refresh Radar</span>
+          </Button>
         </div>
       </div>
 
@@ -176,19 +154,23 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
           <CardContent className="p-5 flex flex-col justify-between h-full">
             <div className="flex items-start justify-between">
               <div>
-                <span className="text-[11px] font-bold text-red-600 uppercase tracking-wider">Tingkat Kritis (Runway &lt; 2 Hari)</span>
-                <div className="text-2xl lg:text-3xl font-extrabold text-on-surface mt-1">3 SKU Terancam</div>
+                <span className="text-[11px] font-bold text-red-600 uppercase tracking-wider">SKU Kritis &amp; Siaga Tinggi</span>
+                <div className="text-2xl lg:text-3xl font-extrabold text-on-surface mt-1">
+                  {criticalCount} SKU Terancam
+                </div>
               </div>
               <div className="w-10 h-10 rounded-xl bg-red-100 text-red-700 flex items-center justify-center">
                 <AlertTriangle className="h-5 w-5" />
               </div>
             </div>
             <div className="mt-4 pt-2.5 bg-surface-container-low rounded-lg p-2.5 space-y-1">
-              <span className="text-[11px] font-semibold text-on-surface">Node Distribusi Terdampak:</span>
+              <span className="text-[11px] font-semibold text-on-surface">Prioritas Penanganan Gudang Krian:</span>
               <div className="flex flex-wrap gap-1">
-                <span className="text-[10px] font-mono bg-surface-container-highest px-2 py-0.5 rounded text-on-surface-variant">CV Surya Krian</span>
-                <span className="text-[10px] font-mono bg-surface-container-highest px-2 py-0.5 rounded text-on-surface-variant">PT Sidoarjo Dist.</span>
-                <span className="text-[10px] font-mono bg-surface-container-highest px-2 py-0.5 rounded text-on-surface-variant">Depot Malang Barat</span>
+                {rawItems.slice(0, 3).map((it) => (
+                  <span key={it.productId} className="text-[10px] font-mono bg-surface-container-highest px-2 py-0.5 rounded text-on-surface-variant">
+                    {it.name.split('(')[0].trim()} ({it.runwayDays}h)
+                  </span>
+                ))}
               </div>
             </div>
           </CardContent>
@@ -201,15 +183,19 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
             <div className="flex items-start justify-between">
               <div>
                 <span className="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider">Potensi Omzet Berisiko</span>
-                <div className="text-2xl lg:text-3xl font-extrabold text-on-surface mt-1">Rp 412.500.000</div>
+                <div className="text-2xl lg:text-3xl font-extrabold text-on-surface mt-1">
+                  {formatRupiah(totalRevAtRisk)}
+                </div>
               </div>
               <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                 <DollarSign className="h-5 w-5" />
               </div>
             </div>
             <div className="mt-4 pt-2.5 bg-surface-container-low rounded-lg p-2.5 flex items-center justify-between text-xs text-on-surface-variant">
-              <span>Estimasi kerugian 48 jam:</span>
-              <span className="font-mono font-bold text-red-600">-2.400 Dus B2B</span>
+              <span>Total Defisit terhadap Target 5 Hari:</span>
+              <span className="font-mono font-bold text-red-600">
+                -{rawItems.reduce((sum, i) => sum + (i.deficitCartons || 0), 0)} Dus B2B
+              </span>
             </div>
           </CardContent>
         </Card>
@@ -220,8 +206,8 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
           <CardContent className="p-5 flex flex-col justify-between h-full">
             <div className="flex items-start justify-between">
               <div>
-                <span className="text-[11px] font-bold text-amber-700 uppercase tracking-wider">Rata-rata Waktu Penyangga (Buffer)</span>
-                <div className="text-2xl lg:text-3xl font-extrabold text-on-surface mt-1">1.3 Hari</div>
+                <span className="text-[11px] font-bold text-amber-700 uppercase tracking-wider">Rata-rata Runway Gudang</span>
+                <div className="text-2xl lg:text-3xl font-extrabold text-on-surface mt-1">{avgRunway} Hari</div>
               </div>
               <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center">
                 <Clock className="h-5 w-5" />
@@ -236,68 +222,97 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
       </div>
 
       {/* AI Cross-Depot Balancing High Priority Mitigator (Proactive Action Card) */}
-      <Card className="border-2 border-primary/20 bg-gradient-to-br from-surface-container-lowest via-surface-container-low to-surface-container-lowest shadow-sm relative overflow-hidden">
-        <CardContent className="p-5 space-y-4">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            <div className="flex items-start gap-3.5">
-              <div className="w-11 h-11 rounded-xl bg-primary text-white flex items-center justify-center shrink-0 shadow-xs">
-                <ArrowRightLeft className="h-5 w-5" />
-              </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded bg-primary text-white text-[10px] uppercase font-bold tracking-wider">
-                    Peluang Rerouting Cepat
-                  </span>
-                  <span className="text-xs font-bold text-on-surface">Keseimbangan Antar-Depot (Cross-Depot Rebalancing)</span>
+      {activeTransferTarget && (
+        <Card className="border-2 border-primary/20 bg-gradient-to-br from-surface-container-lowest via-surface-container-low to-surface-container-lowest shadow-sm relative overflow-hidden">
+          <CardContent className="p-5 space-y-4">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+              <div className="flex items-start gap-3.5">
+                <div className="w-11 h-11 rounded-xl bg-primary text-white flex items-center justify-center shrink-0 shadow-xs">
+                  <ArrowRightLeft className="h-5 w-5" />
                 </div>
-                <h3 className="text-base font-extrabold text-on-surface">
-                  Transfer 300 Dus Roma Kelapa dari Depot Surabaya Rungkut ke Depot Krian
-                </h3>
-                <p className="text-xs text-on-surface-variant max-w-3xl">
-                  Depot Rungkut saat ini memiliki surplus inventori <strong>+140% di atas buffer aman</strong> (9.2 hari). Pemindahan lintas depot melalui Tol Waru-Krian hanya memakan waktu <strong>28 menit</strong>, secara instan menaikkan runway Krian dari 0.8 hari menjadi 2.5 hari.
-                </p>
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="px-2 py-0.5 rounded bg-primary text-white text-[10px] uppercase font-bold tracking-wider">
+                      Peluang Rerouting Cepat (Live DB Mutation)
+                    </span>
+                    <span className="text-xs font-bold text-on-surface">
+                      Keseimbangan Antar-Depot (Cross-Depot Rebalancing)
+                    </span>
+                  </div>
+                  <h3 className="text-base font-extrabold text-on-surface">
+                    Transfer {activeTransferTarget.crossDepotRecommendation?.suggestedTransferCartons || 200} Dus{' '}
+                    {activeTransferTarget.name.split('(')[0].trim()} dari{' '}
+                    {activeTransferTarget.crossDepotRecommendation?.donorDepot || 'Depo Mojokerto'} ke Depo Krian
+                  </h3>
+                  <p className="text-xs text-on-surface-variant max-w-3xl">
+                    Stok saat ini di Gudang Krian adalah <strong>{activeTransferTarget.stockCartons} dus</strong> (runway{' '}
+                    <strong>{activeTransferTarget.runwayDays} hari</strong>, safety stock {activeTransferTarget.safetyStock} dus).
+                    Rute via {activeTransferTarget.crossDepotRecommendation?.routeVia || 'Tol Jombang–Mojokerto -> Exit Krian'}{' '}
+                    memakan waktu {activeTransferTarget.crossDepotRecommendation?.estimatedTransitHours || 1.5} jam dan langsung menambah stok gudang Krian di database.
+                  </p>
+                </div>
               </div>
-            </div>
 
-            <div className="flex items-center gap-2 shrink-0 self-start lg:self-auto">
-              {transferAuthorized ? (
-                <div className="px-4 py-2 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-xs font-bold flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                  <span>Transfer Resmi Diotorisasi (DO-XDEP-088)</span>
-                </div>
-              ) : (
+              <div className="flex flex-col items-end gap-2 shrink-0 self-start lg:self-auto">
                 <Button
                   onClick={handleAuthorizeTransfer}
                   disabled={isAuthorizing}
                   className="bg-primary text-white text-xs font-bold px-4 py-2 hover:bg-primary-container shadow-xs flex items-center gap-2"
                 >
                   <Sparkles className="h-4 w-4" />
-                  <span>{isAuthorizing ? 'Mengirim Instruksi Transfer...' : 'Otorisasi Transfer Antar-Depot Sekarang'}</span>
+                  <span>
+                    {isAuthorizing
+                      ? 'Mengeksekusi Transfer di Database...'
+                      : `Otorisasi Transfer +${activeTransferTarget.crossDepotRecommendation?.suggestedTransferCartons || 200} Dus`}
+                  </span>
                 </Button>
-              )}
-            </div>
-          </div>
-
-          {/* Quick interactive transfer route visualization bar */}
-          <div className="p-3 bg-surface-container-lowest rounded-lg border border-outline/10 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-on-surface">Surabaya Rungkut (Surplus)</span>
-              <span className="text-on-surface-variant font-mono">1.100 Dus</span>
-            </div>
-            <div className="flex-1 max-w-xs flex items-center gap-2 justify-center text-primary font-mono text-[11px] font-bold">
-              <span>-300 Dus</span>
-              <div className="h-0.5 flex-1 bg-primary relative">
-                <div className="absolute right-0 -top-1 w-2 h-2 border-t-2 border-r-2 border-primary rotate-45"></div>
               </div>
-              <span className="text-emerald-700">+300 Dus</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-on-surface">Depot Krian (Kritis)</span>
-              <span className="text-emerald-700 font-mono font-bold">120 Dus → 420 Dus</span>
+
+            {lastTransferReceipt && (
+              <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="flex items-center gap-2 font-bold">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                  <span>
+                    Resi Transfer {lastTransferReceipt.transferCode} Berhasil! Stok {lastTransferReceipt.productName.split('(')[0]}{' '}
+                    bertambah dari {lastTransferReceipt.previousStock} Dus menjadi {lastTransferReceipt.newStock} Dus.
+                  </span>
+                </div>
+                <span className="font-mono text-[11px] font-semibold">
+                  Nilai: {formatRupiah(lastTransferReceipt.transferValueIDR)}
+                </span>
+              </div>
+            )}
+
+            {/* Quick interactive transfer route visualization bar */}
+            <div className="p-3 bg-surface-container-lowest rounded-lg border border-outline/10 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-on-surface">
+                  {activeTransferTarget.crossDepotRecommendation?.donorDepot || 'Depo Donor'}
+                </span>
+              </div>
+              <div className="flex-1 max-w-xs flex items-center gap-2 justify-center text-primary font-mono text-[11px] font-bold">
+                <span>-{activeTransferTarget.crossDepotRecommendation?.suggestedTransferCartons || 200} Dus</span>
+                <div className="h-0.5 flex-1 bg-primary relative">
+                  <div className="absolute right-0 -top-1 w-2 h-2 border-t-2 border-r-2 border-primary rotate-45"></div>
+                </div>
+                <span className="text-emerald-700">
+                  +{activeTransferTarget.crossDepotRecommendation?.suggestedTransferCartons || 200} Dus
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-on-surface">Depot Krian:</span>
+                <span className="text-emerald-700 font-mono font-bold">
+                  {activeTransferTarget.stockCartons} Dus →{' '}
+                  {activeTransferTarget.stockCartons +
+                    (activeTransferTarget.crossDepotRecommendation?.suggestedTransferCartons || 200)}{' '}
+                  Dus
+                </span>
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Risk Severity Matrix & Interactive Prioritization Table */}
       <Card className="border border-outline/10 shadow-xs">
@@ -306,22 +321,24 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
             <div>
               <h3 className="font-bold text-sm text-on-surface flex items-center gap-2">
                 <Layers className="h-4 w-4 text-primary" />
-                Matriks Prioritas Risiko Stockout Seluruh Jaringan
+                Matriks Prioritas Risiko Stockout Seluruh SKU (Data Riil Supabase)
               </h3>
-              <p className="text-xs text-on-surface-variant">Evaluasi real-time SKU terhadap ambang batas kehabisan barang di level distributor.</p>
+              <p className="text-xs text-on-surface-variant">
+                Klik baris SKU mana saja untuk menjadikannya target simulasi Cross-Depot Rebalancing di atas.
+              </p>
             </div>
 
             {/* Filters */}
             <div className="flex flex-wrap items-center gap-2">
               <select
-                value={selectedRegion}
-                onChange={(e) => setSelectedRegion(e.target.value)}
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
                 className="h-8 px-2 text-xs bg-surface-container border border-outline/20 rounded-md font-semibold"
               >
-                <option value="ALL">Semua Wilayah</option>
-                <option value="SDA">Sidoarjo & Krian</option>
-                <option value="SBY">Surabaya Raya</option>
-                <option value="MLG">Malang Raya</option>
+                <option value="ALL">Semua Kategori</option>
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
               </select>
 
               <select
@@ -329,17 +346,17 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
                 onChange={(e) => setSelectedSeverity(e.target.value)}
                 className="h-8 px-2 text-xs bg-surface-container border border-outline/20 rounded-md font-semibold"
               >
-                <option value="ALL">Semua Tingkat</option>
+                <option value="ALL">Semua Tingkat Risiko</option>
                 <option value="CRITICAL">Kritis (&lt;2 Hari)</option>
-                <option value="WARNING">Waspada (2-4 Hari)</option>
-                <option value="SAFE">Aman (&gt;4 Hari)</option>
+                <option value="HIGH">Siaga Tinggi (2-4 Hari)</option>
+                <option value="MODERATE">Waspada (4-6.5 Hari)</option>
+                <option value="OPTIMAL">Optimal (&gt;6.5 Hari)</option>
               </select>
 
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => {
-                  setSelectedRegion('ALL');
                   setSelectedCategory('ALL');
                   setSelectedSeverity('ALL');
                 }}
@@ -356,74 +373,86 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
               <thead>
                 <tr className="bg-surface-container-low text-on-surface-variant border-b border-outline/10">
                   <th className="py-2.5 px-3 font-semibold uppercase tracking-wider">SKU &amp; Kategori</th>
-                  <th className="py-2.5 px-3 font-semibold uppercase tracking-wider">Lokasi Depot</th>
-                  <th className="py-2.5 px-3 font-semibold uppercase tracking-wider text-right">Stok Riil / Buffer</th>
+                  <th className="py-2.5 px-3 font-semibold uppercase tracking-wider">Donor Terdekat</th>
+                  <th className="py-2.5 px-3 font-semibold uppercase tracking-wider text-right">Stok Riil / Buffer SS</th>
+                  <th className="py-2.5 px-3 font-semibold uppercase tracking-wider text-right">Laju ADS</th>
                   <th className="py-2.5 px-3 font-semibold uppercase tracking-wider text-right">Runway (DoI)</th>
                   <th className="py-2.5 px-3 font-semibold uppercase tracking-wider text-right">Omzet Berisiko</th>
                   <th className="py-2.5 px-3 font-semibold uppercase tracking-wider text-center">Status</th>
-                  <th className="py-2.5 px-3 font-semibold uppercase tracking-wider text-right">Tindakan Rekomendasi</th>
+                  <th className="py-2.5 px-3 font-semibold uppercase tracking-wider text-right">Tindakan</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline/10 font-medium">
-                {filteredItems.map((item) => (
-                  <tr key={item.id} className="hover:bg-surface-container-low transition-colors">
-                    <td className="py-3 px-3">
-                      <div className="font-bold text-on-surface">{item.sku}</div>
-                      <div className="text-[10px] text-on-surface-variant font-mono">{item.skuCode} • {item.category}</div>
-                    </td>
-                    <td className="py-3 px-3">
-                      <div className="text-on-surface font-semibold">{item.depot}</div>
-                      <div className="text-[10px] text-on-surface-variant font-mono">Region: {item.region}</div>
-                    </td>
-                    <td className="py-3 px-3 text-right">
-                      <div className="font-mono font-bold text-on-surface">{item.stockReal} Dus</div>
-                      <div className="text-[10px] text-on-surface-variant font-mono">Bfr: {item.buffer} Dus</div>
-                    </td>
-                    <td className="py-3 px-3 text-right">
-                      <span className={`font-mono font-bold text-xs ${item.doi < 2 ? 'text-red-600' : 'text-on-surface'}`}>
-                        {item.doiLabel}
-                      </span>
-                    </td>
-                    <td className="py-3 px-3 text-right font-mono font-bold text-on-surface">
-                      {item.revenueAtRisk > 0 ? formatRupiah(item.revenueAtRisk) : '-'}
-                    </td>
-                    <td className="py-3 px-3 text-center">
-                      <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${item.severityColor}`}>
-                        {item.severityLabel}
-                      </span>
-                    </td>
-                    <td className="py-3 px-3 text-right">
-                      {item.actionType === 'RESTOCK_DISPATCH' && (
-                        <Button
-                          size="sm"
-                          onClick={() => setCurrentScreen && setCurrentScreen('smart-recommendations')}
-                          className="bg-primary text-white text-[11px] h-7 px-2.5 hover:bg-primary-container"
-                        >
-                          Replenish PO
-                        </Button>
-                      )}
-                      {item.actionType === 'CROSS_DEPOT' && (
-                        <Button
-                          size="sm"
-                          onClick={() => setCurrentScreen && setCurrentScreen('what-if-simulator')}
-                          variant="outline"
-                          className="text-[11px] h-7 px-2.5"
-                        >
-                          Simulasi Reroute
-                        </Button>
-                      )}
-                      {item.actionType === 'FACTORY_EXPEDITE' && (
-                        <Badge variant="tertiary" className="text-[10px]">Expedite Pasuruan</Badge>
-                      )}
-                      {item.actionType === 'MONITOR' && (
-                        <span className="text-[11px] text-on-surface-variant">Pantau DSR</span>
-                      )}
-                      {item.actionType === 'NONE' && (
-                        <span className="text-[11px] text-emerald-700 font-semibold">Stok Stabil</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                {filteredItems.map((item) => {
+                  const badge = getSeverityBadge(item.riskLevel);
+                  const isSelected = activeTransferTarget?.productId === item.productId;
+                  return (
+                    <tr
+                      key={item.productId}
+                      onClick={() => setSelectedTransferSku(item)}
+                      className={`hover:bg-surface-container-low transition-colors cursor-pointer ${
+                        isSelected ? 'bg-primary/5' : ''
+                      }`}
+                    >
+                      <td className="py-3 px-3">
+                        <div className="font-bold text-on-surface">{item.name.split('(')[0].trim()}</div>
+                        <div className="text-[10px] text-on-surface-variant font-mono">
+                          {item.sku} • {item.category}
+                        </div>
+                      </td>
+                      <td className="py-3 px-3">
+                        <div className="text-on-surface font-semibold">
+                          {item.crossDepotRecommendation?.donorDepot || 'Depo Mojokerto'}
+                        </div>
+                        <div className="text-[10px] text-on-surface-variant font-mono">
+                          Saran Transfer: +{item.crossDepotRecommendation?.suggestedTransferCartons} Dus
+                        </div>
+                      </td>
+                      <td className="py-3 px-3 text-right">
+                        <div className="font-mono font-bold text-on-surface">{item.stockCartons} Dus</div>
+                        <div className="text-[10px] text-on-surface-variant font-mono">SS: {item.safetyStock} Dus</div>
+                      </td>
+                      <td className="py-3 px-3 text-right font-mono text-on-surface-variant">
+                        {item.adsCartonsPerDay} Dus/hr
+                      </td>
+                      <td className="py-3 px-3 text-right">
+                        <span className={`font-mono font-bold text-xs ${item.runwayDays < 2 ? 'text-red-600' : 'text-on-surface'}`}>
+                          {item.runwayDays} Hari
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 text-right font-mono font-bold text-on-surface">
+                        {item.revenueAtRiskIDR > 0 ? formatRupiah(item.revenueAtRiskIDR) : '-'}
+                      </td>
+                      <td className="py-3 px-3 text-center">
+                        <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${badge.color}`}>
+                          {badge.label}
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 text-right" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-end gap-1.5">
+                          <Button
+                            size="sm"
+                            onClick={() => {
+                              setSelectedTransferSku(item);
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                            variant="outline"
+                            className="text-[11px] h-7 px-2"
+                          >
+                            Rebalance
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={() => setCurrentScreen && setCurrentScreen('smart-recommendations')}
+                            className="bg-primary text-white text-[11px] h-7 px-2.5 hover:bg-primary-container"
+                          >
+                            PO Pabrik
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -432,7 +461,6 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
 
       {/* Visual Analysis: Regional Vulnerability & Lead Time Stress Testing */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        {/* Section 1: Route Vulnerability Breakdown: 7 cols */}
         <div className="lg:col-span-7 bg-surface-container-lowest p-5 rounded-xl border border-outline/10 shadow-xs space-y-3">
           <div className="flex items-center justify-between border-b border-outline/10 pb-3">
             <span className="font-bold text-xs text-on-surface flex items-center gap-1.5">
@@ -454,26 +482,25 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
             </div>
             <div className="p-3 bg-surface-container-low rounded-lg border border-outline/10 flex items-center justify-between text-xs">
               <div>
-                <div className="font-bold text-on-surface">Koridor 2: Jalur Arteri Surabaya - Krian - Balongbendo</div>
+                <div className="font-bold text-on-surface">Koridor 2: Tol Jombang - Mojokerto - Exit Krian</div>
+                <div className="text-[10px] text-on-surface-variant">Jalur Cross-Depot Rebalancing Darurat</div>
+              </div>
+              <span className="px-2 py-0.5 rounded font-bold text-[10px] bg-emerald-100 text-emerald-800">
+                Lancar (1.5 Jam)
+              </span>
+            </div>
+            <div className="p-3 bg-surface-container-low rounded-lg border border-outline/10 flex items-center justify-between text-xs">
+              <div>
+                <div className="font-bold text-on-surface">Koridor 3: Jalur Arteri Surabaya - Krian - Balongbendo</div>
                 <div className="text-[10px] text-on-surface-variant">Rute pengiriman harian armada canter retail</div>
               </div>
               <span className="px-2 py-0.5 rounded font-bold text-[10px] bg-amber-100 text-amber-800">
                 Padat Sore (+25 Menit)
               </span>
             </div>
-            <div className="p-3 bg-surface-container-low rounded-lg border border-outline/10 flex items-center justify-between text-xs">
-              <div>
-                <div className="font-bold text-on-surface">Koridor 3: Pantura Tuban - Lamongan</div>
-                <div className="text-[10px] text-on-surface-variant">Distribusi pasokan regional barat</div>
-              </div>
-              <span className="px-2 py-0.5 rounded font-bold text-[10px] bg-red-100 text-red-800">
-                Perbaikan Jalan (+1.5 Jam)
-              </span>
-            </div>
           </div>
         </div>
 
-        {/* Section 2: Proactive Safety Stock Protocol: 5 cols */}
         <div className="lg:col-span-5 bg-surface-container-lowest p-5 rounded-xl border border-outline/10 shadow-xs space-y-3 flex flex-col justify-between">
           <div className="space-y-2.5">
             <div className="flex items-center gap-2 border-b border-outline/10 pb-2.5">
@@ -481,16 +508,16 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
               <h3 className="font-bold text-xs text-on-surface">Protokol Mitigasi GTNIC 2026</h3>
             </div>
             <p className="text-xs text-on-surface-variant leading-relaxed">
-              Model prediktif SupplySync secara dinamis menyesuaikan batas safety stock berdasarkan cuaca, historis kepadatan rute logistik, dan event retail lokal di Jawa Timur.
+              Model prediktif SupplySync menghitung safety stock dengan rumus <code>SS = 1.65 × 0.85 × ADS</code> langsung dari saldo stok tabel <code>Product</code> di Supabase PostgreSQL.
             </p>
             <div className="p-2.5 bg-surface-container-low rounded-lg border border-outline/10 text-xs space-y-1">
               <div className="flex justify-between">
-                <span className="text-on-surface-variant">Algoritma Active:</span>
-                <span className="font-bold font-mono text-primary">Dynamic Buffer v2.4</span>
+                <span className="text-on-surface-variant">Total SKU Dimonitor:</span>
+                <span className="font-bold font-mono text-primary">{rawItems.length} SKU</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-on-surface-variant">Confidence Interval:</span>
-                <span className="font-bold font-mono text-on-surface">97.8% (Sigma 2.5)</span>
+                <span className="text-on-surface-variant">Service Level Target:</span>
+                <span className="font-bold font-mono text-on-surface">95.0% (Z = 1.65)</span>
               </div>
             </div>
           </div>

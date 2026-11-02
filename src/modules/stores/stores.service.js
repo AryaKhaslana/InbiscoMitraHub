@@ -59,3 +59,30 @@ export async function lookupStoreByPhone(phone) {
 
   return store;
 }
+
+/**
+ * Persists a contact / partnership inquiry from public visitors into AuditLog.
+ */
+export async function createContactInquiry(payload) {
+  const inquiry = await prisma.auditLog.create({
+    data: {
+      action: 'CONTACT_INQUIRY',
+      entityType: 'Inquiry',
+      entityId: `inq-${Date.now()}`,
+      details: {
+        name: payload.name,
+        phone: payload.phone,
+        storeName: payload.storeName || null,
+        category: payload.category || 'General',
+        message: payload.message,
+        submittedAt: new Date().toISOString(),
+      },
+    },
+  });
+
+  return {
+    id: inquiry.id,
+    message: 'Pesan kemitraan Anda telah diterima oleh tim CS PT Inbisco Niagatama Semesta.',
+  };
+}
+

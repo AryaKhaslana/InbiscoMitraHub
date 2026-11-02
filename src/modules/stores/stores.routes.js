@@ -2,7 +2,11 @@ import { Router } from 'express';
 import { rateLimit } from '../../middlewares/rateLimit.middleware.js';
 import { validate } from '../../middlewares/validate.middleware.js';
 import * as storesController from './stores.controller.js';
-import { lookupStoreSchema, registerStoreSchema } from './stores.schema.js';
+import {
+  contactInquirySchema,
+  lookupStoreSchema,
+  registerStoreSchema,
+} from './stores.schema.js';
 
 const router = Router();
 
@@ -16,6 +20,17 @@ router.post(
   rateLimit({ prefix: 'rl:stores_register', max: 10, windowSeconds: 60 }),
   validate(registerStoreSchema),
   storesController.registerStore
+);
+
+/**
+ * POST /api/v1/stores/contact
+ * Public endpoint for partnership inquiries and general support messages.
+ */
+router.post(
+  '/contact',
+  rateLimit({ prefix: 'rl:contact_inquiry', max: 10, windowSeconds: 60 }),
+  validate(contactInquirySchema),
+  storesController.submitContactInquiry
 );
 
 /**

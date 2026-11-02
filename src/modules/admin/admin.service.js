@@ -1422,11 +1422,17 @@ export async function batchApprovePo(payload, meta = {}) {
   const grandTotalIDR = subtotalIDR - wholesaleDiscountIDR + taxPpnIDR;
   const ftlUtilizationPct = Math.min(100, Math.round((totalVolumeM3 / 65.0) * 100));
 
+  const sourceFactory =
+    payload.targetPlant === 'driyorejo'
+      ? 'Mayora Plant Driyorejo (Gresik)'
+      : payload.targetPlant || 'Mayora Plant DC Pasuruan (Jawa Timur)';
+
   const poRecord = {
     poNumber,
     doNumber,
     depotName: payload.depotName,
-    sourceFactory: 'Mayora Plant DC Pasuruan (Jawa Timur)',
+    sourceFactory,
+    priority: payload.priority || 'express',
     status: payload.applyToStock ? 'RECEIVED_IN_STOCK' : 'APPROVED_IN_TRANSIT',
     totalCartons,
     totalVolumeM3: Number(totalVolumeM3.toFixed(1)),
@@ -1545,25 +1551,55 @@ export async function getInboundDeliveries() {
   for (const log of recentPoLogs) {
     const d = log.details || {};
     if (d.doNumber && d.doNumber !== 'DO-2026-0881') {
-      const isDone = confirmedDoSet.has(d.doNumber);
+      const isDone = confirmedDoSet.has(d.doNumber) || d.status === 'RECEIVED_IN_STOCK';
       activeDeliveries.push({
         doNumber: d.doNumber,
         poNumber: d.poNumber,
         origin: d.sourceFactory || 'Mayora Plant DC Pasuruan',
         destination: d.depotName || 'CV Surya Krian Logistik',
         status: isDone ? 'DELIVERED_BAST_VERIFIED' : 'IN_TRANSIT',
-        currentStep: isDone ? 4 : 2,
+        currentStep: isDone ? 4 : 3,
+        milestones: [
+          { step: 1, title: 'HQ Approval & SAP DO Release', time: 'Terverifikasi', completed: true },
+          { step: 2, title: 'Plant Loading & e-Lock Sealing', time: 'Terverifikasi', completed: true },
+          {
+            step: 3,
+            title: 'Transit Tol Pandaan – Krian',
+            time: 'Dalam Perjalanan',
+            completed: true,
+          },
+          {
+            step: 4,
+            title: 'Unloading & Verifikasi BAST Gudang Krian',
+            time: isDone ? 'Selesai' : 'Menunggu Konfirmasi BAST',
+            completed: isDone,
+          },
+        ],
         fleet: {
           plateNumber: 'B 9481 UEX',
           vehicleType: 'Wingbox Tronton 65 m³',
           driverName: 'Hendra Gunawan',
+          driverPhone: '0813-5581-9920',
           sealNumber: `MYR-${d.doNumber.slice(-4)}99`,
           sealStatus: 'LOCKED_INTACT',
+          gpsCoordinates: {
+            lat: -7.4128,
+            lng: 112.5844,
+            distanceRemainingKm: isDone ? 0 : 8.4,
+            locationLabel: isDone
+              ? 'Tiba di Dock Gudang Depo Krian'
+              : '8.4 km menjelang Exit Tol Krian',
+          },
         },
         cargoSummary: {
           totalCartons: d.totalCartons || 0,
           ftlUtilizationPct: d.ftlUtilizationPct || 85,
-          items: d.items || [],
+          items: (d.items || []).map((it) => ({
+            sku: it.sku,
+            name: it.productName || it.name || it.sku,
+            quantityCartons: it.quantityCartons,
+            batchNumber: 'BATCH-NEW-2611',
+          })),
         },
       });
     }
@@ -1598,21 +1634,39 @@ export async function confirmInboundDelivery(doNumber, payload, meta = {}) {
 
   const restockedItems = [];
   if (payload.applyToStock !== false) {
-    const defaultCargo = [
-      { sku: 'MYR-BIS-ROMAKELAPA-300', quantityCartons: 550 },
-      { sku: 'MYR-WAF-BENGBENG-25', quantityCartons: 300 },
-    ];
+    // Check if this DO belongs to a BATCH_PO_APPROVED log with specific items
+    const matchingPoLogs = await prisma.auditLog.findMany({
+      where: { action: 'BATCH_PO_APPROVED' },
+      orderBy: { createdAt: 'desc' },
+      take: 20,
+    });
+    const matchedPo = matchingPoLogs.find(
+      (l) => l.details && String(l.details.doNumber || '').toUpperCase() === cleanDo
+    );
 
-    for (const item of defaultCargo) {
-      const prod = await resolveProduct({ sku: item.sku });
-      const updated = await prisma.product.update({
-        where: { id: prod.id },
-        data: { stockCartons: { increment: item.quantityCartons } },
-      });
+    const cargoToRestock =
+      matchedPo && Array.isArray(matchedPo.details.items) && matchedPo.details.items.length > 0
+        ? matchedPo.details.items
+        : [
+            { sku: 'MYR-BIS-ROMAKELAPA-300', quantityCartons: 550 },
+            { sku: 'MYR-WAF-BENGBENG-25', quantityCartons: 300 },
+          ];
+
+    // Only increment stock if the PO did not already applyToStock at approval time
+    const alreadyApplied = matchedPo && matchedPo.details?.status === 'RECEIVED_IN_STOCK';
+
+    for (const item of cargoToRestock) {
+      const prod = await resolveProduct({ productId: item.productId, sku: item.sku });
+      const updated = alreadyApplied
+        ? prod
+        : await prisma.product.update({
+            where: { id: prod.id },
+            data: { stockCartons: { increment: Number(item.quantityCartons) || 0 } },
+          });
       restockedItems.push({
         sku: prod.sku,
         name: prod.name,
-        addedCartons: item.quantityCartons,
+        addedCartons: Number(item.quantityCartons) || 0,
         newStockCartons: updated.stockCartons,
       });
     }
@@ -1770,15 +1824,21 @@ export async function generateOrdersCsv() {
  * Returns East Java regional distribution network nodes for Executive Overview & Distributor Management.
  */
 export async function getDistributorNodes() {
+  const stockAgg = await prisma.product.aggregate({
+    where: { isAvailable: true },
+    _sum: { stockCartons: true },
+  });
+  const krianLiveStock = Number(stockAgg._sum.stockCartons || 1840);
+
   const distributors = [
     {
       id: 'DIST-01',
       name: 'CV Surya Krian Logistik',
       cluster: 'Sidoarjo Barat',
       hubCoverage: 'Krian, Balongbendo, Tarik, Prambon, Wonoayu',
-      status: 'OPTIMAL',
+      status: krianLiveStock < 1500 ? 'ATTENTION' : 'OPTIMAL',
       healthPct: 98.4,
-      onHandStockCartons: 1840,
+      onHandStockCartons: krianLiveStock,
       activeTruckCount: 6,
       creditLimitIDR: 500000000,
       usedCreditIDR: 80000000,

@@ -1,7 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
+import { api } from '../../services/api';
 import { 
   Boxes, 
   Truck, 
@@ -14,123 +15,106 @@ import {
   Minus, 
   Send, 
   History, 
-  AlertTriangle,
-  RotateCcw,
-  PackageCheck
+  PackageCheck,
+  RefreshCw
 } from 'lucide-react';
 import { formatRupiah } from '../../lib/utils';
 import confetti from 'canvas-confetti';
 
 export default function RestockRequest({ setCurrentScreen }) {
-  // SKUs in the restock form
-  const [skuItems, setSkuItems] = useState([
-    {
-      id: 'roma-kelapa',
-      name: 'Roma Kelapa 300g',
-      category: 'Biskuit',
-      skuCode: 'MYR-BIS-001',
-      stockReal: 120,
-      avgDailySales: 175,
-      aiSuggested: 850,
-      inputDus: 850,
-      unitPrice: 215000,
-      cbmPerDus: 0.038,
-      kgPerDus: 7.2,
-      imageUrl: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=120&auto=format&fit=crop&q=60'
-    },
-    {
-      id: 'beng-beng',
-      name: 'Beng-Beng Regular 20g (Dus)',
-      category: 'Cokelat & Wafer',
-      skuCode: 'MYR-WFR-002',
-      stockReal: 240,
-      avgDailySales: 90,
-      aiSuggested: 400,
-      inputDus: 200,
-      unitPrice: 198000,
-      cbmPerDus: 0.024,
-      kgPerDus: 5.4,
-      imageUrl: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=120&auto=format&fit=crop&q=60'
-    },
-    {
-      id: 'torabika-duo',
-      name: 'Torabika Duo Kopi Manis 25g',
-      category: 'Kopi & Minuman',
-      skuCode: 'MYR-KOP-003',
-      stockReal: 310,
-      avgDailySales: 110,
-      aiSuggested: 350,
-      inputDus: 150,
-      unitPrice: 165000,
-      cbmPerDus: 0.022,
-      kgPerDus: 6.0,
-      imageUrl: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=120&auto=format&fit=crop&q=60'
-    },
-    {
-      id: 'energen-cokelat',
-      name: 'Energen Cokelat Sereal 34g',
-      category: 'Sarapan Sehat',
-      skuCode: 'MYR-SER-004',
-      stockReal: 420,
-      avgDailySales: 85,
-      aiSuggested: 250,
-      inputDus: 100,
-      unitPrice: 182000,
-      cbmPerDus: 0.026,
-      kgPerDus: 6.8,
-      imageUrl: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=120&auto=format&fit=crop&q=60'
-    }
-  ]);
+  const [skuItems, setSkuItems] = useState([]);
+  const [poHistory, setPoHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [targetPlant, setTargetPlant] = useState('pasuruan'); // pasuruan | driyorejo
   const [priority, setPriority] = useState('express'); // regular | express | urgent
+  const [applyImmediately, setApplyImmediately] = useState(false);
   const [notes, setNotes] = useState('Prioritaskan pemenuhan rute Krian Barat & Balongbendo sebelum akhir pekan.');
-  const [submitted, setSubmitted] = useState(false);
+  const [submittedPo, setSubmittedPo] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // History PO items
-  const [poHistory, setPoHistory] = useState([
-    {
-      id: 'PO-2026-MAY-0842',
-      date: '17 Jun 2026',
-      plant: 'Pasuruan Plant DC',
-      totalDus: 850,
-      totalValue: 182750000,
-      status: 'MENUNGGU_APPROVAL',
-      statusLabel: 'Menunggu Approval HQ',
-      statusColor: 'bg-amber-100 text-amber-800'
-    },
-    {
-      id: 'PO-2026-MAY-0839',
-      date: '15 Jun 2026',
-      plant: 'Pasuruan Plant DC',
-      totalDus: 600,
-      totalValue: 118800000,
-      status: 'DISETUJUI',
-      statusLabel: 'Disetujui Mayora HQ',
-      statusColor: 'bg-blue-100 text-blue-800'
-    },
-    {
-      id: 'PO-2026-MAY-0831',
-      date: '12 Jun 2026',
-      plant: 'Driyorejo Plant',
-      totalDus: 950,
-      totalValue: 172400000,
-      status: 'DALAM_PENGIRIMAN',
-      statusLabel: 'Dalam Pengiriman (DO-2026-0881)',
-      statusColor: 'bg-purple-100 text-purple-800'
-    },
-    {
-      id: 'PO-2026-MAY-0818',
-      date: '08 Jun 2026',
-      plant: 'Pasuruan Plant DC',
-      totalDus: 1200,
-      totalValue: 245000000,
-      status: 'SELESAI',
-      statusLabel: 'Selesai & BAST Diterima',
-      statusColor: 'bg-emerald-100 text-emerald-800'
+  const fetchRestockData = useCallback(async () => {
+    setLoading(true);
+    try {
+      let simOverride = null;
+      try {
+        const raw = sessionStorage.getItem('supplysync_sim_restock');
+        if (raw) {
+          simOverride = JSON.parse(raw);
+          sessionStorage.removeItem('supplysync_sim_restock');
+        }
+      } catch {}
+
+      const [recRes, logsRes] = await Promise.all([
+        api.getRestockRecommendations(),
+        api.getAuditLogs({ action: 'BATCH_PO_APPROVED', limit: 15 }),
+      ]);
+
+      const recs = recRes?.recommendations || [];
+      setSkuItems(
+        recs.map((r, idx) => {
+          const isOverridden =
+            simOverride && (simOverride.productId === r.productId || simOverride.sku === r.sku);
+          return {
+            id: r.productId,
+            productId: r.productId,
+            name: r.name.split('(')[0].trim(),
+            category: r.category,
+            skuCode: r.sku,
+            stitchCode: r.stitchCode,
+            stockReal: r.stockCartons,
+            avgDailySales: r.adsCartonsPerDay,
+            aiSuggested: r.recommendedQuantityCartons,
+            inputDus: isOverridden
+              ? simOverride.quantityCartons
+              : idx < 4
+              ? r.recommendedQuantityCartons
+              : 0,
+            unitPrice: r.unitPriceIDR,
+            cbmPerDus: r.cbmPerCarton,
+            kgPerDus: r.weightKgPerCarton,
+          };
+        })
+      );
+
+      const rawLogs = Array.isArray(logsRes) ? logsRes : logsRes?.logs || [];
+      const mappedLogs = rawLogs.map((l) => {
+        const d = l.details || {};
+        const isDone = d.status === 'RECEIVED_IN_STOCK';
+        return {
+          id: d.poNumber || l.entityId,
+          doNumber: d.doNumber || '-',
+          date: new Date(d.approvedAt || l.createdAt).toLocaleDateString('id-ID', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+          }),
+          plant: d.sourceFactory || 'Mayora Plant DC Pasuruan',
+          totalDus: d.totalCartons || 0,
+          totalValue: d.grandTotalIDR || d.subtotalIDR || 0,
+          status: d.status || 'APPROVED_IN_TRANSIT',
+          statusLabel: isDone
+            ? 'Selesai & Stok Masuk DB'
+            : `Dalam Pengiriman (${d.doNumber || 'DO Aktif'})`,
+          statusColor: isDone
+            ? 'bg-emerald-100 text-emerald-800'
+            : 'bg-purple-100 text-purple-800',
+        };
+      });
+      setPoHistory(mappedLogs);
+    } catch (err) {
+      console.error('RestockRequest fetch error:', err);
+    } finally {
+      setLoading(false);
     }
-  ]);
+  }, []);
+
+  useEffect(() => {
+    fetchRestockData();
+    const onRefresh = () => fetchRestockData();
+    window.addEventListener('supplysync:refresh', onRefresh);
+    return () => window.removeEventListener('supplysync:refresh', onRefresh);
+  }, [fetchRestockData]);
 
   // Calculations
   const calculations = useMemo(() => {
@@ -139,7 +123,7 @@ export default function RestockRequest({ setCurrentScreen }) {
     let totalKg = 0;
     let subtotalValue = 0;
 
-    skuItems.forEach(item => {
+    skuItems.forEach((item) => {
       const dus = Number(item.inputDus) || 0;
       totalDus += dus;
       totalCbm += dus * item.cbmPerDus;
@@ -147,12 +131,13 @@ export default function RestockRequest({ setCurrentScreen }) {
       subtotalValue += dus * item.unitPrice;
     });
 
-    const ppn = subtotalValue * 0.11;
-    const grandTotal = subtotalValue + ppn;
-    
-    // FTL capacity = ~45 CBM or ~14,000 KG (Standard Wingbox)
-    const cbmPercentage = Math.min(100, Math.round((totalCbm / 45) * 100));
-    const kgPercentage = Math.min(100, Math.round((totalKg / 14000) * 100));
+    const discount = Math.round(subtotalValue * 0.02);
+    const ppn = Math.round((subtotalValue - discount) * 0.11);
+    const grandTotal = subtotalValue - discount + ppn;
+
+    // Wingbox capacity = 65 CBM or 18,000 KG
+    const cbmPercentage = Math.min(100, Math.round((totalCbm / 65) * 100));
+    const kgPercentage = Math.min(100, Math.round((totalKg / 18000) * 100));
     const ftlPercentage = Math.max(cbmPercentage, kgPercentage);
 
     return {
@@ -160,55 +145,66 @@ export default function RestockRequest({ setCurrentScreen }) {
       totalCbm: totalCbm.toFixed(1),
       totalKg: Math.round(totalKg),
       subtotalValue,
+      discount,
       ppn,
       grandTotal,
-      ftlPercentage
+      ftlPercentage,
     };
   }, [skuItems]);
 
   const handleQuantityChange = (id, newQuantity) => {
     const qty = Math.max(0, parseInt(newQuantity) || 0);
-    setSkuItems(prev => prev.map(item => item.id === id ? { ...item, inputDus: qty } : item));
+    setSkuItems((prev) => prev.map((item) => (item.id === id ? { ...item, inputDus: qty } : item)));
   };
 
   const handleApplyAiRecommendation = () => {
-    setSkuItems(prev => prev.map(item => ({
-      ...item,
-      inputDus: item.aiSuggested
-    })));
+    setSkuItems((prev) =>
+      prev.map((item) => ({
+        ...item,
+        inputDus: item.aiSuggested,
+      }))
+    );
   };
 
-  const handleSubmitPo = (e) => {
+  const handleSubmitPo = async (e) => {
     e.preventDefault();
-    if (calculations.totalDus === 0) {
+    const selectedItems = skuItems.filter((i) => Number(i.inputDus) > 0);
+    if (selectedItems.length === 0) {
       alert('Mohon masukkan kuantitas dus yang ingin diajukan.');
       return;
     }
 
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSubmitted(true);
+    setSubmittedPo(null);
+    try {
+      const po = await api.batchApprovePo({
+        depotName: 'CV Surya Krian Logistik',
+        targetPlant,
+        priority,
+        applyToStock: applyImmediately,
+        notes,
+        items: selectedItems.map((i) => ({
+          productId: i.productId,
+          sku: i.skuCode,
+          quantityCartons: Number(i.inputDus),
+        })),
+      });
+
+      setSubmittedPo(po);
       confetti({
         particleCount: 70,
         spread: 60,
-        origin: { y: 0.7 }
+        origin: { y: 0.7 },
       });
-
-      // Add to history
-      const newPo = {
-        id: `PO-2026-MAY-${Math.floor(1000 + Math.random() * 9000)}`,
-        date: 'Hari ini',
-        plant: targetPlant === 'pasuruan' ? 'Pasuruan Plant DC' : 'Driyorejo Plant',
-        totalDus: calculations.totalDus,
-        totalValue: calculations.grandTotal,
-        status: 'MENUNGGU_APPROVAL',
-        statusLabel: 'Menunggu Approval HQ',
-        statusColor: 'bg-amber-100 text-amber-800'
-      };
-      setPoHistory([newPo, ...poHistory]);
-    }, 800);
+      await fetchRestockData();
+    } catch (err) {
+      alert(err.message || 'Gagal mengajukan Purchase Order');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  const topSku = skuItems[0];
 
   return (
     <div className="flex flex-col w-full pb-16 space-y-6">
@@ -217,30 +213,34 @@ export default function RestockRequest({ setCurrentScreen }) {
         <div>
           <div className="flex items-center gap-2 text-primary font-mono text-xs uppercase tracking-wider mb-1">
             <Truck className="h-4 w-4" />
-            <span>Modul Alokasi Pabrik • Siklus Distribusi Jawa Timur</span>
+            <span>Modul Alokasi Pabrik • Terhubung ke Supabase &amp; SAP S/4HANA</span>
           </div>
           <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-on-surface">
-            Pengajuan Restock Mandiri & Rekomendasi Alokasi Pabrik
+            Pengajuan Restock Mandiri &amp; Rekomendasi Alokasi Pabrik
           </h1>
           <p className="text-sm text-on-surface-variant mt-1">
-            Sinkronisasi kuota replenishment langsung ke Mayora Manufacturing Plant Pasuruan & Driyorejo.
+            Sinkronisasi kuota replenishment langsung ke Mayora Manufacturing Plant Pasuruan &amp; Driyorejo.
           </p>
         </div>
         <div className="flex items-center gap-2.5 self-start lg:self-auto">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container-high text-xs font-semibold text-on-surface shadow-xs">
-            <span className="material-symbols-outlined text-[16px] text-tertiary">verified_user</span>
-            <span>SLA Validasi HQ: &lt; 2 Jam</span>
-          </div>
-          <button 
+          <button
             onClick={() => {
               const el = document.getElementById('history-section');
               if (el) el.scrollIntoView({ behavior: 'smooth' });
             }}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface text-xs font-semibold hover:bg-surface-container-high shadow-xs transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface text-xs font-semibold hover:bg-surface-container-high shadow-xs border border-outline/10 transition-colors"
           >
             <History className="h-3.5 w-3.5" />
-            <span>Riwayat PO</span>
+            <span>Riwayat PO ({poHistory.length})</span>
           </button>
+          <Button
+            onClick={fetchRestockData}
+            variant="outline"
+            size="sm"
+            className="h-8 px-2.5"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin text-primary' : ''}`} />
+          </Button>
         </div>
       </div>
 
@@ -255,27 +255,31 @@ export default function RestockRequest({ setCurrentScreen }) {
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <span className="px-2 py-0.5 rounded bg-primary text-white text-[11px] uppercase tracking-wider font-bold">
-                  Rekomendasi AI Terdeteksi
+                  Rekomendasi AI Terdeteksi (Live DB)
                 </span>
                 <span className="font-mono text-xs text-tertiary font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
-                  Akurasi Prediksi 98.4%
+                  Service Level 95% (Z=1.65)
                 </span>
               </div>
               <h2 className="text-base font-bold text-on-surface">
-                Roma Kelapa 300g (850 Dus) direkomendasikan segera diajukan.
+                {topSku
+                  ? `${topSku.name} (${topSku.aiSuggested} Dus) direkomendasikan segera diajukan.`
+                  : 'Rekomendasi alokasi SKU prioritas siap diajukan.'}
               </h2>
               <p className="text-xs text-on-surface-variant max-w-3xl">
-                Laju konsumsi retail melonjak +42% di teritori Krian & Balongbendo menjelang festival akhir pekan. Stok di gudang hanya tersisa 120 dus (&lt; 1 hari operasional).
+                {topSku
+                  ? `Stok fisik di Gudang Krian saat ini hanya tersisa ${topSku.stockReal} dus dengan laju konsumsi rata-rata ${topSku.avgDailySales} dus/hari.`
+                  : 'Kalkulasi dinamis berdasarkan saldo stok aktual di Supabase.'}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2 self-start lg:self-auto shrink-0">
-            <Button 
+            <Button
               onClick={handleApplyAiRecommendation}
               className="bg-primary text-white text-xs font-semibold px-4 py-2 hover:bg-primary-container shadow-xs flex items-center gap-1.5"
             >
               <PackageCheck className="h-4 w-4" />
-              <span>Terapkan Rekomendasi AI</span>
+              <span>Terapkan Semua Saran AI</span>
             </Button>
           </div>
         </div>
@@ -304,8 +308,8 @@ export default function RestockRequest({ setCurrentScreen }) {
                 </div>
                 <div className="p-3 bg-surface-container-low rounded-lg border border-outline/10">
                   <div className="text-[11px] text-on-surface-variant font-medium">Plafon Kredit Mitra</div>
-                  <div className="text-xs font-bold text-emerald-700 mt-0.5">Rp 1.250.000.000</div>
-                  <div className="text-[10px] text-on-surface-variant mt-0.5">Sisa: Rp 485.000.000</div>
+                  <div className="text-xs font-bold text-emerald-700 mt-0.5">Rp 500.000.000</div>
+                  <div className="text-[10px] text-on-surface-variant mt-0.5">Sisa Aktif: Rp 420.000.000</div>
                 </div>
                 <div className="p-3 bg-surface-container-low rounded-lg border border-outline/10">
                   <div className="text-[11px] text-on-surface-variant font-medium">Plant Induk Pasokan</div>
@@ -314,8 +318,8 @@ export default function RestockRequest({ setCurrentScreen }) {
                       type="button"
                       onClick={() => setTargetPlant('pasuruan')}
                       className={`px-2 py-1 rounded text-[11px] font-bold transition-all ${
-                        targetPlant === 'pasuruan' 
-                          ? 'bg-primary text-white shadow-xs' 
+                        targetPlant === 'pasuruan'
+                          ? 'bg-primary text-white shadow-xs'
                           : 'bg-surface-container text-on-surface-variant'
                       }`}
                     >
@@ -325,8 +329,8 @@ export default function RestockRequest({ setCurrentScreen }) {
                       type="button"
                       onClick={() => setTargetPlant('driyorejo')}
                       className={`px-2 py-1 rounded text-[11px] font-bold transition-all ${
-                        targetPlant === 'driyorejo' 
-                          ? 'bg-primary text-white shadow-xs' 
+                        targetPlant === 'driyorejo'
+                          ? 'bg-primary text-white shadow-xs'
                           : 'bg-surface-container text-on-surface-variant'
                       }`}
                     >
@@ -344,7 +348,7 @@ export default function RestockRequest({ setCurrentScreen }) {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <Boxes className="h-4 w-4 text-primary" />
-                  <span className="font-bold text-sm text-on-surface">Katalog &amp; Alokasi Kuantitas Produk</span>
+                  <span className="font-bold text-sm text-on-surface">Katalog &amp; Alokasi Kuantitas Produk (Data Live Supabase)</span>
                 </div>
                 <span className="text-[11px] text-on-surface-variant">Satuan: <strong>Karton (Dus)</strong></span>
               </div>
@@ -354,8 +358,8 @@ export default function RestockRequest({ setCurrentScreen }) {
                   <thead>
                     <tr className="bg-surface-container-low text-on-surface-variant border-b border-outline/10">
                       <th className="py-2.5 px-3 font-semibold uppercase tracking-wider">Produk SKU</th>
-                      <th className="py-2.5 px-2 font-semibold uppercase tracking-wider text-right">Stok Riil</th>
-                      <th className="py-2.5 px-2 font-semibold uppercase tracking-wider text-right">Avg Laju/Hari</th>
+                      <th className="py-2.5 px-2 font-semibold uppercase tracking-wider text-right">Stok Riil DB</th>
+                      <th className="py-2.5 px-2 font-semibold uppercase tracking-wider text-right">Avg Laju/Hr</th>
                       <th className="py-2.5 px-2 font-semibold uppercase tracking-wider text-right">Saran AI</th>
                       <th className="py-2.5 px-3 font-semibold uppercase tracking-wider text-center w-36">Input Dus</th>
                       <th className="py-2.5 px-2 font-semibold uppercase tracking-wider text-right">Est. CBM</th>
@@ -363,24 +367,21 @@ export default function RestockRequest({ setCurrentScreen }) {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-outline/10 font-medium">
-                    {skuItems.map((sku) => {
+                    {skuItems.map((sku, idx) => {
                       const itemSubtotal = (sku.inputDus || 0) * sku.unitPrice;
                       const itemCbm = ((sku.inputDus || 0) * sku.cbmPerDus).toFixed(2);
-                      const isAiTarget = sku.id === 'roma-kelapa';
+                      const isLow = sku.stockReal < 150;
 
                       return (
-                        <tr key={sku.id} className={`hover:bg-surface-container-low transition-colors ${isAiTarget ? 'bg-amber-50/40' : ''}`}>
+                        <tr key={sku.id} className={`hover:bg-surface-container-low transition-colors ${idx === 0 ? 'bg-amber-50/40' : ''}`}>
                           <td className="py-3 px-3">
-                            <div className="flex items-center gap-2.5">
-                              <img src={sku.imageUrl} alt={sku.name} className="w-9 h-9 object-cover rounded-md border border-outline/15 shrink-0" />
-                              <div>
-                                <div className="font-bold text-on-surface">{sku.name}</div>
-                                <div className="text-[10px] text-on-surface-variant font-mono">{sku.skuCode} • {sku.category}</div>
-                              </div>
+                            <div className="font-bold text-on-surface">{sku.name}</div>
+                            <div className="text-[10px] text-on-surface-variant font-mono">
+                              {sku.skuCode} • {sku.category}
                             </div>
                           </td>
                           <td className="py-3 px-2 text-right font-mono">
-                            <span className={sku.stockReal < 150 ? 'text-error font-bold' : 'text-on-surface'}>
+                            <span className={isLow ? 'text-error font-bold' : 'text-on-surface'}>
                               {sku.stockReal}
                             </span>
                           </td>
@@ -435,21 +436,33 @@ export default function RestockRequest({ setCurrentScreen }) {
           {/* Notes & Priority */}
           <Card className="border border-outline/10 shadow-xs">
             <CardContent className="p-5 space-y-3">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px] text-primary">tune</span>
-                <span className="font-bold text-sm text-on-surface">Preferensi Logistik &amp; Jadwal Kedatangan</span>
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-sm text-on-surface">Preferensi Logistik &amp; Mode Penerimaan Stok</span>
+                <label className="flex items-center gap-2 text-xs font-semibold text-primary cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={applyImmediately}
+                    onChange={(e) => setApplyImmediately(e.target.checked)}
+                    className="accent-primary h-4 w-4"
+                  />
+                  <span>Langsung Tambahkan ke Stok Gudang Saat Ini</span>
+                </label>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div 
+                <div
                   onClick={() => setPriority('regular')}
-                  className={`p-3 rounded-lg border cursor-pointer transition-all ${priority === 'regular' ? 'border-primary bg-primary/5 shadow-xs' : 'border-outline/15 hover:bg-surface-container-low'}`}
+                  className={`p-3 rounded-lg border cursor-pointer transition-all ${
+                    priority === 'regular' ? 'border-primary bg-primary/5 shadow-xs' : 'border-outline/15 hover:bg-surface-container-low'
+                  }`}
                 >
                   <div className="font-bold text-xs">Standard Cycle (48 Jam)</div>
                   <div className="text-[10px] text-on-surface-variant mt-0.5">Jadwal rutin mingguan pabrik</div>
                 </div>
-                <div 
+                <div
                   onClick={() => setPriority('express')}
-                  className={`p-3 rounded-lg border cursor-pointer transition-all ${priority === 'express' ? 'border-primary bg-primary/5 shadow-xs' : 'border-outline/15 hover:bg-surface-container-low'}`}
+                  className={`p-3 rounded-lg border cursor-pointer transition-all ${
+                    priority === 'express' ? 'border-primary bg-primary/5 shadow-xs' : 'border-outline/15 hover:bg-surface-container-low'
+                  }`}
                 >
                   <div className="font-bold text-xs text-primary flex items-center gap-1">
                     <span>Expedited GTNIC (24 Jam)</span>
@@ -457,9 +470,11 @@ export default function RestockRequest({ setCurrentScreen }) {
                   </div>
                   <div className="text-[10px] text-on-surface-variant mt-0.5">Pengiriman esok subuh langsung</div>
                 </div>
-                <div 
+                <div
                   onClick={() => setPriority('urgent')}
-                  className={`p-3 rounded-lg border cursor-pointer transition-all ${priority === 'urgent' ? 'border-primary bg-primary/5 shadow-xs' : 'border-outline/15 hover:bg-surface-container-low'}`}
+                  className={`p-3 rounded-lg border cursor-pointer transition-all ${
+                    priority === 'urgent' ? 'border-primary bg-primary/5 shadow-xs' : 'border-outline/15 hover:bg-surface-container-low'
+                  }`}
                 >
                   <div className="font-bold text-xs text-secondary">Weekend Buffer (12 Jam)</div>
                   <div className="text-[10px] text-on-surface-variant mt-0.5">Penyelamatan stockout kritis</div>
@@ -473,7 +488,6 @@ export default function RestockRequest({ setCurrentScreen }) {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   className="w-full text-xs p-2.5 rounded-lg bg-surface-container-low border border-outline/20 focus:outline-none focus:border-primary"
-                  placeholder="Tambahkan catatan khusus untuk tim logistik DC Pasuruan..."
                 />
               </div>
             </CardContent>
@@ -496,7 +510,7 @@ export default function RestockRequest({ setCurrentScreen }) {
               </div>
 
               <div className="w-full bg-surface-container h-2.5 rounded-full overflow-hidden">
-                <div 
+                <div
                   className={`h-full transition-all duration-500 ${calculations.ftlPercentage >= 80 ? 'bg-emerald-600' : 'bg-primary'}`}
                   style={{ width: `${Math.min(100, calculations.ftlPercentage)}%` }}
                 />
@@ -516,12 +530,6 @@ export default function RestockRequest({ setCurrentScreen }) {
                   <div className="font-bold font-mono mt-0.5 text-on-surface">{(calculations.totalKg / 1000).toFixed(1)} Ton</div>
                 </div>
               </div>
-
-              <p className="text-[11px] text-on-surface-variant leading-relaxed">
-                {calculations.ftlPercentage >= 80 
-                  ? 'Kapasitas armada optimal (>80%). Memenuhi syarat efisiensi pengiriman langsung FTL Mayora.'
-                  : 'Muatan di bawah 80% FTL. Pertimbangkan menambah kuantitas SKU komplementer untuk efisiensi ongkos kirim.'}
-              </p>
             </CardContent>
           </Card>
 
@@ -538,13 +546,19 @@ export default function RestockRequest({ setCurrentScreen }) {
                   <span>Subtotal Produk:</span>
                   <span className="font-mono font-semibold">{formatRupiah(calculations.subtotalValue)}</span>
                 </div>
+                <div className="flex justify-between text-emerald-700">
+                  <span>Diskon Kontrak Distributor (2%):</span>
+                  <span className="font-mono font-semibold">-{formatRupiah(calculations.discount)}</span>
+                </div>
                 <div className="flex justify-between text-on-surface-variant">
                   <span>PPN 11% (Faktur Resmi):</span>
                   <span className="font-mono font-semibold">{formatRupiah(calculations.ppn)}</span>
                 </div>
                 <div className="flex justify-between text-on-surface-variant">
                   <span>Biaya Pengiriman Pabrik:</span>
-                  <span className="font-mono text-emerald-700 font-semibold">GRATIS (Kontrak FTL)</span>
+                  <span className="font-mono text-emerald-700 font-semibold">
+                    {calculations.ftlPercentage >= 80 ? 'GRATIS (Kontrak FTL)' : 'Sesuai Tarif Reguler'}
+                  </span>
                 </div>
                 <div className="border-t border-outline/10 pt-2 flex justify-between items-baseline font-bold">
                   <span className="text-on-surface">Grand Total PO:</span>
@@ -552,59 +566,68 @@ export default function RestockRequest({ setCurrentScreen }) {
                 </div>
               </div>
 
-              {submitted ? (
+              {submittedPo && (
                 <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-center space-y-2">
                   <div className="flex items-center justify-center gap-1.5 text-emerald-800 font-bold text-xs">
                     <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                    <span>PO Berhasil Diajukan ke Mayora HQ!</span>
+                    <span>PO {submittedPo.poNumber} Tercatat di Supabase!</span>
                   </div>
                   <p className="text-[11px] text-emerald-700">
-                    Nomor Pengajuan: <strong>PO-2026-MAY-0845</strong>. Tim dispatch pabrik akan memvalidasi kuota dalam 2 jam.
+                    Surat Jalan: <strong>{submittedPo.doNumber}</strong> ({submittedPo.totalCartons} Dus).
+                    {applyImmediately
+                      ? ' Stok gudang telah langsung diperbarui.'
+                      : ' Anda dapat melacak dan mengonfirmasi BAST di menu Tracking & Dispatch.'}
                   </p>
-                  <Button 
-                    onClick={() => setSubmitted(false)}
-                    variant="outline"
-                    className="w-full text-xs mt-2"
-                  >
-                    Buat Pengajuan Baru
-                  </Button>
+                  <div className="flex gap-2 pt-1">
+                    <Button
+                      onClick={() => setCurrentScreen && setCurrentScreen('order-tracking')}
+                      size="sm"
+                      className="flex-1 bg-emerald-700 text-white text-xs"
+                    >
+                      Lacak {submittedPo.doNumber}
+                    </Button>
+                    <Button
+                      onClick={() => setSubmittedPo(null)}
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 text-xs"
+                    >
+                      Tutup
+                    </Button>
+                  </div>
                 </div>
-              ) : (
-                <Button 
-                  onClick={handleSubmitPo}
-                  disabled={isSubmitting || calculations.totalDus === 0}
-                  className="w-full bg-primary text-white text-xs font-bold py-2.5 hover:bg-primary-container shadow-xs flex items-center justify-center gap-2"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Clock className="h-4 w-4 animate-spin" />
-                      <span>Mengirim ke Sistem SAP HQ...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Send className="h-4 w-4" />
-                      <span>Kirim Pengajuan Restock ke Mayora HQ</span>
-                    </>
-                  )}
-                </Button>
               )}
 
-              <div className="text-[10px] text-on-surface-variant text-center">
-                Terhubung dengan SAP S/4HANA &amp; Warehouse Pasuruan.
-              </div>
+              <Button
+                onClick={handleSubmitPo}
+                disabled={isSubmitting || calculations.totalDus === 0}
+                className="w-full bg-primary text-white text-xs font-bold py-2.5 hover:bg-primary-container shadow-xs flex items-center justify-center gap-2"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Clock className="h-4 w-4 animate-spin" />
+                    <span>Menyimpan PO ke Database...</span>
+                  </>
+                ) : (
+                  <>
+                    <Send className="h-4 w-4" />
+                    <span>Kirim Pengajuan Restock ke Mayora HQ</span>
+                  </>
+                )}
+              </Button>
             </CardContent>
           </Card>
         </div>
       </div>
 
-      {/* Riwayat Permintaan Restock Sebelumnya */}
+      {/* Riwayat Permintaan Restock Sebelumnya (Live from AuditLog) */}
       <div id="history-section" className="space-y-3 pt-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <History className="h-4 w-4 text-primary" />
-            <h3 className="text-sm font-bold text-on-surface">Riwayat Status Pengajuan PO Restock</h3>
+            <h3 className="text-sm font-bold text-on-surface">Riwayat Status Pengajuan PO Restock (Database AuditLog)</h3>
           </div>
-          <span className="text-xs text-on-surface-variant font-mono">Total {poHistory.length} Transaksi Tercatat</span>
+          <span className="text-xs text-on-surface-variant font-mono">Total {poHistory.length} PO Tercatat</span>
         </div>
 
         <Card className="border border-outline/10 shadow-xs overflow-hidden">
@@ -612,8 +635,8 @@ export default function RestockRequest({ setCurrentScreen }) {
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="bg-surface-container-low text-on-surface-variant border-b border-outline/10">
-                  <th className="py-2.5 px-4 font-semibold">Nomor PO</th>
-                  <th className="py-2.5 px-3 font-semibold">Tanggal Diajukan</th>
+                  <th className="py-2.5 px-4 font-semibold">Nomor PO / Surat Jalan</th>
+                  <th className="py-2.5 px-3 font-semibold">Tanggal</th>
                   <th className="py-2.5 px-3 font-semibold">Plant Pasokan</th>
                   <th className="py-2.5 px-3 font-semibold text-right">Total Kuantitas</th>
                   <th className="py-2.5 px-3 font-semibold text-right">Nilai Transaksi</th>
@@ -621,9 +644,12 @@ export default function RestockRequest({ setCurrentScreen }) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline/10 font-medium">
-                {poHistory.map((po) => (
-                  <tr key={po.id} className="hover:bg-surface-container-low/60 transition-colors">
-                    <td className="py-3 px-4 font-bold font-mono text-primary">{po.id}</td>
+                {poHistory.map((po, i) => (
+                  <tr key={`${po.id}-${i}`} className="hover:bg-surface-container-low/60 transition-colors">
+                    <td className="py-3 px-4 font-mono">
+                      <div className="font-bold text-primary">{po.id}</div>
+                      <div className="text-[10px] text-on-surface-variant">DO: {po.doNumber}</div>
+                    </td>
                     <td className="py-3 px-3 text-on-surface-variant">{po.date}</td>
                     <td className="py-3 px-3 text-on-surface">{po.plant}</td>
                     <td className="py-3 px-3 text-right font-mono font-bold">{po.totalDus} Dus</td>

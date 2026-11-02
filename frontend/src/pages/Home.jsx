@@ -101,13 +101,10 @@ export default function Home({ setActiveNav }) {
         <div className="max-w-[1280px] mx-auto px-4 md:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             {/* Left Copy & Actions */}
-            <div className="lg:col-span-6 space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-lowest border border-surface-container-high shadow-xs">
-                <span className="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
-                <span className="text-[11px] font-bold text-primary-container uppercase tracking-wider">
-                  JARINGAN LOGISTIK RESMI · CABANG KRIAN
-                </span>
-              </div>
+            <div className="lg:col-span-6 space-y-4">
+              <span className="text-xs font-bold text-primary uppercase tracking-wider block">
+                Jaringan Logistik Resmi · Cabang Krian Sidoarjo
+              </span>
 
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black font-display text-on-surface tracking-tight leading-[1.15]">
                 Distribusi Produk FMCG Andal untuk Mitra Usaha Anda.
@@ -720,10 +717,9 @@ export default function Home({ setActiveNav }) {
         <div className="max-w-[1280px] mx-auto px-4 md:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-8 space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white text-xs font-semibold">
-                <span className="material-symbols-outlined text-[16px]">stars</span>
-                <span>PELUANG KEMITRAAN RESMI</span>
-              </div>
+              <span className="text-xs font-bold text-tertiary-container uppercase tracking-wider block">
+                Peluang Kemitraan Resmi Wilayah Sidoarjo
+              </span>
               <h2 className="text-2xl sm:text-3xl font-bold font-display text-white tracking-tight">
                 Bangun Kemitraan Distribusi Bersama Inbisco.
               </h2>

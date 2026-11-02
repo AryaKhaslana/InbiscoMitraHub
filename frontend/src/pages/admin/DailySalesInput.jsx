@@ -1,86 +1,116 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
+import { api } from '../../services/api';
 import { 
   Bolt, 
   CheckSquare, 
   TrendingUp, 
   RotateCcw, 
   CheckCircle2, 
-  Store, 
-  Calendar, 
   Clock, 
   Send,
-  Boxes,
-  Layers,
-  ArrowRight
+  RefreshCw,
+  AlertCircle
 } from 'lucide-react';
 import { formatRupiah } from '../../lib/utils';
 import confetti from 'canvas-confetti';
 
-const SKU_OPTIONS = [
-  { id: 'ROMA_300', code: 'MYR-BISC-002', name: 'Roma Kelapa 300g (Karton / 24 Pack)', price: 182000, currentStock: 480 },
-  { id: 'BENGBENG_20', code: 'MYR-WAF-014', name: 'Beng-Beng Regular 20g (Karton / 12 Box x 17 Pcs)', price: 215000, currentStock: 920 },
-  { id: 'TORA_25', code: 'MYR-BEV-033', name: 'Torabika Duo 25g (Karton / 10 Renceng x 12 Sachet)', price: 148500, currentStock: 1250 },
-  { id: 'LEMIN_600', code: 'MYR-WAT-008', name: 'Le Minerale 600ml (Karton / 24 Botol)', price: 48000, currentStock: 840 },
-  { id: 'KOPIKO_CND', code: 'MYR-CND-001', name: 'Kopiko Candy Pocket (Karton / 24 Pack)', price: 95000, currentStock: 600 },
-];
-
 export default function DailySalesInput({ setCurrentScreen }) {
-  const [selectedSkuId, setSelectedSkuId] = useState('ROMA_300');
-  const [transDate, setTransDate] = useState('2026-06-17');
+  const [availableSkus, setAvailableSkus] = useState([]);
+  const [selectedProductId, setSelectedProductId] = useState('');
+  const [summary, setSummary] = useState(null);
+  const [auditLogs, setAuditLogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const [transDate, setTransDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [salesChannel, setSalesChannel] = useState('Grosir Tradisional');
-  const [quantity, setQuantity] = useState(25);
-  const [storeName, setStoreName] = useState('Toko Rejeki Makmur Krian');
+  const [quantity, setQuantity] = useState(10);
+  const [storeName, setStoreName] = useState('Toko Kelontong Berkah Jaya (Krian)');
   const [salesPerson, setSalesPerson] = useState('Bambang Sudiro');
-  const [notes, setNotes] = useState('Faktur Toko #TRM-9812. Pembayaran Tempo 14 Hari.');
+  const [notes, setNotes] = useState('Faktur Toko — Pembayaran Tempo 7 Hari');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [successMsg, setSuccessMsg] = useState(false);
+  const [successReceipt, setSuccessReceipt] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
 
-  const selectedProduct = SKU_OPTIONS.find(s => s.id === selectedSkuId) || SKU_OPTIONS[0];
+  const fetchDsrData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await api.getDailySales({ limit: 20 });
+      const skus = res?.availableSkus || [];
+      setAvailableSkus(skus);
+      setSummary(res?.summary || null);
+      setAuditLogs(res?.records || []);
+      if (skus.length > 0) {
+        setSelectedProductId((prev) => {
+          const exists = prev && skus.find((s) => s.productId === prev);
+          return exists ? prev : skus[0].productId;
+        });
+      }
+    } catch (err) {
+      console.error('DailySalesInput fetch error:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-  const subtotal = quantity * selectedProduct.price;
-  const ppn = subtotal * 0.11;
+  useEffect(() => {
+    fetchDsrData();
+    const onRefresh = () => fetchDsrData();
+    window.addEventListener('supplysync:refresh', onRefresh);
+    return () => window.removeEventListener('supplysync:refresh', onRefresh);
+  }, [fetchDsrData]);
+
+  const selectedProduct =
+    availableSkus.find((s) => s.productId === selectedProductId) ||
+    availableSkus[0] || {
+      productId: '',
+      sku: 'MYR-BIS-ROMAKELAPA-300',
+      name: 'Roma Biskuit Kelapa 300g',
+      cartonPrice: 215000,
+      stockCartons: 140,
+    };
+
+  const subtotal = quantity * (selectedProduct.cartonPrice || 0);
+  const ppn = Math.round(subtotal * 0.11);
   const grandTotal = subtotal + ppn;
-  const remainingStock = Math.max(0, selectedProduct.currentStock - quantity);
-  const stockDepletionPercent = Math.min(100, Math.round((quantity / selectedProduct.currentStock) * 100));
-
-  const [auditLogs, setAuditLogs] = useState([
-    { id: 'LOG-081', time: '14:22 WIB', store: 'Toko Rejeki Makmur', channel: 'Grosir Tradisional', sku: 'Roma Kelapa 300g', qty: 40, total: 7280000, status: 'SYNCED' },
-    { id: 'LOG-080', time: '13:05 WIB', store: 'Warung Bu Siti', channel: 'Warung Ritel', sku: 'Beng-Beng 20g', qty: 25, total: 5375000, status: 'SYNCED' },
-    { id: 'LOG-079', time: '11:40 WIB', store: 'Grosir Berkah Abadi', channel: 'Grosir Tradisional', sku: 'Torabika Duo 25g', qty: 50, total: 7425000, status: 'SYNCED' },
-    { id: 'LOG-078', time: '09:15 WIB', store: 'Minimarket Mitra', channel: 'Minimarket Lokal', sku: 'Le Minerale 600ml', qty: 60, total: 2880000, status: 'SYNCED' },
-  ]);
+  const remainingStock = Math.max(0, (selectedProduct.stockCartons || 0) - quantity);
+  const stockDepletionPercent =
+    selectedProduct.stockCartons > 0
+      ? Math.min(100, Math.round((quantity / selectedProduct.stockCartons) * 100))
+      : 100;
 
   const handleAddQty = (delta) => {
-    setQuantity(prev => Math.max(1, prev + delta));
+    setQuantity((prev) => Math.max(1, prev + delta));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (quantity <= 0) return;
+    if (quantity <= 0 || !selectedProduct.productId) return;
 
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSuccessMsg(true);
-      confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
-
-      const newLog = {
-        id: `LOG-${Math.floor(100 + Math.random() * 900)}`,
-        time: 'Baru saja',
-        store: storeName || 'Toko Retail',
+    setErrorMsg(null);
+    setSuccessReceipt(null);
+    try {
+      const result = await api.submitDailySales({
+        productId: selectedProduct.productId,
+        sku: selectedProduct.sku,
+        quantityCartons: Number(quantity),
         channel: salesChannel,
-        sku: selectedProduct.name.split('(')[0].trim(),
-        qty: quantity,
-        total: grandTotal,
-        status: 'SYNCED'
-      };
+        storeName: storeName || 'Mitra Ritel Krian',
+        operatorName: salesPerson || 'Bambang Sudiro',
+        notes: notes || `Tanggal transaksi: ${transDate}`,
+      });
 
-      setAuditLogs([newLog, ...auditLogs]);
-      setTimeout(() => setSuccessMsg(false), 4000);
-    }, 600);
+      setSuccessReceipt(result);
+      confetti({ particleCount: 55, spread: 60, origin: { y: 0.8 } });
+      await fetchDsrData();
+    } catch (err) {
+      setErrorMsg(err.message || 'Gagal menyimpan transaksi penjualan DSR');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -90,21 +120,28 @@ export default function DailySalesInput({ setCurrentScreen }) {
         <div>
           <div className="flex items-center gap-2 text-primary font-mono text-xs uppercase tracking-wider mb-1">
             <CheckSquare className="h-4 w-4" />
-            <span>Depo Krian • Sinking Stok Real-Time Otomatis</span>
+            <span>Depo Krian • Sinking Stok Real-Time ke Supabase PostgreSQL</span>
           </div>
           <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-on-surface">
             Input Penjualan Harian (DSR)
           </h1>
           <p className="text-sm text-on-surface-variant mt-1">
-            Setiap transaksi retail langsung mengurangi saldo inventori gudang Krian dan memicu update laju konsumsi ADS ke HQ.
+            Setiap transaksi retail langsung mengurangi saldo <code>stockCartons</code> di database Supabase secara atomik dan menginvalidasi cache Upstash Redis.
           </p>
         </div>
         <div className="flex items-center gap-2.5">
-          <Badge variant="surface" className="text-xs font-mono">DSR Shift Siang</Badge>
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-high text-xs font-semibold text-on-surface">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>SAP Synced: 2 mnt lalu</span>
-          </div>
+          <Badge variant="surface" className="text-xs font-mono">
+            Total Terjual: {summary?.totalCartonsSold || 0} Dus
+          </Badge>
+          <Button
+            onClick={fetchDsrData}
+            variant="outline"
+            size="sm"
+            className="h-8 text-xs gap-1.5"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin text-primary' : ''}`} />
+            <span>Refresh Data</span>
+          </Button>
         </div>
       </div>
 
@@ -121,30 +158,32 @@ export default function DailySalesInput({ setCurrentScreen }) {
                     <Bolt className="h-5 w-5" />
                   </div>
                   <div>
-                    <h2 className="text-base font-bold text-on-surface">Formulir Log Transaksi SKU</h2>
-                    <p className="text-xs text-on-surface-variant">Lengkapi kuantitas karton keluar per sub-saluran retail</p>
+                    <h2 className="text-base font-bold text-on-surface">Formulir Log Transaksi SKU (Live DB)</h2>
+                    <p className="text-xs text-on-surface-variant">Potong stok fisik gudang Krian sesuai faktur keluar DSR</p>
                   </div>
                 </div>
                 <span className="text-[11px] font-mono text-on-surface-variant bg-surface-container px-2.5 py-1 rounded">
-                  Shift Siang • Batch #KRN-2026-081
+                  POST /api/v1/distributor/sales
                 </span>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
-                {/* SKU Selection */}
+                {/* SKU Selection from Real DB */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-on-surface flex items-center justify-between">
-                    <span>Pilih SKU Produk Mayora <span className="text-primary">*</span></span>
-                    <span className="text-[10px] text-primary uppercase font-bold">Resmi Terdaftar</span>
+                    <span>Pilih SKU Produk Mayora (Stok Live Supabase) <span className="text-primary">*</span></span>
+                    <span className="text-[10px] text-primary uppercase font-bold">
+                      Harga: {formatRupiah(selectedProduct.cartonPrice || 0)}/Dus
+                    </span>
                   </label>
                   <select
-                    value={selectedSkuId}
-                    onChange={(e) => setSelectedSkuId(e.target.value)}
-                    className="w-full h-10 px-3 text-xs bg-surface-container-low border border-outline/20 rounded-lg focus:outline-none focus:border-primary font-medium"
+                    value={selectedProduct.productId}
+                    onChange={(e) => setSelectedProductId(e.target.value)}
+                    className="w-full h-10 px-3 text-xs bg-surface-container-low border border-outline/20 rounded-lg focus:outline-none focus:border-primary font-semibold"
                   >
-                    {SKU_OPTIONS.map((sku) => (
-                      <option key={sku.id} value={sku.id}>
-                        {sku.name} — Stok: {sku.currentStock} Dus
+                    {availableSkus.map((sku) => (
+                      <option key={sku.productId} value={sku.productId}>
+                        {sku.name} — Stok Tersedia: {sku.stockCartons} Dus ({formatRupiah(sku.cartonPrice)})
                       </option>
                     ))}
                   </select>
@@ -171,7 +210,7 @@ export default function DailySalesInput({ setCurrentScreen }) {
                       <option value="Grosir Tradisional">Grosir Tradisional</option>
                       <option value="Warung Ritel">Warung / Toko Kelontong</option>
                       <option value="Minimarket Lokal">Minimarket Lokal Modern</option>
-                      <option value="Institusi & Katering">Institusi &amp; Katering</option>
+                      <option value="Warkop & Agen Kopi">Warkop &amp; Agen Kopi</option>
                     </select>
                   </div>
                 </div>
@@ -180,46 +219,30 @@ export default function DailySalesInput({ setCurrentScreen }) {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-bold text-on-surface">Kuantitas Terjual (Dus/Karton)</label>
-                    <span className="text-[11px] text-on-surface-variant">Stok Gudang: <strong>{selectedProduct.currentStock} Dus</strong></span>
+                    <span className="text-[11px] text-on-surface-variant">
+                      Stok Gudang Saat Ini: <strong className="font-mono text-primary">{selectedProduct.stockCartons} Dus</strong>
+                    </span>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-wrap">
                     <input
                       type="number"
                       min="1"
-                      max={selectedProduct.currentStock}
+                      max={Math.max(1, selectedProduct.stockCartons)}
                       value={quantity}
-                      onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 0))}
+                      onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
                       className="w-32 h-11 text-center font-bold text-base bg-surface-container-low border border-outline/20 rounded-lg focus:outline-none focus:border-primary"
                     />
                     <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handleAddQty(10)}
-                        className="px-3 py-2 bg-surface-container hover:bg-surface-container-high rounded-lg text-xs font-bold transition-colors"
-                      >
-                        +10
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleAddQty(25)}
-                        className="px-3 py-2 bg-surface-container hover:bg-surface-container-high rounded-lg text-xs font-bold transition-colors"
-                      >
-                        +25
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleAddQty(50)}
-                        className="px-3 py-2 bg-surface-container hover:bg-surface-container-high rounded-lg text-xs font-bold transition-colors"
-                      >
-                        +50
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleAddQty(100)}
-                        className="px-3 py-2 bg-surface-container hover:bg-surface-container-high rounded-lg text-xs font-bold transition-colors"
-                      >
-                        +100
-                      </button>
+                      {[5, 10, 25, 50].map((step) => (
+                        <button
+                          key={step}
+                          type="button"
+                          onClick={() => handleAddQty(step)}
+                          className="px-3 py-2 bg-surface-container hover:bg-surface-container-high rounded-lg text-xs font-bold transition-colors"
+                        >
+                          +{step}
+                        </button>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -250,7 +273,7 @@ export default function DailySalesInput({ setCurrentScreen }) {
 
                 {/* Notes */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-on-surface">Keterangan / Faktur</label>
+                  <label className="text-xs font-bold text-on-surface">Keterangan / Nomor Faktur</label>
                   <input
                     type="text"
                     value={notes}
@@ -267,6 +290,7 @@ export default function DailySalesInput({ setCurrentScreen }) {
                       setQuantity(10);
                       setStoreName('');
                       setNotes('');
+                      setErrorMsg(null);
                     }}
                     className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-on-surface-variant hover:bg-surface-container transition-colors"
                   >
@@ -276,18 +300,28 @@ export default function DailySalesInput({ setCurrentScreen }) {
 
                   <Button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || selectedProduct.stockCartons < quantity}
                     className="bg-primary text-white text-xs font-bold px-6 py-2.5 hover:bg-primary-container shadow-xs flex items-center gap-2"
                   >
                     <Send className="h-4 w-4" />
-                    <span>{isSubmitting ? 'Menyinkronkan...' : 'Simpan & Sinkronkan Stok Fisik'}</span>
+                    <span>{isSubmitting ? 'Menyimpan ke Supabase...' : 'Simpan & Potong Stok Gudang'}</span>
                   </Button>
                 </div>
 
-                {successMsg && (
+                {errorMsg && (
+                  <div className="p-3 bg-red-50 border border-red-200 text-red-800 rounded-lg text-xs font-semibold flex items-center gap-2">
+                    <AlertCircle className="h-4 w-4 text-red-600 shrink-0" />
+                    <span>{errorMsg}</span>
+                  </div>
+                )}
+
+                {successReceipt && (
                   <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-xs font-semibold flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                    <span>Transaksi berhasil dicatat! Stok gudang Krian otomatis dipotong {quantity} dus.</span>
+                    <span>
+                      DSR Berhasil Direkam! Stok {successReceipt.productName?.split('(')[0]} dipotong dari{' '}
+                      {successReceipt.previousStock} dus menjadi {successReceipt.remainingStock} dus di database.
+                    </span>
                   </div>
                 )}
               </form>
@@ -310,11 +344,11 @@ export default function DailySalesInput({ setCurrentScreen }) {
 
               <div className="space-y-2 text-xs">
                 <div className="flex justify-between text-on-surface-variant">
-                  <span>Harga Satuan/Dus:</span>
-                  <span className="font-mono font-semibold">{formatRupiah(selectedProduct.price)}</span>
+                  <span>Harga Karton (DB):</span>
+                  <span className="font-mono font-semibold">{formatRupiah(selectedProduct.cartonPrice || 0)}</span>
                 </div>
                 <div className="flex justify-between text-on-surface-variant">
-                  <span>Kuantitas:</span>
+                  <span>Kuantitas Keluar:</span>
                   <span className="font-mono font-semibold">{quantity} Dus</span>
                 </div>
                 <div className="flex justify-between text-on-surface-variant">
@@ -322,7 +356,7 @@ export default function DailySalesInput({ setCurrentScreen }) {
                   <span className="font-mono font-semibold">{formatRupiah(subtotal)}</span>
                 </div>
                 <div className="flex justify-between text-on-surface-variant">
-                  <span>PPN 11%:</span>
+                  <span>PPN 11% (Estimasi):</span>
                   <span className="font-mono font-semibold">{formatRupiah(ppn)}</span>
                 </div>
                 <div className="border-t border-outline/10 pt-2 flex justify-between items-baseline font-bold">
@@ -334,7 +368,7 @@ export default function DailySalesInput({ setCurrentScreen }) {
               {/* Stock Impact Visualizer */}
               <div className="pt-3 border-t border-outline/10 space-y-2">
                 <div className="flex justify-between text-[11px]">
-                  <span className="text-on-surface-variant">Sisa Stok Fisik:</span>
+                  <span className="text-on-surface-variant">Sisa Stok Setelah Input:</span>
                   <span className={`font-mono font-bold ${remainingStock < 100 ? 'text-error' : 'text-on-surface'}`}>
                     {remainingStock} Dus
                   </span>
@@ -348,96 +382,90 @@ export default function DailySalesInput({ setCurrentScreen }) {
                 <div className="text-[10px] text-on-surface-variant">
                   {remainingStock < 100 ? (
                     <span className="text-error font-semibold flex items-center gap-1">
-                      ⚠️ Sisa stok menipis! Pertimbangkan restock segera.
+                      ⚠️ Sisa stok di bawah 100 dus! Segera ajukan restock.
                     </span>
                   ) : (
-                    <span>Stok masih dalam batas aman operasional.</span>
+                    <span>Stok masih mencukupi untuk operasional harian.</span>
                   )}
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Mini 7-Day Trend Chart Card */}
+          {/* Summary Total DSR Card */}
           <Card className="border border-outline/10 shadow-xs bg-surface-container-lowest">
             <CardContent className="p-5 space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="font-bold text-xs text-on-surface">Laju Penjualan 7 Hari Terakhir</h3>
-                <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded">+18.4% WoW</span>
+                <h3 className="font-bold text-xs text-on-surface">Akumulasi DSR Tercatat (Database)</h3>
+                <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded">
+                  {summary?.totalTransactions || auditLogs.length} Log
+                </span>
               </div>
 
-              {/* Mini SVG Trend Line */}
-              <div className="h-28 w-full flex items-end justify-between gap-2 pt-2 px-1">
-                {[
-                  { day: 'Sen', val: 140, h: '60%' },
-                  { day: 'Sel', val: 155, h: '68%' },
-                  { day: 'Rab', val: 130, h: '55%' },
-                  { day: 'Kam', val: 165, h: '75%' },
-                  { day: 'Jum', val: 190, h: '88%' },
-                  { day: 'Sab', val: 210, h: '98%' },
-                  { day: 'Min', val: 175, h: '80%' },
-                ].map((bar, i) => (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                    <div className="w-full bg-surface-container rounded-t flex items-end justify-center h-20">
-                      <div
-                        className="w-full bg-primary/80 hover:bg-primary transition-all rounded-t"
-                        style={{ height: bar.h }}
-                        title={`${bar.day}: ${bar.val} Dus`}
-                      />
-                    </div>
-                    <span className="text-[10px] font-mono text-on-surface-variant">{bar.day}</span>
+              <div className="grid grid-cols-2 gap-2.5 pt-1">
+                <div className="p-3 bg-surface-container-low rounded-lg">
+                  <div className="text-[10px] text-on-surface-variant">Total Dus Keluar</div>
+                  <div className="text-lg font-extrabold font-mono text-on-surface mt-0.5">
+                    {summary?.totalCartonsSold || 0} Dus
                   </div>
-                ))}
-              </div>
-
-              <div className="text-[10px] text-on-surface-variant text-center pt-1 border-t border-outline/10">
-                Puncak konsumsi terjadi pada Jumat - Sabtu menjelang akhir pekan.
+                </div>
+                <div className="p-3 bg-surface-container-low rounded-lg">
+                  <div className="text-[10px] text-on-surface-variant">Total Nilai DSR</div>
+                  <div className="text-sm font-extrabold font-mono text-primary mt-1">
+                    {formatRupiah(summary?.totalRevenueIDR || 0)}
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
 
-      {/* Real-time Audit Log Table: Riwayat Penjualan Terbaru Hari Ini */}
+      {/* Real-time Audit Log Table: Riwayat Penjualan Terbaru dari Supabase */}
       <Card className="border border-outline/10 shadow-xs">
         <CardContent className="p-5 space-y-3">
           <div className="flex items-center justify-between border-b border-outline/10 pb-3">
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-primary" />
-              <h3 className="text-sm font-bold text-on-surface">Riwayat Penjualan Terbaru Hari Ini</h3>
+              <h3 className="text-sm font-bold text-on-surface">Riwayat Penjualan DSR dari Tabel AuditLog Supabase</h3>
             </div>
-            <span className="text-xs text-on-surface-variant font-mono">Tersinkron dengan Cloud Database</span>
+            <span className="text-xs text-on-surface-variant font-mono">{auditLogs.length} Transaksi Terakhir</span>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="bg-surface-container-low text-on-surface-variant border-b border-outline/10">
-                  <th className="py-2.5 px-4 font-semibold">Waktu / Log ID</th>
+                  <th className="py-2.5 px-4 font-semibold">Waktu / DSR ID</th>
                   <th className="py-2.5 px-3 font-semibold">Outlet / Toko</th>
-                  <th className="py-2.5 px-3 font-semibold">Channel</th>
+                  <th className="py-2.5 px-3 font-semibold">Channel &amp; DSR</th>
                   <th className="py-2.5 px-3 font-semibold">SKU Produk</th>
                   <th className="py-2.5 px-3 font-semibold text-right">Kuantitas</th>
-                  <th className="py-2.5 px-3 font-semibold text-right">Total Nilai</th>
+                  <th className="py-2.5 px-3 font-semibold text-right">Sisa Stok</th>
+                  <th className="py-2.5 px-3 font-semibold text-right">Nilai Penjualan</th>
                   <th className="py-2.5 px-4 font-semibold text-center">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline/10 font-medium">
-                {auditLogs.map((log) => (
-                  <tr key={log.id} className="hover:bg-surface-container-low/60 transition-colors">
+                {auditLogs.map((log, idx) => (
+                  <tr key={log.dsrId || idx} className="hover:bg-surface-container-low/60 transition-colors">
                     <td className="py-3 px-4 font-mono text-on-surface">
-                      <div>{log.time}</div>
-                      <div className="text-[10px] text-on-surface-variant">{log.id}</div>
+                      <div>{log.recordedAt ? new Date(log.recordedAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : 'Hari ini'} WIB</div>
+                      <div className="text-[10px] text-on-surface-variant">{String(log.dsrId || '').slice(0, 8)}</div>
                     </td>
-                    <td className="py-3 px-3 font-bold text-on-surface">{log.store}</td>
-                    <td className="py-3 px-3 text-on-surface-variant">{log.channel}</td>
-                    <td className="py-3 px-3 text-on-surface">{log.sku}</td>
-                    <td className="py-3 px-3 text-right font-mono font-bold">{log.qty} Dus</td>
-                    <td className="py-3 px-3 text-right font-mono">{formatRupiah(log.total)}</td>
+                    <td className="py-3 px-3 font-bold text-on-surface">{log.storeName || 'Toko Mitra'}</td>
+                    <td className="py-3 px-3 text-on-surface-variant">
+                      <div>{log.channel || 'Grosir'}</div>
+                      <div className="text-[10px] font-mono">Oleh: {log.operatorName || 'Bambang S.'}</div>
+                    </td>
+                    <td className="py-3 px-3 text-on-surface">{(log.productName || log.sku || '').split('(')[0]}</td>
+                    <td className="py-3 px-3 text-right font-mono font-bold text-primary">-{log.quantityCartons} Dus</td>
+                    <td className="py-3 px-3 text-right font-mono text-on-surface-variant">{log.remainingStock ?? '-'} Dus</td>
+                    <td className="py-3 px-3 text-right font-mono font-bold">{formatRupiah(log.totalSalesAmount || 0)}</td>
                     <td className="py-3 px-4 text-center">
                       <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
                         <CheckCircle2 className="h-3 w-3 text-emerald-600" />
-                        <span>{log.status}</span>
+                        <span>SYNCED</span>
                       </span>
                     </td>
                   </tr>

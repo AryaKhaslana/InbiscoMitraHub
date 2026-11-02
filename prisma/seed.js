@@ -419,7 +419,219 @@ async function main() {
 
   console.log(`✅ Seeded ${createdOrdersCount} new wholesale orders (total prototype set: ${sampleOrders.length}).`);
 
-  // 4. Clear Redis caches so fresh data is served immediately
+  // 4. Seed initial DSR (DAILY_SALES_INPUT) & Purchase Orders (BATCH_PO_APPROVED) into AuditLog if needed
+  const existingDsrCount = await prisma.auditLog.count({ where: { action: 'DAILY_SALES_INPUT' } });
+  if (existingDsrCount < 4 && roma && bengbeng && torabika && leMinerale) {
+    const sampleDsrLogs = [
+      {
+        action: 'DAILY_SALES_INPUT',
+        entityType: 'PRODUCT',
+        entityId: roma.id,
+        details: {
+          sku: roma.sku,
+          stitchCode: 'MYR-RMK-01',
+          productName: roma.name,
+          category: roma.category,
+          quantityCartons: 40,
+          unitPrice: Number(roma.cartonPrice),
+          totalSalesAmount: 40 * Number(roma.cartonPrice),
+          previousStock: 180,
+          remainingStock: roma.stockCartons,
+          channel: 'Grosir Tradisional',
+          storeName: 'Toko Kelontong Berkah Jaya (Krian)',
+          operatorName: 'Bambang Sudiro',
+          notes: 'Faktur #TRM-9812 — Tempo 7 Hari',
+          syncStatus: 'Tersinkronisasi SAP & HQ',
+        },
+      },
+      {
+        action: 'DAILY_SALES_INPUT',
+        entityType: 'PRODUCT',
+        entityId: bengbeng.id,
+        details: {
+          sku: bengbeng.sku,
+          stitchCode: 'MYR-BBG-02',
+          productName: bengbeng.name,
+          category: bengbeng.category,
+          quantityCartons: 25,
+          unitPrice: Number(bengbeng.cartonPrice),
+          totalSalesAmount: 25 * Number(bengbeng.cartonPrice),
+          previousStock: 120,
+          remainingStock: bengbeng.stockCartons,
+          channel: 'Warung Ritel',
+          storeName: 'Toko Sumber Rejeki (Balongbendo)',
+          operatorName: 'Agus Santoso',
+          notes: 'Pengiriman rute pagi armada Carry #04',
+          syncStatus: 'Tersinkronisasi SAP & HQ',
+        },
+      },
+      {
+        action: 'DAILY_SALES_INPUT',
+        entityType: 'PRODUCT',
+        entityId: torabika.id,
+        details: {
+          sku: torabika.sku,
+          stitchCode: 'MYR-TRB-01',
+          productName: torabika.name,
+          category: torabika.category,
+          quantityCartons: 50,
+          unitPrice: Number(torabika.cartonPrice),
+          totalSalesAmount: 50 * Number(torabika.cartonPrice),
+          previousStock: 260,
+          remainingStock: torabika.stockCartons,
+          channel: 'Grosir Tradisional',
+          storeName: 'Warkop & Agen Kopi Cak Toni (Taman)',
+          operatorName: 'Bambang Sudiro',
+          notes: 'Order rutin mingguan agen kopi',
+          syncStatus: 'Tersinkronisasi SAP & HQ',
+        },
+      },
+      {
+        action: 'DAILY_SALES_INPUT',
+        entityType: 'PRODUCT',
+        entityId: leMinerale.id,
+        details: {
+          sku: leMinerale.sku,
+          stitchCode: 'MYR-LMN-01',
+          productName: leMinerale.name,
+          category: leMinerale.category,
+          quantityCartons: 60,
+          unitPrice: Number(leMinerale.cartonPrice),
+          totalSalesAmount: 60 * Number(leMinerale.cartonPrice),
+          previousStock: 510,
+          remainingStock: leMinerale.stockCartons,
+          channel: 'Minimarket Lokal',
+          storeName: 'Minimarket Barokah (Wonoayu)',
+          operatorName: 'Rian Pratama',
+          notes: 'Lunas COD di tempat',
+          syncStatus: 'Tersinkronisasi SAP & HQ',
+        },
+      },
+    ];
+    await prisma.auditLog.createMany({ data: sampleDsrLogs });
+    console.log('✅ Seeded initial DAILY_SALES_INPUT records in AuditLog.');
+  }
+
+  const existingPoCount = await prisma.auditLog.count({ where: { action: 'BATCH_PO_APPROVED' } });
+  if (existingPoCount < 3 && roma && bengbeng && torabika && energen) {
+    const samplePoLogs = [
+      {
+        action: 'BATCH_PO_APPROVED',
+        entityType: 'PURCHASE_ORDER',
+        entityId: 'PO-MYR-2610-0842',
+        details: {
+          poNumber: 'PO-MYR-2610-0842',
+          doNumber: 'DO-2026-0881',
+          depotName: 'CV Surya Krian Logistik',
+          sourceFactory: 'Mayora Plant DC Pasuruan (Jawa Timur)',
+          priority: 'express',
+          status: 'APPROVED_IN_TRANSIT',
+          totalCartons: 850,
+          totalVolumeM3: 35.7,
+          ftlUtilizationPct: 86,
+          freeShippingApplied: true,
+          subtotalIDR: 182750000,
+          wholesaleDiscountIDR: 3655000,
+          taxPpnIDR: 19700450,
+          grandTotalIDR: 198795450,
+          items: [
+            {
+              productId: roma.id,
+              sku: roma.sku,
+              productName: roma.name,
+              quantityCartons: 550,
+              unitPriceIDR: Number(roma.cartonPrice),
+              cbmM3: 23.1,
+              subtotalIDR: 550 * Number(roma.cartonPrice),
+            },
+            {
+              productId: bengbeng.id,
+              sku: bengbeng.sku,
+              productName: bengbeng.name,
+              quantityCartons: 300,
+              unitPriceIDR: Number(bengbeng.cartonPrice),
+              cbmM3: 10.5,
+              subtotalIDR: 300 * Number(bengbeng.cartonPrice),
+            },
+          ],
+          notes: 'Replenishment prioritas Krian & Balongbendo',
+          approvedAt: addDaysFromNow(-1).toISOString(),
+        },
+      },
+      {
+        action: 'BATCH_PO_APPROVED',
+        entityType: 'PURCHASE_ORDER',
+        entityId: 'PO-MYR-2610-0839',
+        details: {
+          poNumber: 'PO-MYR-2610-0839',
+          doNumber: 'DO-2026-0840',
+          depotName: 'CV Surya Krian Logistik',
+          sourceFactory: 'Mayora Plant Driyorejo (Gresik)',
+          priority: 'regular',
+          status: 'RECEIVED_IN_STOCK',
+          totalCartons: 600,
+          totalVolumeM3: 22.8,
+          ftlUtilizationPct: 82,
+          freeShippingApplied: true,
+          subtotalIDR: 97200000,
+          wholesaleDiscountIDR: 1944000,
+          taxPpnIDR: 10478160,
+          grandTotalIDR: 105734160,
+          items: [
+            {
+              productId: torabika.id,
+              sku: torabika.sku,
+              productName: torabika.name,
+              quantityCartons: 600,
+              unitPriceIDR: Number(torabika.cartonPrice),
+              cbmM3: 22.8,
+              subtotalIDR: 600 * Number(torabika.cartonPrice),
+            },
+          ],
+          notes: 'Siklus reguler mingguan kopi instan',
+          approvedAt: addDaysFromNow(-3).toISOString(),
+        },
+      },
+      {
+        action: 'BATCH_PO_APPROVED',
+        entityType: 'PURCHASE_ORDER',
+        entityId: 'PO-MYR-2610-0818',
+        details: {
+          poNumber: 'PO-MYR-2610-0818',
+          doNumber: 'DO-2026-0792',
+          depotName: 'CV Surya Krian Logistik',
+          sourceFactory: 'Mayora Plant DC Pasuruan (Jawa Timur)',
+          priority: 'regular',
+          status: 'RECEIVED_IN_STOCK',
+          totalCartons: 750,
+          totalVolumeM3: 33.7,
+          ftlUtilizationPct: 88,
+          freeShippingApplied: true,
+          subtotalIDR: 205500000,
+          wholesaleDiscountIDR: 4110000,
+          taxPpnIDR: 22152900,
+          grandTotalIDR: 223542900,
+          items: [
+            {
+              productId: energen.id,
+              sku: energen.sku,
+              productName: energen.name,
+              quantityCartons: 750,
+              unitPriceIDR: Number(energen.cartonPrice),
+              cbmM3: 33.7,
+              subtotalIDR: 750 * Number(energen.cartonPrice),
+            },
+          ],
+          notes: 'Alokasi sereal kuartal berjalan',
+          approvedAt: addDaysFromNow(-6).toISOString(),
+        },
+      },
+    ];
+    await prisma.auditLog.createMany({ data: samplePoLogs });
+    console.log('✅ Seeded initial BATCH_PO_APPROVED records in AuditLog.');
+  }
+
+  // 5. Clear Redis caches so fresh data is served immediately
   await invalidateCache(CACHE_KEYS.CATALOG_PUBLIC, CACHE_KEYS.KPI_SUMMARY);
   console.log('🧹 Invalidated Upstash Redis caches (cache:catalog_public, cache:kpi_summary).');
   console.log('🎉 Database seed completed successfully!');

@@ -1,6 +1,6 @@
 /**
  * Inbisco MitraHub & SupplySync API Client
- * Seamlessly interfaces with all 26 backend endpoints.
+ * Seamlessly interfaces with all 26 backend endpoints (Supabase PostgreSQL + Upstash Redis).
  */
 
 const API_BASE = '/api/v1';
@@ -15,6 +15,7 @@ function normalizeResponse(json) {
     arr.orders = payload;
     arr.inventory = payload;
     arr.risks = payload;
+    arr.logs = payload;
     arr.meta = json.meta;
     arr.message = json.message;
     arr.success = json.success;
@@ -37,8 +38,62 @@ function normalizeResponse(json) {
   return json;
 }
 
-async function fetchJson(endpoint, options = {}) {
-  const token = localStorage.getItem('inbisco_auth_token');
+let inflightAutoLogin = null;
+
+async function ensureAuthToken() {
+  const existing = localStorage.getItem('inbisco_auth_token');
+  if (existing && existing.startsWith('inb_sess_')) {
+    return existing;
+  }
+
+  if (inflightAutoLogin) {
+    return inflightAutoLogin;
+  }
+
+  const activeRole = localStorage.getItem('inbisco_active_role') || 'hq_admin';
+  const roleParam = activeRole === 'distributor_ops' ? 'DISTRIBUTOR_DEPO' : 'HQ_ADMIN';
+  const username = activeRole === 'distributor_ops' ? 'bambang.krian@inbisco.co.id' : 'ops.hq@mayora.co.id';
+
+  inflightAutoLogin = fetch(`${API_BASE}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      username,
+      password: 'Inbisco2026!',
+      role: roleParam,
+    }),
+  })
+    .then((res) => res.json())
+    .then((json) => {
+      const token = json?.data?.token || json?.token;
+      if (token) {
+        localStorage.setItem('inbisco_auth_token', token);
+        return token;
+      }
+      return null;
+    })
+    .catch(() => null)
+    .finally(() => {
+      inflightAutoLogin = null;
+    });
+
+  return inflightAutoLogin;
+}
+
+function requiresAuth(endpoint) {
+  return (
+    endpoint.startsWith('/admin') ||
+    endpoint.startsWith('/distributor') ||
+    endpoint.startsWith('/simulation')
+  );
+}
+
+async function fetchJson(endpoint, options = {}, isRetry = false) {
+  let token = localStorage.getItem('inbisco_auth_token');
+  if (!token && requiresAuth(endpoint)) {
+    token = await ensureAuthToken();
+  }
+
   const headers = {
     'Content-Type': 'application/json',
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -50,11 +105,27 @@ async function fetchJson(endpoint, options = {}) {
     headers,
   });
 
+  if (response.status === 401 && requiresAuth(endpoint) && !isRetry) {
+    localStorage.removeItem('inbisco_auth_token');
+    const newToken = await ensureAuthToken();
+    if (newToken) {
+      return fetchJson(endpoint, options, true);
+    }
+  }
+
   const json = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    const errorMsg = json.error || json.message || `Request failed with status ${response.status}`;
-    throw new Error(errorMsg);
+    const detailMsg =
+      Array.isArray(json.errors) && json.errors.length > 0
+        ? json.errors.map((e) => e.message).filter(Boolean).join(', ')
+        : null;
+    const errorMsg =
+      detailMsg || json.error || json.message || `Request failed with status ${response.status}`;
+    const err = new Error(errorMsg);
+    err.status = response.status;
+    err.errors = json.errors;
+    throw err;
   }
 
   return normalizeResponse(json);
@@ -66,8 +137,10 @@ export const api = {
     const searchParams = new URLSearchParams(params).toString();
     return fetchJson(`/products${searchParams ? `?${searchParams}` : ''}`);
   },
-  registerStore: (payload) => fetchJson('/stores/register', { method: 'POST', body: JSON.stringify(payload) }),
-  lookupStore: (phone) => fetchJson('/stores/lookup', { method: 'POST', body: JSON.stringify({ phone }) }),
+  registerStore: (payload) =>
+    fetchJson('/stores/register', { method: 'POST', body: JSON.stringify(payload) }),
+  lookupStore: (phone) =>
+    fetchJson('/stores/lookup', { method: 'POST', body: JSON.stringify({ phone }) }),
   createOrder: async (payload) => {
     let storeId = payload.storeId;
     if (!storeId && payload.storePhone) {
@@ -85,14 +158,30 @@ export const api = {
     }
 
     if (!storeId) {
-      // Default verified partner store for demo and guest checkout (Toko Kelontong Berkah Jaya)
-      storeId = '7d839d30-b966-4116-8f99-621deffc73e1';
+      // Query verified stores or fallback to Toko Kelontong Berkah Jaya phone lookup
+      try {
+        const defaultLookup = await fetchJson('/stores/lookup', {
+          method: 'POST',
+          body: JSON.stringify({ phone: '081234560001' }),
+        });
+        if (defaultLookup?.id) {
+          storeId = defaultLookup.id;
+        }
+      } catch (e) {
+        // Fallback UUID
+        storeId = '7d839d30-b966-4116-8f99-621deffc73e1';
+      }
     }
 
     const cleanPayload = {
       storeId,
-      paymentMethod: payload.paymentMethod === 'TOP_14_DAYS' || payload.paymentMethod === 'TEMPO_7_DAYS' ? 'TEMPO_7_DAYS' : 'COD',
-      notes: payload.notes || `Order via MitraHub: ${payload.storeName || 'Mitra Toko'} (${payload.storePhone || 'WA'})`,
+      paymentMethod:
+        payload.paymentMethod === 'TOP_14_DAYS' || payload.paymentMethod === 'TEMPO_7_DAYS'
+          ? 'TEMPO_7_DAYS'
+          : 'COD',
+      notes:
+        payload.notes ||
+        `Order via MitraHub: ${payload.storeName || 'Mitra Toko'} (${payload.storePhone || 'WA'})`,
       items: payload.items,
     };
 
@@ -100,26 +189,24 @@ export const api = {
   },
   trackOrder: (trackingCode) => fetchJson(`/orders/track/${encodeURIComponent(trackingCode)}`),
   submitContactInquiry: (payload) =>
-    fetchJson('/stores/register', {
+    fetchJson('/contact', {
       method: 'POST',
-      body: JSON.stringify({
-        name: payload.storeName || payload.name,
-        ownerName: payload.name,
-        phone: payload.phone,
-        address: payload.message,
-        district: 'Krian',
-        storeType: 'WARKOP',
-      }),
-    }).catch(() => ({ success: true, message: 'Inquiry received' })),
-
-  // Auth & Dual-Role Session
-  login: (username, password, role) =>
-    fetchJson('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ username, password, role }),
+      body: JSON.stringify(payload),
     }),
 
-  // Internal Depo Krian Admin Operations
+  // Auth & Dual-Role Session
+  login: async (username, password, role) => {
+    const res = await fetchJson('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ username, password, role }),
+    });
+    if (res?.token) {
+      localStorage.setItem('inbisco_auth_token', res.token);
+    }
+    return res;
+  },
+
+  // Internal Depo Krian & HQ Admin Operations
   getAdminKpi: () => fetchJson('/admin/kpi'),
   getAdminOrders: (params = {}) => {
     const query = new URLSearchParams(params).toString();
@@ -128,9 +215,14 @@ export const api = {
   updateOrderStatus: (orderIdentifier, status, note) =>
     fetchJson(`/admin/orders/${encodeURIComponent(orderIdentifier)}/status`, {
       method: 'PATCH',
-      body: JSON.stringify({ status, note }),
+      body: JSON.stringify(note ? { status, note } : { status }),
     }),
   getFefoInventory: () => fetchJson('/admin/inventory/fefo'),
+  createProduct: (payload) =>
+    fetchJson('/admin/products', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
   updateProductStock: (productIdentifier, payload) =>
     fetchJson(`/admin/products/${encodeURIComponent(productIdentifier)}/stock`, {
       method: 'PATCH',
@@ -145,18 +237,50 @@ export const api = {
       method: 'PATCH',
       body: JSON.stringify({ isVerified }),
     }),
+  getAuditLogs: (params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    return fetchJson(`/admin/audit-logs${query ? `?${query}` : ''}`);
+  },
   syncSap: () => fetchJson('/admin/sync-sap', { method: 'POST' }),
   getDailyManifest: () => fetchJson('/admin/manifest/daily'),
   getDistributorDirectory: () => fetchJson('/admin/distributors'),
+  exportOrdersCsv: async () => {
+    let token = localStorage.getItem('inbisco_auth_token');
+    if (!token) {
+      token = await ensureAuthToken();
+    }
+    const response = await fetch(`${API_BASE}/admin/orders/export/csv`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    if (!response.ok) {
+      throw new Error('Gagal mengunduh CSV pesanan');
+    }
+    const csvText = await response.text();
+    const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `Inbisco_Orders_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    return true;
+  },
 
   // SupplySync HQ Intelligence
   getStockoutRisk: () => fetchJson('/admin/stockout-risk'),
   getRestockRecommendations: () => fetchJson('/admin/restock-recommendations'),
-  batchApprovePo: (recommendationIds = []) =>
-    fetchJson('/admin/batch-approve-po', {
+  batchApprovePo: (payload) => {
+    // Support either full object { depotName, applyToStock, notes, items } or array of items
+    const body = Array.isArray(payload)
+      ? { depotName: 'CV Surya Krian Logistik', applyToStock: true, items: payload }
+      : payload;
+    return fetchJson('/admin/batch-approve-po', {
       method: 'POST',
-      body: JSON.stringify({ recommendationIds }),
-    }),
+      body: JSON.stringify(body),
+    });
+  },
   crossDepotTransfer: (payload) =>
     fetchJson('/admin/cross-depot-transfer', {
       method: 'POST',

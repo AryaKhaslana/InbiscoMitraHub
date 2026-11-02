@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
+import { api } from '../../services/api';
 import { 
   Truck, 
   Package, 
@@ -11,311 +12,483 @@ import {
   RefreshCw, 
   Phone, 
   ShieldCheck, 
-  FileText,
-  AlertCircle
+  FileText
 } from 'lucide-react';
 import { formatRupiah } from '../../lib/utils';
 import confetti from 'canvas-confetti';
 
+const NEXT_ORDER_STATUS = {
+  PENDING: { status: 'CONFIRMED', label: 'Konfirmasi PO' },
+  CONFIRMED: { status: 'PACKING', label: 'Mulai Packing' },
+  PACKING: { status: 'DISPATCHED', label: 'Kirim Armada' },
+  DISPATCHED: { status: 'COMPLETED', label: 'Selesai Terima' },
+};
+
 export default function OrderDeliveryTracking({ setCurrentScreen }) {
-  const [refreshing, setRefreshing] = useState(false);
-  const [bastConfirmed, setBastConfirmed] = useState(false);
+  const [deliveries, setDeliveries] = useState([]);
+  const [selectedDoNumber, setSelectedDoNumber] = useState('DO-2026-0881');
+  const [outboundOrders, setOutboundOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [confirmingBast, setConfirmingBast] = useState(false);
+  const [bastReceipt, setBastReceipt] = useState(null);
+  const [mutatingOrderId, setMutatingOrderId] = useState(null);
 
-  const activeShipment = {
-    doNumber: 'DO-2026-0881',
-    poRef: 'PO-REC-2026-0881',
-    origin: 'Pabrik Pasuruan DC',
-    destination: 'Gudang Krian (SDA)',
-    status: 'DALAM PERJALANAN (TRANSIT)',
-    eta: '09:45 WIB (T-Minus 35 Menit)',
-    product: 'Roma Kelapa 300g (Dus / Karton)',
-    quantityCartons: 850,
-    totalValue: 182750000,
-    driver: 'Bambang Sugiono',
-    phone: '0812-9842-1102',
-    truckType: 'Isuzu Giga FVR Wingbox (6 Roda)',
-    plateNumber: 'L 9482 UT',
-    eLockSeal: '#LK-9941-PASSDA',
-    temperature: '24.2°C (Optimal)',
-    steps: [
-      { step: 1, title: 'Rilis Manifest & Dokumen DO', time: '06:15 WIB', completed: true, note: 'Dokumen DO & Faktur Pajak tervalidasi SAP' },
-      { step: 2, title: 'Pemuatan & Segel di DC Pasuruan', time: '07:30 WIB', completed: true, note: '850 Dus termuat, e-Lock tamper-proof aktif' },
-      { step: 3, title: 'Perjalanan Armada (Inbound Transit)', time: '08:40 WIB', current: true, note: 'Posisi GPS: Tol Pandaan - Porong KM 42' },
-      { step: 4, title: 'Penerimaan & BAST Depo Krian', time: 'Est. 09:45 WIB', pending: true, note: 'Pemeriksaan fisik segel & barcode FEFO' },
-    ],
+  const fetchTrackingData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [inboundRes, ordersRes] = await Promise.all([
+        api.getInboundDeliveries(),
+        api.getAdminOrders({ limit: 15 }),
+      ]);
+      const list = inboundRes?.deliveries || [];
+      setDeliveries(list);
+      if (list.length > 0) {
+        setSelectedDoNumber((prev) => {
+          const exists = list.find((d) => d.doNumber === prev);
+          return exists ? prev : list[0].doNumber;
+        });
+      }
+      setOutboundOrders(Array.isArray(ordersRes) ? ordersRes : ordersRes?.orders || []);
+    } catch (err) {
+      console.error('OrderDeliveryTracking fetch error:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchTrackingData();
+    const onRefresh = () => fetchTrackingData();
+    window.addEventListener('supplysync:refresh', onRefresh);
+    return () => window.removeEventListener('supplysync:refresh', onRefresh);
+  }, [fetchTrackingData]);
+
+  const activeShipment =
+    deliveries.find((d) => d.doNumber === selectedDoNumber) ||
+    deliveries[0] || {
+      doNumber: 'DO-2026-0881',
+      poNumber: 'PO-MYR-2610-8821',
+      origin: 'Mayora Plant DC Pasuruan (Pier II)',
+      destination: 'Gudang Utama CV Surya Krian Logistik (Bay 2)',
+      status: 'IN_TRANSIT',
+      currentStep: 3,
+      milestones: [
+        { step: 1, title: 'HQ Approval & SAP DO Release', time: '14:10 WIB', completed: true },
+        { step: 2, title: 'Plant Loading & e-Lock Sealing', time: '15:25 WIB', completed: true },
+        { step: 3, title: 'Transit Tol Pandaan – Krian (KM 742)', time: '16:45 WIB', completed: true },
+        { step: 4, title: 'Unloading & Verifikasi BAST Gudang Krian', time: 'Estimasi 17:28 WIB', completed: false },
+      ],
+      fleet: {
+        plateNumber: 'W 9102 UP',
+        vehicleType: 'Hino Ranger FM 260 JD Wingbox (65 m³)',
+        driverName: 'Slamet Riyadi',
+        driverPhone: '0812-3099-4412',
+        sealNumber: 'MYR-998240',
+        sealStatus: 'LOCKED_INTACT',
+        gpsCoordinates: {
+          locationLabel: '5.2 km menjelang Exit Tol Krian',
+        },
+      },
+      cargoSummary: {
+        totalCartons: 850,
+        ftlUtilizationPct: 86,
+        items: [],
+      },
+    };
+
+  const isBastVerified = activeShipment.status === 'DELIVERED_BAST_VERIFIED';
+
+  const handleConfirmBast = async () => {
+    if (isBastVerified || confirmingBast) return;
+    setConfirmingBast(true);
+    setBastReceipt(null);
+    try {
+      const res = await api.confirmInboundArrival(activeShipment.doNumber, {
+        receivedBy: 'Bambang Sudiro (Kepala Gudang Krian)',
+        sealCode: activeShipment.fleet?.sealNumber || 'MYR-998240',
+        notes: `Verifikasi BAST fisik untuk ${activeShipment.doNumber} lengkap sesuai manifest`,
+        applyToStock: true,
+      });
+      setBastReceipt(res);
+      confetti({
+        particleCount: 70,
+        spread: 60,
+        origin: { y: 0.7 },
+      });
+      await fetchTrackingData();
+    } catch (err) {
+      alert(err.message || 'Gagal mengonfirmasi BAST');
+    } finally {
+      setConfirmingBast(false);
+    }
   };
 
-  const deliveryHistory = [
-    { doNumber: 'DO-2026-0881', sku: 'Roma Kelapa 300g', qty: 850, date: '17 Jun 2026', status: 'IN_TRANSIT', badge: 'Dalam Perjalanan' },
-    { doNumber: 'DO-2026-0840', sku: 'Beng-Beng Regular 20g', qty: 600, date: '15 Jun 2026', status: 'DELIVERED', badge: 'Diterima Lengkap' },
-    { doNumber: 'DO-2026-0792', sku: 'Torabika Duo 25g', qty: 450, date: '12 Jun 2026', status: 'DELIVERED', badge: 'Diterima Lengkap' },
-    { doNumber: 'DO-2026-0755', sku: 'Energen Cokelat 34g', qty: 900, date: '08 Jun 2026', status: 'DELIVERED', badge: 'Diterima Lengkap' },
-  ];
-
-  const handleRefresh = () => {
-    setRefreshing(true);
-    setTimeout(() => setRefreshing(false), 600);
-  };
-
-  const handleConfirmBast = () => {
-    setBastConfirmed(true);
-    confetti({ particleCount: 60, spread: 60, origin: { y: 0.6 } });
+  const handleAdvanceOrder = async (orderId, targetStatus) => {
+    setMutatingOrderId(orderId);
+    try {
+      await api.updateOrderStatus(orderId, targetStatus);
+      await fetchTrackingData();
+    } catch (err) {
+      alert(err.message || 'Gagal memperbarui status pesanan');
+    } finally {
+      setMutatingOrderId(null);
+    }
   };
 
   return (
-    <div className="space-y-6 pb-12 animate-in fade-in">
-      {/* Top Header & KPI Ribbon */}
+    <div className="flex flex-col w-full pb-16 space-y-6">
+      {/* Top Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-1.5 text-primary text-xs font-bold uppercase tracking-wider mb-1">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-            <span>Sistem Pelacakan Logistik Inbound Hub Krian</span>
+          <div className="flex items-center gap-2 text-primary font-mono text-xs uppercase tracking-wider mb-1">
+            <Truck className="h-4 w-4" />
+            <span>Depo Krian Logistics • Live Inbound DO &amp; Outbound Dispatch</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-on-surface tracking-tight">
-            Pelacakan Pengiriman & Status Pesanan
+          <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-on-surface">
+            Pelacakan Delivery Armada &amp; Status PO Inbound
           </h1>
-          <p className="text-xs sm:text-sm text-on-surface-variant mt-0.5">
-            Distributor Logistics Portal: Pemantauan armada transit pabrik, ETA langsung, dan manifest serah terima fisik (BAST).
+          <p className="text-sm text-on-surface-variant mt-1">
+            Pantau posisi GPS truk Wingbox dari Pabrik Mayora, verifikasi e-Lock &amp; BAST (otomatis menambah stok di Supabase), serta kelola antrean dispatch ke toko.
           </p>
         </div>
 
-        <div className="flex items-center gap-3 flex-wrap">
-          <div className="bg-surface-container-lowest border border-surface-container-high rounded-xl px-4 py-2 flex items-center gap-3 shadow-xs">
-            <div className="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-primary">
-              <Truck className="h-5 w-5" />
-            </div>
-            <div>
-              <span className="block text-[10px] font-bold text-on-surface-variant uppercase">Armada Inbound</span>
-              <span className="text-sm font-bold text-on-surface">1 Truk Bergerak</span>
-            </div>
-          </div>
-
-          <div className="bg-surface-container-lowest border border-surface-container-high rounded-xl px-4 py-2 flex items-center gap-3 shadow-xs">
-            <div className="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-tertiary">
-              <Package className="h-5 w-5" />
-            </div>
-            <div>
-              <span className="block text-[10px] font-bold text-on-surface-variant uppercase">Fulfillment Rata-rata</span>
-              <span className="text-sm font-bold text-on-surface">99.4% Volume</span>
-            </div>
-          </div>
-
-          <Button 
-            onClick={handleRefresh}
-            variant="outline" 
-            size="sm" 
-            className="text-xs font-bold gap-1.5"
+        <div className="flex items-center gap-2.5 self-start lg:self-auto">
+          <Badge variant="surface" className="font-mono text-xs">
+            {deliveries.filter((d) => d.status === 'IN_TRANSIT').length} Truk Dalam Perjalanan
+          </Badge>
+          <Button
+            onClick={fetchTrackingData}
+            variant="outline"
+            size="sm"
+            className="h-9 text-xs gap-1.5"
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : ''}`} />
-            <span>Segarkan Status</span>
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin text-primary' : ''}`} />
+            <span>Refresh Telemetri</span>
           </Button>
         </div>
       </div>
 
-      {/* ACTIVE SHIPMENT HERO CARD */}
-      <div className="bg-surface-container-lowest rounded-2xl border border-surface-container-high shadow-md overflow-hidden">
-        {/* Banner Header */}
-        <div className="bg-gradient-to-r from-primary to-primary-container px-6 py-4 text-white flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/15 backdrop-blur flex items-center justify-center text-white">
-              <Truck className="h-6 w-6" />
-            </div>
+      {bastReceipt && (
+        <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2.5">
+            <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0" />
             <div>
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-white/20 uppercase">
-                  {activeShipment.doNumber}
-                </span>
-                <span className="text-white/60">•</span>
-                <span className="text-xs font-mono text-white/90">{activeShipment.poRef}</span>
+              <div className="font-bold">
+                Berita Acara Serah Terima ({bastReceipt.bastNumber}) untuk {bastReceipt.doNumber} Terverifikasi!
               </div>
-              <h2 className="text-lg font-bold font-display text-white mt-0.5">
-                {activeShipment.origin} ➔ {activeShipment.destination}
-              </h2>
+              <div className="text-[11px] text-emerald-700 mt-0.5">
+                Stok Gudang Krian di Supabase telah diperbarui:{' '}
+                {(bastReceipt.restockedItems || [])
+                  .map((it) => `${it.name.split('(')[0].trim()} (+${it.addedCartons} dus → ${it.newStockCartons} dus)`)
+                  .join(', ')}
+              </div>
             </div>
           </div>
-
-          <div className="flex items-center gap-2">
-            <span className="px-3 py-1 rounded-full bg-tertiary text-white font-mono text-xs font-bold">
-              {activeShipment.status}
-            </span>
-          </div>
+          <Button size="sm" variant="outline" onClick={() => setBastReceipt(null)} className="h-7 text-xs">
+            Tutup
+          </Button>
         </div>
+      )}
 
-        {/* Timeline Stepper */}
-        <div className="p-6 border-b border-surface-container-high bg-surface-container-low/40">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {activeShipment.steps.map((st) => (
-              <div 
-                key={st.step}
-                className={`p-3.5 rounded-xl border flex flex-col justify-between ${
-                  st.current
-                    ? 'bg-primary/5 border-primary shadow-xs'
-                    : st.completed
-                    ? 'bg-surface-container-lowest border-emerald-300'
-                    : 'bg-surface-container border-surface-container-high opacity-70'
+      {/* Main Grid: 8 cols Active Shipment Details + 4 cols Fleet & Cargo */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Left: Stepper & Route Map (8 cols) */}
+        <div className="lg:col-span-8 space-y-5">
+          <Card className="border border-outline/10 shadow-xs overflow-hidden">
+            <div className="bg-surface-container-low px-5 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-outline/10">
+              <div className="flex items-center gap-2.5">
+                <span className="font-mono font-extrabold text-sm text-primary">{activeShipment.doNumber}</span>
+                <span className="text-xs text-on-surface-variant font-mono">({activeShipment.poNumber})</span>
+              </div>
+              <span
+                className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                  isBastVerified
+                    ? 'bg-emerald-100 text-emerald-800'
+                    : 'bg-purple-100 text-purple-800 animate-pulse'
                 }`}
               >
-                <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className={`text-[10px] font-bold font-mono px-1.5 py-0.2 rounded ${
-                      st.current ? 'bg-primary text-white' : st.completed ? 'bg-emerald-100 text-emerald-800' : 'bg-surface-variant text-on-surface-variant'
-                    }`}>
-                      {st.completed ? 'SELESAI' : st.current ? 'SEDANG JALAN' : 'MENUNGGU'}
-                    </span>
-                    <span className="text-[11px] font-mono text-outline">{st.time}</span>
-                  </div>
-                  <h4 className="text-xs font-bold font-display text-on-surface">{st.title}</h4>
-                </div>
-                <p className="text-[11px] text-on-surface-variant mt-2">{st.note}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+                {isBastVerified ? 'SELESAI & BAST TERVERIFIKASI' : 'DALAM PERJALANAN (IN TRANSIT)'}
+              </span>
+            </div>
 
-        {/* Cargo, Driver, & Telemetry Details */}
-        <div className="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Left: Product & Cargo Detail */}
-          <div className="lg:col-span-7 space-y-4">
-            <div className="p-4 rounded-xl bg-surface-container-low border border-surface-container-high space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-primary uppercase tracking-wider">Manifest Kargo Inbound</span>
-                <span className="text-xs font-mono font-bold text-on-surface">Total: {activeShipment.quantityCartons} Karton</span>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="w-16 h-16 rounded-lg bg-surface-container-lowest border border-surface-container-high flex items-center justify-center p-2 shrink-0">
-                  <Package className="h-8 w-8 text-primary" />
+            <CardContent className="p-5 space-y-5">
+              {/* Origin -> Destination */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-3.5 bg-surface-container-low rounded-xl border border-outline/10 text-xs">
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-on-surface-variant">Titik Keberangkatan (Origin)</span>
+                  <div className="font-bold text-on-surface mt-0.5">{activeShipment.origin}</div>
                 </div>
                 <div>
-                  <h3 className="text-base font-bold font-display text-on-surface">{activeShipment.product}</h3>
-                  <div className="text-xs text-on-surface-variant mt-0.5">
-                    Estimasi Nilai Faktur: <strong className="text-primary">{formatRupiah(activeShipment.totalValue)}</strong> (PPn 11% Included)
-                  </div>
-                  <div className="text-[11px] text-outline mt-1 font-mono">
-                    Batch: #RMK-PAS-260601 • Kadaluwarsa: Jun 2027 (FEFO Grade A)
-                  </div>
+                  <span className="text-[10px] uppercase font-bold text-on-surface-variant">Titik Tujuan (Destination)</span>
+                  <div className="font-bold text-on-surface mt-0.5">{activeShipment.destination}</div>
                 </div>
               </div>
-            </div>
 
-            {/* Inspection Checklist */}
-            <div className="p-4 rounded-xl bg-surface-container-lowest border border-surface-container-high space-y-2 text-xs">
-              <span className="font-bold text-on-surface block">Instruksi Verifikasi Gudang Distributor Krian:</span>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-on-surface-variant">
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                  <span>Periksa kesesuaian nomor segel boks #LK-9941</span>
+              {/* GPS Live Position Strip */}
+              <div className="p-3.5 bg-primary/5 border border-primary/15 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-primary shrink-0" />
+                  <span className="font-bold text-on-surface">
+                    Posisi GPS Terkini: {activeShipment.fleet?.gpsCoordinates?.locationLabel || 'Tol Pandaan - Krian'}
+                  </span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                  <span>Scan barcode master karton FEFO</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                  <span>Validasi tanda tangan supir pada BAST</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                  <span>Input kuantitas fisik ke menu DSR</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right: Driver & Vehicle Info */}
-          <div className="lg:col-span-5 bg-surface-container-low p-5 rounded-xl border border-surface-container-high space-y-4 flex flex-col justify-between">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between pb-2 border-b border-surface-container-high">
-                <span className="text-xs font-bold text-on-surface uppercase">Armada & Supir Mayora</span>
-                <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">GPS ONLINE</span>
+                <span className="font-mono text-[11px] text-primary font-bold">
+                  e-Lock Seal: {activeShipment.fleet?.sealNumber || 'MYR-998240'} ({activeShipment.fleet?.sealStatus || 'INTACT'})
+                </span>
               </div>
 
-              <div className="text-xs space-y-1.5">
-                <div className="flex justify-between">
-                  <span className="text-outline">Tipe Armada:</span>
-                  <span className="font-semibold text-on-surface">{activeShipment.truckType}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-outline">Nomor Polisi:</span>
-                  <span className="font-mono font-bold text-on-surface">{activeShipment.plateNumber}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-outline">Nama Driver:</span>
-                  <span className="font-semibold text-on-surface">{activeShipment.driver}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-outline">Segel e-Lock:</span>
-                  <span className="font-mono font-bold text-primary">{activeShipment.eLockSeal}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-outline">Suhu Kargo Boks:</span>
-                  <span className="font-mono text-emerald-700 font-semibold">{activeShipment.temperature}</span>
+              {/* 4-Step Milestone Stepper */}
+              <div className="space-y-3">
+                <div className="text-xs font-bold text-on-surface">Tahapan Perjalanan &amp; Validasi Dokumen</div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {(activeShipment.milestones || []).map((step) => (
+                    <div
+                      key={step.step}
+                      className={`p-3 rounded-xl border text-xs flex items-start gap-3 ${
+                        step.completed
+                          ? 'bg-emerald-50/40 border-emerald-200'
+                          : 'bg-surface-container-low border-outline/15'
+                      }`}
+                    >
+                      {step.completed ? (
+                        <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                      ) : (
+                        <Clock className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+                      )}
+                      <div>
+                        <div className="font-bold text-on-surface">
+                          Step {step.step}: {step.title}
+                        </div>
+                        <div className="text-[10px] text-on-surface-variant font-mono mt-0.5">{step.time}</div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            </div>
 
-            <div className="pt-3 border-t border-surface-container-high flex flex-col gap-2">
-              {bastConfirmed ? (
-                <div className="p-3 bg-emerald-100 text-emerald-900 rounded-lg text-xs font-bold flex items-center justify-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-700" />
-                  <span>BAST Kedatangan Telah Divalidasi</span>
+              {/* Confirm BAST Action */}
+              <div className="pt-3 border-t border-outline/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="text-xs text-on-surface-variant">
+                  {isBastVerified
+                    ? '✓ Muatan DO ini telah diverifikasi dan masuk ke saldo stok gudang di Supabase.'
+                    : 'Klik tombol di samping saat truk tiba di Bay Gudang Krian untuk memverifikasi BAST dan menambah stok otomatis.'}
                 </div>
-              ) : (
-                <Button 
+
+                <Button
                   onClick={handleConfirmBast}
-                  size="sm" 
-                  className="w-full text-xs font-bold gap-1.5 shadow-sm"
+                  disabled={isBastVerified || confirmingBast}
+                  className={`text-xs font-bold px-4 py-2 shrink-0 ${
+                    isBastVerified
+                      ? 'bg-emerald-600 text-white opacity-90'
+                      : 'bg-primary text-white hover:bg-primary-container shadow-xs'
+                  }`}
                 >
-                  <ShieldCheck className="h-4 w-4" />
-                  <span>Konfirmasi Serah Terima Fisik (BAST)</span>
+                  <ShieldCheck className="h-4 w-4 mr-1.5" />
+                  <span>
+                    {isBastVerified
+                      ? 'BAST Terverifikasi'
+                      : confirmingBast
+                      ? 'Memverifikasi & Update Stok...'
+                      : `Konfirmasi BAST ${activeShipment.doNumber} (+${activeShipment.cargoSummary?.totalCartons || 850} Dus)`}
+                  </span>
                 </Button>
-              )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Inbound DO List Selector */}
+          <Card className="border border-outline/10 shadow-xs">
+            <CardContent className="p-5 space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold text-on-surface">Daftar Surat Jalan Inbound Pabrik (DC Pasuruan / Driyorejo)</h3>
+                <span className="text-xs font-mono text-on-surface-variant">{deliveries.length} DO Tercatat</span>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="bg-surface-container-low text-on-surface-variant border-b border-outline/10">
+                      <th className="py-2.5 px-3 font-semibold">Nomor DO</th>
+                      <th className="py-2.5 px-3 font-semibold">Referensi PO</th>
+                      <th className="py-2.5 px-3 font-semibold">Asal Pabrik</th>
+                      <th className="py-2.5 px-3 font-semibold text-right">Muatan</th>
+                      <th className="py-2.5 px-3 font-semibold text-center">Status</th>
+                      <th className="py-2.5 px-3 font-semibold text-right">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-outline/10 font-medium">
+                    {deliveries.map((del) => {
+                      const isDone = del.status === 'DELIVERED_BAST_VERIFIED';
+                      const isSelected = del.doNumber === activeShipment.doNumber;
+                      return (
+                        <tr
+                          key={del.doNumber}
+                          onClick={() => setSelectedDoNumber(del.doNumber)}
+                          className={`hover:bg-surface-container-low cursor-pointer transition-colors ${
+                            isSelected ? 'bg-primary/5' : ''
+                          }`}
+                        >
+                          <td className="py-3 px-3 font-mono font-bold text-primary">{del.doNumber}</td>
+                          <td className="py-3 px-3 font-mono text-on-surface-variant">{del.poNumber}</td>
+                          <td className="py-3 px-3 text-on-surface">{del.origin}</td>
+                          <td className="py-3 px-3 text-right font-mono font-bold">
+                            {del.cargoSummary?.totalCartons || 0} Dus
+                          </td>
+                          <td className="py-3 px-3 text-center">
+                            <span
+                              className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                isDone ? 'bg-emerald-100 text-emerald-800' : 'bg-purple-100 text-purple-800'
+                              }`}
+                            >
+                              {isDone ? 'Diterima (BAST Valid)' : 'In Transit'}
+                            </span>
+                          </td>
+                          <td className="py-3 px-3 text-right">
+                            <Button size="sm" variant="outline" className="text-[11px] h-7 px-2.5">
+                              Pilih DO
+                            </Button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right: Fleet Telemetry & Cargo Items (4 cols) */}
+        <div className="lg:col-span-4 space-y-5">
+          <Card className="border border-outline/10 shadow-xs bg-surface-container-lowest">
+            <CardContent className="p-5 space-y-4">
+              <div className="flex items-center justify-between border-b border-outline/10 pb-3">
+                <span className="font-bold text-xs text-on-surface flex items-center gap-1.5">
+                  <Truck className="h-4 w-4 text-primary" />
+                  Identitas Armada &amp; Pengemudi
+                </span>
+                <Badge variant="surface" className="font-mono text-[10px]">
+                  {activeShipment.fleet?.plateNumber || 'W 9102 UP'}
+                </Badge>
+              </div>
+
+              <div className="space-y-2.5 text-xs">
+                <div className="flex justify-between">
+                  <span className="text-on-surface-variant">Tipe Armada:</span>
+                  <span className="font-bold text-on-surface text-right">{activeShipment.fleet?.vehicleType}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-on-surface-variant">Nama Pengemudi:</span>
+                  <span className="font-bold text-on-surface">{activeShipment.fleet?.driverName}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-on-surface-variant">Kontak Darurat:</span>
+                  <span className="font-mono font-semibold text-primary flex items-center gap-1">
+                    <Phone className="h-3 w-3" />
+                    {activeShipment.fleet?.driverPhone || '0812-3099-4412'}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-on-surface-variant">Utilisasi FTL:</span>
+                  <span className="font-mono font-bold text-emerald-700">
+                    {activeShipment.cargoSummary?.ftlUtilizationPct || 86}% Kapasitas
+                  </span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border border-outline/10 shadow-xs bg-surface-container-lowest">
+            <CardContent className="p-5 space-y-3">
+              <div className="flex items-center justify-between border-b border-outline/10 pb-3">
+                <span className="font-bold text-xs text-on-surface flex items-center gap-1.5">
+                  <Package className="h-4 w-4 text-primary" />
+                  Rincian Muatan Kargo ({activeShipment.cargoSummary?.totalCartons || 0} Dus)
+                </span>
+              </div>
+
+              <div className="space-y-2">
+                {(activeShipment.cargoSummary?.items || []).map((item, idx) => (
+                  <div key={idx} className="p-3 bg-surface-container-low rounded-lg border border-outline/10 flex items-center justify-between text-xs">
+                    <div>
+                      <div className="font-bold text-on-surface">{item.name || item.productName || item.sku}</div>
+                      <div className="text-[10px] text-on-surface-variant font-mono">
+                        {item.sku} • Batch: {item.batchNumber || 'BATCH-2611'}
+                      </div>
+                    </div>
+                    <span className="font-mono font-extrabold text-primary">{item.quantityCartons} Dus</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Outbound Wholesale Store Orders Dispatch Table */}
+      <Card className="border border-outline/10 shadow-xs">
+        <CardContent className="p-5 space-y-3">
+          <div className="flex items-center justify-between border-b border-outline/10 pb-3">
+            <div className="flex items-center gap-2">
+              <FileText className="h-4 w-4 text-primary" />
+              <h3 className="text-sm font-bold text-on-surface">
+                Status Pengiriman Outbound ke Toko Mitra Sidoarjo (Tabel Order Supabase)
+              </h3>
             </div>
+            <span className="text-xs font-mono text-on-surface-variant">{outboundOrders.length} Pesanan Toko</span>
           </div>
-        </div>
-      </div>
 
-      {/* RIWAYAT PENGIRIMAN & PENERIMAAN TABLE */}
-      <div className="bg-surface-container-lowest rounded-2xl border border-surface-container-high shadow-xs p-6 space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-base font-bold font-display text-on-surface">Riwayat Delivery Order & Penerimaan Barang</h3>
-            <p className="text-xs text-on-surface-variant">Arsip serah terima inbound armada 30 hari terakhir dari Pabrik Pasuruan & Driyorejo.</p>
-          </div>
-        </div>
-
-        <div className="overflow-x-auto border border-surface-container-high rounded-xl">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-surface-container-low border-b border-surface-container-high font-bold text-on-surface uppercase">
-              <tr>
-                <th className="py-3 px-4">No. Surat Jalan (DO)</th>
-                <th className="py-3 px-4">Produk FMCG</th>
-                <th className="py-3 px-4">Kuantitas</th>
-                <th className="py-3 px-4">Tanggal Penerimaan</th>
-                <th className="py-3 px-4">Status Logistik</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-surface-container-high">
-              {deliveryHistory.map((row, idx) => (
-                <tr key={idx} className="hover:bg-surface-container-low/50 transition-colors">
-                  <td className="py-3 px-4 font-mono font-bold text-primary">{row.doNumber}</td>
-                  <td className="py-3 px-4 font-semibold text-on-surface">{row.sku}</td>
-                  <td className="py-3 px-4 font-mono">{row.qty} Karton</td>
-                  <td className="py-3 px-4 text-on-surface-variant">{row.date}</td>
-                  <td className="py-3 px-4">
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                      row.status === 'IN_TRANSIT'
-                        ? 'bg-amber-100 text-amber-900 border border-amber-300'
-                        : 'bg-emerald-100 text-emerald-900 border border-emerald-300'
-                    }`}>
-                      {row.badge}
-                    </span>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="bg-surface-container-low text-on-surface-variant border-b border-outline/10">
+                  <th className="py-2.5 px-3 font-semibold">No Resi</th>
+                  <th className="py-2.5 px-3 font-semibold">Toko Tujuan &amp; Kecamatan</th>
+                  <th className="py-2.5 px-3 font-semibold">Ringkasan Item</th>
+                  <th className="py-2.5 px-3 font-semibold text-right">Total Tagihan</th>
+                  <th className="py-2.5 px-3 font-semibold text-center">Status Saat Ini</th>
+                  <th className="py-2.5 px-3 font-semibold text-right">Update Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+              </thead>
+              <tbody className="divide-y divide-outline/10 font-medium">
+                {outboundOrders.map((ord) => {
+                  const nextStep = NEXT_ORDER_STATUS[ord.status];
+                  return (
+                    <tr key={ord.id} className="hover:bg-surface-container-low/60 transition-colors">
+                      <td className="py-3 px-3 font-mono font-bold text-primary">{ord.trackingCode}</td>
+                      <td className="py-3 px-3">
+                        <div className="font-bold text-on-surface">{ord.store?.name}</div>
+                        <div className="text-[10px] text-on-surface-variant">{ord.store?.district} • {ord.store?.phone}</div>
+                      </td>
+                      <td className="py-3 px-3 text-on-surface-variant">{ord.itemsSummary}</td>
+                      <td className="py-3 px-3 text-right font-mono font-bold">{formatRupiah(ord.totalAmount)}</td>
+                      <td className="py-3 px-3 text-center">
+                        <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-surface-container-highest text-on-surface">
+                          {ord.statusLabel || ord.status}
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 text-right">
+                        {nextStep ? (
+                          <Button
+                            size="sm"
+                            disabled={mutatingOrderId === ord.id}
+                            onClick={() => handleAdvanceOrder(ord.id, nextStep.status)}
+                            className="bg-primary text-white text-[11px] h-7 px-2.5 hover:bg-primary-container"
+                          >
+                            {mutatingOrderId === ord.id ? '...' : nextStep.label}
+                          </Button>
+                        ) : (
+                          <span className="text-[11px] text-emerald-700 font-bold">✓ Selesai</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

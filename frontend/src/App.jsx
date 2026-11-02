@@ -48,7 +48,7 @@ function AppContent() {
           {publicNav === 'contact' && <Contact />}
           {publicNav === 'login' && <Login setActiveNav={setPublicNav} />}
         </main>
-        <PublicFooter />
+        <PublicFooter setActiveNav={setPublicNav} />
       </div>
     );
   }

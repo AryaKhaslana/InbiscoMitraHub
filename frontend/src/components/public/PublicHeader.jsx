@@ -51,9 +51,6 @@ export default function PublicHeader({ activeNav, setActiveNav }) {
               <span className="text-lg font-bold font-display text-on-surface tracking-tight leading-none">
                 Inbisco MitraHub
               </span>
-              <Badge variant="tertiary" className="text-[10px] font-bold py-0 px-1.5 uppercase">
-                GTNIC 2026
-              </Badge>
             </div>
             <span className="text-xs text-on-surface-variant font-medium mt-0.5">
               PT Inbisco Niagatama Semesta · Cabang Krian

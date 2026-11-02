@@ -64,11 +64,10 @@ export default function About({ setActiveNav }) {
           </nav>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            <div className="lg:col-span-7 space-y-5">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high text-primary font-bold text-xs uppercase tracking-wider border border-surface-variant">
-                <span className="w-2 h-2 rounded-full bg-primary-container"></span>
-                <span>PROFIL DISTRIBUTOR RESMI MAYORA FMCG</span>
-              </div>
+            <div className="lg:col-span-7 space-y-4">
+              <span className="text-xs font-bold text-primary uppercase tracking-wider block">
+                Profil Distributor Resmi Mayora FMCG · Cabang Krian
+              </span>
 
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-display text-on-surface tracking-tight leading-tight">
                 Menghubungkan Produk Berkualitas dengan Peluang Usaha.

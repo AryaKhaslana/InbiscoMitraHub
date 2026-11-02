@@ -43,6 +43,7 @@ export const updateOrderStatusSchema = z
         }),
       }
     ),
+    note: z.string().trim().max(250).optional(),
   })
   .strict();
 
@@ -304,6 +305,8 @@ export const batchApprovePoSchema = z
       .min(2)
       .max(120)
       .default('CV Surya Krian Logistik'),
+    targetPlant: z.string().trim().max(120).optional(),
+    priority: z.string().trim().max(60).optional(),
     applyToStock: z.boolean().default(false),
     notes: z.string().trim().max(250).optional(),
     items: z
