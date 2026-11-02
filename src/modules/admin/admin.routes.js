@@ -157,6 +157,16 @@ router.patch(
 );
 
 /**
+ * DELETE /api/v1/admin/products/:id
+ * Delete or soft-archive product SKU
+ */
+router.delete(
+  '/products/:id',
+  validate({ params: idParamSchema }),
+  adminController.deleteProduct
+);
+
+/**
  * GET /api/v1/admin/audit-logs
  * Paginated activity trail of admin mutations (filters: action, entityType, entityId, page, limit)
  */

@@ -223,6 +223,10 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(payload),
     }),
+  deleteProduct: (productIdentifier) =>
+    fetchJson(`/admin/products/${encodeURIComponent(productIdentifier)}`, {
+      method: 'DELETE',
+    }),
   updateProductStock: (productIdentifier, payload) =>
     fetchJson(`/admin/products/${encodeURIComponent(productIdentifier)}/stock`, {
       method: 'PATCH',

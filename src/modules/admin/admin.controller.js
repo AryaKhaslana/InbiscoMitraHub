@@ -131,6 +131,22 @@ export async function updateProductStock(req, res, next) {
   }
 }
 
+export async function deleteProduct(req, res, next) {
+  try {
+    const result = await adminService.deleteProduct(req.params.id, {
+      ipAddress: getClientIp(req),
+    });
+
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: result.message,
+      data: result,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 export async function getAuditLogs(req, res, next) {
   try {
     const { logs, meta } = await adminService.getAuditLogs(req.query);

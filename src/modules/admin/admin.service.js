@@ -717,6 +717,64 @@ export async function updateProductStock(productIdentifier, payload, meta = {}) 
 }
 
 /**
+ * DELETE /api/v1/admin/products/:id
+ * Deletes or archives a product SKU and clears catalog & KPI caches.
+ */
+export async function deleteProduct(productId, meta = {}) {
+  const existingProduct = await prisma.product.findFirst({
+    where: {
+      OR: [{ id: productId }, { sku: productId }],
+    },
+    include: {
+      orderItems: { select: { id: true }, take: 1 },
+    },
+  });
+
+  if (!existingProduct) {
+    throw new AppError('Product SKU not found', 404, [
+      { field: 'id', message: `Product "${productId}" does not exist` },
+    ]);
+  }
+
+  let actionTaken = 'DELETED';
+  if (existingProduct.orderItems.length > 0) {
+    await prisma.product.update({
+      where: { id: existingProduct.id },
+      data: { isAvailable: false, stockCartons: 0 },
+    });
+    actionTaken = 'ARCHIVED';
+  } else {
+    await prisma.product.delete({
+      where: { id: existingProduct.id },
+    });
+  }
+
+  await prisma.auditLog.create({
+    data: {
+      action: actionTaken === 'ARCHIVED' ? 'PRODUCT_ARCHIVED' : 'PRODUCT_DELETED',
+      entityType: 'PRODUCT',
+      entityId: existingProduct.id,
+      details: {
+        sku: existingProduct.sku,
+        name: existingProduct.name,
+        mode: actionTaken,
+      },
+      ipAddress: meta.ipAddress || null,
+    },
+  });
+
+  await invalidateCache(CACHE_KEYS.CATALOG_PUBLIC, CACHE_KEYS.KPI_SUMMARY);
+
+  return {
+    id: existingProduct.id,
+    sku: existingProduct.sku,
+    name: existingProduct.name,
+    mode: actionTaken,
+    message: actionTaken === 'ARCHIVED' ? 'SKU berhasil diarsipkan (dinonaktifkan)' : 'SKU berhasil dihapus permanen',
+  };
+}
+
+/**
  * GET /api/v1/admin/audit-logs
  * Retrieves paginated audit trail of administrative operations.
  */

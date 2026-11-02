@@ -138,12 +138,12 @@ export const createProductSchema = z
     imageUrl: z
       .string()
       .trim()
-      .url('imageUrl must be a valid URL')
-      .refine(isSafeHttpUrl, {
-        message: 'imageUrl must use http:// or https:// protocol',
-      })
       .optional()
-      .nullable(),
+      .nullable()
+      .transform((val) => (val && val.trim().length > 0 ? val.trim() : null))
+      .refine((val) => !val || isSafeHttpUrl(val), {
+        message: 'imageUrl must use http:// or https:// protocol',
+      }),
     isAvailable: z.boolean().default(true),
   })
   .strict();

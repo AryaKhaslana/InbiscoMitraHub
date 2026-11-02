@@ -20,7 +20,10 @@ import {
   Store,
   Plus,
   Minus,
-  FileText
+  FileText,
+  Trash2,
+  X,
+  Boxes
 } from 'lucide-react';
 import { formatRupiah } from '../../lib/utils';
 
@@ -40,6 +43,23 @@ export default function DistributorOverview({ setCurrentScreen }) {
   const [orders, setOrders] = useState([]);
   const [stores, setStores] = useState([]);
   const [mutatingId, setMutatingId] = useState(null);
+
+  // CRUD Modal & Feedback State
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
+  const [submittingProduct, setSubmittingProduct] = useState(false);
+  const [productActionFeedback, setProductActionFeedback] = useState(null);
+  const [newProductForm, setNewProductForm] = useState({
+    sku: '',
+    name: '',
+    category: 'Biskuit',
+    cartonPrice: 215000,
+    retailPriceEst: 235000,
+    stockCartons: 100,
+    batchNumber: 'B-2026-N09',
+    expiryDate: '2027-08-30',
+    imageUrl: '',
+  });
 
   const fetchOverviewData = useCallback(async () => {
     setLoading(true);
@@ -105,6 +125,65 @@ export default function DistributorOverview({ setCurrentScreen }) {
       alert(err.message || 'Gagal memverifikasi toko mitra');
     } finally {
       setMutatingId(null);
+    }
+  };
+
+  const handleCreateProduct = async (e) => {
+    e.preventDefault();
+    setSubmittingProduct(true);
+    try {
+      await api.createProduct({
+        sku: newProductForm.sku.trim().toUpperCase(),
+        name: newProductForm.name.trim(),
+        category: newProductForm.category,
+        cartonPrice: Number(newProductForm.cartonPrice),
+        retailPriceEst: Number(newProductForm.retailPriceEst),
+        stockCartons: Number(newProductForm.stockCartons),
+        batchNumber: newProductForm.batchNumber.trim(),
+        expiryDate: new Date(newProductForm.expiryDate).toISOString(),
+        imageUrl: newProductForm.imageUrl.trim() || undefined,
+      });
+      setProductActionFeedback({
+        type: 'success',
+        message: `Produk baru "${newProductForm.name}" (${newProductForm.sku}) berhasil ditambahkan ke database gudang!`,
+      });
+      setIsAddModalOpen(false);
+      setNewProductForm({
+        sku: '',
+        name: '',
+        category: 'Biskuit',
+        cartonPrice: 215000,
+        retailPriceEst: 235000,
+        stockCartons: 100,
+        batchNumber: 'B-2026-N09',
+        expiryDate: '2027-08-30',
+        imageUrl: '',
+      });
+      await fetchOverviewData();
+      setTimeout(() => setProductActionFeedback(null), 4000);
+    } catch (err) {
+      alert(err.message || 'Gagal menambahkan produk SKU baru');
+    } finally {
+      setSubmittingProduct(false);
+    }
+  };
+
+  const handleDeleteProduct = async () => {
+    if (!productToDelete) return;
+    setSubmittingProduct(true);
+    try {
+      const res = await api.deleteProduct(productToDelete.id);
+      setProductActionFeedback({
+        type: 'success',
+        message: res?.message || `SKU "${productToDelete.name}" berhasil dihapus / dinonaktifkan.`,
+      });
+      setProductToDelete(null);
+      await fetchOverviewData();
+      setTimeout(() => setProductActionFeedback(null), 4000);
+    } catch (err) {
+      alert(err.message || 'Gagal menghapus produk SKU');
+    } finally {
+      setSubmittingProduct(false);
     }
   };
 
@@ -309,8 +388,28 @@ export default function DistributorOverview({ setCurrentScreen }) {
               <Badge variant="tertiary" className="text-[10px] font-mono">
                 {fefo?.summary?.warningCount || 2} Warning (&lt;6 Bln)
               </Badge>
+              <Button
+                size="sm"
+                onClick={() => setIsAddModalOpen(true)}
+                className="bg-primary text-white text-xs font-bold h-7 px-3 gap-1 shadow-xs hover:bg-primary-container"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Tambah SKU</span>
+              </Button>
             </div>
           </div>
+
+          {productActionFeedback && (
+            <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-xs font-semibold flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                <span>{productActionFeedback.message}</span>
+              </div>
+              <button onClick={() => setProductActionFeedback(null)} className="text-emerald-700 hover:text-emerald-900">
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          )}
 
           <div className="space-y-2.5">
             {inventoryItems.map((sku) => {
@@ -390,6 +489,16 @@ export default function DistributorOverview({ setCurrentScreen }) {
                       >
                         Restock PO
                       </Button>
+
+                      <button
+                        type="button"
+                        disabled={mutatingId === sku.id}
+                        onClick={() => setProductToDelete(sku)}
+                        title="Hapus / Arsipkan SKU ini"
+                        className="p-1.5 rounded hover:bg-red-50 text-on-surface-variant hover:text-red-600 transition-colors"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -581,6 +690,212 @@ export default function DistributorOverview({ setCurrentScreen }) {
           </div>
         </div>
       </div>
+
+      {/* Modal: Tambah SKU Baru */}
+      {isAddModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-surface-container-lowest border border-outline/15 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 my-8">
+            <div className="flex items-center justify-between border-b border-outline/10 pb-3">
+              <div className="flex items-center gap-2">
+                <Boxes className="h-5 w-5 text-primary" />
+                <h3 className="font-bold text-base text-on-surface">Tambah SKU Produk FMCG Baru</h3>
+              </div>
+              <button
+                onClick={() => setIsAddModalOpen(false)}
+                className="p-1 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateProduct} className="space-y-3.5 text-xs">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="font-bold text-on-surface">Kode SKU *</label>
+                  <input
+                    type="text"
+                    required
+                    value={newProductForm.sku}
+                    onChange={(e) => setNewProductForm({ ...newProductForm, sku: e.target.value.toUpperCase() })}
+                    placeholder="Contoh: MYR-BIS-ROMA500-12"
+                    className="w-full h-9 px-3 rounded-lg bg-surface-container-low border border-outline/20 font-mono font-bold"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="font-bold text-on-surface">Kategori Produk *</label>
+                  <select
+                    value={newProductForm.category}
+                    onChange={(e) => setNewProductForm({ ...newProductForm, category: e.target.value })}
+                    className="w-full h-9 px-3 rounded-lg bg-surface-container-low border border-outline/20 font-semibold"
+                  >
+                    <option value="Biskuit">Biskuit</option>
+                    <option value="Wafer">Wafer</option>
+                    <option value="Cokelat">Cokelat</option>
+                    <option value="Kopi">Kopi</option>
+                    <option value="Sereal">Sereal</option>
+                    <option value="Permen">Permen</option>
+                    <option value="Minuman">Minuman</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-bold text-on-surface">Nama Lengkap Produk *</label>
+                <input
+                  type="text"
+                  required
+                  value={newProductForm.name}
+                  onChange={(e) => setNewProductForm({ ...newProductForm, name: e.target.value })}
+                  placeholder="Contoh: Roma Kelapa Kaleng 450g (1 Karton x 12 Kaleng)"
+                  className="w-full h-9 px-3 rounded-lg bg-surface-container-low border border-outline/20 font-semibold"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="font-bold text-on-surface">Harga Karton/Dus (Rp) *</label>
+                  <input
+                    type="number"
+                    required
+                    min="1000"
+                    value={newProductForm.cartonPrice}
+                    onChange={(e) => setNewProductForm({ ...newProductForm, cartonPrice: e.target.value })}
+                    className="w-full h-9 px-3 rounded-lg bg-surface-container-low border border-outline/20 font-mono font-bold text-primary"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="font-bold text-on-surface">Estimasi Harga Eceran (Rp) *</label>
+                  <input
+                    type="number"
+                    required
+                    min="1000"
+                    value={newProductForm.retailPriceEst}
+                    onChange={(e) => setNewProductForm({ ...newProductForm, retailPriceEst: e.target.value })}
+                    className="w-full h-9 px-3 rounded-lg bg-surface-container-low border border-outline/20 font-mono font-bold"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                <div className="space-y-1">
+                  <label className="font-bold text-on-surface">Stok Awal (Dus)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={newProductForm.stockCartons}
+                    onChange={(e) => setNewProductForm({ ...newProductForm, stockCartons: e.target.value })}
+                    className="w-full h-9 px-3 rounded-lg bg-surface-container-low border border-outline/20 font-mono font-bold"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="font-bold text-on-surface">No. Batch FEFO *</label>
+                  <input
+                    type="text"
+                    required
+                    value={newProductForm.batchNumber}
+                    onChange={(e) => setNewProductForm({ ...newProductForm, batchNumber: e.target.value })}
+                    placeholder="B-2026-N09"
+                    className="w-full h-9 px-3 rounded-lg bg-surface-container-low border border-outline/20 font-mono font-bold"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="font-bold text-on-surface">Kedaluwarsa *</label>
+                  <input
+                    type="date"
+                    required
+                    value={newProductForm.expiryDate}
+                    onChange={(e) => setNewProductForm({ ...newProductForm, expiryDate: e.target.value })}
+                    className="w-full h-9 px-2 rounded-lg bg-surface-container-low border border-outline/20 font-semibold"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-bold text-on-surface">URL Gambar Produk (Opsional)</label>
+                <input
+                  type="url"
+                  value={newProductForm.imageUrl}
+                  onChange={(e) => setNewProductForm({ ...newProductForm, imageUrl: e.target.value })}
+                  placeholder="https://images.unsplash.com/..."
+                  className="w-full h-9 px-3 rounded-lg bg-surface-container-low border border-outline/20"
+                />
+              </div>
+
+              <div className="pt-3 border-t border-outline/10 flex items-center justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsAddModalOpen(false)}
+                  className="text-xs"
+                >
+                  Batal
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={submittingProduct}
+                  size="sm"
+                  className="bg-primary text-white text-xs font-bold px-4"
+                >
+                  {submittingProduct ? 'Menyimpan SKU...' : 'Simpan SKU ke Database'}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Konfirmasi Hapus / Arsipkan SKU */}
+      {productToDelete && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-surface-container-lowest border border-outline/15 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div className="flex items-center gap-2.5 text-red-600">
+              <div className="w-9 h-9 rounded-xl bg-red-100 flex items-center justify-center shrink-0">
+                <Trash2 className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="font-bold text-sm text-on-surface">Hapus / Nonaktifkan SKU Produk?</h3>
+                <span className="text-[11px] text-on-surface-variant font-mono">{productToDelete.sku}</span>
+              </div>
+            </div>
+
+            <div className="p-3 bg-surface-container-low rounded-xl text-xs space-y-1.5">
+              <div className="font-bold text-on-surface">{productToDelete.name}</div>
+              <div className="flex justify-between text-on-surface-variant">
+                <span>Stok Fisik Saat Ini:</span>
+                <span className="font-bold font-mono text-on-surface">{productToDelete.stockCartons} Dus</span>
+              </div>
+              <div className="flex justify-between text-on-surface-variant">
+                <span>Nomor Batch:</span>
+                <span className="font-mono text-on-surface">{productToDelete.batchNumber}</span>
+              </div>
+            </div>
+
+            <p className="text-[11px] text-on-surface-variant leading-relaxed">
+              Jika produk ini memiliki riwayat transaksi pesanan grosir, sistem akan mengarsipkan statusnya agar riwayat keuangan dan faktur toko tidak rusak.
+            </p>
+
+            <div className="pt-2 border-t border-outline/10 flex items-center justify-end gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setProductToDelete(null)}
+                className="text-xs"
+              >
+                Batal
+              </Button>
+              <Button
+                size="sm"
+                disabled={submittingProduct}
+                onClick={handleDeleteProduct}
+                className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4"
+              >
+                {submittingProduct ? 'Memproses...' : 'Ya, Hapus / Arsip SKU'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
