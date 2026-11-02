@@ -172,7 +172,7 @@ export default function Home({ setActiveNav }) {
                     <Input
                       value={trackingInput}
                       onChange={(e) => setTrackingInput(e.target.value)}
-                      placeholder="Masukkan kode tracking (cth: INB-2610-KR03)..."
+                      placeholder="Cth: INB-2610-KR02..."
                       className="text-xs h-9 bg-surface-container-low"
                     />
                     <Button type="submit" size="sm" disabled={trackingLoading} className="h-9 px-4 text-xs font-bold shrink-0">
@@ -189,20 +189,26 @@ export default function Home({ setActiveNav }) {
                   )}
 
                   {trackingResult && (
-                    <div className="mt-3 p-3 bg-surface-container-low rounded-lg border border-surface-container-high text-xs space-y-1.5">
+                    <div className="mt-3 p-3 bg-surface-container-low rounded-lg border border-surface-container-high text-xs space-y-1.5 animate-in fade-in">
                       <div className="flex justify-between items-center">
-                        <span className="font-mono font-bold text-primary">{trackingResult.orderNumber || trackingResult.id}</span>
+                        <span className="font-mono font-bold text-primary">
+                          {trackingResult.trackingCode || trackingResult.orderNumber || trackingResult.id}
+                        </span>
                         <Badge variant="tertiary" className="text-[10px] uppercase font-bold">
-                          {trackingResult.deliveryStatus || trackingResult.status || 'DALAM PERJALANAN'}
+                          {trackingResult.statusLabel || trackingResult.deliveryStatus || trackingResult.status || 'DALAM PERJALANAN'}
                         </Badge>
                       </div>
                       <div className="text-on-surface-variant">
-                        Toko Tujuan: <strong className="text-on-surface">{trackingResult.storeName || 'Toko Mitra Berkah'}</strong> ({trackingResult.district || 'Krian'})
+                        Toko: <strong className="text-on-surface">{trackingResult.store?.name || trackingResult.storeName}</strong> ({trackingResult.store?.district || trackingResult.district || 'Sidoarjo'})
                       </div>
-                      <div className="text-[11px] text-on-surface-variant flex items-center gap-2">
-                        <span>Armada: {trackingResult.driverName || 'Slamet Riyadi'} (Isuzu Giga Wingbox)</span>
-                        <span>•</span>
-                        <span>Estimasi Tiba: {trackingResult.eta || 'Hari ini 14:30 WIB'}</span>
+                      {trackingResult.itemsSummary && (
+                        <div className="text-[11px] text-on-surface-variant">
+                          Muatan: <span className="font-medium text-on-surface">{trackingResult.itemsSummary}</span>
+                        </div>
+                      )}
+                      <div className="text-[11px] text-on-surface-variant flex items-center justify-between pt-1 border-t border-surface-container-high">
+                        <span>Total Nilai: <strong className="text-primary">{trackingResult.totalAmountFormatted || (trackingResult.totalAmount ? formatRupiah(trackingResult.totalAmount) : '-')}</strong></span>
+                        <span className="font-mono text-outline">Metode: {trackingResult.paymentMethodLabel || trackingResult.paymentMethod || 'COD'}</span>
                       </div>
                     </div>
                   )}
