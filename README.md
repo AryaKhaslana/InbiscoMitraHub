@@ -1,122 +1,238 @@
-# Inbisco MitraHub — Backend & Data Engine (Master Progress & API Handover)
+# 🏢 Inbisco MitraHub & SupplySync FMCG Enterprise
 
-**Production URL:** `https://inbisco-mitrahub-backend.vercel.app`  
-**Proyek:** PKL PT Inbisco Niagatama Semesta & Kompetisi GTNIC 2026  
-**Status:** Production-Ready & Hardened (6 Putaran Security Audit)
+<div align="center">
 
----
+[![GTNIC 2026](https://img.shields.io/badge/Competition-GTNIC%202026-b91c1c.svg?style=for-the-badge&logo=target)](https://inbisco-mitrahub.vercel.app)
+[![Production](https://img.shields.io/badge/Deployment-Vercel%20Live-000000.svg?style=for-the-badge&logo=vercel)](https://inbisco-mitrahub.vercel.app)
+[![Node.js](https://img.shields.io/badge/Runtime-Node.js%2024.x-339933.svg?style=for-the-badge&logo=node.js)](https://nodejs.org)
+[![React 19](https://img.shields.io/badge/Frontend-React%2019%20%2B%20Vite-61DAFB.svg?style=for-the-badge&logo=react)](https://react.dev)
+[![Supabase](https://img.shields.io/badge/Database-Supabase%20Postgres-3ECF8E.svg?style=for-the-badge&logo=supabase)](https://supabase.com)
+[![Upstash Redis](https://img.shields.io/badge/Cache-Upstash%20Redis-FF1493.svg?style=for-the-badge&logo=redis)](https://upstash.com)
+[![Prisma ORM](https://img.shields.io/badge/ORM-Prisma%206-2D3748.svg?style=for-the-badge&logo=prisma)](https://prisma.io)
 
-## 1. Ringkasan Arsitektur & Infrastruktur
-- **Runtime & Framework:** Node.js (ES Modules) + Express.js di atas **Vercel Serverless Functions** (`api/index.js`).
-- **Database:** PostgreSQL (**Supabase** `ap-northeast-2`)
-  - Runtime: Transaction Pooler Port `6543` (`?pgbouncer=true&connection_limit=5`).
-  - Migration: Direct Session Pooler Port `5432`.
-  - **Row Level Security (RLS):** Aktif di seluruh tabel (`Store`, `Product`, `Order`, `OrderItem`) + `REVOKE ALL` dari `anon` & `authenticated` + `ALTER DEFAULT PRIVILEGES`.
-- **Cache & Rate Limiter:** **Upstash Redis** (`@upstash/redis` Stateless HTTP REST)
-  - `cache:catalog_public` (TTL 3600 detik / 1 jam) dengan *in-memory filtering*.
-  - `cache:kpi_summary` (TTL 180 detik / 3 menit).
-  - Atomic Pipeline Rate Limiter (`INCR` + `EXPIRE NX`) per IP yang kebal terhadap pemalsuan header `X-Forwarded-For`.
+<br />
 
----
+**Next-Gen FMCG Micro-Distribution Ecosystem & Macro-Logistics Intelligence Engine**  
+*Mendigitalkan Rantai Pasok Grosir Tradisional Mayora Sidoarjo: Dari Pemesanan Toko Ritel hingga Prescriptive Restocking Pabrik.*
 
-## 2. Daftar Lengkap Endpoint API (14 Endpoints)
+[🚀 **Jelajahi Live Demo**](https://inbisco-mitrahub.vercel.app) • [📋 **Panduan QC & Arsitektur**](file:///home/wisesa/.gemini/antigravity/brain/242aaef9-3e0f-4c5b-b3e2-3e19143a0136/qc_roadmap_inbisco_mitrahub.md) • [📚 **Dokumentasi API**](#-direktori-endpoint-api-26-endpoints)
 
-Semua response menggunakan standar JSON envelope:
-- **Sukses:** `{ "success": true, "message": "...", "data": ..., "meta": ... }`
-- **Error:** `{ "success": false, "message": "...", "errors": [{ "field": "...", "message": "..." }] }`
-
-### A. Public Endpoints (Sisi Warung & Landing Page — Tanpa Token)
-
-| No | Method & Path | Rate Limit | Kegunaan & Contoh Payload / Query |
-|----|---------------|------------|-----------------------------------|
-| 1 | `GET /` | 120/m | Info status service utama. |
-| 2 | `GET /api/v1/health` | 120/m | Health check & pemanas Vercel Serverless (Cron Job). |
-| 3 | `GET /api/v1/products` | 60/m | Katalog produk aktif Mayora (non-expired). Support query `?category=Biskuit&search=Roma` (tetap `X-Cache: HIT`). |
-| 4 | `POST /api/v1/stores/register` | 10/m | Pendaftaran mitra warung baru.<br>Body: `{ "name": "Warung Berkah", "ownerName": "Pak Budi", "phone": "081234567890", "district": "Krian", "address": "Jl. Raya Krian No. 10" }` |
-| 5 | `POST /api/v1/stores/lookup` | 10/m | **(Baru)** Cek status verifikasi & ambil `storeId` warung lama menggunakan nomor HP.<br>Body: `{ "phone": "081234560001" }`<br>Response `data`: `{ "id": "UUID", "name": "...", "district": "Krian", "isVerified": true }` |
-| 6 | `POST /api/v1/orders` | 15/m | Checkout pesanan grosir (wajib `isVerified: true`, atomic stock decrement, `Prisma.Decimal`).<br>Body: `{ "storeId": "UUID", "paymentMethod": "COD", "notes": "Kirim pagi", "items": [{ "productId": "UUID", "quantity": 5 }] }` |
-| 7 | `GET /api/v1/orders/track/:code` | 30/m | Lacak pesanan live via kode resi 8 karakter (contoh seed: `INB-2610-K8R4M9P2`, `INB-2610-T7M3W6Q9`, `INB-2610-W5R8N2X7`). PII toko otomatis disensor (`maskedPhone`). |
+</div>
 
 ---
 
-### B. Admin Endpoints (Sisi Gudang & Operasional Inbisco)
-Wajib menyertakan header: `Authorization: Bearer <ADMIN_SECRET_KEY>`  
-*(Seluruh endpoint admin diproteksi Rate Limit 60 req/menit, SHA-256 `timingSafeEqual`, dan header `Cache-Control: no-store`)*
+## 📌 Latar Belakang & Masalah Riil (The "Why")
 
-| No | Method & Path | Kegunaan & Contoh Payload / Query |
-|----|---------------|-----------------------------------|
-| 8 | `GET /api/v1/admin/kpi` | Ringkasan KPI (`todayRevenue`, `todayOrders`, `totalOrders`, `activeStores`, `totalRegisteredStores`, `pendingDispatch`, `fastMovingProducts`). Di-cache di Redis 3 menit. |
-| 9 | `GET /api/v1/admin/orders` | Daftar pesanan terfilter & terpaginasi.<br>Query: `?status=PENDING&district=Krian&paymentMethod=COD&search=Berkah&page=1&limit=20` |
-| 10 | `PATCH /api/v1/admin/orders/:id/status` | Update status pesanan satu arah (*Strict State Machine* + Compare-And-Swap anti *double-restock* saat `CANCELLED`).<br>Body: `{ "status": "CONFIRMED" }` (`CONFIRMED \| PACKING \| DISPATCHED \| COMPLETED \| CANCELLED`) |
-| 11 | `GET /api/v1/admin/inventory/fefo` | Inventaris gudang diurutkan berdasarkan `expiryDate ASC` (First Expired, First Out) lengkap dengan ringkasan & status `EXPIRED`, `DANGER` (< 3 bln), `WARNING` (< 6 bln), `SAFE`. |
-| 12 | `GET /api/v1/admin/stores` | Direktori mitra warung terpaginasi.<br>Query: `?verified=true&district=Krian&page=1&limit=50` |
-| 13 | `PATCH /api/v1/admin/stores/:id/verify` | Set status verifikasi toko secara eksplisit.<br>Body: `{ "isVerified": true }` |
-| 14 | `POST /api/v1/admin/products` | **(Tambahan)** Tambah SKU produk Mayora baru ke gudang & invalidasi cache katalog.<br>Body: `{ "sku": "MYR-...", "name": "...", "category": "Biskuit", "cartonPrice": 215000, "retailPriceEst": 252000, "stockCartons": 100, "batchNumber": "BATCH-01", "expiryDate": "2027-06-01T00:00:00.000Z", "imageUrl": "https://..." }` |
-| 15 | `PATCH /api/v1/admin/products/:id/stock` | **(Tambahan)** Update stok karton (pilih salah satu: `stockCartons` absolut ATAU `addCartons` relatif `+/-`), harga, atau batch FEFO secara atomik.<br>Body: `{ "addCartons": 50 }` atau `{ "stockCartons": 200, "batchNumber": "BATCH-02" }` |
-| 16 | `GET /api/v1/admin/audit-logs` | **(Tambahan)** Jejak audit log mutasi administratif (perubahan status order, verifikasi warung, restok/edit produk) lengkap dengan snapshot `details` dan `ipAddress`.<br>Query: `?action=ORDER_STATUS_UPDATED&entityType=ORDER&entityId=...&page=1&limit=20` |
+Distribusi FMCG (*Fast-Moving Consumer Goods*) di Indonesia untuk kategori General Trade (toko kelontong, warkop, minimarket lokal) menghadapi 4 kendala kritis:
+1. **The Bullwhip Effect:** Distorsi informasi permintaan dari warung ke depo hingga pabrik manufaktur, memicu overstock barang slow-moving dan kelangkaan barang fast-moving.
+2. **Blind Spot Stok Fisik:** Depo distributor sering tidak memiliki visibilitas *real-time* saldo stok saat sales lapangan (DSR) menerbitkan nota keluar.
+3. **Penyusutan Kedaluwarsa (FEFO Risk):** Produk biskuit dan sereal berisiko kedaluwarsa di gudang karena tidak adanya penegakan alokasi *First Expired, First Out*.
+4. **Lead Time & Stockout Vulnerability:** Proses pengajuan restock mandiri yang lambat menyebabkan warung kehabisan stok (*lost sales*) selama 3–5 hari.
+
+**Inbisco MitraHub & SupplySync** hadir sebagai ekosistem tertutup (closed-loop) yang menghubungkan **Toko Mitra Ritel**, **Depo Distribusi Regional (CV Surya Krian Logistik)**, dan **Mayora Enterprise HQ Governance** dalam satu arsitektur terintegrasi.
 
 ---
 
-### C. SupplySync HQ & Extended Distributor Endpoints (Dual-Role: Mayora HQ & Depo Krian)
+## 🏗️ Arsitektur Sistem Dua Sisi (Dual-Side Engine)
 
-| No | Method & Path | Kegunaan & Contoh Payload |
-|----|---------------|---------------------------|
-| 17 | `POST /api/v1/auth/login` | Login Portal Operasional & Role Switcher (`HQ_ADMIN` vs `DISTRIBUTOR_DEPO`). Menghasilkan HMAC Bearer token.<br>Body: `{ "username": "bambang.krian@inbisco.co.id", "password": "Inbisco2026!", "role": "DISTRIBUTOR_DEPO" }` |
-| 18 | `POST /api/v1/distributor/sales`<br>*(alias: `/api/v1/admin/sales`)* | Input Penjualan Harian Kasir / DSR (potong stok fisik atomik & rekam log sinkronisasi SAP).<br>Body: `{ "sku": "MYR-BISC-002", "quantityCartons": 25, "channel": "Grosir Warung & Warkop", "storeName": "Warkop Berkah" }` |
-| 19 | `GET /api/v1/distributor/sales`<br>*(alias: `/api/v1/admin/sales`)* | Ambil daftar transaksi DSR harian + snapshot stok SKU gudang terkini. |
-| 20 | `POST /api/v1/simulation/what-if`<br>*(alias: `/api/v1/admin/simulation/what-if`)* | Mesin Simulasi What-If Restock & Lead Time (kurva deplesi 14 hari, *runway* hari, *lost sales*, efisiensi Wingbox FTL %).<br>Body: `{ "sku": "MYR-RMK-01", "stockOnHand": 280, "ads": 175, "leadTimeDays": 3, "safetyStock": 200, "proposedRestockQty": 850 }` |
-| 21 | `GET /api/v1/admin/stockout-risk` | Radar deteksi dini kerentanan stok (*runway* < 2 hari) & rekomendasi *Cross-Depot Rebalancing*. |
-| 22 | `POST /api/v1/admin/cross-depot-transfer` | Eksekusi realokasi stok darurat antar-gudang (misal Depo Mojokerto $\to$ Depo Krian).<br>Body: `{ "sku": "MYR-RMK-01", "quantityCartons": 150, "sourceDepot": "Depo Mojokerto", "targetDepot": "CV Surya Krian Logistik" }` |
-| 23 | `GET /api/v1/admin/restock-recommendations` | Mesin rekomendasi *Smart Replenishment* berbasis rumus $SS = Z \times \sigma_L \times ADS$ + kalkulator kubikasi truk Wingbox 65 m³ (FTL %). |
-| 24 | `POST /api/v1/admin/batch-approve-po` | Persetujuan massal Purchase Order (*Batch PO Approval*) ke pabrik Mayora DC Pasuruan.<br>Body: `{ "depotName": "CV Surya Krian Logistik", "applyToStock": false, "items": [{ "sku": "MYR-RMK-01", "quantityCartons": 550 }] }` |
-| 25 | `GET /api/v1/distributor/inbound-deliveries`<br>*(alias: `/api/v1/admin/inbound-deliveries`)* | Pelacakan truk pasokan pabrik (*Inbound DO* `DO-2026-0881`, koordinat GPS Tol Pandaan–Krian, status segel e-Lock `MYR-998240`). |
-| 26 | `PATCH /api/v1/distributor/inbound-deliveries/:doNumber/confirm` | Konfirmasi BAST barang tiba di Gudang Krian & tambah stok karton otomatis.<br>Body: `{ "receivedBy": "Bambang Sudiro", "sealCode": "MYR-998240", "applyToStock": true }` |
+```mermaid
+flowchart TD
+    subgraph PUBLIC["1. PUBLIC STOREFRONT (Toko Mitra Ritel)"]
+        A["Toko Kelontong / Grosir Sidoarjo"] -->|Pilih SKU & Pesan Kartonan| B["Katalog Grosir Resmi Mayora"]
+        B -->|Checkout COD / Tempo 7 Hari| C["Penerbitan Order & Resi Unik"]
+        C -->|Pelacakan Terproteksi PII| D["Live Tracking Status Pesanan"]
+    end
+
+    subgraph ENGINE["2. DATA CORE & STATELESS ENGINE"]
+        DB[("Supabase PostgreSQL (RLS Hardened)")]
+        Cache[("Upstash Redis (Rate Limiter & In-Memory Filter)")]
+        Audit[("Audit Trail Log Terpusat")]
+    end
+
+    subgraph DEPO["3. MICRO OPERATIONS (Depo Krian Distribusi)"]
+        E["Input Penjualan Harian DSR"] -->|Potong Stok Fisik Realtime| DB
+        F["Inventori Gudang FEFO"] -->|Koreksi Stok & CRUD Produk| DB
+        G["Tracking Truk Inbound Wingbox"] -->|Konfirmasi e-BAST di Bay Gudang| DB
+    end
+
+    subgraph HQ["4. MACRO INTELLIGENCE (Mayora Enterprise HQ)"]
+        H["Executive Macro Overview"] -->|Agregasi KPI & Fill-Rate Jaringan| Cache
+        I["Stockout Risk Radar"] -->|Analisis Runway & DoI Kritis| DB
+        I -->|Opsi A: Rebalancing Cepat| J["Cross-Depot Transfer (Depo Mojokerto)"]
+        I -->|Opsi B: Restock Pabrik| K["Smart Replenishment Engine (Batch PO)"]
+        L["What-if Restock Simulator"] -->|Simulasi Lonjakan Permintaan| I
+    end
+
+    C --> DB
+    E --> Audit
+    J --> DB
+    K --> G
+    DB --> Audit
+```
 
 ---
 
-## 3. Rangkuman 6 Putaran Security Audit & Hardening
+## ✨ Fitur Unggulan Sistem
 
-1. **Database & PostgREST Lockout (`prisma/security_rls.sql`):**
-   - `ENABLE ROW LEVEL SECURITY` + `REVOKE ALL` dari role `anon` dan `authenticated` + `ALTER DEFAULT PRIVILEGES` untuk tabel masa depan.
-   - Penambahan 3 Foreign Key Indexes (`Order_storeId_idx`, `OrderItem_orderId_idx`, `OrderItem_productId_idx`).
-2. **Authentication & Secret Hygiene (`src/middlewares/auth.middleware.js`):**
-   - Token di-hash dengan **SHA-256** (32 byte tetap) sebelum `crypto.timingSafeEqual` sehingga panjang token tidak bocor via *timing attack*.
-3. **Anti-Spoofing Stateless Rate Limiter (`src/middlewares/rateLimit.middleware.js`):**
-   - Mengabaikan header `X-Forwarded-For` palsu dari klien; menggunakan `redis.pipeline()` (`INCR` + `EXPIRE NX`) agar bebas *zombie key* (`TTL -1`).
-4. **Concurrency & Financial Integrity (`src/modules/orders/*`, `src/modules/admin/*`):**
-   - Checkout menggunakan `Prisma.Decimal`, *conditional atomic stock decrement* (`stockCartons: { gte: quantity }`), menolak toko `isVerified: false` (`403`), dan menolak produk kedaluwarsa (`400`).
-   - Pembatalan pesanan (`CANCELLED`) dikunci dengan **Compare-And-Swap (CAS)** agar dua klik paralel tidak mengembalikan stok 2 kali.
-   - Penyesuaian stok admin (`addCartons`) menggunakan atomic `{ increment }` di PostgreSQL.
-5. **Privacy (PII Redaction) & Enumeration Defense:**
-   - Tracking publik (`GET /orders/track/:code`) menggunakan kode 8 karakter acak (`INB-YYMM-XXXXXXXX`), menyembunyikan `store.id`/`address`/`ownerName`, dan menyamarkan nomor HP (`0812****0001`).
-   - Error duplikat nomor HP saat registrasi tidak membocorkan nama toko yang sudah terdaftar.
-6. **Input Boundary & Cache Protection:**
-   - Semua Zod body schema dikunci dengan `.strict()` (anti *mass-assignment*), batas ukuran body JSON `100kb`, batas jumlah item checkout (`<= 1000` karton per SKU pasca-merge), validasi protokol `http/https` pada `imageUrl` (anti `javascript:` XSS), serta filter katalog dilakukan *in-memory* di atas cache Redis.
+### 🛍️ Sisi Publik: Inbisco MitraHub (Storefront)
+* **Katalog Grosir Resmi Mayora:** 8 SKU unggulan FMCG (*Roma Kelapa, Beng-Beng, Torabika Duo, Kopiko, Energen, Le Minerale, Teh Pucuk, Malkist*) dengan kalkulasi harga karton pabrik dan estimasi PPN 11%.
+* **Sistem Verifikasi Instan Toko Mitra:** Lookup otomatis nomor WhatsApp (`081234560001` - Toko Kelontong Berkah Jaya) dengan opsi pembayaran Tempo 7 Hari atau COD.
+* **Pelacakan Pesanan Terproteksi PII:** Cek status pesanan (*PENDING $\to$ PACKING $\to$ SHIPPED $\to$ COMPLETED*) dengan sensor privasi otomatis (*masked phone*).
+* **Surat Tanda Registrasi Resmi Kemitraan:** Generator tanda bukti pendaftaran toko mitra dengan kop surat resmi PT Inbisco Niagatama Semesta yang siap dicetak/PDF.
+
+### 🏭 Sisi Operasional: SupplySync Depo Krian (CV Surya Krian Logistik)
+* **Input Penjualan Harian (DSR):** Pemotongan saldo fisik inventori seketika begitu faktur kasir/DSR diterbitkan, lengkap dengan preview sisa stok dan riwayat transaksi tersinkron.
+* **Inventori FEFO & Full CRUD:** Manajemen mutasi inventori berbasis tanggal kedaluwarsa (*First Expired, First Out*), penyesuaian stok cepat (`+50/-25` dus), penambahan SKU baru lewat formulir modal, dan penonaktifan SKU.
+* **Tracking Armada Inbound & e-BAST:** Telemetri truk Wingbox dari DC Pasuruan (Tol Pandaan $\to$ Sumo $\to$ Krian Bay 2) dan verifikasi digital tanda terima barang.
+
+### 🧠 Sisi Tata Kelola: SupplySync Mayora HQ Intelligence
+* **Stockout Risk Radar:** Deteksi dini kerentanan stok berbasis perhitungan *Average Daily Sales* (ADS) dan *Days of Inventory* (DoI / Runway).
+* **Cross-Depot Transfer:** Eksekusi realokasi stok darurat antar-gudang (contoh: transfer 209 dus dari Depo Mojokerto surplus ke Hub Krian).
+* **Smart Replenishment Engine:** Rekomendasi kuantitas restock preskriptif berbasis formula Safety Stock $SS = Z \times \sigma_L \times ADS$ dan otorisasi massal *Batch PO Approval*.
+* **What-if Restock Simulator:** Simulasi stres interaktif untuk menguji lonjakan permintaan (+10% s/d +50%) dan variasi *lead time* supplier (1 s/d 7 hari).
+* **Pusat Notifikasi Live (Bell Header):** Notifikasi dinamis dari database (stok kritis, armada jalan, order masuk), dilengkapi scroll halus, dismiss per item (X), dan pembersihan daftar.
+* **Audit Trail & Log Terpusat:** Rekam jejak seluruh mutasi administratif, login, DSR, dan sync ERP Mayora SAP S/4HANA lengkap dengan ekspor CSV.
 
 ---
 
-## 4. Data Seed Aktif (Siap Dipakai Demo / Frontend Raka)
-- **Nomor HP Warung Terverifikasi (bisa dites ke `POST /api/v1/stores/lookup`):**
-  - `081234560001` — Toko Kelontong Berkah Jaya (Kec. Krian, `isVerified: true`)
-  - `081234560002` — Warkop & Agen Kopi Cak Toni (Kec. Taman, `isVerified: true`)
-  - `081234560003` — Warung Sembako Bu Sri Rejeki (Kec. Waru, `isVerified: true`)
-  - `081234560004` — Toko Grosir Sumber Makmur (Kec. Sidoarjo, `isVerified: true`)
-  - `081234560011` — Warkop Berkah (Kec. Krian, `isVerified: true`)
-  - `081234560012` — Toko Sumber Rejeki (Kec. Balongbendo, `isVerified: true`)
-  - `081234560013` — Warkop Sentosa (Kec. Prambon, `isVerified: true`)
-  - `081234560014` — Toko Murah Jaya (Kec. Tarik, `isVerified: true`)
-  - `081234560015` — Minimarket Barokah (Kec. Wonoayu, `isVerified: true`)
-  - `081234560016` — Toko Makmur (Kec. Krian, `isVerified: true`)
-- **Nomor HP Warung Belum Terverifikasi:**
-  - `081234560005` — Warung Madura 24 Jam Al-Fath (Kec. Candi, `isVerified: false`)
-  - `081234560006` — Kedai & Warung Pojok Gedangan (Kec. Gedangan, `isVerified: false`)
-- **Kode Resi Pesanan Aktif (Mockup Prototype Sidoarjo Barat & General):**
-  - `INB-2610-KR01` (`PACKING` — Warkop Berkah, Krian — COD TUNAI)
-  - `INB-2610-KR02` (`DISPATCHED` — Toko Sumber Rejeki, Balongbendo — TEMPO 7 HARI)
-  - `INB-2610-KR03` (`PENDING` — Warkop Sentosa, Prambon — COD TUNAI)
-  - `INB-2610-KR04` (`CONFIRMED` — Toko Murah Jaya, Tarik — COD TUNAI)
-  - `INB-2610-KR05` (`COMPLETED` — Minimarket Barokah, Wonoayu — TEMPO 7 HARI)
-  - `INB-2610-KR06` (`PENDING` — Toko Makmur, Krian — COD TUNAI)
-  - `INB-2610-K8R4M9P2` (`COMPLETED` — Krian)
-  - `INB-2610-T7M3W6Q9` (`PACKING` — Taman)
-  - `INB-2610-W5R8N2X7` (`PENDING` — Waru)
+## 🔑 Kredensial Demo (Siap Uji Juri GTNIC)
+
+Aplikasi telah dilengkapi tombol **Autofill Cepat** di portal login untuk memudahkan pengujian:
+
+| Role | Username / Identifier | Password | Hak Akses & Cakupan |
+|:---|:---|:---|:---|
+| **Mayora Admin (HQ)** | `ops.hq@mayora.co.id` | `Inbisco2026!` | Macro Governance, Radar Risiko, Otorisasi PO Pabrik, Simulasi What-if, Log Audit Trail |
+| **Depo Krian Ops** | `bambang.krian@inbisco.co.id` | `Inbisco2026!` | Micro Operations, Input DSR Ritel, Inventori Gudang FEFO, Antrean Order Toko, e-BAST Inbound |
+| **Toko Mitra Verified** | `081234560001` *(Nomor HP)* | *Tanpa Password* | Toko Kelontong Berkah Jaya (Krian) — Tes Checkout Grosir Tempo 7 Hari & Lacak Resi |
+
+---
+
+## 🛠️ Tech Stack & Infrastruktur
+
+| Lapisan | Teknologi | Penjelasan |
+|:---|:---|:---|
+| **Frontend** | React 19, Vite, Tailwind CSS | Single Page Application ultra-cepat, responsive di zoom 100% laptop, modul komponen modular |
+| **Icons & UI** | Lucide React, Canvas Confetti | Ikonografi standar enterprise dan mikro-interaksi responsif |
+| **Backend API** | Node.js (ESM), Express.js | Arsitektur controller-service-repository berlapis (Clean Architecture) |
+| **Hosting & Edge** | Vercel Serverless Functions | Edge caching, automated builds, domain kustom produksi |
+| **Database** | PostgreSQL (Supabase) | RLS aktif di seluruh tabel, strict relational foreign keys, zero-loss migrations |
+| **Cache & Rate Limit** | Upstash Redis | Stateless HTTP REST cache anti-cold-start, atomic token bucket rate limiter |
+| **ORM & Validasi** | Prisma 6, Zod Validation | Skema tipe ketat, sanitasi input `.strict()`, transaksi atomik database |
+
+---
+
+## 📡 Direktori Endpoint API (26 Endpoints)
+
+Seluruh response API menggunakan standar envelope JSON konsisten:
+```json
+{
+  "success": true,
+  "message": "Operasi berhasil",
+  "data": { ... },
+  "meta": { "page": 1, "limit": 20, "total": 45 }
+}
+```
+
+### A. Public & Storefront Endpoints
+* `GET /api/v1/health` — Pemeriksaan status server & pemanas serverless.
+* `GET /api/v1/products` — Katalog produk aktif (dukungan filter kategori & search in-memory Redis).
+* `POST /api/v1/stores/lookup` — Cek verifikasi warung via nomor WhatsApp.
+* `POST /api/v1/stores/register` — Pendaftaran calon mitra toko baru.
+* `POST /api/v1/orders` — Checkout grosir (validasi saldo stok atomik & status toko).
+* `GET /api/v1/orders/track/:code` — Lacak status pengiriman via resi 8 digit.
+* `POST /api/v1/contact` — Pengiriman formulir konsultasi / pesan kemitraan.
+
+### B. Depo Krian Micro-Operations
+* `POST /api/v1/distributor/sales` — Input transaksi kasir DSR (potong stok gudang atomik).
+* `GET /api/v1/distributor/sales` — Riwayat transaksi DSR harian.
+* `GET /api/v1/distributor/inbound-deliveries` — Daftar surat jalan (DO) armada masuk.
+* `PATCH /api/v1/distributor/inbound-deliveries/:doNumber/confirm` — Konfirmasi penerimaan e-BAST.
+
+### C. Mayora Enterprise HQ Macro-Governance
+* `POST /api/v1/auth/login` — Autentikasi dual-role dengan penerbitan Bearer token.
+* `GET /api/v1/admin/kpi` — Rekap KPI makro jaringan (omzet, fill-rate, toko aktif).
+* `GET /api/v1/admin/orders` — Manajemen antrean pesanan toko mitra.
+* `PATCH /api/v1/admin/orders/:id/status` — Pembaruan status pesanan (*State Machine lock*).
+* `GET /api/v1/admin/inventory/fefo` — Inventaris gudang FEFO lengkap dengan status kedaluwarsa.
+* `POST /api/v1/admin/products` — Penambahan SKU baru ke gudang.
+* `PATCH /api/v1/admin/products/:id/stock` — Penyesuaian stok karton fisik gudang.
+* `DELETE /api/v1/admin/products/:id` — Penonaktifan / arsip SKU.
+* `GET /api/v1/admin/stockout-risk` — Radar analisis runway inventori dan defisit rupiah.
+* `POST /api/v1/admin/cross-depot-transfer` — Eksekusi transfer stok darurat antar-gudang.
+* `GET /api/v1/admin/restock-recommendations` — Mesin rekomendasi Safety Stock & FTL Wingbox.
+* `POST /api/v1/admin/batch-approve-po` — Persetujuan massal PO restock ke pabrik Mayora.
+* `POST /api/v1/simulation/what-if` — Mesin simulasi Monte Carlo lonjakan permintaan.
+* `GET /api/v1/admin/audit-logs` — Jejak audit trail seluruh aksi sistem terpaginasi.
+* `POST /api/v1/admin/sync-sap` — Sinkronisasi manual on-demand dengan ERP SAP S/4HANA.
+
+---
+
+## 💻 Panduan Menjalankan di Lokal (Local Setup)
+
+### 1. Prasyarat Sistem
+* Node.js $\ge$ 18.x (Disarankan Node.js 20.x atau 24.x)
+* Akun Supabase (PostgreSQL)
+* Akun Upstash (Redis)
+
+### 2. Kloning Repositori
+```bash
+git clone https://github.com/AryaKhaslana/Api-InbiscoMitraHub.git
+cd Api-InbiscoMitraHub
+```
+
+### 3. Konfigurasi Environment (`.env`)
+Buat file `.env` di root direktori dengan menyalin template berikut:
+```env
+PORT=3000
+NODE_ENV=development
+
+# Database Supabase PostgreSQL
+DATABASE_URL="postgresql://postgres.[REF]:[PASS]@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=5"
+DIRECT_URL="postgresql://postgres.[REF]:[PASS]@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
+
+# Upstash Redis REST
+UPSTASH_REDIS_REST_URL="https://[YOUR-UPSTASH-INSTANCE].upstash.io"
+UPSTASH_REDIS_REST_TOKEN="[YOUR-UPSTASH-TOKEN]"
+
+# Security Secret
+ADMIN_SECRET_KEY="Inbisco2026!"
+```
+
+### 4. Instalasi Dependensi & Database Migration
+```bash
+# Install backend dependencies
+npm install
+
+# Generate Prisma Client
+npx prisma generate
+
+# Install frontend dependencies
+npm --prefix frontend install
+```
+
+### 5. Jalankan Aplikasi
+```bash
+# Mode Development (Full-stack concurrently)
+npm run dev
+
+# Atau jalankan Frontend terpisah:
+npm --prefix frontend run dev
+```
+Buka browser di `http://localhost:5173` untuk Storefront & Portal Operasional.
+
+---
+
+## 🏆 Kesiapan Kompetisi GTNIC 2026
+
+* **Zero Mock Data:** Seluruh angka di Beranda, Inventori FEFO, Radar Risiko, hingga Notifikasi Header terhubung langsung ke live database Supabase & Upstash.
+* **Audit Trail Transparan:** Setiap interaksi terindeks dengan IP Address, role pelaksana, dan waktu WIB.
+* **High Availability & Performance:** Vercel Global Edge Network dengan latensi respon sub-100ms.
+
+---
+
+<div align="center">
+
+**Dikembangkan dengan dedikasi untuk Kompetisi GTNIC 2026**  
+*Kolaborasi Inovasi Distribusi Digital: PT Inbisco Niagatama Semesta & Tim Pengembang MitraHub.*
+
+</div>
