@@ -19,7 +19,11 @@ import {
   Truck,
   ShieldCheck,
   Sparkles,
-  PhoneCall
+  PhoneCall,
+  Check,
+  Clock,
+  Navigation,
+  Layers
 } from 'lucide-react';
 
 const SIDOARJO_DISTRICTS = [
@@ -41,6 +45,114 @@ const SIDOARJO_DISTRICTS = [
   'Krembung',
   'Tulangan',
   'Jabon',
+];
+
+const DEMO_PRESETS = [
+  {
+    label: 'Toko Grosir Krian',
+    badge: 'Grosir Pasar Ring 1',
+    data: {
+      name: 'Toko Sembako Berkah Barokah',
+      ownerName: 'Haji Budi Santoso',
+      phone: '081234567890',
+      nik: '3515081203850001',
+      address: 'Jl. Raya Krian No. 142 (Depan Pasar Krian)',
+      district: 'Krian',
+      postalCode: '61262',
+      storeType: 'GROSIR',
+      estimatedMonthlyTurnover: '45000000',
+      operationalYears: '6 Tahun',
+      storageCapacity: '100-250 Karton',
+      preferredVisitDays: 'Senin & Kamis',
+    },
+  },
+  {
+    label: 'Warkop Balongbendo',
+    badge: 'Food Service & Seduh',
+    data: {
+      name: 'Warkop Nusantara & Camilan',
+      ownerName: 'Achmad Zaky',
+      phone: '085712348901',
+      nik: '3515091507920003',
+      address: 'Jl. Raya Bakalan No. 45, Balongbendo',
+      district: 'Balongbendo',
+      postalCode: '61263',
+      storeType: 'WARKOP',
+      estimatedMonthlyTurnover: '18500000',
+      operationalYears: '3 Tahun',
+      storageCapacity: '50-100 Karton',
+      preferredVisitDays: 'Selasa & Jumat',
+    },
+  },
+  {
+    label: 'Agen Sidoarjo Kota',
+    badge: 'Retail Modern & Agen',
+    data: {
+      name: 'CV Surya Rezeki Makmur',
+      ownerName: 'Ibu Siti Rahmawati',
+      phone: '081398765432',
+      nik: '3515014811880002',
+      address: 'Komp. Ruko Pondok Jati Blok AA-12, Buduran',
+      district: 'Buduran',
+      postalCode: '61252',
+      storeType: 'MINIMARKET',
+      estimatedMonthlyTurnover: '80000000',
+      operationalYears: '8 Tahun',
+      storageCapacity: '>250 Karton',
+      preferredVisitDays: 'Senin, Rabu, & Jumat',
+    },
+  },
+];
+
+const SIDOARJO_ZONES = [
+  {
+    id: 'zona-barat',
+    name: 'Zona 1: Sidoarjo Barat',
+    badge: 'Ring 1 Depo Krian · Prioritas Harian',
+    badgeVariant: 'bg-primary-container text-white',
+    leadTime: '< 12 Jam (Same-Day / Next-Day Pagi)',
+    frequency: 'Rute Harian (Senin – Sabtu, 2 Rit/Hari)',
+    depotDistance: 'Perimeter Utama KM 29 Krian (Radius 2 – 14 km)',
+    vehicle: 'Colt Diesel Boks & Canter Ber-GPS',
+    districts: ['Krian', 'Balongbendo', 'Tarik', 'Prambon', 'Wonoayu'],
+    description: 'Koridor prioritas dengan perimeter logistik terdekat ke pusat pergudangan. Menyediakan pengantaran terjadwal cepat dan tanggap retur instan.',
+  },
+  {
+    id: 'zona-pusat',
+    name: 'Zona 2: Sidoarjo Pusat & Kota',
+    badge: 'Sentra Grosir & Pasar Induk',
+    badgeVariant: 'bg-[#92400e] text-white',
+    leadTime: 'Maksimal 24 Jam (Pemberangkatan 08:00 WIB)',
+    frequency: 'Rute Reguler 6 Hari Kerja (Senin – Sabtu)',
+    depotDistance: 'Koridor Jalur Arteri Sidoarjo Tengah (12 – 22 km)',
+    vehicle: 'Truk Boks 6-Roda & Canter',
+    districts: ['Sidoarjo', 'Buduran', 'Candi', 'Sukodono', 'Tulangan'],
+    description: 'Kawasan perdagangan grosir, agen pasar sentral, dan toko kelontong jalan arteri utama dengan volume perputaran karton tinggi.',
+  },
+  {
+    id: 'zona-utara',
+    name: 'Zona 3: Sidoarjo Utara & Industri',
+    badge: 'Koridor Surabaya & Ritel Padat',
+    badgeVariant: 'bg-[#065f46] text-white',
+    leadTime: 'Maksimal 24 Jam (Jalur Logistik Bypass)',
+    frequency: 'Rute Pagi Reguler (Senin – Sabtu)',
+    depotDistance: 'Koridor Bypass Waru-Gedangan (18 – 28 km)',
+    vehicle: 'Wingbox & Truk Boks Tertutup Ber-GPS',
+    districts: ['Waru', 'Taman', 'Gedangan', 'Sedati'],
+    description: 'Pusat pemukiman padat dan koridor industri dengan ribuan titik warkop aktif, minimarket, serta agen retail modern.',
+  },
+  {
+    id: 'zona-selatan',
+    name: 'Zona 4: Sidoarjo Selatan & Pesisir',
+    badge: 'Jalur Lingkar Industri & Pesisir',
+    badgeVariant: 'bg-[#075985] text-white',
+    leadTime: 'Maksimal 24 Jam Sesuai Klaster Rute',
+    frequency: '3× Seminggu Terjadwal (Senin, Rabu, Jumat)',
+    depotDistance: 'Koridor Porong-Jabon (20 – 32 km)',
+    vehicle: 'Armada Boks Canter Distribusi Khusus',
+    districts: ['Tanggulangin', 'Porong', 'Krembung', 'Jabon'],
+    description: 'Menjangkau sentra UMKM, pasar tradisional pelosok, dan warung mitra di pesisir serta perbatasan Pasuruan.',
+  },
 ];
 
 export default function Partnership({ setActiveNav }) {
@@ -82,8 +194,24 @@ export default function Partnership({ setActiveNav }) {
     preferredVisitDays: 'Senin & Kamis',
   });
 
+  const [activePreset, setActivePreset] = useState(null);
+
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const applyDemoPreset = (preset) => {
+    setFormData(preset.data);
+    setActivePreset(preset.label);
+    setError(null);
+  };
+
+  const handleSelectDistrict = (districtName) => {
+    setFormData((prev) => ({ ...prev, district: districtName }));
+    const formElem = document.getElementById('form-section');
+    if (formElem) {
+      formElem.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const handleNext = (e) => {
@@ -244,8 +372,8 @@ export default function Partnership({ setActiveNav }) {
       {/* ========================================================= */}
       <section className="py-12 bg-surface-container-low border-t border-surface-container-high" id="form-section">
         <div className="max-w-[1280px] mx-auto px-4 md:px-8">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+          {/* Header & Auto-Fill Ribbon */}
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
             <div>
               <span className="text-xs font-bold text-primary tracking-wider uppercase">
                 LANGKAH PENDAFTARAN (LANGKAH {step} DARI 4)
@@ -254,7 +382,56 @@ export default function Partnership({ setActiveNav }) {
                 Formulir Verifikasi Kemitraan Toko & Warkop
               </h2>
             </div>
-</div>
+
+            {/* Quick Auto-Fill Tool for Evaluation & Testing */}
+            <div className="p-2 sm:p-2.5 rounded-xl bg-surface-container-lowest border border-primary/20 shadow-2xs flex flex-wrap items-center gap-2">
+              <span className="text-xs font-bold text-primary flex items-center gap-1.5 pl-1.5">
+                <Sparkles className="h-3.5 w-3.5" />
+                <span>Auto-Fill Uji Form:</span>
+              </span>
+              <div className="flex flex-wrap items-center gap-1.5">
+                {DEMO_PRESETS.map((p, idx) => {
+                  const isActive = activePreset === p.label;
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => applyDemoPreset(p)}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 ${
+                        isActive
+                          ? 'bg-primary-container text-white shadow-2xs font-bold'
+                          : 'bg-surface-container hover:bg-surface-container-high text-on-surface hover:text-primary border border-surface-container-high'
+                      }`}
+                      title={p.badge}
+                    >
+                      {isActive && <Check className="h-3 w-3" />}
+                      <span>{p.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Active Preset Notification Banner */}
+          {activePreset && (
+            <div className="mb-6 px-4 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-2xs anim-fade-in">
+              <span className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                <span>
+                  Data profil <strong>{formData.name}</strong> ({formData.ownerName} · {formData.district}) berhasil dimuat!
+                </span>
+              </span>
+              <button
+                type="button"
+                onClick={() => setStep(4)}
+                className="font-bold text-emerald-700 hover:text-emerald-900 underline flex items-center gap-1 self-end sm:self-auto cursor-pointer"
+              >
+                <span>Loncat ke Ringkasan (Langkah 4)</span>
+                <ArrowRight className="h-3 w-3" />
+              </button>
+            </div>
+          )}
 
           {/* Stepper Progress Bar */}
           <div className="grid grid-cols-4 gap-2 mb-8">
@@ -266,12 +443,18 @@ export default function Partnership({ setActiveNav }) {
             ].map((s) => (
               <div 
                 key={s.num} 
-                onClick={() => { if (s.num < step) setStep(s.num); }}
+                onClick={() => { 
+                  if (s.num < step || (formData.name && formData.phone)) {
+                    setStep(s.num);
+                  }
+                }}
                 className={`p-3 rounded-xl border text-center transition-all ${
                   step === s.num
                     ? 'bg-primary-container text-white border-primary-container shadow-xs font-bold'
                     : step > s.num
                     ? 'bg-surface-container-lowest text-emerald-800 border-emerald-300 font-semibold cursor-pointer'
+                    : formData.name && formData.phone
+                    ? 'bg-surface-container-lowest text-on-surface border-surface-container-high hover:border-primary cursor-pointer'
                     : 'bg-surface-container text-on-surface-variant border-surface-container-high opacity-70'
                 }`}
               >
@@ -615,32 +798,158 @@ export default function Partnership({ setActiveNav }) {
       </section>
 
       {/* ========================================================= */}
-      {/* SECTION 3: 18 KECAMATAN COVERAGE BADGES                  */}
+      {/* SECTION 3: 4 ZONA LOGISTIK & 18 KECAMATAN INTERAKTIF      */}
       {/* ========================================================= */}
-      <section className="py-12 bg-surface border-t border-surface-container-high">
-        <div className="max-w-[1280px] mx-auto px-4 md:px-8">
-          <div className="mb-6">
-            <span className="text-xs font-bold text-primary tracking-wider uppercase">
-              JALUR DISTRIBUSI REGULER DEPOT KRIAN
-            </span>
-            <h3 className="text-xl font-bold font-display text-on-surface mt-1">
-              18 Kecamatan Kabupaten Sidoarjo Terlayani
-            </h3>
-            <p className="text-xs text-on-surface-variant mt-1">
-              Seluruh kecamatan berikut tercakup dalam rute reguler armada truk Mayora:
-            </p>
+      <section className="py-14 bg-surface border-t border-surface-container-high" id="lokasi-coverage">
+        <div className="max-w-[1280px] mx-auto px-4 md:px-8 space-y-8">
+          {/* Section Header */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <span className="text-xs font-bold text-primary tracking-wider uppercase flex items-center gap-1.5">
+                <Navigation className="h-3.5 w-3.5" />
+                <span>ZONA DISTRIBUSI & JANGKAUAN LOGISTIK</span>
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-bold font-display text-on-surface mt-1">
+                Jaringan Rute Terjadwal 18 Kecamatan Kabupaten Sidoarjo
+              </h3>
+              <p className="text-xs sm:text-sm text-on-surface-variant mt-1.5 max-w-2xl leading-relaxed">
+                PT Inbisco Niagatama Semesta Cabang Krian mengoperasikan 4 koridor logistik armada boks Mayora. Klik nama kecamatan untuk langsung memilihnya pada formulir pendaftaran di atas.
+              </p>
+            </div>
+
+            {formData.district && (
+              <div className="px-3.5 py-2 rounded-xl bg-primary/5 border border-primary/20 text-xs text-primary font-medium flex items-center gap-2 self-start md:self-auto shrink-0">
+                <MapPin className="h-4 w-4" />
+                <span>Kecamatan Terpilih di Form: <strong>{formData.district}</strong></span>
+              </div>
+            )}
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            {SIDOARJO_DISTRICTS.map((d, idx) => (
-              <span
-                key={idx}
-                className="px-3 py-1.5 rounded-lg bg-surface-container-lowest border border-surface-container-high text-xs font-semibold text-on-surface flex items-center gap-1.5 shadow-2xs"
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
-                <span>{d}</span>
-              </span>
-            ))}
+          {/* 4-Zone Bento Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {SIDOARJO_ZONES.map((zone) => {
+              const hasActiveDistrict = zone.districts.includes(formData.district);
+              return (
+                <div
+                  key={zone.id}
+                  className={`p-6 rounded-2xl border transition-all duration-200 flex flex-col justify-between ${
+                    hasActiveDistrict
+                      ? 'bg-surface-container-lowest border-primary shadow-sm ring-1 ring-primary/20'
+                      : 'bg-surface-container-lowest border-surface-container-high hover:border-surface-variant'
+                  }`}
+                >
+                  <div className="space-y-4">
+                    {/* Zone Header */}
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${zone.badgeVariant}`}>
+                            {zone.badge}
+                          </span>
+                        </div>
+                        <h4 className="text-base font-bold font-display text-on-surface">
+                          {zone.name}
+                        </h4>
+                      </div>
+                      <div className="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-primary shrink-0 border border-surface-container-high">
+                        <Truck className="h-5 w-5" />
+                      </div>
+                    </div>
+
+                    <p className="text-xs text-on-surface-variant leading-relaxed">
+                      {zone.description}
+                    </p>
+
+                    {/* Operational Specs */}
+                    <div className="grid grid-cols-2 gap-2.5 pt-1 text-xs">
+                      <div className="p-2.5 rounded-lg bg-surface-container-low border border-surface-container-high/60 space-y-0.5">
+                        <span className="text-[10px] text-outline font-semibold uppercase block">Frekuensi Kirim</span>
+                        <span className="font-semibold text-on-surface text-[11px] block">{zone.frequency}</span>
+                      </div>
+                      <div className="p-2.5 rounded-lg bg-surface-container-low border border-surface-container-high/60 space-y-0.5">
+                        <span className="text-[10px] text-outline font-semibold uppercase block">SLA Kedatangan</span>
+                        <span className="font-semibold text-primary text-[11px] block">{zone.leadTime}</span>
+                      </div>
+                    </div>
+
+                    {/* Interactive District Pills */}
+                    <div>
+                      <span className="text-[11px] font-bold text-outline uppercase tracking-wider block mb-2">
+                        Pilih Kecamatan Terdaftar:
+                      </span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {zone.districts.map((d) => {
+                          const isSelected = formData.district === d;
+                          return (
+                            <button
+                              key={d}
+                              type="button"
+                              onClick={() => handleSelectDistrict(d)}
+                              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+                                isSelected
+                                  ? 'bg-primary-container text-white shadow-xs font-bold ring-2 ring-primary ring-offset-1'
+                                  : 'bg-surface-container hover:bg-surface-container-high border border-surface-container-high text-on-surface hover:text-primary hover:border-primary/40'
+                              }`}
+                              title={`Pilih kecamatan ${d} untuk formulir pendaftaran`}
+                            >
+                              {isSelected ? (
+                                <Check className="h-3 w-3 text-white" />
+                              ) : (
+                                <span className="w-1.5 h-1.5 rounded-full bg-primary-container shrink-0"></span>
+                              )}
+                              <span>{d}</span>
+                              {isSelected && (
+                                <span className="text-[10px] bg-white/25 px-1 py-0.2 rounded font-mono">
+                                  Aktif
+                                </span>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 pt-3 border-t border-surface-container-high/60 flex items-center justify-between text-[11px] text-outline">
+                    <span className="truncate">{zone.depotDistance}</span>
+                    <span className="shrink-0 font-medium">{zone.vehicle.split('&')[0]}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* 3 Logistics Performance SLA Guarantees */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+            <div className="p-4 rounded-xl bg-surface-container-lowest border border-surface-container-high flex items-center gap-3 shadow-2xs">
+              <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-200">
+                <ShieldCheck className="h-5 w-5" />
+              </div>
+              <div>
+                <span className="text-xs font-bold text-on-surface block">100% Sidoarjo Tercover</span>
+                <span className="text-[11px] text-on-surface-variant">18 kecamatan tanpa area blank spot</span>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-xl bg-surface-container-lowest border border-surface-container-high flex items-center gap-3 shadow-2xs">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 border border-primary/20">
+                <Clock className="h-5 w-5" />
+              </div>
+              <div>
+                <span className="text-xs font-bold text-on-surface block">&lt; 24 Jam Garansi Tiba</span>
+                <span className="text-[11px] text-on-surface-variant">Armada diberangkatkan rutin tiap pagi</span>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-xl bg-surface-container-lowest border border-surface-container-high flex items-center gap-3 shadow-2xs">
+              <div className="w-10 h-10 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 border border-amber-200">
+                <Truck className="h-5 w-5" />
+              </div>
+              <div>
+                <span className="text-xs font-bold text-on-surface block">Rp 0 Biaya Pengiriman</span>
+                <span className="text-[11px] text-on-surface-variant">Bebas ongkir sampai ke pintu toko mitra</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
