@@ -47,7 +47,7 @@ export const updateOrderStatusSchema = z
   .strict();
 
 export const idParamSchema = z.object({
-  id: z.string().uuid('Parameter id must be a valid UUID'),
+  id: z.string().trim().min(2, 'Parameter id is required').max(100),
 });
 
 export const adminStoresQuerySchema = z.object({

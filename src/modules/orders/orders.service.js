@@ -15,13 +15,47 @@ export function maskPhoneNumber(phone) {
   return `${phone.slice(0, 4)}****${phone.slice(-4)}`;
 }
 
+const STATUS_META = {
+  PENDING: { label: 'Pending', nextStatus: 'CONFIRMED', nextActionLabel: 'Terima Order' },
+  CONFIRMED: { label: 'Confirmed', nextStatus: 'PACKING', nextActionLabel: 'Mulai Packing' },
+  PACKING: { label: 'Packing', nextStatus: 'DISPATCHED', nextActionLabel: 'Kirim Armada' },
+  DISPATCHED: { label: 'Dispatched', nextStatus: 'COMPLETED', nextActionLabel: 'Tandai Selesai' },
+  COMPLETED: { label: 'Completed', nextStatus: null, nextActionLabel: '✓ Tuntas' },
+  CANCELLED: { label: 'Cancelled', nextStatus: null, nextActionLabel: 'Dibatalkan' },
+};
+
 /**
- * Formats an Order record (converting Prisma Decimal fields to JS numbers).
+ * Formats an Order record (converting Prisma Decimal fields to JS numbers and enriching UI helpers).
  */
 export function serializeOrder(order) {
+  const meta = STATUS_META[order.status] || {
+    label: order.status,
+    nextStatus: null,
+    nextActionLabel: 'Detail',
+  };
+  const totalAmountNum = Number(order.totalAmount);
+
+  const itemsSummary = Array.isArray(order.items)
+    ? order.items
+        .map((item) => {
+          const prodName = item.product?.name
+            ? item.product.name.split('(')[0].trim()
+            : 'Produk Mayora';
+          return `${item.quantity} Karton ${prodName}`;
+        })
+        .join(', ')
+    : '';
+
   return {
     ...order,
-    totalAmount: Number(order.totalAmount),
+    totalAmount: totalAmountNum,
+    totalAmountFormatted: `Rp ${Math.round(totalAmountNum).toLocaleString('id-ID')}`,
+    statusLabel: meta.label,
+    nextStatus: meta.nextStatus,
+    nextActionLabel: meta.nextActionLabel,
+    paymentMethodLabel:
+      order.paymentMethod === 'TEMPO_7_DAYS' ? 'TEMPO 7 HARI' : 'COD TUNAI',
+    itemsSummary,
     items: Array.isArray(order.items)
       ? order.items.map((item) => ({
           ...item,

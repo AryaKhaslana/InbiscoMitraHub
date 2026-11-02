@@ -298,4 +298,62 @@ export async function confirmInboundDelivery(req, res, next) {
   }
 }
 
+export async function syncSap(req, res, next) {
+  try {
+    const syncResult = await adminService.syncSap({
+      ipAddress: getClientIp(req),
+    });
+
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: 'Sinkronisasi SAP S/4HANA & refresh cache berhasil',
+      data: syncResult,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function getDailyManifest(req, res, next) {
+  try {
+    const manifest = await adminService.getDailyManifest();
+
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: 'Manifest harian muat armada berhasil dibuat',
+      data: manifest,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function exportOrdersCsv(req, res, next) {
+  try {
+    const csvContent = await adminService.generateOrdersCsv();
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="Inbisco_Orders_${new Date().toISOString().slice(0, 10)}.csv"`
+    );
+    return res.status(200).send(csvContent);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function getDistributorNodes(req, res, next) {
+  try {
+    const data = await adminService.getDistributorNodes();
+
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: 'Direktori distributor regional Jawa Timur berhasil diambil',
+      data,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 

@@ -211,5 +211,13 @@ router.patch(
   adminController.confirmInboundDelivery
 );
 
+/**
+ * Operations & Export Helpers
+ */
+router.post('/sync-sap', adminController.syncSap);
+router.get('/manifest/daily', adminController.getDailyManifest);
+router.get('/orders/export/csv', adminController.exportOrdersCsv);
+router.get('/distributors', adminController.getDistributorNodes);
+
 export default router;
 
