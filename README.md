@@ -53,6 +53,7 @@ Wajib menyertakan header: `Authorization: Bearer <ADMIN_SECRET_KEY>`
 | 13 | `PATCH /api/v1/admin/stores/:id/verify` | Set status verifikasi toko secara eksplisit.<br>Body: `{ "isVerified": true }` |
 | 14 | `POST /api/v1/admin/products` | **(Tambahan)** Tambah SKU produk Mayora baru ke gudang & invalidasi cache katalog.<br>Body: `{ "sku": "MYR-...", "name": "...", "category": "Biskuit", "cartonPrice": 215000, "retailPriceEst": 252000, "stockCartons": 100, "batchNumber": "BATCH-01", "expiryDate": "2027-06-01T00:00:00.000Z", "imageUrl": "https://..." }` |
 | 15 | `PATCH /api/v1/admin/products/:id/stock` | **(Tambahan)** Update stok karton (pilih salah satu: `stockCartons` absolut ATAU `addCartons` relatif `+/-`), harga, atau batch FEFO secara atomik.<br>Body: `{ "addCartons": 50 }` atau `{ "stockCartons": 200, "batchNumber": "BATCH-02" }` |
+| 16 | `GET /api/v1/admin/audit-logs` | **(Tambahan)** Jejak audit log mutasi administratif (perubahan status order, verifikasi warung, restok/edit produk) lengkap dengan snapshot `details` dan `ipAddress`.<br>Query: `?action=ORDER_STATUS_UPDATED&entityType=ORDER&entityId=...&page=1&limit=20` |
 
 ---
 

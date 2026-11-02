@@ -194,3 +194,11 @@ export const updateProductStockSchema = z
       message: 'At least one field must be provided to update product/stock',
     }
   );
+
+export const adminAuditLogsQuerySchema = z.object({
+  action: z.string().trim().optional(),
+  entityType: z.enum(['ORDER', 'STORE', 'PRODUCT']).optional(),
+  entityId: z.string().trim().optional(),
+  page: z.coerce.number().int().min(1).max(10000).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+});

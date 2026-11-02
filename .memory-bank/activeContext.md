@@ -1,12 +1,18 @@
 # Active Context: Inbisco MitraHub
 
 ## 1. Current Focus
-Seluruh 15 endpoint REST API (7 Public + 8 Admin) dan 6 putaran Security Hardening telah selesai, teruji otomatis, dan terdokumentasi lengkap di `README.md` serta `.memory-bank/progress.md` sebagai panduan integrasi untuk Frontend (Raka).
+Seluruh 16 endpoint REST API (7 Public + 9 Admin) dan Audit Trail Engine telah selesai, teruji otomatis, dan terdokumentasi lengkap di `README.md` serta `.memory-bank/progress.md`.
 
 ## 2. Recent Additions
-- Menambahkan endpoint **`POST /api/v1/stores/lookup`** (`{ "phone": "0812..." }`) dengan rate-limit ketat (10 req/m) dan redaksi PII (`id`, `name`, `district`, `isVerified`) agar warung lama yang sudah diverifikasi Admin bisa mengambil kembali `storeId` mereka saat hendak checkout di Frontend tanpa membocorkan `storeId` di halaman publik.
-- Menyusun Master Handover & Progress Document di `README.md` dan `.memory-bank/progress.md`.
+- Menambahkan tabel **`AuditLog`** di Supabase PostgreSQL dengan RLS aktif (`REVOKE ALL` dari `anon`/`authenticated`) serta 3 index performa (`[entityType, entityId]`, `[createdAt]`, `[action]`).
+- Menambahkan pencatatan otomatis di setiap mutasi admin:
+  - `ORDER_STATUS_UPDATED` (di dalam transaksi CAS)
+  - `STORE_VERIFIED` (perubahan status verifikasi mitra)
+  - `PRODUCT_CREATED` (penambahan SKU baru)
+  - `PRODUCT_STOCK_UPDATED` (penyesuaian stok/harga/batch)
+- Mengekspos endpoint **`GET /api/v1/admin/audit-logs`** dengan paginasi dan filter `action`, `entityType`, serta `entityId`.
+- Ekstraksi aman `ipAddress` client via helper `getClientIp(req)`.
 
 ## 3. Immediate Next Steps
-1. Deploy perubahan terbaru (`POST /api/v1/stores/lookup` & `Cache-Control: no-store`) ke Vercel (`vercel --prod` atau `git push`).
-2. Bagikan file `README.md` ke Raka (Frontend Developer) sebagai acuan kontrak API.
+1. Deploy pembaruan ke Vercel (`git push origin main`).
+2. Sampaikan ringkasan ke user.

@@ -31,6 +31,13 @@ CREATE INDEX IF NOT EXISTS "Order_storeId_idx" ON "public"."Order"("storeId");
 CREATE INDEX IF NOT EXISTS "OrderItem_orderId_idx" ON "public"."OrderItem"("orderId");
 CREATE INDEX IF NOT EXISTS "OrderItem_productId_idx" ON "public"."OrderItem"("productId");
 
+-- AuditLog table security and indexes
+ALTER TABLE IF EXISTS "public"."AuditLog" ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE "public"."AuditLog" FROM anon, authenticated;
+CREATE INDEX IF NOT EXISTS "AuditLog_entityType_entityId_idx" ON "public"."AuditLog"("entityType", "entityId");
+CREATE INDEX IF NOT EXISTS "AuditLog_createdAt_idx" ON "public"."AuditLog"("createdAt");
+CREATE INDEX IF NOT EXISTS "AuditLog_action_idx" ON "public"."AuditLog"("action");
+
 ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON TABLES FROM anon, authenticated;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON SEQUENCES FROM anon, authenticated;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON ROUTINES FROM anon, authenticated;
@@ -39,4 +46,11 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON ROUTINES FROM anon, auth
 CREATE INDEX IF NOT EXISTS "Order_storeId_idx" ON "public"."Order"("storeId");
 CREATE INDEX IF NOT EXISTS "OrderItem_orderId_idx" ON "public"."OrderItem"("orderId");
 CREATE INDEX IF NOT EXISTS "OrderItem_productId_idx" ON "public"."OrderItem"("productId");
+
+-- AuditLog table security and indexes
+ALTER TABLE IF EXISTS "public"."AuditLog" ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE "public"."AuditLog" FROM anon, authenticated;
+CREATE INDEX IF NOT EXISTS "AuditLog_entityType_entityId_idx" ON "public"."AuditLog"("entityType", "entityId");
+CREATE INDEX IF NOT EXISTS "AuditLog_createdAt_idx" ON "public"."AuditLog"("createdAt");
+CREATE INDEX IF NOT EXISTS "AuditLog_action_idx" ON "public"."AuditLog"("action");
 

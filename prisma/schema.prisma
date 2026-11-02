@@ -91,3 +91,17 @@ model OrderItem {
   @@index([orderId])
   @@index([productId])
 }
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  action     String
+  entityType String
+  entityId   String
+  details    Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@index([action])
+}

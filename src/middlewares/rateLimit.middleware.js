@@ -8,7 +8,7 @@ import { sendError } from '../utils/response.js';
  * - Outside Vercel (local dev / direct server), we NEVER trust client-supplied `x-forwarded-for`
  *   unless `TRUST_PROXY_HEADERS=true` is explicitly configured, using `req.socket.remoteAddress` instead.
  */
-function getClientIp(req) {
+export function getClientIp(req) {
   const isVercel = Boolean(process.env.VERCEL);
 
   if (isVercel) {

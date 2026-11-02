@@ -4,6 +4,7 @@ import { rateLimit } from '../../middlewares/rateLimit.middleware.js';
 import { validate } from '../../middlewares/validate.middleware.js';
 import * as adminController from './admin.controller.js';
 import {
+  adminAuditLogsQuerySchema,
   adminOrdersQuerySchema,
   adminStoresQuerySchema,
   createProductSchema,
@@ -95,6 +96,16 @@ router.patch(
   '/products/:id/stock',
   validate({ params: idParamSchema, body: updateProductStockSchema }),
   adminController.updateProductStock
+);
+
+/**
+ * GET /api/v1/admin/audit-logs
+ * Paginated activity trail of admin mutations (filters: action, entityType, entityId, page, limit)
+ */
+router.get(
+  '/audit-logs',
+  validate({ query: adminAuditLogsQuerySchema }),
+  adminController.getAuditLogs
 );
 
 export default router;

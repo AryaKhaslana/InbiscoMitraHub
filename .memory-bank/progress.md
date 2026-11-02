@@ -6,7 +6,7 @@
 - [x] Project setup (`package.json`, `.env`, `.env.local`, `.env.example`, `.gitignore`, `vercel.json`)
 - [x] Install dependencies & Supabase Agent Skills (`npx skills add supabase/agent-skills`)
 - [x] Prisma Schema (`prisma/schema.prisma`) pushed to Supabase PostgreSQL & Database Seeding (`prisma/seed.js`)
-- [x] **15 Production API Endpoints Implemented & Verified:**
+- [x] **16 Production API Endpoints Implemented & Verified:**
   - **Public (7):**
     - [x] `GET /` & `GET /api/v1/health` (Warm-up & health check)
     - [x] `GET /api/v1/products` (Redis cached catalog + in-memory search/category filter)
@@ -14,15 +14,16 @@
     - [x] `POST /api/v1/stores/lookup` (Returning store lookup by phone number for checkout flow)
     - [x] `POST /api/v1/orders` (Atomic wholesale checkout with `Prisma.Decimal` & stock deduction)
     - [x] `GET /api/v1/orders/track/:code` (Live order tracking with PII redaction)
-  - **Admin (8):**
+  - **Admin (9):**
     - [x] `GET /api/v1/admin/kpi` (Redis cached 4 KPI metrics + Fast Moving Products)
     - [x] `GET /api/v1/admin/orders` (Filtered by status & Sidoarjo district + pagination)
-    - [x] `PATCH /api/v1/admin/orders/:id/status` (Strict one-way state machine + CAS auto-restock on `CANCELLED`)
+    - [x] `PATCH /api/v1/admin/orders/:id/status` (Strict one-way state machine + CAS auto-restock on `CANCELLED` + audit log)
     - [x] `GET /api/v1/admin/inventory/fefo` (FEFO warehouse sorting + `EXPIRED`/`DANGER`/`WARNING`/`SAFE` alerts)
     - [x] `GET /api/v1/admin/stores` (Paginated store directory with verified & district filters)
-    - [x] `PATCH /api/v1/admin/stores/:id/verify` (Explicit boolean store verification)
-    - [x] `POST /api/v1/admin/products` (Add new Mayora SKU + cache invalidation)
-    - [x] `PATCH /api/v1/admin/products/:id/stock` (Atomic carton stock/price/FEFO batch update)
+    - [x] `PATCH /api/v1/admin/stores/:id/verify` (Explicit boolean store verification + audit log)
+    - [x] `POST /api/v1/admin/products` (Add new Mayora SKU + cache invalidation + audit log)
+    - [x] `PATCH /api/v1/admin/products/:id/stock` (Atomic carton stock/price/FEFO batch update + audit log)
+    - [x] `GET /api/v1/admin/audit-logs` (Paginated activity trail with filters `action`, `entityType`, `entityId`)
 - [x] **6 Rounds of Security Audit & Hardening:**
   - [x] Round 1: Supabase RLS + `REVOKE ALL`, SHA-256 `timingSafeEqual` auth, Upstash Rate Limiter, Verified-Store Checkout Guard, CAS Cancel Restock, `Prisma.Decimal`.
   - [x] Round 2: Anti-Spoofing Rate Limiter (`x-vercel-forwarded-for` / socket IP), 8-char high-entropy tracking codes, stripped `storeId` from public tracking, `ALTER DEFAULT PRIVILEGES`, explicit `{ isVerified }`.

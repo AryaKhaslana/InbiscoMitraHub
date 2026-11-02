@@ -1,3 +1,4 @@
+import { getClientIp } from '../../middlewares/rateLimit.middleware.js';
 import { sendSuccess } from '../../utils/response.js';
 import * as adminService from './admin.service.js';
 
@@ -35,7 +36,8 @@ export async function updateOrderStatus(req, res, next) {
   try {
     const updatedOrder = await adminService.updateOrderStatus(
       req.params.id,
-      req.body.status
+      req.body.status,
+      { ipAddress: getClientIp(req) }
     );
 
     return sendSuccess(res, {
@@ -81,7 +83,8 @@ export async function verifyStore(req, res, next) {
   try {
     const updatedStore = await adminService.verifyStore(
       req.params.id,
-      req.body?.isVerified
+      req.body?.isVerified,
+      { ipAddress: getClientIp(req) }
     );
 
     return sendSuccess(res, {
@@ -96,7 +99,9 @@ export async function verifyStore(req, res, next) {
 
 export async function createProduct(req, res, next) {
   try {
-    const product = await adminService.createProduct(req.body);
+    const product = await adminService.createProduct(req.body, {
+      ipAddress: getClientIp(req),
+    });
 
     return sendSuccess(res, {
       statusCode: 201,
@@ -112,13 +117,29 @@ export async function updateProductStock(req, res, next) {
   try {
     const product = await adminService.updateProductStock(
       req.params.id,
-      req.body
+      req.body,
+      { ipAddress: getClientIp(req) }
     );
 
     return sendSuccess(res, {
       statusCode: 200,
       message: 'Product stock and batch details updated successfully',
       data: product,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function getAuditLogs(req, res, next) {
+  try {
+    const { logs, meta } = await adminService.getAuditLogs(req.query);
+
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: 'Admin audit logs retrieved successfully',
+      data: logs,
+      meta,
     });
   } catch (error) {
     return next(error);

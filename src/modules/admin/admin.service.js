@@ -231,7 +231,7 @@ export async function getAdminOrders({ status, district, page = 1, limit = 20 })
  * Uses `updateMany({ where: { id, status: currentStatus } })` so two concurrent `CANCELLED` requests
  * can never double-restock warehouse inventory.
  */
-export async function updateOrderStatus(orderId, targetStatus) {
+export async function updateOrderStatus(orderId, targetStatus, meta = {}) {
   const updatedOrder = await prisma.$transaction(
     async (tx) => {
       const existingOrder = await tx.order.findUnique({
@@ -317,6 +317,20 @@ export async function updateOrderStatus(orderId, targetStatus) {
           });
         }
       }
+
+      await tx.auditLog.create({
+        data: {
+          action: 'ORDER_STATUS_UPDATED',
+          entityType: 'ORDER',
+          entityId: orderId,
+          details: {
+            trackingCode: existingOrder.trackingCode,
+            previousStatus: currentStatus,
+            newStatus: targetStatus,
+          },
+          ipAddress: meta.ipAddress || null,
+        },
+      });
 
       const savedOrder = await tx.order.findUnique({
         where: { id: orderId },
@@ -478,7 +492,7 @@ export async function getAdminStores({ verified, district, page = 1, limit = 50 
  * PATCH /api/v1/admin/stores/:id/verify
  * Explicitly sets `isVerified` status for a partner store (idempotent, prevents accidental double-click toggle).
  */
-export async function verifyStore(storeId, explicitIsVerified) {
+export async function verifyStore(storeId, explicitIsVerified, meta = {}) {
   if (typeof explicitIsVerified !== 'boolean') {
     throw new AppError('isVerified (boolean) is required', 400, [
       { field: 'isVerified', message: 'Explicit boolean isVerified is required' },
@@ -500,6 +514,20 @@ export async function verifyStore(storeId, explicitIsVerified) {
     data: { isVerified: explicitIsVerified },
   });
 
+  await prisma.auditLog.create({
+    data: {
+      action: 'STORE_VERIFIED',
+      entityType: 'STORE',
+      entityId: storeId,
+      details: {
+        storeName: existing.name,
+        previousStatus: existing.isVerified,
+        newStatus: explicitIsVerified,
+      },
+      ipAddress: meta.ipAddress || null,
+    },
+  });
+
   await invalidateCache(CACHE_KEYS.KPI_SUMMARY);
 
   return updatedStore;
@@ -509,7 +537,7 @@ export async function verifyStore(storeId, explicitIsVerified) {
  * POST /api/v1/admin/products
  * Creates a new product SKU in the warehouse & invalidates public catalog cache.
  */
-export async function createProduct(payload) {
+export async function createProduct(payload, meta = {}) {
   const existingSku = await prisma.product.findUnique({
     where: { sku: payload.sku },
   });
@@ -535,6 +563,22 @@ export async function createProduct(payload) {
     },
   });
 
+  await prisma.auditLog.create({
+    data: {
+      action: 'PRODUCT_CREATED',
+      entityType: 'PRODUCT',
+      entityId: product.id,
+      details: {
+        sku: product.sku,
+        name: product.name,
+        category: product.category,
+        stockCartons: product.stockCartons,
+        batchNumber: product.batchNumber,
+      },
+      ipAddress: meta.ipAddress || null,
+    },
+  });
+
   await invalidateCache(CACHE_KEYS.CATALOG_PUBLIC, CACHE_KEYS.KPI_SUMMARY);
 
   return serializeProduct(product);
@@ -545,7 +589,7 @@ export async function createProduct(payload) {
  * Updates product stock (absolute `stockCartons` or relative `addCartons`), batch/expiry, or pricing,
  * and invalidates `cache:catalog_public` + `cache:kpi_summary`.
  */
-export async function updateProductStock(productId, payload) {
+export async function updateProductStock(productId, payload, meta = {}) {
   const updateData = {};
 
   if (payload.cartonPrice !== undefined) updateData.cartonPrice = payload.cartonPrice;
@@ -585,7 +629,55 @@ export async function updateProductStock(productId, payload) {
   }
 
   const updatedProduct = await prisma.product.findUnique({ where: { id: productId } });
+
+  await prisma.auditLog.create({
+    data: {
+      action: 'PRODUCT_STOCK_UPDATED',
+      entityType: 'PRODUCT',
+      entityId: productId,
+      details: payload,
+      ipAddress: meta.ipAddress || null,
+    },
+  });
+
   await invalidateCache(CACHE_KEYS.CATALOG_PUBLIC, CACHE_KEYS.KPI_SUMMARY);
 
   return serializeProduct(updatedProduct);
+}
+
+/**
+ * GET /api/v1/admin/audit-logs
+ * Retrieves paginated audit trail of administrative operations.
+ */
+export async function getAuditLogs({ action, entityType, entityId, page = 1, limit = 20 } = {}) {
+  const where = {};
+  if (action) where.action = action;
+  if (entityType) where.entityType = entityType;
+  if (entityId) where.entityId = entityId;
+
+  const skip = (page - 1) * limit;
+
+  const [totalItems, logs] = await Promise.all([
+    prisma.auditLog.count({ where }),
+    prisma.auditLog.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+    }),
+  ]);
+
+  const totalPages = Math.ceil(totalItems / limit) || 1;
+
+  return {
+    logs,
+    meta: {
+      page,
+      limit,
+      totalItems,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+    },
+  };
 }
