@@ -32,8 +32,8 @@ export default function Products({ setActiveNav }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Semua Kategori');
 
-  // Drawer & Order State
-  const [drawerProduct, setDrawerProduct] = useState(null);
+  // Modal & Order State
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [orderQuantity, setOrderQuantity] = useState(1);
   const [storePhone, setStorePhone] = useState('');
   const [storeName, setStoreName] = useState('');
@@ -41,6 +41,24 @@ export default function Products({ setActiveNav }) {
   const [submittingOrder, setSubmittingOrder] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(null);
   const [orderError, setOrderError] = useState(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && selectedProduct) {
+        setSelectedProduct(null);
+      }
+    };
+    if (selectedProduct) {
+      document.body.style.overflow = 'hidden';
+      window.addEventListener('keydown', handleKeyDown);
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [selectedProduct]);
 
   // Fallback product data with rich specs, official Google Stitch CDN images, and actual DB UUIDs
   const defaultProducts = [
@@ -184,12 +202,13 @@ export default function Products({ setActiveNav }) {
     return matchesCat && matchesQuery;
   });
 
-  const handleOpenDrawer = (product) => {
-    setDrawerProduct(product);
+  const handleOpenModal = (product) => {
+    setSelectedProduct(product);
     setOrderQuantity(product.minOrder || 1);
     setOrderSuccess(null);
     setOrderError(null);
   };
+  const handleOpenDrawer = handleOpenModal;
 
   const handleSubmitOrder = async (e) => {
     e.preventDefault();
@@ -208,7 +227,7 @@ export default function Products({ setActiveNav }) {
         paymentMethod,
         items: [
           {
-            productId: drawerProduct.id,
+            productId: selectedProduct.id,
             quantity: Number(orderQuantity),
           },
         ],
@@ -362,7 +381,7 @@ export default function Products({ setActiveNav }) {
                 {filteredProducts.map((p) => (
                   <div
                     key={p.id}
-                    onClick={() => handleOpenDrawer(p)}
+                    onClick={() => handleOpenModal(p)}
                     className="bg-surface-container-lowest rounded-xl border border-surface-container-high p-4 flex flex-col justify-between hover:border-primary-container hover:shadow-md transition-all duration-200 cursor-pointer group"
                   >
                     <div>
@@ -405,11 +424,12 @@ export default function Products({ setActiveNav }) {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleOpenDrawer(p);
+                          handleOpenModal(p);
                         }}
-                        className="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-bold hover:bg-secondary transition-colors shadow-2xs"
+                        className="px-3.5 py-1.5 rounded-lg bg-primary-container text-white text-xs font-bold hover:bg-secondary-container transition-colors shadow-2xs flex items-center gap-1.5"
                       >
-                        Pesan B2B
+                        <ShoppingBag className="h-3.5 w-3.5" />
+                        <span>Pesan Grosir</span>
                       </button>
                     </div>
                   </div>
@@ -421,189 +441,250 @@ export default function Products({ setActiveNav }) {
       </div>
 
       {/* ========================================================= */}
-      {/* SLIDE-OUT PRODUCT DRAWER (Stitch 08 Detail Modal)         */}
+      {/* CENTERED PRODUCT DETAIL & B2B ORDER POPUP MODAL           */}
       {/* ========================================================= */}
-      {drawerProduct && (
-        <div className="fixed inset-0 z-50 overflow-hidden">
+      {selectedProduct && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
+          role="dialog"
+          aria-modal="true"
+        >
+          {/* Focused Dim Backdrop */}
           <div
-            onClick={() => setDrawerProduct(null)}
-            className="fixed inset-0 bg-black/60 backdrop-blur-xs anim-backdrop"
+            onClick={() => setSelectedProduct(null)}
+            className="fixed inset-0 bg-black/70 backdrop-blur-xs anim-backdrop"
           />
 
-          <div className="fixed inset-y-0 right-0 max-w-full flex pl-6">
-            <form
-              onSubmit={handleSubmitOrder}
-              className="w-screen max-w-md bg-surface-container-lowest shadow-2xl flex flex-col border-l border-surface-container-high rounded-l-2xl overflow-hidden anim-slide-right"
-            >
-              <div className="px-5 py-4 border-b border-surface-container-high flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <span className="text-[11px] text-outline">{drawerProduct.category}</span>
-                  <h2 className="text-lg font-bold font-display text-on-surface leading-snug">
-                    {drawerProduct.name}
-                  </h2>
+          {/* Centered Modal Card */}
+          <div className="relative w-full max-w-3xl bg-surface-container-lowest rounded-2xl shadow-2xl border border-surface-container-high overflow-hidden anim-modal z-10 flex flex-col max-h-[92vh] my-auto">
+            
+            {/* Modal Header */}
+            <div className="px-6 py-4 border-b border-surface-container-high flex items-center justify-between bg-surface-container-lowest shrink-0">
+              <div className="min-w-0 pr-4">
+                <div className="flex items-center gap-2 text-xs text-outline mb-0.5">
+                  <span className="font-semibold text-primary">{selectedProduct.category}</span>
+                  <span>•</span>
+                  <span className="font-mono text-[11px]">{selectedProduct.sku}</span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setDrawerProduct(null)}
-                  className="p-2 text-outline hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors shrink-0"
-                  aria-label="Tutup"
-                >
-                  <X className="h-5 w-5" />
-                </button>
+                <h2 className="text-xl font-bold font-display text-on-surface truncate">
+                  {selectedProduct.name}
+                </h2>
               </div>
+              <button
+                type="button"
+                onClick={() => setSelectedProduct(null)}
+                className="w-9 h-9 rounded-lg text-outline hover:text-on-surface hover:bg-surface-container flex items-center justify-center transition-colors shrink-0"
+                aria-label="Tutup"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
 
+            {/* Modal Content */}
+            <div className="overflow-y-auto p-6 flex-1">
               {orderSuccess ? (
-                <div className="p-5 flex-1 overflow-y-auto">
-                  <div className="p-4 bg-emerald-50 text-emerald-900 rounded-xl border border-emerald-200 space-y-2">
-                    <div className="flex items-center gap-2 font-bold text-sm">
-                      <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0" />
-                      <span>Pesanan berhasil dibuat</span>
-                    </div>
-                    <p className="text-xs text-emerald-800">
-                      Nomor pesanan: <strong className="font-mono text-emerald-950">{orderSuccess.trackingCode || orderSuccess.orderNumber || orderSuccess.id}</strong>. Sales kami akan menghubungi WhatsApp Anda untuk konfirmasi jadwal pengiriman.
+                <div className="py-8 px-4 text-center space-y-4 max-w-md mx-auto">
+                  <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto">
+                    <CheckCircle2 className="h-8 w-8" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold font-display text-on-surface">
+                      Pesanan Grosir Berhasil Dibuat!
+                    </h3>
+                    <p className="text-xs text-on-surface-variant mt-1 leading-relaxed">
+                      Kode Pelacakan:{' '}
+                      <strong className="font-mono text-primary text-sm">
+                        {orderSuccess.trackingCode || orderSuccess.orderNumber || orderSuccess.id}
+                      </strong>
                     </p>
+                    <p className="text-xs text-on-surface-variant mt-2">
+                      Sales representatif cabang Krian akan segera menghubungi WhatsApp Anda untuk konfirmasi jadwal armada pengiriman.
+                    </p>
+                  </div>
+                  <div className="pt-2 flex justify-center gap-3">
                     <Button
                       type="button"
                       onClick={() => {
                         setOrderSuccess(null);
-                        setDrawerProduct(null);
+                        setSelectedProduct(null);
                       }}
-                      size="sm"
-                      className="w-full text-xs font-bold mt-2"
+                      className="text-xs font-bold px-6"
                     >
-                      Tutup
+                      Selesai & Tutup
                     </Button>
                   </div>
                 </div>
               ) : (
-                <>
-                  <div className="p-5 flex-1 overflow-y-auto space-y-5">
-                    <div className="flex items-center gap-4">
-                      <div className="w-20 h-20 rounded-xl bg-surface-container-low border border-surface-container-high flex items-center justify-center p-2 shrink-0">
-                        <img
-                          src={drawerProduct.image}
-                          alt={drawerProduct.name}
-                          className="max-h-full max-w-full object-contain mix-blend-multiply"
-                        />
-                      </div>
-                      <div>
-                        <div className="text-lg font-bold font-display text-primary">
-                          {formatRupiah(drawerProduct.price)}
-                          <span className="text-xs font-medium text-outline"> / karton</span>
-                        </div>
-                        <div className="text-xs text-on-surface-variant">{drawerProduct.packSpec}</div>
-                      </div>
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                  
+                  {/* Left Column: Product Showcase & Specifications */}
+                  <div className="md:col-span-6 space-y-4">
+                    <div className="w-full h-52 sm:h-60 rounded-xl bg-surface-container-low border border-surface-container-high flex items-center justify-center p-4 relative overflow-hidden">
+                      <img
+                        src={selectedProduct.image}
+                        alt={selectedProduct.name}
+                        className="max-h-full max-w-full object-contain mix-blend-multiply"
+                      />
+                      <span className="absolute bottom-3 left-3 px-2 py-0.5 rounded bg-surface-container-lowest/90 backdrop-blur-xs text-[10px] font-bold text-emerald-800 border border-emerald-200 shadow-2xs">
+                        Ready di Depo Krian
+                      </span>
                     </div>
 
-                    <div className="space-y-3.5">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-on-surface font-semibold">Jumlah karton</span>
-                        <div className="flex items-center gap-2">
+                    <div>
+                      <h4 className="text-xs font-bold text-on-surface uppercase tracking-wider mb-1">
+                        Deskripsi Produk
+                      </h4>
+                      <p className="text-xs text-on-surface-variant leading-relaxed">
+                        {selectedProduct.description}
+                      </p>
+                    </div>
+
+                    {/* Specification Highlights */}
+                    <div className="p-3.5 rounded-xl bg-surface-container-low border border-surface-container-high text-xs space-y-2">
+                      <div className="flex justify-between items-center py-0.5 border-b border-surface-container-high/60">
+                        <span className="text-outline">Merek Prinsipal:</span>
+                        <span className="font-semibold text-on-surface">{selectedProduct.brand || 'Mayora'}</span>
+                      </div>
+                      <div className="flex justify-between items-center py-0.5 border-b border-surface-container-high/60">
+                        <span className="text-outline">Format Master Dus:</span>
+                        <span className="font-semibold text-on-surface">{selectedProduct.packSpec}</span>
+                      </div>
+                      <div className="flex justify-between items-center py-0.5 border-b border-surface-container-high/60">
+                        <span className="text-outline">Masa Simpan (Shelf Life):</span>
+                        <span className="font-semibold text-primary">{selectedProduct.shelfLife}</span>
+                      </div>
+                      <div className="flex justify-between items-center py-0.5">
+                        <span className="text-outline">Kepatuhan Standar:</span>
+                        <span className="font-semibold text-emerald-800 flex items-center gap-1">
+                          <CheckCircle2 className="h-3.5 w-3.5" /> BPOM RI & Halal
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Direct Order Form */}
+                  <div className="md:col-span-6 bg-surface-container-low p-5 rounded-xl border border-surface-container-high flex flex-col justify-between">
+                    <form onSubmit={handleSubmitOrder} className="space-y-4">
+                      
+                      {/* Price Header */}
+                      <div className="p-3.5 rounded-lg bg-surface-container-lowest border border-surface-container-high flex items-center justify-between">
+                        <div>
+                          <div className="text-[11px] text-outline font-medium">Harga Grosir Cabang</div>
+                          <div className="text-xl font-bold font-display text-primary">
+                            {formatRupiah(selectedProduct.price)}
+                            <span className="text-xs font-normal text-outline"> / dus</span>
+                          </div>
+                        </div>
+                        <span className="px-2 py-0.5 rounded bg-primary/10 text-primary text-[10px] font-bold">
+                          Harga Pabrikan
+                        </span>
+                      </div>
+
+                      {/* Quantity Stepper */}
+                      <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <label className="text-xs font-semibold text-on-surface">
+                            Jumlah Pesanan (Karton)
+                          </label>
+                          <span className="text-[11px] text-outline">
+                            Min: {selectedProduct.minOrder || 1} dus
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3">
                           <button
                             type="button"
-                            onClick={() => setOrderQuantity(Math.max(1, orderQuantity - 1))}
-                            className="w-8 h-8 rounded-lg border border-surface-variant flex items-center justify-center hover:bg-surface-container"
+                            onClick={() => setOrderQuantity(Math.max(selectedProduct.minOrder || 1, orderQuantity - 1))}
+                            className="w-9 h-9 rounded-lg border border-surface-variant bg-surface-container-lowest flex items-center justify-center text-on-surface hover:bg-surface-container font-bold transition-colors"
                             aria-label="Kurangi"
                           >
-                            <Minus className="h-3.5 w-3.5" />
+                            <Minus className="h-4 w-4" />
                           </button>
-                          <span className="w-10 text-center font-bold font-mono">{orderQuantity}</span>
+                          <span className="w-12 text-center font-bold font-mono text-base">
+                            {orderQuantity}
+                          </span>
                           <button
                             type="button"
                             onClick={() => setOrderQuantity(orderQuantity + 1)}
-                            className="w-8 h-8 rounded-lg border border-surface-variant flex items-center justify-center hover:bg-surface-container"
+                            className="w-9 h-9 rounded-lg border border-surface-variant bg-surface-container-lowest flex items-center justify-center text-on-surface hover:bg-surface-container font-bold transition-colors"
                             aria-label="Tambah"
                           >
-                            <Plus className="h-3.5 w-3.5" />
+                            <Plus className="h-4 w-4" />
                           </button>
+                          <div className="flex-1 text-right">
+                            <span className="text-[10px] text-outline block">Subtotal:</span>
+                            <span className="text-sm font-bold font-display text-on-surface">
+                              {formatRupiah(selectedProduct.price * orderQuantity)}
+                            </span>
+                          </div>
                         </div>
                       </div>
 
-                      <div>
-                        <label className="text-xs font-semibold text-on-surface block mb-1">
-                          Nomor WhatsApp toko <span className="text-error">*</span>
-                        </label>
-                        <Input
-                          value={storePhone}
-                          onChange={(e) => setStorePhone(e.target.value)}
-                          placeholder="081234567890"
-                          className="text-sm h-10"
-                          required
-                        />
-                      </div>
+                      {/* Form Inputs */}
+                      <div className="space-y-3 pt-2 border-t border-surface-container-high">
+                        <div>
+                          <label className="text-xs font-semibold text-on-surface block mb-1">
+                            Nomor WhatsApp Toko <span className="text-error">*</span>
+                          </label>
+                          <Input
+                            value={storePhone}
+                            onChange={(e) => setStorePhone(e.target.value)}
+                            placeholder="081234567890"
+                            className="text-xs h-9 bg-surface-container-lowest"
+                            required
+                          />
+                        </div>
 
-                      <div>
-                        <label className="text-xs font-semibold text-on-surface block mb-1">
-                          Nama toko (opsional)
-                        </label>
-                        <Input
-                          value={storeName}
-                          onChange={(e) => setStoreName(e.target.value)}
-                          placeholder="Cth: Toko Barokah Krian"
-                          className="text-sm h-10"
-                        />
-                      </div>
+                        <div>
+                          <label className="text-xs font-semibold text-on-surface block mb-1">
+                            Nama Toko / Pemilik (Opsional)
+                          </label>
+                          <Input
+                            value={storeName}
+                            onChange={(e) => setStoreName(e.target.value)}
+                            placeholder="Cth: Toko Barokah Jaya Krian"
+                            className="text-xs h-9 bg-surface-container-lowest"
+                          />
+                        </div>
 
-                      <div>
-                        <label className="text-xs font-semibold text-on-surface block mb-1">
-                          Pembayaran
-                        </label>
-                        <select
-                          value={paymentMethod}
-                          onChange={(e) => setPaymentMethod(e.target.value)}
-                          className="w-full text-sm h-10 rounded-md border border-input bg-surface-container-lowest px-3"
-                        >
-                          <option value="CASH_ON_DELIVERY">Bayar saat barang tiba (COD)</option>
-                          <option value="TOP_14_DAYS">Tempo mitra</option>
-                        </select>
+                        <div>
+                          <label className="text-xs font-semibold text-on-surface block mb-1">
+                            Metode Pembayaran
+                          </label>
+                          <select
+                            value={paymentMethod}
+                            onChange={(e) => setPaymentMethod(e.target.value)}
+                            className="w-full text-xs h-9 rounded-md border border-input bg-surface-container-lowest px-2.5 font-medium"
+                          >
+                            <option value="CASH_ON_DELIVERY">Cash on Delivery (Bayar Saat Barang Tiba)</option>
+                            <option value="TOP_14_DAYS">Tempo Pembayaran Mitra (TOP 14 Hari)</option>
+                          </select>
+                        </div>
                       </div>
 
                       {orderError && (
-                        <div className="text-xs text-error flex items-center gap-1.5">
-                          <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                        <div className="p-2.5 rounded-lg bg-error-container text-on-error-container text-xs flex items-center gap-1.5">
+                          <AlertCircle className="h-3.5 w-3.5 text-error shrink-0" />
                           <span>{orderError}</span>
                         </div>
                       )}
-                    </div>
 
-                    <details className="group rounded-xl border border-surface-container-high">
-                      <summary className="cursor-pointer list-none px-4 py-3 text-xs font-bold text-on-surface flex items-center justify-between">
-                        Detail produk
-                        <span className="material-symbols-outlined text-[18px] text-outline group-open:rotate-180 transition-transform">expand_more</span>
-                      </summary>
-                      <div className="px-4 pb-4 space-y-3 text-xs">
-                        <p className="text-on-surface-variant leading-relaxed">{drawerProduct.description}</p>
-                        <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5">
-                          <dt className="text-outline">Merek</dt>
-                          <dd className="text-on-surface font-medium">{drawerProduct.brand}</dd>
-                          <dt className="text-outline">Dimensi</dt>
-                          <dd className="text-on-surface font-medium">{drawerProduct.dimensions}</dd>
-                          <dt className="text-outline">Masa simpan</dt>
-                          <dd className="text-on-surface font-medium">{drawerProduct.shelfLife}</dd>
-                        </dl>
-                      </div>
-                    </details>
-                  </div>
+                      <Button
+                        type="submit"
+                        disabled={submittingOrder}
+                        className="w-full text-xs font-bold py-2.5 gap-2 shadow-sm"
+                      >
+                        <ShoppingBag className="h-4 w-4" />
+                        <span>{submittingOrder ? 'Memproses PO...' : 'Konfirmasi Pesanan Grosir'}</span>
+                      </Button>
 
-                  <div className="px-5 py-4 border-t border-surface-container-high bg-surface-container-lowest space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-on-surface-variant">Estimasi total</span>
-                      <span className="text-lg font-bold font-display text-primary">
-                        {formatRupiah(drawerProduct.price * orderQuantity)}
-                      </span>
-                    </div>
-                    <Button
-                      type="submit"
-                      disabled={submittingOrder}
-                      className="w-full text-sm font-bold py-2.5 gap-2"
-                    >
-                      <ShoppingBag className="h-4 w-4" />
-                      <span>{submittingOrder ? 'Memproses...' : 'Pesan Sekarang'}</span>
-                    </Button>
+                      <p className="text-[10px] text-center text-outline">
+                        Armada logistik beroperasi Senin – Sabtu untuk wilayah Sidoarjo.
+                      </p>
+                    </form>
                   </div>
-                </>
+                </div>
               )}
-            </form>
+            </div>
           </div>
         </div>
       )}
