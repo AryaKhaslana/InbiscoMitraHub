@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 import express from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 import {
   errorHandler,
@@ -23,6 +25,10 @@ import { sendSuccess } from '../src/utils/response.js';
 
 dotenv.config();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const publicPath = path.join(__dirname, '..', 'public');
+
 const app = express();
 
 // Only enable Express proxy trust when running behind Vercel Edge or explicit reverse proxy
@@ -30,16 +36,17 @@ if (process.env.VERCEL || process.env.TRUST_PROXY_HEADERS === 'true') {
   app.set('trust proxy', 1);
 }
 
-// Security & HTTP headers with CSP configured for DevOps monitoring UI
+// Security & HTTP headers with CSP configured for React SPA & fonts
 app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://cdn.tailwindcss.com'],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https:'],
         styleSrc: ["'self'", "'unsafe-inline'", 'https:'],
+        fontSrc: ["'self'", 'https:', 'data:'],
         imgSrc: ["'self'", 'data:', 'https:'],
-        connectSrc: ["'self'"],
+        connectSrc: ["'self'", 'https:'],
       },
     },
   })
@@ -66,13 +73,21 @@ if (process.env.NODE_ENV !== 'test') {
 // Request telemetry & jury audit tracking (Upstash Redis + in-memory ring buffer)
 app.use(auditTracker);
 
+// Serve built React static assets
+app.use(express.static(publicPath));
+
 /**
- * Root informational route
+ * Root informational / SPA route
  */
 app.get(
-  '/',
+  ['/', '/api'],
   rateLimit({ prefix: 'rl:health', max: 120, windowSeconds: 60 }),
-  (_req, res) => {
+  (req, res) => {
+    // If requesting root page from browser, deliver the React SPA
+    if (req.path === '/' && req.headers.accept?.includes('text/html')) {
+      return res.sendFile(path.join(publicPath, 'index.html'));
+    }
+
     return sendSuccess(res, {
       statusCode: 200,
       message: 'Inbisco MitraHub Backend API Engine is running',
@@ -117,6 +132,14 @@ app.use('/api/v1/orders', ordersRoutes);
 app.use('/api/v1/simulation', simulationRouter);
 app.use('/api/v1/distributor', distributorRouter);
 app.use('/api/v1/admin', adminRoutes);
+
+// SPA HTML fallback for non-API client routes
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    return next();
+  }
+  return res.sendFile(path.join(publicPath, 'index.html'));
+});
 
 // 404 & Global Error Handlers
 app.use(notFoundHandler);
