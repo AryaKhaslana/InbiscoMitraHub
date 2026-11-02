@@ -4,6 +4,8 @@
 Seluruh 16 endpoint REST API (7 Public + 9 Admin) dan Audit Trail Engine telah selesai, teruji otomatis, dan terdokumentasi lengkap di `README.md` serta `.memory-bank/progress.md`.
 
 ## 2. Recent Additions
+- Menambahkan parameter query `search` (pencarian resi & nama warung) dan `paymentMethod` (`COD`, `TEMPO_7_DAYS`) pada `GET /api/v1/admin/orders`.
+- Memperbarui database seed dengan data resmi Cabang Krian (Sidoarjo Barat: Krian, Balongbendo, Prambon, Tarik, Wonoayu) lengkap dengan 6 pesanan contoh (`INB-2610-KR01` s/d `INB-2610-KR06`) yang cocok 100% dengan rancangan antarmuka Google Stitch.
 - Menambahkan tabel **`AuditLog`** di Supabase PostgreSQL dengan RLS aktif (`REVOKE ALL` dari `anon`/`authenticated`) serta 3 index performa (`[entityType, entityId]`, `[createdAt]`, `[action]`).
 - Menambahkan pencatatan otomatis di setiap mutasi admin:
   - `ORDER_STATUS_UPDATED` (di dalam transaksi CAS)

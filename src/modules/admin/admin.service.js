@@ -155,11 +155,22 @@ export async function getKpiSummary() {
  * GET /api/v1/admin/orders
  * Filtered & paginated list of orders by status and Sidoarjo district cluster.
  */
-export async function getAdminOrders({ status, district, page = 1, limit = 20 }) {
+export async function getAdminOrders({
+  status,
+  district,
+  paymentMethod,
+  search,
+  page = 1,
+  limit = 20,
+}) {
   const where = {};
 
   if (status) {
     where.status = status;
+  }
+
+  if (paymentMethod) {
+    where.paymentMethod = paymentMethod;
   }
 
   if (district) {
@@ -169,6 +180,25 @@ export async function getAdminOrders({ status, district, page = 1, limit = 20 })
         mode: 'insensitive',
       },
     };
+  }
+
+  if (search) {
+    where.OR = [
+      {
+        trackingCode: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      },
+      {
+        store: {
+          name: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+      },
+    ];
   }
 
   const skip = (page - 1) * limit;

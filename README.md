@@ -46,7 +46,7 @@ Wajib menyertakan header: `Authorization: Bearer <ADMIN_SECRET_KEY>`
 | No | Method & Path | Kegunaan & Contoh Payload / Query |
 |----|---------------|-----------------------------------|
 | 8 | `GET /api/v1/admin/kpi` | Ringkasan KPI (`todayRevenue`, `todayOrders`, `totalOrders`, `activeStores`, `totalRegisteredStores`, `pendingDispatch`, `fastMovingProducts`). Di-cache di Redis 3 menit. |
-| 9 | `GET /api/v1/admin/orders` | Daftar pesanan terfilter & terpaginasi.<br>Query: `?status=PENDING&district=Krian&page=1&limit=20` |
+| 9 | `GET /api/v1/admin/orders` | Daftar pesanan terfilter & terpaginasi.<br>Query: `?status=PENDING&district=Krian&paymentMethod=COD&search=Berkah&page=1&limit=20` |
 | 10 | `PATCH /api/v1/admin/orders/:id/status` | Update status pesanan satu arah (*Strict State Machine* + Compare-And-Swap anti *double-restock* saat `CANCELLED`).<br>Body: `{ "status": "CONFIRMED" }` (`CONFIRMED \| PACKING \| DISPATCHED \| COMPLETED \| CANCELLED`) |
 | 11 | `GET /api/v1/admin/inventory/fefo` | Inventaris gudang diurutkan berdasarkan `expiryDate ASC` (First Expired, First Out) lengkap dengan ringkasan & status `EXPIRED`, `DANGER` (< 3 bln), `WARNING` (< 6 bln), `SAFE`. |
 | 12 | `GET /api/v1/admin/stores` | Direktori mitra warung terpaginasi.<br>Query: `?verified=true&district=Krian&page=1&limit=50` |
@@ -84,9 +84,22 @@ Wajib menyertakan header: `Authorization: Bearer <ADMIN_SECRET_KEY>`
   - `081234560002` — Warkop & Agen Kopi Cak Toni (Kec. Taman, `isVerified: true`)
   - `081234560003` — Warung Sembako Bu Sri Rejeki (Kec. Waru, `isVerified: true`)
   - `081234560004` — Toko Grosir Sumber Makmur (Kec. Sidoarjo, `isVerified: true`)
+  - `081234560011` — Warkop Berkah (Kec. Krian, `isVerified: true`)
+  - `081234560012` — Toko Sumber Rejeki (Kec. Balongbendo, `isVerified: true`)
+  - `081234560013` — Warkop Sentosa (Kec. Prambon, `isVerified: true`)
+  - `081234560014` — Toko Murah Jaya (Kec. Tarik, `isVerified: true`)
+  - `081234560015` — Minimarket Barokah (Kec. Wonoayu, `isVerified: true`)
+  - `081234560016` — Toko Makmur (Kec. Krian, `isVerified: true`)
 - **Nomor HP Warung Belum Terverifikasi:**
   - `081234560005` — Warung Madura 24 Jam Al-Fath (Kec. Candi, `isVerified: false`)
-- **Kode Resi Pesanan Aktif (bisa dites ke `GET /api/v1/orders/track/:code`):**
+  - `081234560006` — Kedai & Warung Pojok Gedangan (Kec. Gedangan, `isVerified: false`)
+- **Kode Resi Pesanan Aktif (Mockup Prototype Sidoarjo Barat & General):**
+  - `INB-2610-KR01` (`PACKING` — Warkop Berkah, Krian — COD TUNAI)
+  - `INB-2610-KR02` (`DISPATCHED` — Toko Sumber Rejeki, Balongbendo — TEMPO 7 HARI)
+  - `INB-2610-KR03` (`PENDING` — Warkop Sentosa, Prambon — COD TUNAI)
+  - `INB-2610-KR04` (`CONFIRMED` — Toko Murah Jaya, Tarik — COD TUNAI)
+  - `INB-2610-KR05` (`COMPLETED` — Minimarket Barokah, Wonoayu — TEMPO 7 HARI)
+  - `INB-2610-KR06` (`PENDING` — Toko Makmur, Krian — COD TUNAI)
   - `INB-2610-K8R4M9P2` (`COMPLETED` — Krian)
   - `INB-2610-T7M3W6Q9` (`PACKING` — Taman)
   - `INB-2610-W5R8N2X7` (`PENDING` — Waru)

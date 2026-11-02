@@ -65,6 +65,55 @@ async function main() {
       address: 'Jl. Raya Gedangan No. 67, Keboansikep, Kec. Gedangan, Sidoarjo',
       isVerified: false,
     },
+    // Sidoarjo Barat (Depot Krian Hub) stores matching UI prototype
+    {
+      name: 'Warkop Berkah',
+      ownerName: 'Cak Subur',
+      phone: '081234560011',
+      district: 'Krian',
+      address: 'Jl. Raya Krian Barat No. 12, Kec. Krian, Sidoarjo',
+      isVerified: true,
+    },
+    {
+      name: 'Toko Sumber Rejeki',
+      ownerName: 'H. Suwandi',
+      phone: '081234560012',
+      district: 'Balongbendo',
+      address: 'Jl. Raya Bakung Pringgodani, Kec. Balongbendo, Sidoarjo',
+      isVerified: true,
+    },
+    {
+      name: 'Warkop Sentosa',
+      ownerName: 'Mas Sentot',
+      phone: '081234560013',
+      district: 'Prambon',
+      address: 'Jl. Raya Prambon No. 89, Kec. Prambon, Sidoarjo',
+      isVerified: true,
+    },
+    {
+      name: 'Toko Murah Jaya',
+      ownerName: 'Ibu Ratna',
+      phone: '081234560014',
+      district: 'Tarik',
+      address: 'Jl. Raya Tarik Stasiun No. 04, Kec. Tarik, Sidoarjo',
+      isVerified: true,
+    },
+    {
+      name: 'Minimarket Barokah',
+      ownerName: 'Ust. H. Fauzan',
+      phone: '081234560015',
+      district: 'Wonoayu',
+      address: 'Jl. Raya Candinegoro No. 55, Kec. Wonoayu, Sidoarjo',
+      isVerified: true,
+    },
+    {
+      name: 'Toko Makmur',
+      ownerName: 'Ko Ahok',
+      phone: '081234560016',
+      district: 'Krian',
+      address: 'Jl. Setasiun Krian No. 22, Kec. Krian, Sidoarjo',
+      isVerified: true,
+    },
   ];
 
   const upsertedStores = [];
@@ -208,78 +257,153 @@ async function main() {
   }
   console.log(`✅ Upserted ${upsertedProducts.length} Mayora FMCG products with FEFO batches.`);
 
-  // 3. Seed Sample Wholesale Orders with non-predictable 8-char tracking codes
-  const [storeKrian, storeTaman, storeWaru] = upsertedStores;
-  const [roma, bengbeng, torabika, energen, leMinerale, tehPucuk] = upsertedProducts;
+  // 3. Seed Sample Wholesale Orders matching UI prototype & previous seeds
+  const storeMap = new Map(upsertedStores.map((s) => [s.phone, s]));
+  const prodMap = new Map(upsertedProducts.map((p) => [p.sku, p]));
 
-  // Remove old predictable 4-char seed orders if they exist
-  await prisma.order.deleteMany({
-    where: {
-      trackingCode: {
-        in: ['INB-2610-KR01', 'INB-2610-TM02', 'INB-2610-WR03'],
-      },
+  const roma = prodMap.get('MYR-BIS-ROMAKELAPA-300');
+  const bengbeng = prodMap.get('MYR-WAF-BENGBENG-25');
+  const torabika = prodMap.get('MYR-KOP-TORABIKADUO-25');
+  const energen = prodMap.get('MYR-SER-ENERGENCOK-34');
+  const leMinerale = prodMap.get('MYR-AIR-LEMINERALE-600');
+  const tehPucuk = prodMap.get('MYR-MIN-TEHPUCUK-350');
+  const kopiko = prodMap.get('MYR-PER-KOPIKO-150');
+
+  const sampleOrders = [
+    // Sidoarjo Barat (Depot Krian) prototype orders matching Google Stitch mockup
+    {
+      trackingCode: 'INB-2610-KR01',
+      store: storeMap.get('081234560011'), // Warkop Berkah (Krian)
+      paymentMethod: 'COD',
+      status: 'PACKING',
+      notes: 'Titip kasir warkop',
+      items: [
+        { product: roma, quantity: 5 },
+        { product: torabika, quantity: 2 },
+      ],
     },
-  });
+    {
+      trackingCode: 'INB-2610-KR02',
+      store: storeMap.get('081234560012'), // Toko Sumber Rejeki (Balongbendo)
+      paymentMethod: 'TEMPO_7_DAYS',
+      status: 'DISPATCHED',
+      notes: 'Tempo 7 hari jatuh tempo minggu depan',
+      items: [
+        { product: bengbeng, quantity: 10 },
+        { product: energen, quantity: 4 },
+      ],
+    },
+    {
+      trackingCode: 'INB-2610-KR03',
+      store: storeMap.get('081234560013'), // Warkop Sentosa (Prambon)
+      paymentMethod: 'COD',
+      status: 'PENDING',
+      notes: 'Tolong kirim sebelum jam 12 siang',
+      items: [
+        { product: torabika, quantity: 3 },
+        { product: roma, quantity: 2 },
+      ],
+    },
+    {
+      trackingCode: 'INB-2610-KR04',
+      store: storeMap.get('081234560014'), // Toko Murah Jaya (Tarik)
+      paymentMethod: 'COD',
+      status: 'CONFIRMED',
+      notes: 'Konfirmasi via telepon sebelum kurir jalan',
+      items: [
+        { product: leMinerale, quantity: 8 },
+        { product: roma, quantity: 4 },
+      ],
+    },
+    {
+      trackingCode: 'INB-2610-KR05',
+      store: storeMap.get('081234560015'), // Minimarket Barokah (Wonoayu)
+      paymentMethod: 'TEMPO_7_DAYS',
+      status: 'COMPLETED',
+      notes: 'Diterima kasir shift pagi',
+      items: [
+        { product: roma, quantity: 15 },
+        { product: bengbeng, quantity: 6 },
+      ],
+    },
+    {
+      trackingCode: 'INB-2610-KR06',
+      store: storeMap.get('081234560016'), // Toko Makmur (Krian)
+      paymentMethod: 'COD',
+      status: 'PENDING',
+      notes: 'Pesanan baru via telepon',
+      items: [
+        { product: energen, quantity: 4 },
+        { product: kopiko, quantity: 2 },
+      ],
+    },
+    // Retain initial test orders
+    {
+      trackingCode: 'INB-2610-K8R4M9P2',
+      store: storeMap.get('081234560001'),
+      paymentMethod: 'COD',
+      status: 'COMPLETED',
+      notes: 'Kirim pagi sebelum jam 10 ke Pasar Krian Baru',
+      items: [
+        { product: leMinerale, quantity: 10 },
+        { product: roma, quantity: 4 },
+        { product: torabika, quantity: 5 },
+      ],
+    },
+    {
+      trackingCode: 'INB-2610-T7M3W6Q9',
+      store: storeMap.get('081234560002'),
+      paymentMethod: 'TEMPO_7_DAYS',
+      status: 'PACKING',
+      notes: 'Stok warkop mingguan, titip kasir',
+      items: [
+        { product: torabika, quantity: 8 },
+        { product: energen, quantity: 3 },
+        { product: bengbeng, quantity: 4 },
+      ],
+    },
+    {
+      trackingCode: 'INB-2610-W5R8N2X7',
+      store: storeMap.get('081234560003'),
+      paymentMethod: 'COD',
+      status: 'PENDING',
+      notes: 'Mohon dipilihkan dus yang mulus',
+      items: [
+        { product: tehPucuk, quantity: 12 },
+        { product: leMinerale, quantity: 15 },
+        { product: roma, quantity: 3 },
+      ],
+    },
+  ];
 
-  const existingOrderCount = await prisma.order.count();
-  if (existingOrderCount === 0) {
-    const sampleOrders = [
-      {
-        trackingCode: 'INB-2610-K8R4M9P2',
-        storeId: storeKrian.id,
-        paymentMethod: 'COD',
-        status: 'COMPLETED',
-        notes: 'Kirim pagi sebelum jam 10 ke Pasar Krian Baru',
-        items: [
-          { product: leMinerale, quantity: 10 },
-          { product: roma, quantity: 4 },
-          { product: torabika, quantity: 5 },
-        ],
-      },
-      {
-        trackingCode: 'INB-2610-T7M3W6Q9',
-        storeId: storeTaman.id,
-        paymentMethod: 'TEMPO_7_DAYS',
-        status: 'PACKING',
-        notes: 'Stok warkop mingguan, titip kasir',
-        items: [
-          { product: torabika, quantity: 8 },
-          { product: energen, quantity: 3 },
-          { product: bengbeng, quantity: 4 },
-        ],
-      },
-      {
-        trackingCode: 'INB-2610-W5R8N2X7',
-        storeId: storeWaru.id,
-        paymentMethod: 'COD',
-        status: 'PENDING',
-        notes: 'Mohon dipilihkan dus yang mulus',
-        items: [
-          { product: tehPucuk, quantity: 12 },
-          { product: leMinerale, quantity: 15 },
-          { product: roma, quantity: 3 },
-        ],
-      },
-    ];
+  let createdOrdersCount = 0;
+  for (const sample of sampleOrders) {
+    if (!sample.store) continue;
 
-    for (const sample of sampleOrders) {
-      const itemsData = sample.items.map(({ product, quantity }) => {
-        const unitPrice = Number(product.cartonPrice);
-        const subtotal = Number((unitPrice * quantity).toFixed(2));
-        return {
-          productId: product.id,
-          quantity,
-          unitPrice,
-          subtotal,
-        };
-      });
+    const existingOrder = await prisma.order.findUnique({
+      where: { trackingCode: sample.trackingCode },
+    });
+
+    if (!existingOrder) {
+      const itemsData = sample.items
+        .filter((i) => i.product)
+        .map(({ product, quantity }) => {
+          const unitPrice = Number(product.cartonPrice);
+          const subtotal = Number((unitPrice * quantity).toFixed(2));
+          return {
+            productId: product.id,
+            quantity,
+            unitPrice,
+            subtotal,
+          };
+        });
 
       const totalAmount = itemsData.reduce((sum, i) => sum + i.subtotal, 0);
 
       await prisma.order.create({
         data: {
           trackingCode: sample.trackingCode,
-          storeId: sample.storeId,
+          storeId: sample.store.id,
           totalAmount,
           paymentMethod: sample.paymentMethod,
           status: sample.status,
@@ -289,12 +413,11 @@ async function main() {
           },
         },
       });
+      createdOrdersCount++;
     }
-
-    console.log(`✅ Created ${sampleOrders.length} sample wholesale orders (INB-2610-K8R4M9P2, INB-2610-T7M3W6Q9, INB-2610-W5R8N2X7).`);
-  } else {
-    console.log(`ℹ️ Skipping sample orders creation (${existingOrderCount} orders already in database).`);
   }
+
+  console.log(`✅ Seeded ${createdOrdersCount} new wholesale orders (total prototype set: ${sampleOrders.length}).`);
 
   // 4. Clear Redis caches so fresh data is served immediately
   await invalidateCache(CACHE_KEYS.CATALOG_PUBLIC, CACHE_KEYS.KPI_SUMMARY);

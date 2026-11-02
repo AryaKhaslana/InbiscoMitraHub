@@ -16,7 +16,7 @@
     - [x] `GET /api/v1/orders/track/:code` (Live order tracking with PII redaction)
   - **Admin (9):**
     - [x] `GET /api/v1/admin/kpi` (Redis cached 4 KPI metrics + Fast Moving Products)
-    - [x] `GET /api/v1/admin/orders` (Filtered by status & Sidoarjo district + pagination)
+    - [x] `GET /api/v1/admin/orders` (Filtered by status, district, paymentMethod, quick search resi/toko + pagination)
     - [x] `PATCH /api/v1/admin/orders/:id/status` (Strict one-way state machine + CAS auto-restock on `CANCELLED` + audit log)
     - [x] `GET /api/v1/admin/inventory/fefo` (FEFO warehouse sorting + `EXPIRED`/`DANGER`/`WARNING`/`SAFE` alerts)
     - [x] `GET /api/v1/admin/stores` (Paginated store directory with verified & district filters)

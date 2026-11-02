@@ -12,6 +12,8 @@ export const adminOrdersQuerySchema = z.object({
       'CANCELLED',
     ])
     .optional(),
+  paymentMethod: z.enum(['COD', 'TEMPO_7_DAYS']).optional(),
+  search: z.string().trim().max(100).optional(),
   district: z
     .string()
     .trim()
