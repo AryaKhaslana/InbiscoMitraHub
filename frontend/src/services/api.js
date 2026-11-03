@@ -88,7 +88,33 @@ function requiresAuth(endpoint) {
   );
 }
 
-async function fetchJson(endpoint, options = {}, isRetry = false) {
+// Short-lived GET cache + in-flight dedupe: header, sidebar and pages ask for the same data at once.
+const GET_TTL_MS = 15000;
+const getCache = new Map();
+if (typeof window !== 'undefined') {
+  // Registered at module load, so it runs before page listeners refetch.
+  window.addEventListener('supplysync:refresh', () => getCache.clear());
+}
+
+function fetchJson(endpoint, options = {}, isRetry = false) {
+  const method = (options.method || 'GET').toUpperCase();
+  if (method !== 'GET' || isRetry) {
+    return rawFetchJson(endpoint, options, isRetry).then((res) => {
+      if (method !== 'GET') getCache.clear();
+      return res;
+    });
+  }
+  const hit = getCache.get(endpoint);
+  if (hit && Date.now() - hit.t < GET_TTL_MS) return hit.p;
+  const p = rawFetchJson(endpoint, options).catch((err) => {
+    getCache.delete(endpoint);
+    throw err;
+  });
+  getCache.set(endpoint, { t: Date.now(), p });
+  return p;
+}
+
+async function rawFetchJson(endpoint, options = {}, isRetry = false) {
   let token = localStorage.getItem('inbisco_auth_token');
   if (!token && requiresAuth(endpoint)) {
     token = await ensureAuthToken();

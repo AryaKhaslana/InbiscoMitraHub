@@ -50,6 +50,8 @@ export default function AdminHeader({ currentScreen, setCurrentScreen }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [productsList, setProductsList] = useState([]);
+  const [liveDeliveries, setLiveDeliveries] = useState([]);
+  const [liveOrders, setLiveOrders] = useState([]);
   const searchRef = useRef(null);
 
   // Notification State
@@ -105,6 +107,7 @@ export default function AdminHeader({ currentScreen, setCurrentScreen }) {
       if (inboundSettled.status === 'fulfilled' && inboundSettled.value) {
         const inboundPayload = inboundSettled.value;
         const deliveries = inboundPayload.deliveries || inboundPayload.activeDeliveries || [];
+        setLiveDeliveries(deliveries);
         const activeShipment = deliveries.find((d) => d.status === 'IN_TRANSIT') || deliveries[0];
         if (activeShipment) {
           const id = `inbound-${activeShipment.doNumber}`;
@@ -132,6 +135,7 @@ export default function AdminHeader({ currentScreen, setCurrentScreen }) {
         const orderList = Array.isArray(ordersPayload)
           ? ordersPayload
           : ordersPayload.orders || ordersPayload.data || [];
+        setLiveOrders(orderList);
         orderList.slice(0, 2).forEach((ord) => {
           const id = `order-${ord.id || ord.trackingCode}`;
           items.push({
@@ -186,7 +190,22 @@ export default function AdminHeader({ currentScreen, setCurrentScreen }) {
     const onRefresh = () => fetchNotifications();
     window.addEventListener('supplysync:refresh', onRefresh);
     return () => window.removeEventListener('supplysync:refresh', onRefresh);
-  }, [fetchNotifications, currentScreen]);
+  }, [fetchNotifications]);
+
+  // Global Keyboard Shortcut: Cmd+K / Ctrl+K to open Search Palette
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsSearchOpen((prev) => !prev);
+        setTimeout(() => {
+          searchRef.current?.querySelector('input')?.focus();
+        }, 50);
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Click outside listener for search & notif dropdowns
   useEffect(() => {
@@ -235,12 +254,43 @@ export default function AdminHeader({ currentScreen, setCurrentScreen }) {
     { id: 'audit-logs', label: 'Log & Audit Trail Sistem', desc: 'Riwayat lengkap seluruh mutasi stok, login, otorisasi PO, dan sync SAP', icon: FileText },
   ];
 
-  const searchableDocuments = [
-    { id: 'DO-2026-0881', label: 'Surat Jalan DO-2026-0881', desc: 'Truk Wingbox Pasuruan • 850 Dus Inbound Transit Tol Pandaan', targetScreen: 'order-tracking', icon: Truck },
-    { id: 'DO-2026-0882', label: 'Surat Jalan DO-2026-0882', desc: 'Truk B 9421 UYX Jayanti • 1.200 Dus Transit Tol Mojokerto', targetScreen: 'order-tracking', icon: Truck },
-    { id: 'PO-2026-0042', label: 'Purchase Order PO-2026-0042', desc: 'Alokasi 650 Dus Roma & Beng-Beng disetujui Mayora HQ', targetScreen: 'restock-request', icon: Boxes },
-    { id: 'ORD-2026-001', label: 'Pesanan Toko Mitra Berkah Jaya', desc: '15 Dus Biskuit & Kopi • Sidoarjo Barat', targetScreen: 'distributor-overview', icon: Store },
-  ];
+  const searchableDocuments = useMemo(() => {
+    const docs = [];
+    if (liveDeliveries && liveDeliveries.length > 0) {
+      liveDeliveries.forEach((d) => {
+        docs.push({
+          id: d.doNumber || `DO-${d.id}`,
+          label: `Surat Jalan ${d.doNumber}`,
+          desc: `${d.fleet?.plateNumber || 'Armada Inbound'} • ${d.origin} ➔ ${d.destination} (${d.status})`,
+          targetScreen: 'order-tracking',
+          icon: Truck,
+        });
+      });
+    } else {
+      docs.push(
+        { id: 'DO-2026-0881', label: 'Surat Jalan DO-2026-0881', desc: 'Truk Wingbox Pasuruan • 850 Dus Inbound Transit Tol Pandaan', targetScreen: 'order-tracking', icon: Truck },
+        { id: 'DO-2026-0882', label: 'Surat Jalan DO-2026-0882', desc: 'Truk B 9421 UYX Jayanti • 1.200 Dus Transit Tol Mojokerto', targetScreen: 'order-tracking', icon: Truck }
+      );
+    }
+
+    if (liveOrders && liveOrders.length > 0) {
+      liveOrders.forEach((o) => {
+        docs.push({
+          id: o.trackingCode || `ORD-${o.id}`,
+          label: `Pesanan Toko ${o.trackingCode || o.id}`,
+          desc: `${o.store?.name || 'Mitra Toko'} • ${formatRupiah(o.totalAmount)} (${o.status})`,
+          targetScreen: 'distributor-overview',
+          icon: Store,
+        });
+      });
+    } else {
+      docs.push(
+        { id: 'PO-2026-0042', label: 'Purchase Order PO-2026-0042', desc: 'Alokasi 650 Dus Roma & Beng-Beng disetujui Mayora HQ', targetScreen: 'restock-request', icon: Boxes },
+        { id: 'ORD-2026-001', label: 'Pesanan Toko Mitra Berkah Jaya', desc: '15 Dus Biskuit & Kopi • Sidoarjo Barat', targetScreen: 'distributor-overview', icon: Store }
+      );
+    }
+    return docs;
+  }, [liveDeliveries, liveOrders]);
 
   const searchResults = useMemo(() => {
     if (!searchQuery.trim()) return { screens: [], products: [], documents: [] };
@@ -262,7 +312,7 @@ export default function AdminHeader({ currentScreen, setCurrentScreen }) {
     );
 
     return { screens, products, documents };
-  }, [searchQuery, productsList]);
+  }, [searchQuery, productsList, searchableDocuments]);
 
   const hasSearchResults = 
     searchResults.screens.length > 0 || 
@@ -374,6 +424,11 @@ export default function AdminHeader({ currentScreen, setCurrentScreen }) {
             placeholder="Cari SKU, batch, DO..."
             className="w-full h-9 pl-8 pr-7 rounded-lg bg-surface-container-low text-xs text-on-surface border border-outline/15 focus:outline-none focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary transition-all truncate"
           />
+          {!searchQuery && (
+            <span className="absolute right-2 top-2.5 pointer-events-none hidden xl:inline-flex items-center px-1.5 py-0.5 rounded border border-outline/20 text-[9px] font-mono text-outline bg-surface">
+              ⌘K
+            </span>
+          )}
           {searchQuery && (
             <button
               onClick={() => {
@@ -433,6 +488,9 @@ export default function AdminHeader({ currentScreen, setCurrentScreen }) {
                           onClick={() =>
                             handleSelectSearchResult('distributor-overview', () => {
                               sessionStorage.setItem('supplysync_highlight_sku', p.sku);
+                              window.dispatchEvent(
+                                new CustomEvent('supplysync:highlight-sku', { detail: p.sku })
+                              );
                             })
                           }
                           className="w-full px-3 py-2 text-left hover:bg-surface-container-low flex items-center justify-between group transition-colors"

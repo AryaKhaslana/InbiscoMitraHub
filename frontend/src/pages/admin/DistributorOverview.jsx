@@ -43,6 +43,7 @@ export default function DistributorOverview({ setCurrentScreen }) {
   const [orders, setOrders] = useState([]);
   const [stores, setStores] = useState([]);
   const [mutatingId, setMutatingId] = useState(null);
+  const [highlightedSku, setHighlightedSku] = useState(null);
 
   // CRUD Modal & Feedback State
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -61,8 +62,8 @@ export default function DistributorOverview({ setCurrentScreen }) {
     imageUrl: '',
   });
 
-  const fetchOverviewData = useCallback(async () => {
-    setLoading(true);
+  const fetchOverviewData = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
       const [kpiRes, fefoRes, dsrRes, inboundRes, ordersRes, storesRes] = await Promise.all([
         api.getAdminKpi(),
@@ -81,24 +82,68 @@ export default function DistributorOverview({ setCurrentScreen }) {
     } catch (err) {
       console.error('DistributorOverview fetch error:', err);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }, []);
 
   useEffect(() => {
     fetchOverviewData();
-    const onRefresh = () => fetchOverviewData();
+
+    // Check if navigated with a specific SKU from search palette
+    const savedSku = sessionStorage.getItem('supplysync_highlight_sku');
+    if (savedSku) {
+      setHighlightedSku(savedSku);
+      sessionStorage.removeItem('supplysync_highlight_sku');
+    }
+
+    const onHighlight = (e) => {
+      if (e.detail) {
+        setHighlightedSku(e.detail);
+      }
+    };
+
+    const onRefresh = () => fetchOverviewData(true);
     window.addEventListener('supplysync:refresh', onRefresh);
-    return () => window.removeEventListener('supplysync:refresh', onRefresh);
+    window.addEventListener('supplysync:highlight-sku', onHighlight);
+    return () => {
+      window.removeEventListener('supplysync:refresh', onRefresh);
+      window.removeEventListener('supplysync:highlight-sku', onHighlight);
+    };
   }, [fetchOverviewData]);
+
+  // Scroll to and highlight targeted SKU row
+  useEffect(() => {
+    if (highlightedSku) {
+      const el = document.getElementById(`sku-row-${highlightedSku}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      const timer = setTimeout(() => setHighlightedSku(null), 4500);
+      return () => clearTimeout(timer);
+    }
+  }, [highlightedSku, fefo]);
 
   const handleAdjustStock = async (productId, addCartons) => {
     setMutatingId(productId);
+    // Optimistic UI update
+    setFefo((prev) => {
+      if (!prev?.inventory) return prev;
+      return {
+        ...prev,
+        inventory: prev.inventory.map((item) =>
+          item.id === productId
+            ? { ...item, stockCartons: Math.max(0, (item.stockCartons || 0) + addCartons) }
+            : item
+        ),
+      };
+    });
     try {
       await api.updateProductStock(productId, { addCartons });
-      await fetchOverviewData();
+      window.dispatchEvent(new CustomEvent('supplysync:refresh'));
+      await fetchOverviewData(true);
     } catch (err) {
       alert(err.message || 'Gagal memperbarui stok gudang');
+      await fetchOverviewData(true);
     } finally {
       setMutatingId(null);
     }
@@ -106,11 +151,17 @@ export default function DistributorOverview({ setCurrentScreen }) {
 
   const handleAdvanceOrder = async (orderId, nextStatus) => {
     setMutatingId(orderId);
+    // Optimistic UI update
+    setOrders((prev) =>
+      prev.map((ord) => (ord.id === orderId ? { ...ord, status: nextStatus } : ord))
+    );
     try {
       await api.updateOrderStatus(orderId, nextStatus);
-      await fetchOverviewData();
+      window.dispatchEvent(new CustomEvent('supplysync:refresh'));
+      await fetchOverviewData(true);
     } catch (err) {
       alert(err.message || 'Gagal mengubah status pesanan');
+      await fetchOverviewData(true);
     } finally {
       setMutatingId(null);
     }
@@ -118,11 +169,17 @@ export default function DistributorOverview({ setCurrentScreen }) {
 
   const handleVerifyStore = async (storeId, isVerified) => {
     setMutatingId(storeId);
+    // Optimistic UI update
+    setStores((prev) =>
+      prev.map((s) => (s.id === storeId ? { ...s, isVerified } : s))
+    );
     try {
       await api.verifyStore(storeId, isVerified);
-      await fetchOverviewData();
+      window.dispatchEvent(new CustomEvent('supplysync:refresh'));
+      await fetchOverviewData(true);
     } catch (err) {
       alert(err.message || 'Gagal memverifikasi toko mitra');
+      await fetchOverviewData(true);
     } finally {
       setMutatingId(null);
     }
@@ -427,8 +484,17 @@ export default function DistributorOverview({ setCurrentScreen }) {
                   : 'bg-emerald-600';
               const fillPercent = Math.min(100, Math.round((sku.stockCartons / 500) * 100));
 
+              const isTargeted = highlightedSku === sku.sku;
               return (
-                <div key={sku.id} className="p-3.5 bg-surface-container-low rounded-xl border border-outline/10 hover:border-outline/25 transition-all">
+                <div 
+                  id={`sku-row-${sku.sku}`}
+                  key={sku.id} 
+                  className={`p-3.5 rounded-xl border transition-all duration-300 ${
+                    isTargeted
+                      ? 'bg-primary/10 border-primary ring-2 ring-primary/40 shadow-md'
+                      : 'bg-surface-container-low border-outline/10 hover:border-outline/25'
+                  }`}
+                >
                   <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
                     <div className="flex items-start gap-3 min-w-[260px]">
                       <div className="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center font-bold text-xs text-primary shrink-0">

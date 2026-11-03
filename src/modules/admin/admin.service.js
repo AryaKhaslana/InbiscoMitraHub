@@ -1106,7 +1106,8 @@ export async function getDailySalesLogs({ limit = 20 } = {}) {
  */
 export async function runWhatIfSimulation(payload) {
   let targetProduct = null;
-  if (payload.productId || payload.sku) {
+  // Skip DB round-trip when caller already supplies live stockOnHand and unitPrice
+  if ((payload.productId || payload.sku) && (payload.stockOnHand === undefined || payload.unitPrice === undefined)) {
     try {
       targetProduct = await resolveProduct(payload);
     } catch {

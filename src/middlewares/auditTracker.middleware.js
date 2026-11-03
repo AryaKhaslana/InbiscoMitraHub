@@ -109,19 +109,21 @@ export function auditTracker(req, res, next) {
         if (inMemoryJuryLogs.length > MEMORY_LOG_LIMIT) inMemoryJuryLogs.pop();
       }
 
-      // Persist to Upstash Redis asynchronously (non-blocking)
+      // Persist to Upstash Redis in a single HTTP pipeline (1 round-trip instead of 8)
       if (redis) {
         const payload = JSON.stringify(logEntry);
-        await Promise.allSettled([
-          redis.lpush('devops:audit_logs', payload),
-          redis.ltrim('devops:audit_logs', 0, 499),
-          isJury ? redis.lpush('devops:jury_logs', payload) : Promise.resolve(),
-          isJury ? redis.ltrim('devops:jury_logs', 0, 199) : Promise.resolve(),
-          redis.sadd('devops:unique_ips', ip),
-          redis.hincrby('devops:stats', 'total_requests', 1),
-          isJury ? redis.hincrby('devops:stats', 'jury_requests', 1) : Promise.resolve(),
-          isJury ? redis.hset('devops:stats', { last_jury_active: now.toISOString() }) : Promise.resolve(),
-        ]);
+        const pipe = redis.pipeline();
+        pipe.lpush('devops:audit_logs', payload);
+        pipe.ltrim('devops:audit_logs', 0, 499);
+        pipe.sadd('devops:unique_ips', ip);
+        pipe.hincrby('devops:stats', 'total_requests', 1);
+        if (isJury) {
+          pipe.lpush('devops:jury_logs', payload);
+          pipe.ltrim('devops:jury_logs', 0, 199);
+          pipe.hincrby('devops:stats', 'jury_requests', 1);
+          pipe.hset('devops:stats', { last_jury_active: now.toISOString() });
+        }
+        await pipe.exec();
       }
     } catch (err) {
       // Never crash or fail a client response due to logging errors

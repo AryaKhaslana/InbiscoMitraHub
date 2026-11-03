@@ -117,20 +117,25 @@ export default function WhatIfSimulator({ setCurrentScreen }) {
     }
   };
 
-  // Trajectory points from backend response (or fallback instant math while debouncing)
+  // Real-time 60fps trajectory computation from live slider values (matches backend simulation math)
   const trajectory = useMemo(() => {
-    if (simResult?.trajectory?.length) {
-      return simResult.trajectory;
-    }
     const pts = [];
+    const restock = proposedRestock;
     for (let day = 0; day <= 14; day++) {
       const sq = Math.max(0, Math.round(stockOnHand - day * adsValue));
-      const arrived = day >= leadTime ? proposedRestock : 0;
-      const prop = Math.max(0, Math.round(stockOnHand + arrived - day * adsValue));
+      let prop;
+      if (dispatchMode === 'SPLIT') {
+        const batch1 = day >= leadTime ? Math.round(restock * 0.5) : 0;
+        const batch2 = day >= leadTime + 3 ? Math.round(restock * 0.5) : 0;
+        prop = Math.max(0, Math.round(stockOnHand + batch1 + batch2 - day * adsValue));
+      } else {
+        const arrived = day >= leadTime ? restock : 0;
+        prop = Math.max(0, Math.round(stockOnHand + arrived - day * adsValue));
+      }
       pts.push({ day, statusQuoStock: sq, proposedStock: prop });
     }
     return pts;
-  }, [simResult, stockOnHand, adsValue, leadTime, proposedRestock]);
+  }, [stockOnHand, adsValue, leadTime, proposedRestock, dispatchMode]);
 
   const maxChartStock = Math.max(1200, stockOnHand + proposedRestock);
   const getSvgCoordinates = (day, stock) => {
@@ -144,11 +149,12 @@ export default function WhatIfSimulator({ setCurrentScreen }) {
   const ySafety = 200 - (safetyStock / maxChartStock) * 160;
   const xDelivery = 50 + (leadTime / 14) * 600;
 
-  const beforeRunway = simResult?.beforeMetrics?.runwayDays ?? (stockOnHand / adsValue).toFixed(1);
-  const afterRunway = simResult?.afterMetrics?.runwayDays ?? ((stockOnHand + proposedRestock) / adsValue).toFixed(1);
-  const stockAtArrival = simResult?.afterMetrics?.stockAtArrival ?? stockOnHand - adsValue * leadTime;
-  const ftlPct = simResult?.logistics?.ftlUtilizationPct ?? ((proposedRestock / 1000) * 100).toFixed(1);
-  const revenueProtected = simResult?.afterMetrics?.revenueProtectedIDR ?? proposedRestock * (currentProduct?.cartonPrice || 215000);
+  // Instant reactive metrics for 0ms slider dragging feedback
+  const beforeRunway = adsValue > 0 ? (stockOnHand / adsValue).toFixed(1) : '99.9';
+  const afterRunway = adsValue > 0 ? ((stockOnHand + proposedRestock) / adsValue).toFixed(1) : '99.9';
+  const stockAtArrival = Math.round(stockOnHand - adsValue * leadTime);
+  const ftlPct = ((proposedRestock / 1000) * 100).toFixed(1);
+  const revenueProtected = proposedRestock * (currentProduct?.cartonPrice || 215000);
 
   return (
     <div className="flex flex-col w-full pb-16 space-y-6">

@@ -344,8 +344,19 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
                             </span>
                           </td>
                           <td className="py-3 px-3 text-right">
-                            <Button size="sm" variant="outline" className="text-[11px] h-7 px-2.5">
-                              Pilih DO
+                            <Button
+                              size="sm"
+                              variant={isSelected ? 'default' : 'outline'}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedDoNumber(del.doNumber);
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                              }}
+                              className={`text-[11px] h-7 px-2.5 ${
+                                isSelected ? 'bg-primary text-white shadow-xs' : ''
+                              }`}
+                            >
+                              {isSelected ? 'Sedang Aktif' : 'Pilih DO'}
                             </Button>
                           </td>
                         </tr>

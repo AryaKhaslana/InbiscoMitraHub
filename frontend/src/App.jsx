@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { AuthRoleProvider, useAuthRole } from './context/AuthRoleContext';
 import PublicHeader from './components/public/PublicHeader';
 import PublicFooter from './components/public/PublicFooter';
@@ -14,22 +14,60 @@ import Login from './pages/Login';
 import AdminSidebar from './components/admin/AdminSidebar';
 import AdminHeader from './components/admin/AdminHeader';
 
-// 8 Dedicated SupplySync Screens (matching Google Stitch Prototypes)
-import OrderDeliveryTracking from './pages/admin/OrderDeliveryTracking'; // Screen 1
-import RestockRequest from './pages/admin/RestockRequest';             // Screen 2
-import DistributorOverview from './pages/admin/DistributorOverview';     // Screen 3
-import DailySalesInput from './pages/admin/DailySalesInput';             // Screen 4
-import StockoutRiskAnalysis from './pages/admin/StockoutRiskAnalysis';   // Screen 5
-import SmartRecommendations from './pages/admin/SmartRecommendations';   // Screen 6
-import WhatIfSimulator from './pages/admin/WhatIfSimulator';             // Screen 7
-import ExecutiveOverview from './pages/admin/ExecutiveOverview';         // Screen 8
-import AuditLogs from './pages/admin/AuditLogs';                         // System Audit & Activity Logs
+// Code-split 9 SupplySync Admin Screens (preloaded on admin entry for 0ms tab switches)
+const loadOrderDeliveryTracking = () => import('./pages/admin/OrderDeliveryTracking');
+const loadRestockRequest = () => import('./pages/admin/RestockRequest');
+const loadDistributorOverview = () => import('./pages/admin/DistributorOverview');
+const loadDailySalesInput = () => import('./pages/admin/DailySalesInput');
+const loadStockoutRiskAnalysis = () => import('./pages/admin/StockoutRiskAnalysis');
+const loadSmartRecommendations = () => import('./pages/admin/SmartRecommendations');
+const loadWhatIfSimulator = () => import('./pages/admin/WhatIfSimulator');
+const loadExecutiveOverview = () => import('./pages/admin/ExecutiveOverview');
+const loadAuditLogs = () => import('./pages/admin/AuditLogs');
+
+const OrderDeliveryTracking = lazy(loadOrderDeliveryTracking);
+const RestockRequest = lazy(loadRestockRequest);
+const DistributorOverview = lazy(loadDistributorOverview);
+const DailySalesInput = lazy(loadDailySalesInput);
+const StockoutRiskAnalysis = lazy(loadStockoutRiskAnalysis);
+const SmartRecommendations = lazy(loadSmartRecommendations);
+const WhatIfSimulator = lazy(loadWhatIfSimulator);
+const ExecutiveOverview = lazy(loadExecutiveOverview);
+const AuditLogs = lazy(loadAuditLogs);
 
 function AppContent() {
   const { activeRole, switchRole, publicNav, setPublicNav } = useAuthRole();
   const [productCategoryFilter, setProductCategoryFilter] = useState('Semua Kategori');
 
-  // Dynamic Browser Title per page
+  // Admin navigation state across 9 SupplySync screens
+  const [adminScreen, setAdminScreen] = useState(() => {
+    return activeRole === 'hq_admin' ? 'executive-overview' : 'distributor-overview';
+  });
+
+  // Sync default landing screen & preload admin chunks when switching into an internal role
+  useEffect(() => {
+    if (activeRole === 'hq_admin') {
+      setAdminScreen('executive-overview');
+    } else if (activeRole === 'distributor_ops') {
+      setAdminScreen('distributor-overview');
+    }
+    if (activeRole !== 'storefront') {
+      // Preload all admin screen chunks in background so tab switching is 0ms instant
+      Promise.allSettled([
+        loadExecutiveOverview(),
+        loadStockoutRiskAnalysis(),
+        loadSmartRecommendations(),
+        loadWhatIfSimulator(),
+        loadDistributorOverview(),
+        loadDailySalesInput(),
+        loadRestockRequest(),
+        loadOrderDeliveryTracking(),
+        loadAuditLogs(),
+      ]);
+    }
+  }, [activeRole]);
+
+  // Dynamic Browser Title & scroll-to-top per page/screen
   useEffect(() => {
     if (activeRole === 'storefront') {
       const titles = {
@@ -42,8 +80,22 @@ function AppContent() {
         login: 'Portal Masuk Operasional B2B — Inbisco MitraHub',
       };
       document.title = titles[publicNav] || 'Inbisco MitraHub — B2B FMCG Supply Chain';
+    } else {
+      const adminTitles = {
+        'executive-overview': 'Executive Overview — SupplySync Mayora HQ',
+        'stockout-risk': 'Stockout Risk Radar — SupplySync Mayora HQ',
+        'smart-recommendations': 'Smart Replenishment Engine — SupplySync Mayora HQ',
+        'what-if-simulator': 'What-if Restock Simulator — SupplySync Mayora HQ',
+        'distributor-overview': 'Depo Krian Overview & FEFO — SupplySync',
+        'daily-sales-input': 'Input Penjualan Harian (DSR) — SupplySync Depo Krian',
+        'restock-request': 'Pengajuan Restock Mandiri — SupplySync Depo Krian',
+        'order-tracking': 'Tracking Armada & Dispatch — SupplySync Depo Krian',
+        'audit-logs': 'Audit Trail & Log Aktivitas — SupplySync',
+      };
+      document.title = adminTitles[adminScreen] || 'SupplySync — Mayora FMCG Enterprise';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }, [activeRole, publicNav]);
+  }, [activeRole, publicNav, adminScreen]);
 
   const handlePublicNav = (nav, param) => {
     if (nav === 'products') {
@@ -52,11 +104,6 @@ function AppContent() {
     setPublicNav(nav);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-
-  // Admin navigation state across 8 SupplySync screens
-  const [adminScreen, setAdminScreen] = useState(() => {
-    return activeRole === 'hq_admin' ? 'executive-overview' : 'distributor-overview';
-  });
 
   // If in Storefront mode
   if (activeRole === 'storefront') {
@@ -91,33 +138,44 @@ function AppContent() {
       <div className="pl-72 w-full flex flex-col min-h-screen">
         <AdminHeader currentScreen={adminScreen} setCurrentScreen={setAdminScreen} />
         <main className="pt-20 px-6 sm:px-8 max-w-[1600px] w-full mx-auto flex-1">
-          {adminScreen === 'executive-overview' && (
-            <ExecutiveOverview setCurrentScreen={setAdminScreen} />
-          )}
-          {adminScreen === 'stockout-risk' && (
-            <StockoutRiskAnalysis setCurrentScreen={setAdminScreen} />
-          )}
-          {adminScreen === 'smart-recommendations' && (
-            <SmartRecommendations setCurrentScreen={setAdminScreen} />
-          )}
-          {adminScreen === 'what-if-simulator' && (
-            <WhatIfSimulator setCurrentScreen={setAdminScreen} />
-          )}
-          {(adminScreen === 'distributor-overview' || adminScreen === 'krian-dashboard') && (
-            <DistributorOverview setCurrentScreen={setAdminScreen} />
-          )}
-          {adminScreen === 'daily-sales-input' && (
-            <DailySalesInput setCurrentScreen={setAdminScreen} />
-          )}
-          {adminScreen === 'restock-request' && (
-            <RestockRequest setCurrentScreen={setAdminScreen} />
-          )}
-          {adminScreen === 'order-tracking' && (
-            <OrderDeliveryTracking setCurrentScreen={setAdminScreen} />
-          )}
-          {adminScreen === 'audit-logs' && (
-            <AuditLogs setCurrentScreen={setAdminScreen} />
-          )}
+          <Suspense
+            fallback={
+              <div className="py-24 text-center">
+                <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-surface-container-high border border-outline-variant/30 text-xs text-on-surface-variant font-mono animate-pulse">
+                  <span className="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+                  Memuat modul operasional SupplySync...
+                </div>
+              </div>
+            }
+          >
+            {adminScreen === 'executive-overview' && (
+              <ExecutiveOverview setCurrentScreen={setAdminScreen} />
+            )}
+            {adminScreen === 'stockout-risk' && (
+              <StockoutRiskAnalysis setCurrentScreen={setAdminScreen} />
+            )}
+            {adminScreen === 'smart-recommendations' && (
+              <SmartRecommendations setCurrentScreen={setAdminScreen} />
+            )}
+            {adminScreen === 'what-if-simulator' && (
+              <WhatIfSimulator setCurrentScreen={setAdminScreen} />
+            )}
+            {(adminScreen === 'distributor-overview' || adminScreen === 'krian-dashboard') && (
+              <DistributorOverview setCurrentScreen={setAdminScreen} />
+            )}
+            {adminScreen === 'daily-sales-input' && (
+              <DailySalesInput setCurrentScreen={setAdminScreen} />
+            )}
+            {adminScreen === 'restock-request' && (
+              <RestockRequest setCurrentScreen={setAdminScreen} />
+            )}
+            {adminScreen === 'order-tracking' && (
+              <OrderDeliveryTracking setCurrentScreen={setAdminScreen} />
+            )}
+            {adminScreen === 'audit-logs' && (
+              <AuditLogs setCurrentScreen={setAdminScreen} />
+            )}
+          </Suspense>
         </main>
       </div>
     </div>

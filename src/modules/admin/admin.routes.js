@@ -40,7 +40,7 @@ authRouter.post(
 /**
  * Simulation Router (/api/v1/simulation)
  */
-simulationRouter.use(rateLimit({ prefix: 'rl:sim_api', max: 60, windowSeconds: 60 }));
+simulationRouter.use(rateLimit({ prefix: 'rl:sim_api', max: 300, windowSeconds: 60 }));
 simulationRouter.use(adminAuth);
 simulationRouter.post(
   '/what-if',
@@ -51,7 +51,7 @@ simulationRouter.post(
 /**
  * Distributor Depo Router (/api/v1/distributor)
  */
-distributorRouter.use(rateLimit({ prefix: 'rl:dist_api', max: 60, windowSeconds: 60 }));
+distributorRouter.use(rateLimit({ prefix: 'rl:dist_api', max: 300, windowSeconds: 60 }));
 distributorRouter.use(adminAuth);
 distributorRouter.use((_req, res, next) => {
   res.setHeader('Cache-Control', 'no-store');
@@ -75,7 +75,7 @@ distributorRouter.patch(
 );
 
 // Rate-limit all /api/v1/admin/* requests BEFORE authentication to block token brute-force attempts
-router.use(rateLimit({ prefix: 'rl:admin_api', max: 60, windowSeconds: 60 }));
+router.use(rateLimit({ prefix: 'rl:admin_api', max: 300, windowSeconds: 60 }));
 
 // Protect all /api/v1/admin/* endpoints with Bearer <ADMIN_SECRET_KEY> and prevent browser/proxy caching
 router.use(adminAuth);
