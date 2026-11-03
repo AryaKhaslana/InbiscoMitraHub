@@ -132,21 +132,28 @@ export default function PublicHeader({ activeNav, setActiveNav }) {
                     <span>{cat.label}</span>
                   </button>
                 ))}
+
+                {/* Sub-Aksi: Lacak Pesanan Mitra */}
+                <div className="pt-2 mt-1.5 border-t border-surface-container-high px-2 pb-1">
+                  <button
+                    onClick={() => {
+                      setActiveNav('track-order');
+                      setProductDropdownOpen(false);
+                    }}
+                    className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-surface-container hover:bg-primary/10 text-on-surface hover:text-primary transition-colors cursor-pointer group/track"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Truck className="h-4 w-4 text-primary" />
+                      <span className="text-xs font-bold">Status &amp; Lacak Pesanan</span>
+                    </div>
+                    <span className="text-[10px] font-semibold bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded border border-emerald-200">
+                      Live e-POD
+                    </span>
+                  </button>
+                </div>
               </div>
             )}
           </div>
-
-          <button
-            onClick={() => setActiveNav('track-order')}
-            className={`pb-1 text-sm font-semibold inline-flex items-center gap-1.5 transition-all duration-200 ${
-              activeNav === 'track-order'
-                ? 'border-b-2 border-primary-container text-primary font-bold'
-                : 'text-on-surface hover:text-primary'
-            }`}
-          >
-            <Truck className="h-4 w-4" />
-            <span>Status Pesanan</span>
-          </button>
 
           <button
             onClick={() => setActiveNav('moments')}
@@ -238,12 +245,17 @@ export default function PublicHeader({ activeNav, setActiveNav }) {
           </button>
           <button
             onClick={() => { setActiveNav('track-order'); setMobileMenuOpen(false); }}
-            className={`w-full text-left px-3 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 ${
-              activeNav === 'track-order' ? 'bg-primary text-white font-bold' : 'text-on-surface hover:bg-surface-container'
+            className={`w-full text-left pl-6 pr-3 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors ${
+              activeNav === 'track-order'
+                ? 'text-primary font-bold bg-primary/10'
+                : 'text-on-surface-variant hover:text-primary hover:bg-surface-container'
             }`}
           >
-            <Truck className="h-4 w-4" />
-            <span>Status &amp; Lacak Pesanan</span>
+            <div className="flex items-center gap-2">
+              <Truck className="h-3.5 w-3.5 text-primary" />
+              <span>Status &amp; Lacak Pesanan Toko</span>
+            </div>
+            <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded font-semibold">Live</span>
           </button>
           <button
             onClick={() => { setActiveNav('moments'); setMobileMenuOpen(false); }}

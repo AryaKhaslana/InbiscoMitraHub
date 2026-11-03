@@ -442,16 +442,36 @@ export default function Products({ setActiveNav, initialCategory, onCategoryChan
     <div className="w-full bg-surface py-8">
       <div className="max-w-[1280px] mx-auto px-4 md:px-8">
         {/* Title & Eyebrow */}
-        <div className="mb-8">
-          <span className="text-xs font-bold text-primary uppercase tracking-wider block mb-1.5">
-            Katalog Distributor Resmi · Cabang Krian Sidoarjo
-          </span>
-          <h1 className="text-3xl sm:text-4xl font-bold font-display text-on-surface tracking-tight">
-            Katalog Produk FMCG Mayora
-          </h1>
-          <p className="text-sm text-on-surface-variant mt-1.5 max-w-2xl">
-            Akses langsung stok master dus & karton dari Depo Krian untuk toko kelontong, warkop, minimarket, dan agen grosir dengan harga distributor resmi.
-          </p>
+        <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-surface-container-high">
+          <div>
+            <span className="text-xs font-bold text-primary uppercase tracking-wider block mb-1.5">
+              Katalog Distributor Resmi · Cabang Krian Sidoarjo
+            </span>
+            <h1 className="text-3xl sm:text-4xl font-bold font-display text-on-surface tracking-tight">
+              Katalog Produk FMCG Mayora
+            </h1>
+            <p className="text-sm text-on-surface-variant mt-1.5 max-w-2xl">
+              Akses langsung stok master dus &amp; karton dari Depo Krian untuk toko kelontong, warkop, minimarket, dan agen grosir dengan harga distributor resmi.
+            </p>
+          </div>
+
+          {/* Quick Access ke Status & Pelacakan Pesanan */}
+          <button
+            onClick={() => setActiveNav && setActiveNav('track-order')}
+            className="inline-flex items-center gap-3 px-4 py-2.5 rounded-xl bg-surface-container-lowest hover:bg-surface-container-low border border-surface-container-high hover:border-primary/50 text-on-surface transition-all shadow-xs shrink-0 cursor-pointer group"
+          >
+            <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+              <Truck className="h-4 w-4" />
+            </div>
+            <div className="text-left">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-on-surface">Status &amp; Lacak Pesanan</span>
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="Layanan Live"></span>
+              </div>
+              <span className="text-[11px] text-on-surface-variant block">Pantau resi &amp; progres armada PO toko</span>
+            </div>
+            <ArrowRight className="h-4 w-4 text-outline group-hover:text-primary group-hover:translate-x-0.5 transition-transform ml-1" />
+          </button>
         </div>
 
         {/* 2-COLUMN LAYOUT: Filter Sidebar (Left) + Search & Grid (Right) */}
@@ -522,6 +542,26 @@ export default function Products({ setActiveNav, initialCategory, onCategoryChan
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* Quick Card: Cek Status Pesanan Toko */}
+            <div className="bg-surface-container-lowest border border-surface-container-high rounded-xl p-4 shadow-xs space-y-2.5">
+              <div className="flex items-center gap-2">
+                <Truck className="h-4 w-4 text-primary" />
+                <h3 className="text-xs font-bold font-display text-on-surface">Sudah Pesan Grosir?</h3>
+              </div>
+              <p className="text-[11px] text-on-surface-variant leading-relaxed">
+                Pantau langsung armada Suzuki Carry Box dan verifikasi tanda tangan serah terima e-POD toko.
+              </p>
+              <Button
+                type="button"
+                onClick={() => setActiveNav && setActiveNav('track-order')}
+                variant="outline"
+                className="w-full text-xs font-bold h-8 gap-1.5 border-primary/30 text-primary hover:bg-primary/5 cursor-pointer"
+              >
+                <span>Cek Status Pesanan</span>
+                <ArrowRight className="h-3 w-3" />
+              </Button>
             </div>
           </aside>
 
