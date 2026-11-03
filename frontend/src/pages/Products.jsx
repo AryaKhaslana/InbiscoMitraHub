@@ -249,7 +249,24 @@ export default function Products({ setActiveNav, initialCategory, onCategoryChan
       };
 
       const res = await api.createOrder(payload);
-      setOrderSuccess(res.order || res);
+      const createdOrder = res.order || res;
+      setOrderSuccess(createdOrder);
+
+      // Save to recent orders localStorage so it immediately appears in track-order
+      try {
+        const trackingCode = createdOrder.trackingCode || createdOrder.orderNumber || createdOrder.id;
+        const existing = JSON.parse(localStorage.getItem('supplysync_mitra_recent_orders') || '[]');
+        const newEntry = {
+          code: trackingCode,
+          storeName: storeName.trim() || 'Toko Mitra Sidoarjo',
+          totalAmount: selectedProduct.price * orderQuantity,
+          statusLabel: 'Pesanan Masuk (PO Depo)',
+          date: new Date().toISOString(),
+        };
+        const updated = [newEntry, ...existing.filter((x) => x.code !== newEntry.code)].slice(0, 5);
+        localStorage.setItem('supplysync_mitra_recent_orders', JSON.stringify(updated));
+      } catch {}
+
       confetti({ particleCount: 75, spread: 60, origin: { y: 0.7 } });
     } catch (err) {
       setOrderError(err.message || 'Gagal membuat pesanan. Silakan coba lagi.');
@@ -688,11 +705,27 @@ export default function Products({ setActiveNav, initialCategory, onCategoryChan
                     <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2.5">
                       <Button
                         type="button"
+                        onClick={() => {
+                          const code = orderSuccess.trackingCode || orderSuccess.orderNumber || orderSuccess.id;
+                          setOrderSuccess(null);
+                          setSelectedProduct(null);
+                          if (setActiveNav) {
+                            setActiveNav('track-order', code);
+                          }
+                        }}
+                        className="text-xs font-bold px-5 gap-2 bg-emerald-600 text-white shadow-xs hover:bg-emerald-700 transition-colors cursor-pointer w-full sm:w-auto py-2.5"
+                      >
+                        <Truck className="h-4 w-4" />
+                        <span>Pantau Status Pesanan Sekarang ➔</span>
+                      </Button>
+                      <Button
+                        type="button"
                         onClick={handlePrintOrderInvoice}
-                        className="text-xs font-bold px-5 gap-2 bg-primary-container text-white shadow-xs hover:bg-primary transition-colors cursor-pointer w-full sm:w-auto py-2.5"
+                        variant="outline"
+                        className="text-xs font-bold px-5 gap-2 border-primary text-primary hover:bg-primary/5 transition-colors cursor-pointer w-full sm:w-auto py-2.5"
                       >
                         <Printer className="h-4 w-4" />
-                        <span>Cetak Surat Pesanan (PDF)</span>
+                        <span>Cetak Bukti PO (PDF)</span>
                       </Button>
                       <Button
                         type="button"
@@ -700,10 +733,10 @@ export default function Products({ setActiveNav, initialCategory, onCategoryChan
                           setOrderSuccess(null);
                           setSelectedProduct(null);
                         }}
-                        variant="outline"
-                        className="text-xs font-semibold px-6 cursor-pointer w-full sm:w-auto py-2.5"
+                        variant="ghost"
+                        className="text-xs font-semibold px-4 cursor-pointer w-full sm:w-auto py-2.5 text-on-surface-variant hover:bg-surface-container"
                       >
-                        Selesai & Tutup
+                        Tutup
                       </Button>
                     </div>
                   </div>

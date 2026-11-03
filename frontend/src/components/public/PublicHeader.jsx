@@ -137,6 +137,18 @@ export default function PublicHeader({ activeNav, setActiveNav }) {
           </div>
 
           <button
+            onClick={() => setActiveNav('track-order')}
+            className={`pb-1 text-sm font-semibold inline-flex items-center gap-1.5 transition-all duration-200 ${
+              activeNav === 'track-order'
+                ? 'border-b-2 border-primary-container text-primary font-bold'
+                : 'text-on-surface hover:text-primary'
+            }`}
+          >
+            <Truck className="h-4 w-4" />
+            <span>Status Pesanan</span>
+          </button>
+
+          <button
             onClick={() => setActiveNav('moments')}
             className={`pb-1 text-sm font-semibold transition-all duration-200 ${
               activeNav === 'moments'
@@ -223,6 +235,15 @@ export default function PublicHeader({ activeNav, setActiveNav }) {
             }`}
           >
             Katalog Produk FMCG
+          </button>
+          <button
+            onClick={() => { setActiveNav('track-order'); setMobileMenuOpen(false); }}
+            className={`w-full text-left px-3 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 ${
+              activeNav === 'track-order' ? 'bg-primary text-white font-bold' : 'text-on-surface hover:bg-surface-container'
+            }`}
+          >
+            <Truck className="h-4 w-4" />
+            <span>Status &amp; Lacak Pesanan</span>
           </button>
           <button
             onClick={() => { setActiveNav('moments'); setMobileMenuOpen(false); }}

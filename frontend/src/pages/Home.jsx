@@ -268,8 +268,29 @@ export default function Home({ setActiveNav }) {
                         <span>Total Nilai: <strong className="text-primary">{trackingResult.totalAmountFormatted || (trackingResult.totalAmount ? formatRupiah(trackingResult.totalAmount) : '-')}</strong></span>
                         <span className="font-mono text-outline">Metode: {trackingResult.paymentMethodLabel || trackingResult.paymentMethod || 'COD'}</span>
                       </div>
+
+                      <Button
+                        type="button"
+                        onClick={() => setActiveNav && setActiveNav('track-order', trackingResult.trackingCode || trackingResult.orderNumber || trackingResult.id)}
+                        className="w-full h-8 text-xs font-bold gap-1.5 bg-primary-container text-white cursor-pointer mt-1"
+                      >
+                        <span>Lihat Rincian Lengkap &amp; Cetak Faktur</span>
+                        <ArrowRight className="h-3.5 w-3.5" />
+                      </Button>
                     </div>
                   )}
+
+                  <div className="mt-3 pt-2.5 border-t border-surface-container-high flex items-center justify-between text-[11px]">
+                    <span className="text-on-surface-variant">Punya banyak pesanan toko?</span>
+                    <button
+                      type="button"
+                      onClick={() => setActiveNav && setActiveNav('track-order')}
+                      className="font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer"
+                    >
+                      <span>Buka Portal Status Pesanan</span>
+                      <ArrowRight className="h-3 w-3" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

@@ -12,6 +12,7 @@ const About = lazy(() => import('./pages/About'));
 const Moments = lazy(() => import('./pages/Moments'));
 const Contact = lazy(() => import('./pages/Contact'));
 const Login = lazy(() => import('./pages/Login'));
+const OrderTrackingPublic = lazy(() => import('./pages/OrderTrackingPublic'));
 
 import AdminSidebar from './components/admin/AdminSidebar';
 import AdminHeader from './components/admin/AdminHeader';
@@ -40,6 +41,7 @@ const AuditLogs = lazy(loadAuditLogs);
 function AppContent() {
   const { activeRole, switchRole, publicNav, setPublicNav } = useAuthRole();
   const [productCategoryFilter, setProductCategoryFilter] = useState('Semua Kategori');
+  const [trackingCodeParam, setTrackingCodeParam] = useState('');
 
   // Admin navigation state across 9 SupplySync screens
   const [adminScreen, setAdminScreen] = useState(() => {
@@ -80,6 +82,7 @@ function AppContent() {
         about: 'Tentang Kami & Depot Logistik — Inbisco MitraHub',
         contact: 'Kontak Cabang Krian & FAQ — Inbisco MitraHub',
         login: 'Portal Masuk Operasional B2B — Inbisco MitraHub',
+        'track-order': 'Status Pesanan & Pelacakan Pengiriman — Inbisco MitraHub',
       };
       document.title = titles[publicNav] || 'Inbisco MitraHub — B2B FMCG Supply Chain';
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -104,6 +107,9 @@ function AppContent() {
     if (nav === 'products') {
       setProductCategoryFilter(param || 'Semua Kategori');
     }
+    if (nav === 'track-order') {
+      setTrackingCodeParam(param || '');
+    }
     setPublicNav(nav);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -126,6 +132,12 @@ function AppContent() {
                 setActiveNav={handlePublicNav}
                 initialCategory={productCategoryFilter}
                 onCategoryChange={setProductCategoryFilter}
+              />
+            )}
+            {publicNav === 'track-order' && (
+              <OrderTrackingPublic
+                setActiveNav={handlePublicNav}
+                initialTrackingCode={trackingCodeParam}
               />
             )}
             {publicNav === 'partnership' && <Partnership setActiveNav={handlePublicNav} />}

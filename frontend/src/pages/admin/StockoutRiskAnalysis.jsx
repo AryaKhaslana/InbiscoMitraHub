@@ -86,6 +86,8 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
     );
   }, [rawItems]);
 
+  const criticalCount = threatenedSkus.length;
+
   const activeTransferTarget = selectedTransferSku || threatenedSkus[0] || rawItems[0];
 
   const handleAuthorizeTransfer = async (overrideItem = null) => {
@@ -128,7 +130,6 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
     }
   };
 
-  const criticalCount = riskData?.summary?.criticalSkuCount ?? 0;
   const totalRevAtRisk = riskData?.summary?.totalRevenueAtRiskIDR ?? 0;
   const totalDeficit = rawItems.reduce((sum, i) => sum + (i.deficitCartons || 0), 0);
   const avgRunway =
@@ -203,7 +204,7 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
                 {criticalCount > 0 ? <AlertTriangle className="h-5 w-5" /> : <CheckCircle2 className="h-5 w-5" />}
               </div>
             </div>
-            {threatenedSkus.length > 0 && (
+            {threatenedSkus.length > 0 ? (
               <div className="mt-4 pt-2.5 bg-surface-container-low rounded-lg p-2.5 space-y-1">
                 <span className="text-[11px] font-semibold text-on-surface">Prioritas Penanganan Gudang Krian:</span>
                 <div className="flex flex-wrap gap-1">
@@ -213,6 +214,13 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
                     </span>
                   ))}
                 </div>
+              </div>
+            ) : (
+              <div className="mt-4 pt-2 bg-emerald-50 border border-emerald-200/60 rounded-lg p-2 text-center">
+                <span className="text-[11px] font-semibold text-emerald-800 flex items-center justify-center gap-1.5">
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  Semua stok SKU Depo Krian dalam batas aman (&gt;7 hari)
+                </span>
               </div>
             )}
           </CardContent>

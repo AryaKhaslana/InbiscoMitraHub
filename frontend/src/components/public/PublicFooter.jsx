@@ -66,6 +66,12 @@ export default function PublicFooter({ setActiveNav }) {
                 </button>
               </li>
               <li>
+                <button type="button" onClick={() => handleNav('track-order')} className="hover:text-white transition-colors text-left cursor-pointer flex items-center gap-1.5 text-primary-300 font-medium">
+                  <span>Status &amp; Lacak Pesanan</span>
+                  <span className="text-[10px] bg-primary/20 text-red-300 px-1.5 py-0.2 rounded font-semibold">Live</span>
+                </button>
+              </li>
+              <li>
                 <button type="button" onClick={() => handleNav('moments')} className="hover:text-white transition-colors text-left cursor-pointer">
                   Aktivitas & Jaringan
                 </button>
