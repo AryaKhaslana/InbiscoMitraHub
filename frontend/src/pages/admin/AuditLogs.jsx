@@ -380,7 +380,14 @@ export default function AuditLogs({ setCurrentScreen }) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-outline/10 font-medium">
-                  {filteredLogs.map((log) => {
+                  {filteredLogs.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="py-10 text-center text-on-surface-variant text-xs">
+                        Tidak ada riwayat log audit yang cocok dengan kriteria filter. Silakan ubah kata kunci atau kategori aksi.
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredLogs.map((log) => {
                     const isExpanded = expandedLogId === log.id;
                     const dateObj = log.createdAt ? new Date(log.createdAt) : new Date();
                     const dateStr = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -427,7 +434,15 @@ export default function AuditLogs({ setCurrentScreen }) {
 
                           {/* EXPAND BUTTON */}
                           <td className="py-3 px-3 text-center">
-                            <button className="text-outline hover:text-primary transition-colors p-1">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setExpandedLogId(isExpanded ? null : log.id);
+                              }}
+                              className="text-outline hover:text-primary transition-colors p-1 rounded-md hover:bg-surface-container"
+                              title={isExpanded ? 'Tutup Rincian' : 'Buka Rincian Log'}
+                            >
                               {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                             </button>
                           </td>
@@ -451,7 +466,7 @@ export default function AuditLogs({ setCurrentScreen }) {
                         )}
                       </React.Fragment>
                     );
-                  })}
+                  }))}
                 </tbody>
               </table>
             </div>

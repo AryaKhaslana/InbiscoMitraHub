@@ -12,7 +12,13 @@ import {
   FileSpreadsheet, 
   FileText,
   RefreshCw,
-  CheckCircle2
+  CheckCircle2,
+  Truck,
+  Eye,
+  X,
+  CreditCard,
+  Phone,
+  ShieldCheck
 } from 'lucide-react';
 import { formatRupiah } from '../../lib/utils';
 
@@ -21,6 +27,7 @@ export default function ExecutiveOverview({ setCurrentScreen }) {
   const [loading, setLoading] = useState(true);
   const [exportingCsv, setExportingCsv] = useState(false);
   const [manifestData, setManifestData] = useState(null);
+  const [selectedDistributorDetail, setSelectedDistributorDetail] = useState(null);
 
   const [kpi, setKpi] = useState(null);
   const [riskData, setRiskData] = useState(null);
@@ -53,6 +60,17 @@ export default function ExecutiveOverview({ setCurrentScreen }) {
     window.addEventListener('supplysync:refresh', onRefresh);
     return () => window.removeEventListener('supplysync:refresh', onRefresh);
   }, [fetchExecutiveData]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setSelectedDistributorDetail(null);
+        setManifestData(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const handleExportCsv = async () => {
     setExportingCsv(true);
@@ -451,53 +469,229 @@ export default function ExecutiveOverview({ setCurrentScreen }) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline/10 font-medium">
-                {regionalDistributors.map((dist) => {
-                  const statusBadge =
-                    dist.status === 'SURPLUS_DONOR'
-                      ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
-                      : dist.status === 'ATTENTION'
-                      ? 'bg-amber-100 text-amber-800 border-amber-200'
-                      : 'bg-blue-100 text-blue-800 border-blue-200';
-                  return (
-                    <tr key={dist.id} className="hover:bg-surface-container-low/60 transition-colors">
-                      <td className="py-3 px-3 font-bold text-on-surface">
-                        {dist.name}
-                        {dist.isFlagshipHub && (
-                          <Badge variant="tertiary" className="ml-2 text-[9px] py-0 px-1">Hub Utama</Badge>
-                        )}
-                      </td>
-                      <td className="py-3 px-3 text-on-surface-variant">{dist.hubCoverage}</td>
-                      <td className="py-3 px-3 text-right font-mono font-bold text-on-surface">
-                        {Number(dist.onHandStockCartons).toLocaleString('id-ID')} Dus
-                      </td>
-                      <td className="py-3 px-3 text-right font-mono">{dist.activeTruckCount} Truk</td>
-                      <td className="py-3 px-3 text-right font-mono font-semibold text-on-surface">{dist.healthPct}%</td>
-                      <td className="py-3 px-3 text-center">
-                        <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${statusBadge}`}>
-                          {dist.status === 'SURPLUS_DONOR' ? 'Surplus (Donor)' : dist.status === 'ATTENTION' ? 'Perlu Atensi' : 'Optimal'}
-                        </span>
-                      </td>
-                      <td className="py-3 px-3 text-right">
-                        <Button
-                          size="sm"
-                          onClick={() =>
-                            setCurrentScreen &&
-                            setCurrentScreen(dist.isFlagshipHub ? 'distributor-overview' : 'stockout-risk')
-                          }
-                          variant="outline"
-                          className="text-[11px] h-7 px-2.5"
-                        >
-                          Inspeksi
-                        </Button>
-                      </td>
-                    </tr>
-                  );
-                })}
+                {regionalDistributors.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="py-10 text-center text-on-surface-variant text-xs">
+                      Tidak ada data distributor untuk filter wilayah ini.
+                    </td>
+                  </tr>
+                ) : (
+                  regionalDistributors.map((dist) => {
+                    const statusBadge =
+                      dist.status === 'SURPLUS_DONOR'
+                        ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
+                        : dist.status === 'ATTENTION'
+                        ? 'bg-amber-100 text-amber-800 border-amber-200'
+                        : 'bg-blue-100 text-blue-800 border-blue-200';
+                    return (
+                      <tr
+                        key={dist.id}
+                        onClick={() => setSelectedDistributorDetail(dist)}
+                        className="hover:bg-surface-container-low/80 transition-colors cursor-pointer group"
+                      >
+                        <td className="py-3 px-3 font-bold text-on-surface">
+                          <span className="group-hover:text-primary transition-colors">{dist.name}</span>
+                          {dist.isFlagshipHub && (
+                            <Badge variant="tertiary" className="ml-2 text-[9px] py-0 px-1">Hub Utama</Badge>
+                          )}
+                        </td>
+                        <td className="py-3 px-3 text-on-surface-variant">{dist.hubCoverage}</td>
+                        <td className="py-3 px-3 text-right font-mono font-bold text-on-surface">
+                          {Number(dist.onHandStockCartons).toLocaleString('id-ID')} Dus
+                        </td>
+                        <td className="py-3 px-3 text-right font-mono">{dist.activeTruckCount} Truk</td>
+                        <td className="py-3 px-3 text-right font-mono font-semibold text-on-surface">{dist.healthPct}%</td>
+                        <td className="py-3 px-3 text-center">
+                          <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${statusBadge}`}>
+                            {dist.status === 'SURPLUS_DONOR' ? 'Surplus (Donor)' : dist.status === 'ATTENTION' ? 'Perlu Atensi' : 'Optimal'}
+                          </span>
+                        </td>
+                        <td className="py-3 px-3 text-right" onClick={(e) => e.stopPropagation()}>
+                          <Button
+                            size="sm"
+                            onClick={() => setSelectedDistributorDetail(dist)}
+                            variant="outline"
+                            className="text-[11px] h-7 px-2.5 gap-1 hover:bg-surface-container font-semibold"
+                            title="Buka Profil Simpul Jaringan"
+                          >
+                            <Eye className="h-3 w-3 text-primary" />
+                            <span>Inspeksi</span>
+                          </Button>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>
         </CardContent>
       </Card>
+
+      {/* Modal: Inspeksi Profil Simpul Distributor Regional */}
+      {selectedDistributorDetail && (
+        <div
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setSelectedDistributorDetail(null);
+          }}
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto cursor-pointer animate-in fade-in duration-150"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-surface-container-lowest border border-outline/15 rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-4 my-8 cursor-default"
+          >
+            {/* Header */}
+            <div className="flex items-start justify-between border-b border-outline/10 pb-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                  <Building2 className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-extrabold text-base text-on-surface">
+                      {selectedDistributorDetail.name}
+                    </h3>
+                    {selectedDistributorDetail.isFlagshipHub && (
+                      <Badge variant="tertiary" className="text-[9px] py-0 px-1 font-bold">
+                        Hub Utama
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-xs text-on-surface-variant">
+                    Cluster: <strong>{selectedDistributorDetail.cluster || 'Jawa Timur'}</strong> • ID: {selectedDistributorDetail.id}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedDistributorDetail(null)}
+                className="text-on-surface-variant hover:text-on-surface p-1 rounded-lg hover:bg-surface-container transition-colors"
+                title="Tutup (Esc)"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="space-y-3 text-xs">
+              <div className="p-3 bg-surface-container-low rounded-xl border border-outline/10 space-y-2">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <span className="text-on-surface-variant text-[11px] block">Wilayah Cakupan (Kecamatan):</span>
+                    <span className="font-bold text-on-surface text-xs leading-relaxed">
+                      {selectedDistributorDetail.hubCoverage || 'Krian, Balongbendo, Tarik, Prambon, Wonoayu'}
+                    </span>
+                  </div>
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold shrink-0 ${
+                    selectedDistributorDetail.status === 'SURPLUS_DONOR'
+                      ? 'bg-emerald-100 text-emerald-800'
+                      : selectedDistributorDetail.status === 'ATTENTION'
+                      ? 'bg-amber-100 text-amber-800'
+                      : 'bg-blue-100 text-blue-800'
+                  }`}>
+                    {selectedDistributorDetail.status === 'SURPLUS_DONOR' ? 'Surplus (Donor)' : selectedDistributorDetail.status === 'ATTENTION' ? 'Perlu Atensi' : 'Optimal'}
+                  </span>
+                </div>
+
+                <div className="pt-2 border-t border-outline/10 grid grid-cols-2 gap-2 text-[11px]">
+                  <div>
+                    <span className="text-on-surface-variant">Penanggung Jawab:</span>
+                    <div className="font-semibold text-on-surface mt-0.5">{selectedDistributorDetail.contactPerson || 'Kepala Depo'}</div>
+                  </div>
+                  <div>
+                    <span className="text-on-surface-variant">Line Kontak Darurat:</span>
+                    <div className="font-mono text-primary font-semibold mt-0.5 flex items-center gap-1">
+                      <Phone className="h-3 w-3" />
+                      0812-3099-8800
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3 Telemetry Stats */}
+              <div className="grid grid-cols-3 gap-2.5 text-center">
+                <div className="p-2.5 bg-surface-container-low rounded-xl border border-outline/10">
+                  <span className="text-[10px] text-on-surface-variant block">Saldo Stok Fisik</span>
+                  <strong className="text-sm font-mono text-on-surface mt-0.5 block">
+                    {Number(selectedDistributorDetail.onHandStockCartons).toLocaleString('id-ID')} Dus
+                  </strong>
+                </div>
+                <div className="p-2.5 bg-surface-container-low rounded-xl border border-outline/10">
+                  <span className="text-[10px] text-on-surface-variant block">Armada Truk Aktif</span>
+                  <strong className="text-sm font-mono text-primary mt-0.5 block">
+                    {selectedDistributorDetail.activeTruckCount} Truk
+                  </strong>
+                </div>
+                <div className="p-2.5 bg-surface-container-low rounded-xl border border-outline/10">
+                  <span className="text-[10px] text-on-surface-variant block">Health SLA Jaringan</span>
+                  <strong className="text-sm font-mono text-emerald-700 mt-0.5 block">
+                    {selectedDistributorDetail.healthPct}%
+                  </strong>
+                </div>
+              </div>
+
+              {/* Credit Limit & Financial Clearance */}
+              <div className="p-3 bg-surface-container-low rounded-xl border border-outline/10 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-on-surface flex items-center gap-1.5 text-[11px]">
+                    <CreditCard className="h-3.5 w-3.5 text-primary" />
+                    Plafon Kredit Mitra (Credit Limit):
+                  </span>
+                  <span className="font-mono font-bold text-on-surface">
+                    {formatRupiah(selectedDistributorDetail.creditLimitIDR || 500000000)}
+                  </span>
+                </div>
+                <div className="flex justify-between text-[11px] text-on-surface-variant">
+                  <span>Kredit Terpakai:</span>
+                  <span className="font-mono">{formatRupiah(selectedDistributorDetail.usedCreditIDR || 80000000)}</span>
+                </div>
+                <div className="flex justify-between text-[11px] text-emerald-700 font-semibold pt-1 border-t border-outline/10">
+                  <span>Sisa Saldo Plafon Kredit:</span>
+                  <span className="font-mono">
+                    {formatRupiah((selectedDistributorDetail.creditLimitIDR || 500000000) - (selectedDistributorDetail.usedCreditIDR || 80000000))}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="pt-2 border-t border-outline/10 flex items-center justify-between gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSelectedDistributorDetail(null)}
+                className="text-xs h-8 px-4"
+              >
+                Tutup
+              </Button>
+
+              {selectedDistributorDetail.isFlagshipHub ? (
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    setSelectedDistributorDetail(null);
+                    if (setCurrentScreen) setCurrentScreen('distributor-overview');
+                  }}
+                  className="bg-primary hover:bg-primary-container text-white text-xs font-bold px-4 gap-1.5 shadow-xs h-8"
+                >
+                  <span>Buka Depo Krian Logistik ➔</span>
+                </Button>
+              ) : (
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    setSelectedDistributorDetail(null);
+                    if (setCurrentScreen) setCurrentScreen('stockout-risk');
+                  }}
+                  className="bg-primary hover:bg-primary-container text-white text-xs font-bold px-4 gap-1.5 shadow-xs h-8"
+                >
+                  <ArrowRight className="h-3.5 w-3.5" />
+                  <span>Simulasi Rebalance Pasokan ➔</span>
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

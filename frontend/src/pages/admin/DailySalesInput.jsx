@@ -12,7 +12,10 @@ import {
   Clock, 
   Send,
   RefreshCw,
-  AlertCircle
+  AlertCircle,
+  Eye,
+  X,
+  FileText
 } from 'lucide-react';
 import { formatRupiah } from '../../lib/utils';
 import confetti from 'canvas-confetti';
@@ -23,6 +26,7 @@ export default function DailySalesInput({ setCurrentScreen }) {
   const [summary, setSummary] = useState(null);
   const [auditLogs, setAuditLogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedDsrRecord, setSelectedDsrRecord] = useState(null);
 
   const [transDate, setTransDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [salesChannel, setSalesChannel] = useState('Grosir Tradisional');
@@ -61,6 +65,16 @@ export default function DailySalesInput({ setCurrentScreen }) {
     window.addEventListener('supplysync:refresh', onRefresh);
     return () => window.removeEventListener('supplysync:refresh', onRefresh);
   }, [fetchDsrData]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setSelectedDsrRecord(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const selectedProduct =
     availableSkus.find((s) => s.productId === selectedProductId) ||
@@ -460,37 +474,174 @@ export default function DailySalesInput({ setCurrentScreen }) {
                   <th className="py-2.5 px-3 font-semibold text-right">Sisa Stok</th>
                   <th className="py-2.5 px-3 font-semibold text-right">Nilai Penjualan</th>
                   <th className="py-2.5 px-4 font-semibold text-center">Status</th>
+                  <th className="py-2.5 px-3 font-semibold text-right">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline/10 font-medium">
-                {auditLogs.map((log, idx) => (
-                  <tr key={log.dsrId || idx} className="hover:bg-surface-container-low/60 transition-colors">
-                    <td className="py-3 px-4 font-mono text-on-surface">
-                      <div>{log.recordedAt ? new Date(log.recordedAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : 'Hari ini'} WIB</div>
-                      <div className="text-[10px] text-on-surface-variant">{String(log.dsrId || '').slice(0, 8)}</div>
-                    </td>
-                    <td className="py-3 px-3 font-bold text-on-surface">{log.storeName || 'Toko Mitra'}</td>
-                    <td className="py-3 px-3 text-on-surface-variant">
-                      <div>{log.channel || 'Grosir'}</div>
-                      <div className="text-[10px] font-mono">Oleh: {log.operatorName || 'Bambang S.'}</div>
-                    </td>
-                    <td className="py-3 px-3 text-on-surface">{(log.productName || log.sku || '').split('(')[0]}</td>
-                    <td className="py-3 px-3 text-right font-mono font-bold text-primary">-{log.quantityCartons} Dus</td>
-                    <td className="py-3 px-3 text-right font-mono text-on-surface-variant">{log.remainingStock ?? '-'} Dus</td>
-                    <td className="py-3 px-3 text-right font-mono font-bold">{formatRupiah(log.totalSalesAmount || 0)}</td>
-                    <td className="py-3 px-4 text-center">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                        <CheckCircle2 className="h-3 w-3 text-emerald-600" />
-                        <span>SYNCED</span>
-                      </span>
+                {auditLogs.length === 0 ? (
+                  <tr>
+                    <td colSpan={9} className="py-10 text-center text-on-surface-variant text-xs">
+                      Belum ada riwayat transaksi penjualan DSR tercatat hari ini. Gunakan formulir di atas untuk mencatat penjualan perdana.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  auditLogs.map((log, idx) => (
+                    <tr
+                      key={log.dsrId || idx}
+                      onClick={() => setSelectedDsrRecord(log)}
+                      className="hover:bg-surface-container-low/80 transition-colors cursor-pointer group"
+                    >
+                      <td className="py-3 px-4 font-mono text-on-surface">
+                        <div className="font-bold group-hover:text-primary transition-colors">
+                          {log.recordedAt ? new Date(log.recordedAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : 'Hari ini'} WIB
+                        </div>
+                        <div className="text-[10px] text-on-surface-variant">{String(log.dsrId || '').slice(0, 8)}</div>
+                      </td>
+                      <td className="py-3 px-3 font-bold text-on-surface">{log.storeName || 'Toko Mitra'}</td>
+                      <td className="py-3 px-3 text-on-surface-variant">
+                        <div>{log.channel || 'Grosir'}</div>
+                        <div className="text-[10px] font-mono">Oleh: {log.operatorName || 'Bambang S.'}</div>
+                      </td>
+                      <td className="py-3 px-3 text-on-surface font-semibold">{(log.productName || log.sku || '').split('(')[0]}</td>
+                      <td className="py-3 px-3 text-right font-mono font-bold text-primary">-{log.quantityCartons} Dus</td>
+                      <td className="py-3 px-3 text-right font-mono text-on-surface-variant">{log.remainingStock ?? '-'} Dus</td>
+                      <td className="py-3 px-3 text-right font-mono font-bold">{formatRupiah(log.totalSalesAmount || 0)}</td>
+                      <td className="py-3 px-4 text-center">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                          <CheckCircle2 className="h-3 w-3 text-emerald-600" />
+                          <span>SYNCED</span>
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 text-right" onClick={(e) => e.stopPropagation()}>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setSelectedDsrRecord(log)}
+                          className="h-7 px-2 text-[11px] gap-1 hover:bg-surface-container"
+                          title="Buka Voucher Faktur DSR"
+                        >
+                          <Eye className="h-3 w-3 text-primary" />
+                          <span>Faktur</span>
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
         </CardContent>
       </Card>
+
+      {/* Modal: Voucher / Faktur Rincian Transaksi DSR */}
+      {selectedDsrRecord && (
+        <div
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setSelectedDsrRecord(null);
+          }}
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto cursor-pointer animate-in fade-in duration-150"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-surface-container-lowest border border-outline/15 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 my-8 cursor-default"
+          >
+            {/* Header */}
+            <div className="flex items-start justify-between border-b border-outline/10 pb-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                  <FileText className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-on-surface">
+                    Voucher Bukti Penjualan DSR
+                  </h3>
+                  <p className="text-xs text-on-surface-variant font-mono">
+                    ID Transaksi: {selectedDsrRecord.dsrId || 'DSR-RECORD'}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedDsrRecord(null)}
+                className="text-on-surface-variant hover:text-on-surface p-1 rounded-lg hover:bg-surface-container transition-colors"
+                title="Tutup (Esc)"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Content Dossier */}
+            <div className="space-y-3 text-xs">
+              <div className="p-3 bg-surface-container-low rounded-xl border border-outline/10 space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-on-surface-variant">Toko / Outlet Tujuan:</span>
+                  <strong className="text-on-surface text-right">{selectedDsrRecord.storeName || 'Toko Mitra'}</strong>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-on-surface-variant">Channel Retail:</span>
+                  <span className="font-semibold text-on-surface">{selectedDsrRecord.channel || 'Grosir Tradisional'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-on-surface-variant">DSR Petugas:</span>
+                  <span className="font-mono text-on-surface">{selectedDsrRecord.operatorName || 'Bambang Sudiro'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-on-surface-variant">Waktu Pencatatan:</span>
+                  <span className="font-mono text-on-surface">
+                    {selectedDsrRecord.recordedAt ? new Date(selectedDsrRecord.recordedAt).toLocaleString('id-ID') : 'Hari ini'} WIB
+                  </span>
+                </div>
+              </div>
+
+              {/* Produk & Stok Info */}
+              <div className="p-3 bg-surface-container-low rounded-xl border border-outline/10 space-y-2">
+                <div className="font-bold text-on-surface text-sm">
+                  {selectedDsrRecord.productName || selectedDsrRecord.sku}
+                </div>
+                <div className="text-[11px] text-on-surface-variant font-mono">
+                  SKU: {selectedDsrRecord.sku}
+                </div>
+                <div className="pt-2 border-t border-outline/10 grid grid-cols-2 gap-2 text-[11px]">
+                  <div>
+                    <span className="text-on-surface-variant block">Kuantitas Terjual:</span>
+                    <strong className="text-primary font-mono text-sm">-{selectedDsrRecord.quantityCartons} Dus</strong>
+                  </div>
+                  <div>
+                    <span className="text-on-surface-variant block">Sisa Stok Fisik:</span>
+                    <strong className="text-emerald-700 font-mono text-sm">{selectedDsrRecord.remainingStock ?? '-'} Dus</strong>
+                  </div>
+                </div>
+              </div>
+
+              {/* Total Tagihan & Catatan */}
+              <div className="p-3 bg-surface-container-low rounded-xl border border-outline/10 space-y-1.5">
+                <div className="flex justify-between text-sm font-bold">
+                  <span>Total Tagihan Penjualan:</span>
+                  <span className="font-mono text-primary text-base">
+                    {formatRupiah(selectedDsrRecord.totalSalesAmount || 0)}
+                  </span>
+                </div>
+                {selectedDsrRecord.notes && (
+                  <div className="text-[11px] text-on-surface-variant pt-1 border-t border-outline/10">
+                    Catatan Faktur: <em>{selectedDsrRecord.notes}</em>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="pt-2 border-t border-outline/10 flex justify-end">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSelectedDsrRecord(null)}
+                className="text-xs h-8 px-4"
+              >
+                Tutup
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

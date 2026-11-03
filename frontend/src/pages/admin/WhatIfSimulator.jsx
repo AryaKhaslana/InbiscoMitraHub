@@ -499,6 +499,36 @@ export default function WhatIfSimulator({ setCurrentScreen }) {
                       : `Stok saat truk tiba masih tersisa ${stockAtArrival} dus. Alokasi ${proposedRestock} dus mengamankan pasokan hingga ${afterRunway} hari ke depan.`)}
                 </p>
               </div>
+
+              {/* Action Button: Apply Simulation to Restock Request */}
+              <div className="pt-2 flex flex-col sm:flex-row gap-2.5">
+                <Button
+                  onClick={() => {
+                    sessionStorage.setItem(
+                      'supplysync_sim_restock',
+                      JSON.stringify({
+                        productId: currentProduct?.id,
+                        sku: currentProduct?.sku,
+                        quantityCartons: proposedRestock,
+                      })
+                    );
+                    if (setCurrentScreen) setCurrentScreen('restock-request');
+                  }}
+                  className="flex-1 bg-primary text-white text-xs font-bold h-10 hover:bg-primary-container shadow-xs flex items-center justify-center gap-2"
+                >
+                  <Boxes className="h-4 w-4" />
+                  <span>Terapkan Simulasi ke Pengajuan Restock ({proposedRestock} Dus) ➔</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    if (setCurrentScreen) setCurrentScreen('stockout-risk');
+                  }}
+                  className="text-xs h-10 px-3.5"
+                >
+                  Lihat Radar Risiko
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>

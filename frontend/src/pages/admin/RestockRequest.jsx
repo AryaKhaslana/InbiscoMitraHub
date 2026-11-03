@@ -659,26 +659,51 @@ export default function RestockRequest({ setCurrentScreen }) {
                   <th className="py-2.5 px-3 font-semibold text-right">Total Kuantitas</th>
                   <th className="py-2.5 px-3 font-semibold text-right">Nilai Transaksi</th>
                   <th className="py-2.5 px-4 font-semibold text-center">Status Pemrosesan</th>
+                  <th className="py-2.5 px-3 font-semibold text-right">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline/10 font-medium">
-                {poHistory.map((po, i) => (
-                  <tr key={`${po.id}-${i}`} className="hover:bg-surface-container-low/60 transition-colors">
-                    <td className="py-3 px-4 font-mono">
-                      <div className="font-bold text-primary">{po.id}</div>
-                      <div className="text-[10px] text-on-surface-variant">DO: {po.doNumber}</div>
-                    </td>
-                    <td className="py-3 px-3 text-on-surface-variant">{po.date}</td>
-                    <td className="py-3 px-3 text-on-surface">{po.plant}</td>
-                    <td className="py-3 px-3 text-right font-mono font-bold">{po.totalDus} Dus</td>
-                    <td className="py-3 px-3 text-right font-mono">{formatRupiah(po.totalValue)}</td>
-                    <td className="py-3 px-4 text-center">
-                      <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold ${po.statusColor}`}>
-                        {po.statusLabel}
-                      </span>
+                {poHistory.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="py-10 text-center text-on-surface-variant text-xs">
+                      Belum ada riwayat pengajuan Purchase Order (PO). Gunakan formulir di atas untuk mengajukan restock perdana ke pabrik.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  poHistory.map((po, i) => (
+                    <tr
+                      key={`${po.id}-${i}`}
+                      onClick={() => setCurrentScreen && setCurrentScreen('order-tracking')}
+                      className="hover:bg-surface-container-low/80 transition-colors cursor-pointer group"
+                    >
+                      <td className="py-3 px-4 font-mono">
+                        <div className="font-bold text-primary group-hover:underline">{po.id}</div>
+                        <div className="text-[10px] text-on-surface-variant">DO: {po.doNumber}</div>
+                      </td>
+                      <td className="py-3 px-3 text-on-surface-variant">{po.date}</td>
+                      <td className="py-3 px-3 text-on-surface">{po.plant}</td>
+                      <td className="py-3 px-3 text-right font-mono font-bold">{po.totalDus} Dus</td>
+                      <td className="py-3 px-3 text-right font-mono">{formatRupiah(po.totalValue)}</td>
+                      <td className="py-3 px-4 text-center">
+                        <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold ${po.statusColor}`}>
+                          {po.statusLabel}
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 text-right" onClick={(e) => e.stopPropagation()}>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setCurrentScreen && setCurrentScreen('order-tracking')}
+                          className="h-7 px-2.5 text-[11px] gap-1 hover:bg-surface-container font-semibold"
+                          title="Lacak status pengiriman dan BAST armada"
+                        >
+                          <Truck className="h-3 w-3 text-primary" />
+                          <span>Lacak</span>
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

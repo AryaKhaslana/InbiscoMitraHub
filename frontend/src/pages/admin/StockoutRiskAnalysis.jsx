@@ -425,7 +425,24 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline/10 font-medium">
-                {filteredItems.map((item) => {
+                {filteredItems.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="py-10 text-center text-on-surface-variant text-xs">
+                      Tidak ada SKU produk yang cocok dengan filter kriteria yang dipilih.{' '}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedCategory('ALL');
+                          setSelectedSeverity('ALL');
+                        }}
+                        className="text-primary font-bold hover:underline ml-1 cursor-pointer"
+                      >
+                        Reset Filter
+                      </button>
+                    </td>
+                  </tr>
+                ) : (
+                  filteredItems.map((item) => {
                   const badge = getSeverityBadge(item.riskLevel);
                   const isSelected = activeTransferTarget?.productId === item.productId;
                   return (
@@ -494,7 +511,7 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
                       </td>
                     </tr>
                   );
-                })}
+                }))}
               </tbody>
             </table>
           </div>
