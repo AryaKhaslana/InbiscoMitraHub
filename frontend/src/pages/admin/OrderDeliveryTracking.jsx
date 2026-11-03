@@ -13,7 +13,10 @@ import {
   Phone, 
   ShieldCheck, 
   FileText,
-  Users
+  Users,
+  Eye,
+  X,
+  ArrowRight
 } from 'lucide-react';
 import { formatRupiah } from '../../lib/utils';
 import confetti from 'canvas-confetti';
@@ -25,6 +28,14 @@ const NEXT_ORDER_STATUS = {
   DISPATCHED: { status: 'COMPLETED', label: 'Selesai Terima' },
 };
 
+const STATUS_INDEX_MAP = {
+  PENDING: 0,
+  CONFIRMED: 1,
+  PACKING: 2,
+  DISPATCHED: 3,
+  COMPLETED: 4,
+};
+
 export default function OrderDeliveryTracking({ setCurrentScreen }) {
   const [deliveries, setDeliveries] = useState([]);
   const [selectedDoNumber, setSelectedDoNumber] = useState('DO-2026-0881');
@@ -33,6 +44,8 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
   const [confirmingBast, setConfirmingBast] = useState(false);
   const [bastReceipt, setBastReceipt] = useState(null);
   const [mutatingOrderId, setMutatingOrderId] = useState(null);
+  const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
+  const [orderFeedbackToast, setOrderFeedbackToast] = useState(null);
 
   const fetchTrackingData = useCallback(async () => {
     setLoading(true);
@@ -63,6 +76,16 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
     window.addEventListener('supplysync:refresh', onRefresh);
     return () => window.removeEventListener('supplysync:refresh', onRefresh);
   }, [fetchTrackingData]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setSelectedOrderDetails(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const activeShipment =
     deliveries.find((d) => d.doNumber === selectedDoNumber) ||
@@ -124,10 +147,80 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
     }
   };
 
-  const handleAdvanceOrder = async (orderId, targetStatus) => {
+  const handleAdvanceOrder = async (orderId, targetStatus, orderData = null) => {
     setMutatingOrderId(orderId);
     try {
       await api.updateOrderStatus(orderId, targetStatus);
+      
+      const statusFeedback = {
+        CONFIRMED: {
+          title: 'Pesanan Dikonfirmasi & Masuk Antrean Gudang',
+          message: 'Verifikasi DO selesai. Tim gudang siap memproses alokasi stok dan batching.',
+        },
+        PACKING: {
+          title: 'Proses Packing Gudang Dimulai',
+          message: 'Barang sedang diambil dari rak penyimpanan dan dikemas sesuai manifest surat jalan.',
+        },
+        DISPATCHED: {
+          title: 'Armada Pengiriman Berangkat Menuju Toko',
+          message: 'Muatan telah dinaikkan ke armada pengantaran lokal menuju kecamatan mitra.',
+        },
+        COMPLETED: {
+          title: 'Pesanan Selesai & e-POD Terverifikasi',
+          message: 'Serah terima barang telah divalidasi oleh pemilik toko mitra dengan bukti penerimaan digital.',
+        },
+      };
+
+      const feedback = statusFeedback[targetStatus] || {
+        title: 'Status Pesanan Berhasil Diperbarui',
+        message: `Status dialihkan ke tahap ${targetStatus}.`,
+      };
+
+      const trackingCode =
+        orderData?.trackingCode ||
+        outboundOrders.find((o) => o.id === orderId)?.trackingCode ||
+        orderId;
+
+      setOrderFeedbackToast({
+        trackingCode,
+        title: feedback.title,
+        message: feedback.message,
+      });
+
+      if (targetStatus === 'COMPLETED') {
+        confetti({
+          particleCount: 60,
+          spread: 70,
+          origin: { y: 0.6 },
+        });
+      }
+
+      // If modal is currently open for this order, update its status reactively
+      setSelectedOrderDetails((prev) => {
+        if (!prev || prev.id !== orderId) return prev;
+        const nextMap = {
+          CONFIRMED: { nextStatus: 'PACKING', nextActionLabel: 'Mulai Packing' },
+          PACKING: { nextStatus: 'DISPATCHED', nextActionLabel: 'Kirim Armada' },
+          DISPATCHED: { nextStatus: 'COMPLETED', nextActionLabel: 'Selesai Terima' },
+          COMPLETED: { nextStatus: null, nextActionLabel: null },
+        };
+        const nextInfo = nextMap[targetStatus] || { nextStatus: null, nextActionLabel: null };
+        return {
+          ...prev,
+          status: targetStatus,
+          statusLabel:
+            targetStatus === 'CONFIRMED'
+              ? 'Dikonfirmasi'
+              : targetStatus === 'PACKING'
+              ? 'Dipacking'
+              : targetStatus === 'DISPATCHED'
+              ? 'Dikirim'
+              : 'Selesai',
+          nextStatus: nextInfo.nextStatus,
+          nextActionLabel: nextInfo.nextActionLabel,
+        };
+      });
+
       await fetchTrackingData();
     } catch (err) {
       alert(err.message || 'Gagal memperbarui status pesanan');
@@ -544,17 +637,51 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
         </div>
       </div>
 
+      {/* Toast Feedback Status Update Outbound */}
+      {orderFeedbackToast && (
+        <div className="p-4 bg-primary/10 border border-primary/20 text-on-surface rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs animate-in fade-in duration-200">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center shrink-0">
+              <CheckCircle2 className="h-4 w-4" />
+            </div>
+            <div>
+              <div className="font-bold text-on-surface">
+                {orderFeedbackToast.title} • <span className="font-mono text-primary font-extrabold">{orderFeedbackToast.trackingCode}</span>
+              </div>
+              <div className="text-xs text-on-surface-variant mt-0.5">
+                {orderFeedbackToast.message}
+              </div>
+            </div>
+          </div>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => setOrderFeedbackToast(null)}
+            className="h-7 text-xs text-on-surface-variant hover:text-on-surface self-end sm:self-auto"
+          >
+            Tutup
+          </Button>
+        </div>
+      )}
+
       {/* Outbound Wholesale Store Orders Dispatch Table */}
       <Card className="border border-outline/10 shadow-xs">
         <CardContent className="p-5 space-y-3">
-          <div className="flex items-center justify-between border-b border-outline/10 pb-3">
-            <div className="flex items-center gap-2">
-              <FileText className="h-4 w-4 text-primary" />
-              <h3 className="text-sm font-bold text-on-surface">
-                Status Pengiriman Outbound ke Toko Mitra Sidoarjo
-              </h3>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-outline/10 pb-3 gap-2">
+            <div>
+              <div className="flex items-center gap-2">
+                <FileText className="h-4 w-4 text-primary" />
+                <h3 className="text-sm font-bold text-on-surface">
+                  Status Pengiriman Outbound ke Toko Mitra Sidoarjo
+                </h3>
+              </div>
+              <p className="text-xs text-on-surface-variant mt-0.5">
+                Klik baris pesanan atau tombol <strong>Detail &amp; POD</strong> untuk memeriksa rincian kargo dus, alamat penerima, kurir, dan bukti tanda terima digital (e-POD).
+              </p>
             </div>
-            <span className="text-xs font-mono text-on-surface-variant">{outboundOrders.length} Pesanan Toko</span>
+            <Badge variant="surface" className="text-xs font-mono self-start sm:self-auto">
+              {outboundOrders.length} Pesanan Toko
+            </Badge>
           </div>
 
           <div className="overflow-x-auto">
@@ -566,39 +693,75 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
                   <th className="py-2.5 px-3 font-semibold">Ringkasan Item</th>
                   <th className="py-2.5 px-3 font-semibold text-right">Total Tagihan</th>
                   <th className="py-2.5 px-3 font-semibold text-center">Status Saat Ini</th>
-                  <th className="py-2.5 px-3 font-semibold text-right">Update Status</th>
+                  <th className="py-2.5 px-3 font-semibold text-right">Aksi Dispatch &amp; e-POD</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline/10 font-medium">
                 {outboundOrders.map((ord) => {
                   const nextStep = NEXT_ORDER_STATUS[ord.status];
                   return (
-                    <tr key={ord.id} className="hover:bg-surface-container-low/60 transition-colors">
-                      <td className="py-3 px-3 font-mono font-bold text-primary">{ord.trackingCode}</td>
+                    <tr
+                      key={ord.id}
+                      onClick={() => setSelectedOrderDetails(ord)}
+                      className="hover:bg-surface-container-low/80 cursor-pointer transition-colors group"
+                    >
+                      <td className="py-3 px-3 font-mono font-bold text-primary group-hover:underline">
+                        {ord.trackingCode}
+                      </td>
                       <td className="py-3 px-3">
                         <div className="font-bold text-on-surface">{ord.store?.name}</div>
-                        <div className="text-[10px] text-on-surface-variant">{ord.store?.district} • {ord.store?.phone}</div>
+                        <div className="text-[10px] text-on-surface-variant">
+                          {ord.store?.district} • {ord.store?.phone}
+                        </div>
                       </td>
-                      <td className="py-3 px-3 text-on-surface-variant">{ord.itemsSummary}</td>
-                      <td className="py-3 px-3 text-right font-mono font-bold">{formatRupiah(ord.totalAmount)}</td>
+                      <td className="py-3 px-3 text-on-surface-variant max-w-xs truncate">
+                        {ord.itemsSummary}
+                      </td>
+                      <td className="py-3 px-3 text-right font-mono font-bold">
+                        {formatRupiah(ord.totalAmount)}
+                      </td>
                       <td className="py-3 px-3 text-center">
-                        <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-surface-container-highest text-on-surface">
+                        <span
+                          className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold ${
+                            ord.status === 'COMPLETED'
+                              ? 'bg-emerald-100 text-emerald-800'
+                              : ord.status === 'DISPATCHED'
+                              ? 'bg-blue-100 text-blue-800'
+                              : ord.status === 'PACKING'
+                              ? 'bg-amber-100 text-amber-800'
+                              : 'bg-surface-container-highest text-on-surface'
+                          }`}
+                        >
                           {ord.statusLabel || ord.status}
                         </span>
                       </td>
-                      <td className="py-3 px-3 text-right">
-                        {nextStep ? (
+                      <td className="py-3 px-3 text-right" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-end gap-1.5">
                           <Button
                             size="sm"
-                            disabled={mutatingOrderId === ord.id}
-                            onClick={() => handleAdvanceOrder(ord.id, nextStep.status)}
-                            className="bg-primary text-white text-[11px] h-7 px-2.5 hover:bg-primary-container"
+                            variant="outline"
+                            onClick={() => setSelectedOrderDetails(ord)}
+                            className="h-7 px-2 text-[11px] gap-1 border-outline/20 hover:bg-surface-container"
+                            title="Buka Rincian Pesanan & e-POD"
                           >
-                            {mutatingOrderId === ord.id ? '...' : nextStep.label}
+                            <Eye className="h-3 w-3 text-primary" />
+                            <span>Detail &amp; POD</span>
                           </Button>
-                        ) : (
-                          <span className="text-[11px] text-emerald-700 font-bold">✓ Selesai</span>
-                        )}
+                          {nextStep ? (
+                            <Button
+                              size="sm"
+                              disabled={mutatingOrderId === ord.id}
+                              onClick={() => handleAdvanceOrder(ord.id, nextStep.status, ord)}
+                              className="bg-primary text-white text-[11px] h-7 px-2.5 hover:bg-primary-container font-semibold shadow-xs"
+                            >
+                              {mutatingOrderId === ord.id ? '...' : nextStep.label}
+                            </Button>
+                          ) : (
+                            <span className="text-[11px] text-emerald-700 font-bold px-1.5 flex items-center gap-1">
+                              <CheckCircle2 className="h-3.5 w-3.5" /> Selesai
+                            </span>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   );
@@ -608,6 +771,250 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Modal Dossier Detail & e-POD Pesanan Toko Outbound */}
+      {selectedOrderDetails && (
+        <div
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setSelectedOrderDetails(null);
+          }}
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto cursor-pointer animate-in fade-in duration-150"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-surface-container-lowest border border-outline/15 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-5 my-8 cursor-default"
+          >
+            {/* Modal Header */}
+            <div className="flex items-start justify-between border-b border-outline/10 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                  <Truck className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-extrabold text-base text-on-surface">
+                      {selectedOrderDetails.trackingCode}
+                    </h3>
+                    <Badge variant="surface" className="text-[10px] font-mono font-bold">
+                      {selectedOrderDetails.statusLabel || selectedOrderDetails.status}
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-on-surface-variant mt-0.5">
+                    Toko Mitra: <strong>{selectedOrderDetails.store?.name}</strong> • Pemilik:{' '}
+                    {selectedOrderDetails.store?.ownerName || '-'}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedOrderDetails(null)}
+                className="text-on-surface-variant hover:text-on-surface p-1 rounded-lg hover:bg-surface-container transition-colors"
+                title="Tutup (Esc)"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Stepper Status Alur Outbound */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-xs font-bold text-on-surface">
+                <span>Alur Pemenuhan &amp; Pengiriman Outbound:</span>
+                <span className="text-[11px] text-primary font-mono">
+                  Tahap {(STATUS_INDEX_MAP[selectedOrderDetails.status] ?? 0) + 1} dari 5
+                </span>
+              </div>
+              <div className="grid grid-cols-5 gap-1.5 text-center text-[10px]">
+                {[
+                  { key: 'PENDING', label: '1. Masuk PO' },
+                  { key: 'CONFIRMED', label: '2. Verifikasi' },
+                  { key: 'PACKING', label: '3. Packing' },
+                  { key: 'DISPATCHED', label: '4. Dikirim' },
+                  { key: 'COMPLETED', label: '5. Selesai POD' },
+                ].map((st, idx) => {
+                  const currentIdx = STATUS_INDEX_MAP[selectedOrderDetails.status] ?? 0;
+                  const isDone = idx < currentIdx;
+                  const isCurrent = idx === currentIdx;
+
+                  return (
+                    <div
+                      key={st.key}
+                      className={`p-2 rounded-lg border font-semibold transition-all ${
+                        isCurrent
+                          ? 'bg-primary text-white border-primary shadow-xs'
+                          : isDone
+                          ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                          : 'bg-surface-container-low text-on-surface-variant border-transparent'
+                      }`}
+                    >
+                      <div>{st.label}</div>
+                      <div className="text-[9px] opacity-80 mt-0.5">
+                        {isCurrent ? 'Aktif' : isDone ? '✓ Selesai' : 'Antre'}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Informasi Toko & Lokasi Pengantaran */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+              <div className="p-3 bg-surface-container-low rounded-xl border border-outline/10 space-y-1.5">
+                <div className="font-bold text-on-surface flex items-center gap-1.5 text-[11px] text-primary">
+                  <MapPin className="h-3.5 w-3.5" />
+                  Alamat &amp; Kontak Penerima
+                </div>
+                <div className="text-on-surface font-semibold">{selectedOrderDetails.store?.name}</div>
+                <div className="text-on-surface-variant text-[11px]">
+                  {selectedOrderDetails.store?.address || 'Jl. Raya Sidoarjo No. 12'}, Kec.{' '}
+                  {selectedOrderDetails.store?.district}
+                </div>
+                <div className="text-primary font-mono text-[11px] flex items-center gap-1">
+                  <Phone className="h-3 w-3" />
+                  {selectedOrderDetails.store?.phone || '0812-3456-7890'}
+                </div>
+              </div>
+
+              <div className="p-3 bg-surface-container-low rounded-xl border border-outline/10 space-y-1.5">
+                <div className="font-bold text-on-surface flex items-center gap-1.5 text-[11px] text-primary">
+                  <Truck className="h-3.5 w-3.5" />
+                  Armada &amp; Kurir Distribusi Depo
+                </div>
+                <div className="text-on-surface font-semibold">Suzuki Carry Box (W 8821 NA)</div>
+                <div className="text-on-surface-variant text-[11px]">
+                  Kurir: <strong>Bambang Triyono</strong> (Depo Krian Hub)
+                </div>
+                <div className="text-emerald-700 font-semibold text-[11px]">
+                  {selectedOrderDetails.status === 'COMPLETED'
+                    ? '✓ Tiba & Diserahterimakan di Lokasi'
+                    : selectedOrderDetails.status === 'DISPATCHED'
+                    ? '🚚 Dalam Perjalanan Pengantaran'
+                    : '⏳ Menunggu Jadwal Muat Dispatch'}
+                </div>
+              </div>
+            </div>
+
+            {/* Rincian Muatan Kargo */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-xs font-bold text-on-surface">
+                <span className="flex items-center gap-1.5">
+                  <Package className="h-3.5 w-3.5 text-primary" />
+                  Daftar Muatan Dus Pesanan:
+                </span>
+                <span className="text-[11px] font-mono text-on-surface-variant">
+                  {selectedOrderDetails.items?.length || 1} SKU Produk
+                </span>
+              </div>
+              <div className="max-h-40 overflow-y-auto border border-outline/10 rounded-xl divide-y divide-outline/10 text-xs">
+                {(selectedOrderDetails.items || []).length > 0 ? (
+                  selectedOrderDetails.items.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="p-2.5 bg-surface-container-low/50 flex items-center justify-between"
+                    >
+                      <div>
+                        <div className="font-bold text-on-surface">
+                          {item.product?.name || item.name || 'Produk Mayora'}
+                        </div>
+                        <div className="text-[10px] text-on-surface-variant font-mono">
+                          SKU: {item.product?.sku || item.sku || '-'} • Batch:{' '}
+                          {item.product?.batchNumber || 'B-2026-N09'}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-bold font-mono text-on-surface">
+                          {item.quantity} Dus
+                        </div>
+                        <div className="text-[10px] text-on-surface-variant font-mono">
+                          {formatRupiah(item.subtotal || item.quantity * (item.unitPrice || 0))}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="p-3 bg-surface-container-low/50 text-on-surface-variant text-xs">
+                    {selectedOrderDetails.itemsSummary || 'Rincian produk tidak tersedia'}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Financial & e-POD Status Bar */}
+            <div className="p-3.5 bg-surface-container-low rounded-xl space-y-2 text-xs border border-outline/10">
+              <div className="flex justify-between text-on-surface-variant">
+                <span>Metode Pembayaran:</span>
+                <span className="font-mono font-bold text-on-surface">
+                  {selectedOrderDetails.paymentMethodLabel ||
+                    selectedOrderDetails.paymentMethod ||
+                    'TEMPO 7 HARI'}
+                </span>
+              </div>
+              <div className="flex justify-between pt-1 border-t border-outline/10 text-sm">
+                <span className="font-bold text-on-surface">Total Tagihan DO:</span>
+                <span className="font-mono font-black text-primary">
+                  {formatRupiah(selectedOrderDetails.totalAmount)}
+                </span>
+              </div>
+
+              {/* e-POD Verification Badge */}
+              <div className="pt-2 border-t border-outline/10 flex items-center justify-between text-[11px]">
+                <span className="text-on-surface-variant">Status e-POD (Proof of Delivery):</span>
+                {selectedOrderDetails.status === 'COMPLETED' ? (
+                  <span className="text-emerald-700 font-bold flex items-center gap-1 font-mono">
+                    <ShieldCheck className="h-3.5 w-3.5" /> e-POD Tervalidasi &amp; Tanda Terima Sah
+                  </span>
+                ) : selectedOrderDetails.status === 'DISPATCHED' ? (
+                  <span className="text-blue-700 font-semibold flex items-center gap-1 font-mono">
+                    <Clock className="h-3.5 w-3.5" /> Menunggu Konfirmasi Serah Terima Toko
+                  </span>
+                ) : (
+                  <span className="text-on-surface-variant font-mono">
+                    Belum Diterbitkan (Menunggu Pengiriman)
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="pt-3 border-t border-outline/10 flex items-center justify-between gap-3">
+              <div>
+                {NEXT_ORDER_STATUS[selectedOrderDetails.status] ? (
+                  <Button
+                    size="sm"
+                    disabled={mutatingOrderId === selectedOrderDetails.id}
+                    onClick={() =>
+                      handleAdvanceOrder(
+                        selectedOrderDetails.id,
+                        NEXT_ORDER_STATUS[selectedOrderDetails.status].status,
+                        selectedOrderDetails
+                      )
+                    }
+                    className="bg-primary hover:bg-primary-container text-white text-xs font-bold px-4 gap-1.5 shadow-xs h-9"
+                  >
+                    <span>
+                      {mutatingOrderId === selectedOrderDetails.id
+                        ? 'Memproses...'
+                        : `Lanjut: ${NEXT_ORDER_STATUS[selectedOrderDetails.status].label}`}
+                    </span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Button>
+                ) : (
+                  <span className="text-emerald-700 font-bold text-xs flex items-center gap-1.5">
+                    <CheckCircle2 className="h-4 w-4" /> Serah Terima Selesai &amp; e-POD Terverifikasi
+                  </span>
+                )}
+              </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSelectedOrderDetails(null)}
+                className="text-xs h-9 px-4"
+              >
+                Tutup
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
