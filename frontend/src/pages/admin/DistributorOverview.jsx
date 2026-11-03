@@ -45,6 +45,8 @@ export default function DistributorOverview({ setCurrentScreen }) {
   const [mutatingId, setMutatingId] = useState(null);
   const [highlightedSku, setHighlightedSku] = useState(null);
   const [selectedStoreProposal, setSelectedStoreProposal] = useState(null);
+  const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
+  const [orderAdvanceToast, setOrderAdvanceToast] = useState(null);
 
   // CRUD Modal & Feedback State
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -150,14 +152,24 @@ export default function DistributorOverview({ setCurrentScreen }) {
     }
   };
 
-  const handleAdvanceOrder = async (orderId, nextStatus) => {
+  const handleAdvanceOrder = async (orderId, nextStatus, ordData = null) => {
     setMutatingId(orderId);
     // Optimistic UI update
     setOrders((prev) =>
       prev.map((ord) => (ord.id === orderId ? { ...ord, status: nextStatus } : ord))
     );
+    setSelectedOrderDetails((prev) =>
+      prev && prev.id === orderId ? { ...prev, status: nextStatus } : prev
+    );
     try {
       await api.updateOrderStatus(orderId, nextStatus);
+      const tracking = ordData?.trackingCode || 'PO';
+      const storeName = ordData?.store?.name || 'Toko Mitra';
+      setOrderAdvanceToast({
+        trackingCode: tracking,
+        storeName,
+        status: nextStatus,
+      });
       window.dispatchEvent(new CustomEvent('supplysync:refresh'));
       await fetchOverviewData(true);
     } catch (err) {
@@ -589,15 +601,36 @@ export default function DistributorOverview({ setCurrentScreen }) {
               <span className="text-[11px] font-mono text-on-surface-variant">{orders.length} Order Terakhir</span>
             </div>
 
+            {/* Instant Toast Feedback saat status PO dimajukan */}
+            {orderAdvanceToast && (
+              <div className="p-2.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-xs flex items-center justify-between animate-in fade-in duration-150">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                  <span>
+                    Status PO <strong>{orderAdvanceToast.trackingCode}</strong> ({orderAdvanceToast.storeName}) berhasil dimajukan ke: <strong>{orderAdvanceToast.status}</strong>!
+                  </span>
+                </div>
+                <button
+                  onClick={() => setOrderAdvanceToast(null)}
+                  className="text-emerald-700 hover:text-emerald-900 font-bold text-xs ml-2"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+
             <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
               {orders.map((ord) => {
                 const nextAction = NEXT_ORDER_STATUS[ord.status];
                 return (
-                  <div key={ord.id} className="p-3 bg-surface-container-low rounded-lg border border-outline/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-                    <div>
-                      <div className="flex items-center gap-2">
+                  <div
+                    key={ord.id}
+                    className="p-3 bg-surface-container-low rounded-lg border border-outline/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs hover:border-outline/25 transition-all"
+                  >
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-mono font-bold text-primary">{ord.trackingCode}</span>
-                        <span className="font-bold text-on-surface">{ord.store?.name}</span>
+                        <span className="font-bold text-on-surface truncate">{ord.store?.name}</span>
                         <Badge variant="surface" className="text-[9px] py-0 px-1.5">{ord.store?.district}</Badge>
                       </div>
                       <div className="text-[11px] text-on-surface-variant mt-0.5">
@@ -606,17 +639,42 @@ export default function DistributorOverview({ setCurrentScreen }) {
                     </div>
 
                     <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setSelectedOrderDetails(ord)}
+                        className="text-[10px] h-7 px-2 gap-1 font-semibold"
+                        title="Lihat Alur Status & Faktur Rincian"
+                      >
+                        <FileText className="h-3 w-3 text-primary" />
+                        <span>Detail &amp; Alur</span>
+                      </Button>
+
                       <span className="px-2 py-0.5 rounded bg-surface-container-highest text-[10px] font-mono font-bold">
                         {ord.status}
                       </span>
+
                       {nextAction && (
                         <Button
                           size="sm"
                           disabled={mutatingId === ord.id}
-                          onClick={() => handleAdvanceOrder(ord.id, nextAction.status)}
+                          onClick={() => handleAdvanceOrder(ord.id, nextAction.status, ord)}
                           className="bg-primary text-white text-[11px] h-7 px-2.5 hover:bg-primary-container"
                         >
                           {mutatingId === ord.id ? '...' : nextAction.label}
+                        </Button>
+                      )}
+
+                      {ord.status === 'DISPATCHED' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setCurrentScreen && setCurrentScreen('order-tracking')}
+                          className="text-[10px] h-7 px-2 text-primary border-primary/30 hover:bg-primary/10 font-bold"
+                          title="Lacak armada pengiriman ke toko di Tracking & Dispatch"
+                        >
+                          <Truck className="h-3 w-3 mr-1" />
+                          <span>Lacak</span>
                         </Button>
                       )}
                     </div>
@@ -1187,6 +1245,151 @@ export default function DistributorOverview({ setCurrentScreen }) {
               >
                 Tutup
               </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Detail Alur Pesanan Grosir & One-Way State Machine */}
+      {selectedOrderDetails && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-surface-container-lowest border border-outline/15 rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-5 my-8">
+            {/* Modal Header */}
+            <div className="flex items-start justify-between border-b border-outline/10 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                  <FileText className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-extrabold text-base text-on-surface">
+                      {selectedOrderDetails.trackingCode}
+                    </h3>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-surface-container font-mono">
+                      {selectedOrderDetails.status}
+                    </span>
+                  </div>
+                  <p className="text-xs text-on-surface-variant">
+                    Toko: <strong>{selectedOrderDetails.store?.name}</strong> • {selectedOrderDetails.store?.district}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedOrderDetails(null)}
+                className="text-on-surface-variant hover:text-on-surface p-1 rounded-lg hover:bg-surface-container transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Visual One-Way State Machine Stepper (5 Steps) */}
+            <div className="space-y-2">
+              <span className="text-[10px] text-outline uppercase font-bold tracking-wider block">
+                Alur Progres One-Way State Machine
+              </span>
+              <div className="grid grid-cols-5 gap-1.5 text-center text-[10px]">
+                {[
+                  { key: 'PENDING', label: '1. Masuk' },
+                  { key: 'CONFIRMED', label: '2. Konfirmasi' },
+                  { key: 'PACKING', label: '3. Packing' },
+                  { key: 'DISPATCHED', label: '4. Dikirim' },
+                  { key: 'COMPLETED', label: '5. Selesai' },
+                ].map((st, idx) => {
+                  const statusIdxMap = { PENDING: 0, CONFIRMED: 1, PACKING: 2, DISPATCHED: 3, COMPLETED: 4 };
+                  const currentIdx = statusIdxMap[selectedOrderDetails.status] ?? 0;
+                  const isDone = idx < currentIdx;
+                  const isCurrent = idx === currentIdx;
+
+                  return (
+                    <div
+                      key={st.key}
+                      className={`p-2 rounded-lg border font-semibold transition-all ${
+                        isCurrent
+                          ? 'bg-primary text-white border-primary shadow-xs'
+                          : isDone
+                          ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                          : 'bg-surface-container-low text-on-surface-variant/60 border-outline/10'
+                      }`}
+                    >
+                      <div className="truncate">{st.label}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Rincian Finansial & Produk */}
+            <div className="p-3.5 bg-surface-container-low rounded-xl space-y-2 text-xs">
+              <div className="flex justify-between text-on-surface-variant">
+                <span>Ringkasan Barang:</span>
+                <span className="font-bold text-on-surface text-right">{selectedOrderDetails.itemsSummary}</span>
+              </div>
+              <div className="flex justify-between text-on-surface-variant">
+                <span>Metode Pembayaran:</span>
+                <span className="font-mono font-bold text-on-surface">
+                  {selectedOrderDetails.paymentMethodLabel || selectedOrderDetails.paymentMethod}
+                </span>
+              </div>
+              <div className="flex justify-between pt-2 border-t border-outline/10 text-sm">
+                <span className="font-bold text-on-surface">Total Tagihan:</span>
+                <span className="font-mono font-black text-primary">
+                  {formatRupiah(selectedOrderDetails.totalAmount)}
+                </span>
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="pt-3 border-t border-outline/10 flex items-center justify-between gap-2">
+              <div>
+                {NEXT_ORDER_STATUS[selectedOrderDetails.status] ? (
+                  <Button
+                    size="sm"
+                    disabled={mutatingId === selectedOrderDetails.id}
+                    onClick={() =>
+                      handleAdvanceOrder(
+                        selectedOrderDetails.id,
+                        NEXT_ORDER_STATUS[selectedOrderDetails.status].status,
+                        selectedOrderDetails
+                      )
+                    }
+                    className="bg-primary hover:bg-primary-container text-white text-xs font-bold px-4 gap-1.5 shadow-xs"
+                  >
+                    <span>
+                      {mutatingId === selectedOrderDetails.id
+                        ? 'Memproses...'
+                        : `Lanjut: ${NEXT_ORDER_STATUS[selectedOrderDetails.status].label}`}
+                    </span>
+                  </Button>
+                ) : (
+                  <span className="text-emerald-700 font-bold text-xs flex items-center gap-1">
+                    <CheckCircle2 className="h-4 w-4" /> Pesanan Selesai &amp; Lunas
+                  </span>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2">
+                {selectedOrderDetails.status === 'DISPATCHED' && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setSelectedOrderDetails(null);
+                      setCurrentScreen && setCurrentScreen('order-tracking');
+                    }}
+                    className="text-xs text-primary"
+                  >
+                    Lacak Pengiriman ➔
+                  </Button>
+                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedOrderDetails(null)}
+                  className="text-xs"
+                >
+                  Tutup
+                </Button>
+              </div>
             </div>
           </div>
         </div>

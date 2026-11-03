@@ -14,7 +14,8 @@ import {
   Sparkles,
   Layers,
   ArrowRightLeft,
-  RefreshCw
+  RefreshCw,
+  X
 } from 'lucide-react';
 import { formatRupiah } from '../../lib/utils';
 import confetti from 'canvas-confetti';
@@ -25,6 +26,7 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [selectedSeverity, setSelectedSeverity] = useState('ALL');
   const [selectedTransferSku, setSelectedTransferSku] = useState(null);
+  const [rebalanceConfirmItem, setRebalanceConfirmItem] = useState(null);
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const [lastTransferReceipt, setLastTransferReceipt] = useState(null);
 
@@ -69,23 +71,25 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
 
   const activeTransferTarget = selectedTransferSku || rawItems[0];
 
-  const handleAuthorizeTransfer = async () => {
-    if (!activeTransferTarget) return;
+  const handleAuthorizeTransfer = async (overrideItem = null) => {
+    const target = overrideItem || activeTransferTarget;
+    if (!target) return;
     setIsAuthorizing(true);
     setLastTransferReceipt(null);
     try {
-      const rec = activeTransferTarget.crossDepotRecommendation || {};
+      const rec = target.crossDepotRecommendation || {};
       const qty = rec.suggestedTransferCartons || 200;
       const result = await api.crossDepotTransfer({
-        productId: activeTransferTarget.productId,
-        sku: activeTransferTarget.sku,
-        sourceDepot: rec.donorDepot || 'Depo Mojokerto (Surplus)',
-        targetDepot: rec.targetDepot || 'CV Surya Krian Logistik (Hub Jatim 1)',
+        productId: target.productId,
+        sku: target.sku,
+        sourceDepot: rec.donorDepot || 'Depo Mitra Mojokerto (Surplus Buffer)',
+        targetDepot: rec.targetDepot || 'CV Surya Krian Logistik (Hub Jawa Timur 1)',
         quantityCartons: qty,
-        notes: `Cross-depot emergency rebalancing untuk ${activeTransferTarget.name}`,
+        notes: `Cross-depot emergency rebalancing untuk ${target.name}`,
       });
       setLastTransferReceipt(result);
-      confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 } });
+      setRebalanceConfirmItem(null);
+      confetti({ particleCount: 70, spread: 70, origin: { y: 0.6 } });
       await fetchRiskAnalysis();
     } catch (err) {
       alert(err.message || 'Gagal mengeksekusi transfer antar-depot');
@@ -434,12 +438,12 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
                             size="sm"
                             onClick={() => {
                               setSelectedTransferSku(item);
-                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                              setRebalanceConfirmItem(item);
                             }}
                             variant="outline"
-                            className="text-[11px] h-7 px-2"
+                            className="text-[11px] h-7 px-2 font-semibold hover:bg-primary/10 hover:text-primary transition-colors"
                           >
-                            Rebalance
+                            Rebalance Antar-Depo
                           </Button>
                           <Button
                             size="sm"
@@ -532,6 +536,118 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
           </Button>
         </div>
       </div>
+
+      {/* Modal: Konfirmasi Otorisasi Rebalancing Antar-Depot */}
+      {rebalanceConfirmItem && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-surface-container-lowest border border-outline/15 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 my-8">
+            <div className="flex items-start justify-between border-b border-outline/10 pb-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                  <ArrowRightLeft className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-on-surface">
+                    Otorisasi Rebalancing Antar-Depot
+                  </h3>
+                  <p className="text-xs text-on-surface-variant font-mono">
+                    Emergency Stockout Mitigation Protocol • GTNIC 2026
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setRebalanceConfirmItem(null)}
+                className="text-on-surface-variant hover:text-on-surface p-1 rounded-lg hover:bg-surface-container transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Visual Route Strip: Donor -> Target */}
+            <div className="p-3.5 bg-surface-container-low rounded-xl space-y-2 border border-outline/10 text-xs">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <span className="text-[10px] text-outline uppercase font-bold block">Pemberi Stok (Source)</span>
+                  <span className="font-bold text-on-surface">
+                    {rebalanceConfirmItem.crossDepotRecommendation?.donorDepot || 'Depo Mitra Mojokerto'}
+                  </span>
+                  <span className="text-[10px] text-emerald-700 font-mono block">Status: Surplus Buffer</span>
+                </div>
+                <ArrowRightLeft className="h-4 w-4 text-primary shrink-0 mx-2" />
+                <div className="space-y-0.5 text-right">
+                  <span className="text-[10px] text-outline uppercase font-bold block">Penerima Stok (Target)</span>
+                  <span className="font-bold text-on-surface">
+                    {rebalanceConfirmItem.crossDepotRecommendation?.targetDepot || 'CV Surya Krian Logistik'}
+                  </span>
+                  <span className="text-[10px] text-red-600 font-mono block">Status: Defisit / Kritis</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Detail SKU & Dampak */}
+            <div className="space-y-2 text-xs">
+              <div className="p-3 bg-surface-container-low rounded-xl space-y-1.5 border border-outline/10">
+                <div className="font-bold text-on-surface text-sm">
+                  {rebalanceConfirmItem.name}
+                </div>
+                <div className="text-[11px] text-on-surface-variant font-mono">
+                  SKU: {rebalanceConfirmItem.sku} • Kategori: {rebalanceConfirmItem.category}
+                </div>
+
+                <div className="pt-2 border-t border-outline/10 grid grid-cols-2 gap-2 text-[11px]">
+                  <div>
+                    <span className="text-on-surface-variant block">Stok Krian Saat Ini:</span>
+                    <strong className="text-red-600 font-mono text-xs">{rebalanceConfirmItem.stockCartons} Dus</strong>
+                    <span className="text-[10px] text-outline block">(Runway {rebalanceConfirmItem.runwayDays} Hari)</span>
+                  </div>
+                  <div>
+                    <span className="text-on-surface-variant block">Jumlah Rebalance:</span>
+                    <strong className="text-primary font-mono text-xs">
+                      +{rebalanceConfirmItem.crossDepotRecommendation?.suggestedTransferCartons || 200} Dus
+                    </strong>
+                    <span className="text-[10px] text-emerald-700 block">(Stok Baru: {rebalanceConfirmItem.stockCartons + (rebalanceConfirmItem.crossDepotRecommendation?.suggestedTransferCartons || 200)} Dus)</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-[11px] text-amber-900 flex items-start gap-2">
+                <Truck className="h-4 w-4 text-amber-700 shrink-0 mt-0.5" />
+                <div>
+                  <strong className="block">Rute &amp; Waktu Tempuh Cepat:</strong>
+                  <span>
+                    Via {rebalanceConfirmItem.crossDepotRecommendation?.routeVia || 'Tol Jombang–Mojokerto -> Exit Krian'} (Estimasi {rebalanceConfirmItem.crossDepotRecommendation?.estimatedTransitHours || 1.5} jam perjalanan via armada Hino Box).
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Buttons */}
+            <div className="pt-3 border-t border-outline/10 flex items-center justify-end gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setRebalanceConfirmItem(null)}
+                className="text-xs"
+              >
+                Batal
+              </Button>
+              <Button
+                size="sm"
+                disabled={isAuthorizing}
+                onClick={() => handleAuthorizeTransfer(rebalanceConfirmItem)}
+                className="bg-primary hover:bg-primary-container text-white text-xs font-bold px-4 gap-1.5 shadow-xs"
+              >
+                <Sparkles className="h-3.5 w-3.5" />
+                <span>
+                  {isAuthorizing
+                    ? 'Memproses Transfer...'
+                    : `Eksekusi Transfer +${rebalanceConfirmItem.crossDepotRecommendation?.suggestedTransferCartons || 200} Dus`}
+                </span>
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

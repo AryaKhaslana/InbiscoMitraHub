@@ -12,7 +12,8 @@ import {
   RefreshCw, 
   Phone, 
   ShieldCheck, 
-  FileText
+  FileText,
+  Users
 } from 'lucide-react';
 import { formatRupiah } from '../../lib/utils';
 import confetti from 'canvas-confetti';
@@ -190,6 +191,89 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
         </div>
       )}
 
+      {/* Fleet & Driver Selector Grid (Pilih Pengemudi & Truk Aktif) */}
+      <div className="space-y-2.5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Users className="h-4 w-4 text-primary" />
+            <h3 className="font-bold text-xs text-on-surface uppercase tracking-wider">
+              Pilih Armada &amp; Pengemudi Aktif (Fleet &amp; Driver Directory)
+            </h3>
+          </div>
+          <span className="text-[11px] text-on-surface-variant font-mono">
+            Klik kartu untuk beralih pengemudi ({deliveries.length} Armada Siap Dipantau)
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          {deliveries.map((del) => {
+            const isSelected = del.doNumber === activeShipment.doNumber;
+            const isDelivered = del.status === 'DELIVERED_BAST_VERIFIED';
+            const driver = del.fleet?.driverName || 'Pengemudi Mayora';
+            const plate = del.fleet?.plateNumber || 'Plat Truk';
+            const cartons = del.cargoSummary?.totalCartons || 0;
+
+            return (
+              <button
+                key={del.doNumber}
+                type="button"
+                onClick={() => setSelectedDoNumber(del.doNumber)}
+                className={`p-3 rounded-xl border text-left transition-all duration-200 relative overflow-hidden flex flex-col justify-between group ${
+                  isSelected
+                    ? 'bg-surface-container-lowest border-primary ring-2 ring-primary/40 shadow-md'
+                    : 'bg-surface-container-low border-outline/10 hover:border-outline/30 hover:bg-surface-container-lowest'
+                }`}
+              >
+                {isSelected && (
+                  <div className="absolute top-0 right-0 bg-primary text-white text-[9px] font-bold px-2 py-0.5 rounded-bl-lg font-mono">
+                    AKTIF
+                  </div>
+                )}
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 ${
+                        isSelected ? 'bg-primary text-white' : 'bg-surface-container text-on-surface-variant'
+                      }`}
+                    >
+                      {driver.substring(0, 2).toUpperCase()}
+                    </div>
+                    <div className="overflow-hidden">
+                      <div className="font-bold text-xs text-on-surface truncate group-hover:text-primary transition-colors">
+                        {driver}
+                      </div>
+                      <div className="font-mono text-[10px] text-on-surface-variant truncate">
+                        {plate}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="text-[11px] text-on-surface-variant truncate">
+                    {del.doNumber} • <strong className="text-on-surface font-mono">{cartons} Dus</strong>
+                  </div>
+                </div>
+
+                <div className="mt-2.5 pt-2 border-t border-outline/5 flex items-center justify-between">
+                  <span
+                    className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
+                      isDelivered
+                        ? 'bg-emerald-100 text-emerald-800'
+                        : 'bg-purple-100 text-purple-800'
+                    }`}
+                  >
+                    {isDelivered ? '✓ BAST Valid' : 'In Transit'}
+                  </span>
+                  <span className="text-[10px] font-mono text-outline truncate max-w-[90px]">
+                    {del.origin.split('(')[0].replace('Mayora', '').trim()}
+                  </span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Main Grid: 8 cols Active Shipment Details + 4 cols Fleet & Cargo */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left: Stepper & Route Map (8 cols) */}
@@ -309,8 +393,8 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
                   <thead>
                     <tr className="bg-surface-container-low text-on-surface-variant border-b border-outline/10">
                       <th className="py-2.5 px-3 font-semibold">Nomor DO</th>
-                      <th className="py-2.5 px-3 font-semibold">Referensi PO</th>
-                      <th className="py-2.5 px-3 font-semibold">Asal Pabrik</th>
+                      <th className="py-2.5 px-3 font-semibold">Pengemudi &amp; Armada</th>
+                      <th className="py-2.5 px-3 font-semibold">Asal Pabrik / Depo</th>
                       <th className="py-2.5 px-3 font-semibold text-right">Muatan</th>
                       <th className="py-2.5 px-3 font-semibold text-center">Status</th>
                       <th className="py-2.5 px-3 font-semibold text-right">Aksi</th>
@@ -328,8 +412,14 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
                             isSelected ? 'bg-primary/5' : ''
                           }`}
                         >
-                          <td className="py-3 px-3 font-mono font-bold text-primary">{del.doNumber}</td>
-                          <td className="py-3 px-3 font-mono text-on-surface-variant">{del.poNumber}</td>
+                          <td className="py-3 px-3">
+                            <span className="font-mono font-bold text-primary block">{del.doNumber}</span>
+                            <span className="font-mono text-[10px] text-on-surface-variant">{del.poNumber}</span>
+                          </td>
+                          <td className="py-3 px-3">
+                            <span className="font-bold text-on-surface block">{del.fleet?.driverName || 'Supir Mayora'}</span>
+                            <span className="font-mono text-[10px] text-on-surface-variant">{del.fleet?.plateNumber} • {del.fleet?.vehicleType?.split('(')[0].trim()}</span>
+                          </td>
                           <td className="py-3 px-3 text-on-surface">{del.origin}</td>
                           <td className="py-3 px-3 text-right font-mono font-bold">
                             {del.cargoSummary?.totalCartons || 0} Dus

@@ -1569,30 +1569,30 @@ export async function getInboundDeliveries() {
 
   const confirmedDoSet = new Set(recentBastLogs.map((l) => l.entityId));
 
-  // Primary flagship shipment matching Stitch SCREEN_4 (DO-2026-0881)
-  const flagshipDelivered = confirmedDoSet.has('DO-2026-0881');
+  // Flagship & pool of 5 enterprise FMCG delivery fleets & drivers
+  const d1Done = confirmedDoSet.has('DO-2026-0881');
+  const d2Done = confirmedDoSet.has('DO-2026-0882');
+  const d3Done = confirmedDoSet.has('DO-2026-0883');
+  const d4Done = confirmedDoSet.has('DO-2026-0884');
+  const d5Done = confirmedDoSet.has('DO-2026-0885') || true; // Flagship completed receipt
+
   const activeDeliveries = [
     {
       doNumber: 'DO-2026-0881',
       poNumber: 'PO-MYR-2610-8821',
       origin: 'Mayora Plant DC Pasuruan (Pier II)',
       destination: 'Gudang Utama CV Surya Krian Logistik (Bay 2)',
-      status: flagshipDelivered ? 'DELIVERED_BAST_VERIFIED' : 'IN_TRANSIT',
-      currentStep: flagshipDelivered ? 4 : 3,
+      status: d1Done ? 'DELIVERED_BAST_VERIFIED' : 'IN_TRANSIT',
+      currentStep: d1Done ? 4 : 3,
       milestones: [
         { step: 1, title: 'HQ Approval & SAP DO Release', time: '14:10 WIB', completed: true },
         { step: 2, title: 'Plant Loading & e-Lock Sealing', time: '15:25 WIB', completed: true },
-        {
-          step: 3,
-          title: 'Transit Tol Pandaan – Krian (KM 742)',
-          time: '16:45 WIB',
-          completed: true,
-        },
+        { step: 3, title: 'Transit Tol Pandaan – Krian (KM 742)', time: '16:45 WIB', completed: true },
         {
           step: 4,
           title: 'Unloading & Verifikasi BAST Gudang Krian',
-          time: flagshipDelivered ? 'Selesai' : 'Estimasi 17:28 WIB',
-          completed: flagshipDelivered,
+          time: d1Done ? 'Selesai' : 'Estimasi 17:28 WIB',
+          completed: d1Done,
         },
       ],
       fleet: {
@@ -1605,8 +1605,8 @@ export async function getInboundDeliveries() {
         gpsCoordinates: {
           lat: -7.4128,
           lng: 112.5844,
-          distanceRemainingKm: flagshipDelivered ? 0 : 5.2,
-          locationLabel: flagshipDelivered
+          distanceRemainingKm: d1Done ? 0 : 5.2,
+          locationLabel: d1Done
             ? 'Tiba di Dock Bay 2 Depo Krian'
             : '5.2 km menjelang Exit Tol Krian',
         },
@@ -1615,18 +1615,174 @@ export async function getInboundDeliveries() {
         totalCartons: 850,
         ftlUtilizationPct: 86,
         items: [
-          {
-            sku: 'MYR-BIS-ROMAKELAPA-300',
-            name: 'Biskuit Roma Kelapa 300g',
-            quantityCartons: 550,
-            batchNumber: 'BATCH-RK-2611A',
-          },
-          {
-            sku: 'MYR-WAF-BENGBENG-25',
-            name: 'Wafer Beng-Beng Regular 25g',
-            quantityCartons: 300,
-            batchNumber: 'BATCH-BB-2611B',
-          },
+          { sku: 'MYR-BIS-ROMAKELAPA-300', name: 'Biskuit Roma Kelapa 300g', quantityCartons: 550, batchNumber: 'BATCH-RK-2611A' },
+          { sku: 'MYR-WAF-BENGBENG-25', name: 'Wafer Beng-Beng Regular 25g', quantityCartons: 300, batchNumber: 'BATCH-BB-2611B' },
+        ],
+      },
+    },
+    {
+      doNumber: 'DO-2026-0882',
+      poNumber: 'PO-MYR-2610-8822',
+      origin: 'Mayora Manufacturing Plant Jayanti (DC Balaraja)',
+      destination: 'Gudang Utama CV Surya Krian Logistik (Bay 1)',
+      status: d2Done ? 'DELIVERED_BAST_VERIFIED' : 'IN_TRANSIT',
+      currentStep: d2Done ? 4 : 3,
+      milestones: [
+        { step: 1, title: 'SAP Inter-Plant DO Release', time: '08:00 WIB', completed: true },
+        { step: 2, title: 'Pemuatan Kontainer & Segel RFID', time: '10:30 WIB', completed: true },
+        { step: 3, title: 'Transit Tol Trans-Jawa KM 685 (Mojokerto Timur)', time: '15:10 WIB', completed: true },
+        {
+          step: 4,
+          title: 'Unloading & Verifikasi BAST Gudang Krian',
+          time: d2Done ? 'Selesai' : 'Estimasi 18:15 WIB',
+          completed: d2Done,
+        },
+      ],
+      fleet: {
+        plateNumber: 'B 9481 UEX',
+        vehicleType: 'Isuzu Giga FVM 240 Wingbox (70 m³)',
+        driverName: 'Hendra Gunawan',
+        driverPhone: '0813-5581-9920',
+        sealNumber: 'MYR-882190',
+        sealStatus: 'LOCKED_INTACT',
+        gpsCoordinates: {
+          lat: -7.4721,
+          lng: 112.4382,
+          distanceRemainingKm: d2Done ? 0 : 21.4,
+          locationLabel: d2Done
+            ? 'Tiba di Dock Bay 1 Depo Krian'
+            : 'KM 685 Tol Mojokerto Timur (Kecepatan 72 km/jam)',
+        },
+      },
+      cargoSummary: {
+        totalCartons: 1200,
+        ftlUtilizationPct: 96,
+        items: [
+          { sku: 'MYR-SER-ENERGENCOK-34', name: 'Energen Cokelat 34g', quantityCartons: 600, batchNumber: 'BATCH-EN-2611C' },
+          { sku: 'MYR-KOP-KOPIKOCANDY', name: 'Permen Kopiko Coffee Candy', quantityCartons: 400, batchNumber: 'BATCH-KP-2611D' },
+          { sku: 'MYR-KOP-TORABIKADUO', name: 'Kopi Torabika Duo 25g', quantityCartons: 200, batchNumber: 'BATCH-TB-2611A' },
+        ],
+      },
+    },
+    {
+      doNumber: 'DO-2026-0883',
+      poNumber: 'PO-TRF-2610-MJ01',
+      origin: 'Depo Mitra Mojokerto (Surplus Buffer)',
+      destination: 'CV Surya Krian Logistik (Hub Jawa Timur 1)',
+      status: d3Done ? 'DELIVERED_BAST_VERIFIED' : 'IN_TRANSIT',
+      currentStep: d3Done ? 4 : 3,
+      milestones: [
+        { step: 1, title: 'Otorisasi Rebalancing SCM Mayora HQ', time: '13:00 WIB', completed: true },
+        { step: 2, title: 'Dispatch Buffer Depo Mojokerto', time: '14:20 WIB', completed: true },
+        { step: 3, title: 'Transit Tol Sumo (Surabaya–Mojokerto)', time: '15:40 WIB', completed: true },
+        {
+          step: 4,
+          title: 'Unloading Cepat Emergency Stockout Krian',
+          time: d3Done ? 'Selesai' : 'Estimasi 16:30 WIB (Tol Sumo)',
+          completed: d3Done,
+        },
+      ],
+      fleet: {
+        plateNumber: 'L 8820 YK',
+        vehicleType: 'Mitsubishi Fuso Fighter Box HD (40 m³)',
+        driverName: 'Agus Prasetyo',
+        driverPhone: '0812-4410-8831',
+        sealNumber: 'TRF-MOJ-4421',
+        sealStatus: 'LOCKED_INTACT',
+        gpsCoordinates: {
+          lat: -7.4205,
+          lng: 112.5510,
+          distanceRemainingKm: d3Done ? 0 : 7.8,
+          locationLabel: d3Done
+            ? 'Bongkar Muat Rebalancing Selesai'
+            : 'Tol Sumo KM 728 (Menuju Gerbang Tol Krian)',
+        },
+      },
+      cargoSummary: {
+        totalCartons: 300,
+        ftlUtilizationPct: 75,
+        items: [
+          { sku: 'MYR-WAF-BENGBENG-25', name: 'Beng-Beng Wafer Caramel 25g', quantityCartons: 200, batchNumber: 'BATCH-BB-2602B' },
+          { sku: 'MYR-BIS-ROMAKELAPA-300', name: 'Roma Biskuit Kelapa 300g', quantityCartons: 100, batchNumber: 'BATCH-RK-2601A' },
+        ],
+      },
+    },
+    {
+      doNumber: 'DO-2026-0884',
+      poNumber: 'DO-OUT-SDA-0941',
+      origin: 'CV Surya Krian Logistik (Gudang Distribusi)',
+      destination: 'Outlet Retail Kelontong Teritori Balongbendo & Krian',
+      status: d4Done ? 'DELIVERED_BAST_VERIFIED' : 'IN_TRANSIT',
+      currentStep: d4Done ? 4 : 3,
+      milestones: [
+        { step: 1, title: 'Rilis Faktur Penjualan DSR', time: '07:30 WIB', completed: true },
+        { step: 2, title: 'Muat Barang Rute Balongbendo', time: '08:45 WIB', completed: true },
+        { step: 3, title: 'Keliling Drop Toko Kelontong Sidoarjo Barat', time: 'Dalam Rute', completed: true },
+        {
+          step: 4,
+          title: 'Serah Terima Nota Toko (BAST DSR)',
+          time: d4Done ? 'Semua Toko Terlayani' : 'Proses Distribusi Ritel',
+          completed: d4Done,
+        },
+      ],
+      fleet: {
+        plateNumber: 'W 8211 NA',
+        vehicleType: 'Toyota Dyna 130 HT Box Distribusi Lokal (25 m³)',
+        driverName: 'Bambang Wahyudi',
+        driverPhone: '0813-7729-1102',
+        sealNumber: 'DSR-KRN-9912',
+        sealStatus: 'LOCKED_INTACT',
+        gpsCoordinates: {
+          lat: -7.4089,
+          lng: 112.5692,
+          distanceRemainingKm: d4Done ? 0 : 3.1,
+          locationLabel: d4Done
+            ? 'Kembali ke Depo Krian (Setor Faktur)'
+            : 'Rute Drop Toko: Jl. Imam Bonjol Krian Kota',
+        },
+      },
+      cargoSummary: {
+        totalCartons: 250,
+        ftlUtilizationPct: 82,
+        items: [
+          { sku: 'MYR-MIN-LEMINERALE-600', name: 'Le Minerale 600ml', quantityCartons: 150, batchNumber: 'BATCH-LM-2604A' },
+          { sku: 'MYR-MIN-PUCUKHARUM-350', name: 'Teh Pucuk Harum 350ml', quantityCartons: 100, batchNumber: 'BATCH-TP-2603B' },
+        ],
+      },
+    },
+    {
+      doNumber: 'DO-2026-0885',
+      poNumber: 'PO-MYR-2610-8819',
+      origin: 'Mayora Plant Cikupa Tangerang (DC Minuman)',
+      destination: 'Gudang Utama CV Surya Krian Logistik (Bay 3)',
+      status: 'DELIVERED_BAST_VERIFIED',
+      currentStep: 4,
+      milestones: [
+        { step: 1, title: 'HQ Approval & SAP DO Release', time: 'Kemarin 10:00 WIB', completed: true },
+        { step: 2, title: 'Plant Loading & e-Lock Sealing', time: 'Kemarin 13:00 WIB', completed: true },
+        { step: 3, title: 'Perjalanan Tol Trans-Jawa', time: 'Kemarin 23:00 WIB', completed: true },
+        { step: 4, title: 'Unloading & Verifikasi BAST Fisik', time: 'Tadi Pagi 07:15 WIB', completed: true },
+      ],
+      fleet: {
+        plateNumber: 'N 9122 BC',
+        vehicleType: 'Hino Dutro 130 HD Box Pendingin (30 m³)',
+        driverName: 'Dedi Kusnandar',
+        driverPhone: '0811-9234-5510',
+        sealNumber: 'MYR-772101',
+        sealStatus: 'LOCKED_INTACT',
+        gpsCoordinates: {
+          lat: -7.4128,
+          lng: 112.5844,
+          distanceRemainingKm: 0,
+          locationLabel: 'Selesai Bongkar di Dock Bay 3 Depo Krian',
+        },
+      },
+      cargoSummary: {
+        totalCartons: 600,
+        ftlUtilizationPct: 92,
+        items: [
+          { sku: 'MYR-MIN-PUCUKHARUM-350', name: 'Teh Pucuk Harum Melati 350ml', quantityCartons: 350, batchNumber: 'BATCH-TP-2603B' },
+          { sku: 'MYR-MIN-LEMINERALE-600', name: 'Le Minerale Air Mineral 600ml', quantityCartons: 250, batchNumber: 'BATCH-LM-2604A' },
         ],
       },
     },
