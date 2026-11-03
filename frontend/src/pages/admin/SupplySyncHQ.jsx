@@ -54,6 +54,14 @@ export default function SupplySyncHQ() {
 
   useEffect(() => {
     loadHqData();
+
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setCrossDepotModalOpen(false);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
 
   const loadHqData = async () => {
@@ -551,8 +559,14 @@ export default function SupplySyncHQ() {
 
       {/* CROSS-DEPOT REBALANCING MODAL */}
       {crossDepotModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
-          <div className="w-full max-w-lg bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline/15 overflow-hidden animate-in fade-in duration-150">
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) setCrossDepotModalOpen(false); }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 cursor-pointer"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-lg bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline/15 overflow-hidden animate-in fade-in duration-150 cursor-default"
+          >
             <div className="p-5 bg-surface-container-low border-b border-outline/10 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <ArrowRightLeft className="h-5 w-5 text-secondary" />

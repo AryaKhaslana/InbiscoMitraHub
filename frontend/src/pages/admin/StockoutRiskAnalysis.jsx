@@ -52,7 +52,18 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
     fetchRiskAnalysis();
     const onRefresh = () => fetchRiskAnalysis();
     window.addEventListener('supplysync:refresh', onRefresh);
-    return () => window.removeEventListener('supplysync:refresh', onRefresh);
+
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setRebalanceConfirmItem(null);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+
+    return () => {
+      window.removeEventListener('supplysync:refresh', onRefresh);
+      window.removeEventListener('keydown', onKeyDown);
+    };
   }, [fetchRiskAnalysis]);
 
   const rawItems = riskData?.items || [];
@@ -539,8 +550,14 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
 
       {/* Modal: Konfirmasi Otorisasi Rebalancing Antar-Depot */}
       {rebalanceConfirmItem && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-surface-container-lowest border border-outline/15 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 my-8">
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) setRebalanceConfirmItem(null); }}
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto cursor-pointer animate-in fade-in duration-150"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-surface-container-lowest border border-outline/15 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 my-8 cursor-default"
+          >
             <div className="flex items-start justify-between border-b border-outline/10 pb-3">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">

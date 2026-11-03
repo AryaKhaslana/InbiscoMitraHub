@@ -62,9 +62,9 @@ app.use(
   })
 );
 
-// Request parsing & logging (100kb max body size to prevent JSON memory exhaustion DoS)
-app.use(express.json({ limit: '100kb' }));
-app.use(express.urlencoded({ extended: true, limit: '100kb' }));
+// Request parsing & logging (500kb limit supports optimized WebP FMCG product thumbnails)
+app.use(express.json({ limit: '500kb' }));
+app.use(express.urlencoded({ extended: true, limit: '500kb' }));
 
 if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('dev'));

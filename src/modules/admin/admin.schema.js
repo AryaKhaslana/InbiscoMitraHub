@@ -84,11 +84,19 @@ export const verifyStoreBodySchema = z
   .strict();
 
 /**
- * Validates that a URL strictly uses http:// or https:// protocol (blocks javascript:, data:, file:, etc.)
+ * Validates that a URL strictly uses http://, https://, or a safe optimized data:image URI
+ * (blocks javascript:, file:, vbscript:, etc. while keeping memory safe <= 500KB)
  */
-function isSafeHttpUrl(val) {
+function isSafeImageUrl(val) {
+  if (!val) return true;
+  if (typeof val !== 'string') return false;
+  const trimmed = val.trim();
+  if (trimmed.startsWith('data:image/')) {
+    // Only accept image data URIs up to 500KB to safeguard performance & prevent memory exhaustion
+    return trimmed.length <= 500000;
+  }
   try {
-    const parsed = new URL(val);
+    const parsed = new URL(trimmed);
     return parsed.protocol === 'http:' || parsed.protocol === 'https:';
   } catch {
     return false;
@@ -141,8 +149,8 @@ export const createProductSchema = z
       .optional()
       .nullable()
       .transform((val) => (val && val.trim().length > 0 ? val.trim() : null))
-      .refine((val) => !val || isSafeHttpUrl(val), {
-        message: 'imageUrl must use http:// or https:// protocol',
+      .refine((val) => !val || isSafeImageUrl(val), {
+        message: 'imageUrl must use http://, https://, or an optimized data:image URI',
       }),
     isAvailable: z.boolean().default(true),
   })

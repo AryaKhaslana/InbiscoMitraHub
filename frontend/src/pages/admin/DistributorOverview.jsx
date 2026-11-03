@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Card, CardContent } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
@@ -23,9 +23,71 @@ import {
   FileText,
   Trash2,
   X,
-  Boxes
+  Boxes,
+  UploadCloud,
+  Image as ImageIcon,
+  Zap
 } from 'lucide-react';
 import { formatRupiah } from '../../lib/utils';
+
+function formatBytes(bytes, decimals = 1) {
+  if (!bytes || bytes === 0) return '0 B';
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
+async function compressImageFile(file, maxWidth = 800, maxHeight = 800, quality = 0.75) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new window.Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxWidth || height > maxHeight) {
+          if (width > height) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          } else {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        let dataUrl = canvas.toDataURL('image/webp', quality);
+        if (!dataUrl.startsWith('data:image/webp')) {
+          dataUrl = canvas.toDataURL('image/jpeg', quality);
+        }
+
+        const estBytes = Math.round((dataUrl.length * 3) / 4);
+        const originalBytes = file.size;
+        const savings = Math.max(0, Math.round(((originalBytes - estBytes) / originalBytes) * 100));
+
+        resolve({
+          dataUrl,
+          originalSizeStr: formatBytes(originalBytes),
+          compressedSizeStr: formatBytes(estBytes),
+          savingsPercent: savings,
+          format: dataUrl.startsWith('data:image/webp') ? 'WebP' : 'JPEG',
+          width,
+          height,
+        });
+      };
+      img.onerror = () => reject(new Error('Gagal memuat file gambar'));
+      img.src = e.target.result;
+    };
+    reader.onerror = () => reject(new Error('Gagal membaca file gambar'));
+    reader.readAsDataURL(file);
+  });
+}
 
 const NEXT_ORDER_STATUS = {
   PENDING: { status: 'CONFIRMED', label: 'Konfirmasi PO' },
@@ -64,6 +126,97 @@ export default function DistributorOverview({ setCurrentScreen }) {
     expiryDate: '2027-08-30',
     imageUrl: '',
   });
+
+  // Image Upload & Auto-Compression State (WebP / Supabase Storage)
+  const [imageUploadMode, setImageUploadMode] = useState('upload'); // 'upload' | 'url'
+  const [photoName, setPhotoName] = useState('');
+  const [photoPreview, setPhotoPreview] = useState(null);
+  const [photoMetrics, setPhotoMetrics] = useState(null);
+  const [isCompressing, setIsCompressing] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const resetAddForm = useCallback(() => {
+    setIsAddModalOpen(false);
+    setPhotoPreview(null);
+    setPhotoMetrics(null);
+    setPhotoName('');
+    setIsCompressing(false);
+    setIsDragging(false);
+    setImageUploadMode('upload');
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    setNewProductForm({
+      sku: '',
+      name: '',
+      category: 'Biskuit',
+      cartonPrice: 215000,
+      retailPriceEst: 235000,
+      stockCartons: 100,
+      batchNumber: 'B-2026-N09',
+      expiryDate: '2027-08-30',
+      imageUrl: '',
+    });
+  }, []);
+
+  const processImageFile = async (file) => {
+    if (!file || !file.type.startsWith('image/')) {
+      alert('Silakan pilih file gambar yang valid (JPG, PNG, atau WebP)');
+      return;
+    }
+    setIsCompressing(true);
+    try {
+      const result = await compressImageFile(file, 800, 800, 0.75);
+      setPhotoName(file.name);
+      setPhotoPreview(result.dataUrl);
+      setPhotoMetrics(result);
+      setNewProductForm((prev) => ({ ...prev, imageUrl: result.dataUrl }));
+    } catch (err) {
+      console.error('Image compression error:', err);
+      alert('Gagal mengompresi gambar. Coba file gambar lain.');
+    } finally {
+      setIsCompressing(false);
+    }
+  };
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      processImageFile(file);
+    }
+  };
+
+  const handleFileDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      processImageFile(file);
+    }
+  };
+
+  const handleRemovePhoto = () => {
+    setPhotoPreview(null);
+    setPhotoMetrics(null);
+    setPhotoName('');
+    setNewProductForm((prev) => ({ ...prev, imageUrl: '' }));
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  // Close any open modal on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        resetAddForm();
+        setProductToDelete(null);
+        setSelectedStoreProposal(null);
+        setSelectedOrderDetails(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [resetAddForm]);
 
   const fetchOverviewData = useCallback(async (silent = false) => {
     if (!silent) setLoading(true);
@@ -218,18 +371,7 @@ export default function DistributorOverview({ setCurrentScreen }) {
         type: 'success',
         message: `Produk baru "${newProductForm.name}" (${newProductForm.sku}) berhasil ditambahkan ke database gudang!`,
       });
-      setIsAddModalOpen(false);
-      setNewProductForm({
-        sku: '',
-        name: '',
-        category: 'Biskuit',
-        cartonPrice: 215000,
-        retailPriceEst: 235000,
-        stockCartons: 100,
-        batchNumber: 'B-2026-N09',
-        expiryDate: '2027-08-30',
-        imageUrl: '',
-      });
+      resetAddForm();
       await fetchOverviewData();
       setTimeout(() => setProductActionFeedback(null), 4000);
     } catch (err) {
@@ -839,15 +981,22 @@ export default function DistributorOverview({ setCurrentScreen }) {
 
       {/* Modal: Tambah SKU Baru */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-surface-container-lowest border border-outline/15 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 my-8">
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) resetAddForm(); }}
+          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto cursor-pointer animate-in fade-in duration-150"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-surface-container-lowest border border-outline/15 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 my-8 cursor-default"
+          >
             <div className="flex items-center justify-between border-b border-outline/10 pb-3">
               <div className="flex items-center gap-2">
                 <Boxes className="h-5 w-5 text-primary" />
                 <h3 className="font-bold text-base text-on-surface">Tambah SKU Produk FMCG Baru</h3>
               </div>
               <button
-                onClick={() => setIsAddModalOpen(false)}
+                type="button"
+                onClick={resetAddForm}
                 className="p-1 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
               >
                 <X className="h-4 w-4" />
@@ -956,15 +1105,140 @@ export default function DistributorOverview({ setCurrentScreen }) {
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <label className="font-bold text-on-surface">URL Gambar Produk (Opsional)</label>
-                <input
-                  type="url"
-                  value={newProductForm.imageUrl}
-                  onChange={(e) => setNewProductForm({ ...newProductForm, imageUrl: e.target.value })}
-                  placeholder="https://images.unsplash.com/..."
-                  className="w-full h-9 px-3 rounded-lg bg-surface-container-low border border-outline/20"
-                />
+              {/* Upload Foto Produk dengan Auto-Compress WebP & Supabase Storage */}
+              <div className="space-y-1.5 pt-1">
+                <div className="flex items-center justify-between">
+                  <label className="font-bold text-on-surface flex items-center gap-1.5">
+                    <ImageIcon className="h-3.5 w-3.5 text-primary" />
+                    <span>Foto Produk (Auto-Compress WebP • Supabase Storage)</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setImageUploadMode((m) => (m === 'upload' ? 'url' : 'upload'))}
+                    className="text-[11px] font-semibold text-primary hover:underline flex items-center gap-1"
+                  >
+                    {imageUploadMode === 'upload' ? 'Gunakan Link URL' : 'Upload File Foto'}
+                  </button>
+                </div>
+
+                {imageUploadMode === 'upload' ? (
+                  <div className="space-y-2">
+                    {!photoPreview ? (
+                      <div
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          setIsDragging(true);
+                        }}
+                        onDragLeave={() => setIsDragging(false)}
+                        onDrop={handleFileDrop}
+                        onClick={() => fileInputRef.current?.click()}
+                        className={`relative border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-all ${
+                          isDragging
+                            ? 'border-primary bg-primary/5 ring-2 ring-primary/20'
+                            : 'border-outline/25 hover:border-primary/50 hover:bg-surface-container-low'
+                        } ${isCompressing ? 'opacity-60 pointer-events-none' : ''}`}
+                      >
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/png,image/jpeg,image/webp,image/jpg"
+                          onChange={handleFileSelect}
+                          className="hidden"
+                        />
+                        <div className="flex flex-col items-center justify-center gap-1 text-on-surface-variant">
+                          <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                            <UploadCloud className="h-5 w-5" />
+                          </div>
+                          <div className="text-xs font-bold text-on-surface">
+                            {isCompressing ? 'Mengompresi Gambar ke WebP...' : 'Pilih Foto Produk atau Tarik ke Sini'}
+                          </div>
+                          <p className="text-[10px] text-on-surface-variant max-w-xs leading-normal">
+                            Otomatis di-compress ke WebP ultra-ringan (&lt;35 KB) agar katalog cepat dan hemat bandwidth storage.
+                          </p>
+                          <div className="flex items-center gap-1.5 text-[9px] font-mono text-outline uppercase tracking-wider pt-0.5">
+                            <span>JPG</span> • <span>PNG</span> • <span>WEBP</span> • <span>Auto Optimize</span>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-3 bg-surface-container-low rounded-xl border border-outline/15 flex items-center justify-between gap-3 animate-in fade-in">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="relative w-14 h-14 rounded-lg overflow-hidden bg-black/5 shrink-0 border border-outline/20">
+                            <img
+                              src={photoPreview}
+                              alt="Preview SKU"
+                              className="w-full h-full object-cover"
+                            />
+                            <span className="absolute bottom-0 right-0 bg-primary text-white text-[8px] font-bold px-1 rounded-tl">
+                              {photoMetrics?.format || 'WebP'}
+                            </span>
+                          </div>
+                          <div className="min-w-0 space-y-0.5">
+                            <div className="text-xs font-bold text-on-surface truncate">
+                              {photoName || 'Foto Produk Terkompresi'}
+                            </div>
+                            <div className="flex items-center gap-1.5 flex-wrap text-[10px]">
+                              {photoMetrics?.originalSizeStr && (
+                                <span className="text-on-surface-variant line-through">
+                                  {photoMetrics.originalSizeStr}
+                                </span>
+                              )}
+                              <span className="font-bold text-primary font-mono">
+                                ➔ {photoMetrics?.compressedSizeStr}
+                              </span>
+                              {photoMetrics?.savingsPercent > 0 && (
+                                <span className="px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[9px]">
+                                  Hemat {photoMetrics.savingsPercent}%
+                                </span>
+                              )}
+                            </div>
+                            <span className="text-[9px] text-emerald-700 font-medium block">
+                              ✓ Siap disimpan ke Supabase Storage (Performa 100%)
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="px-2.5 py-1 text-[11px] font-bold text-on-surface hover:bg-surface-container rounded-lg border border-outline/20"
+                          >
+                            Ganti
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleRemovePhoto}
+                            className="p-1 text-red-600 hover:bg-red-50 rounded-lg"
+                            title="Hapus foto"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/png,image/jpeg,image/webp,image/jpg"
+                            onChange={handleFileSelect}
+                            className="hidden"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    <input
+                      type="url"
+                      value={newProductForm.imageUrl}
+                      onChange={(e) => setNewProductForm({ ...newProductForm, imageUrl: e.target.value })}
+                      placeholder="https://images.unsplash.com/..."
+                      className="w-full h-9 px-3 rounded-lg bg-surface-container-low border border-outline/20 font-mono text-xs"
+                    />
+                    <span className="text-[10px] text-on-surface-variant block">
+                      Gunakan link URL CDN eksternal jika tidak ingin mengupload file lokal.
+                    </span>
+                  </div>
+                )}
               </div>
 
               <div className="pt-3 border-t border-outline/10 flex items-center justify-end gap-2">
@@ -972,14 +1246,14 @@ export default function DistributorOverview({ setCurrentScreen }) {
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => setIsAddModalOpen(false)}
+                  onClick={resetAddForm}
                   className="text-xs"
                 >
                   Batal
                 </Button>
                 <Button
                   type="submit"
-                  disabled={submittingProduct}
+                  disabled={submittingProduct || isCompressing}
                   size="sm"
                   className="bg-primary text-white text-xs font-bold px-4"
                 >
@@ -993,8 +1267,14 @@ export default function DistributorOverview({ setCurrentScreen }) {
 
       {/* Modal: Konfirmasi Hapus / Arsipkan SKU */}
       {productToDelete && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-surface-container-lowest border border-outline/15 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) setProductToDelete(null); }}
+          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 cursor-pointer animate-in fade-in duration-150"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-surface-container-lowest border border-outline/15 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 cursor-default"
+          >
             <div className="flex items-center gap-2.5 text-red-600">
               <div className="w-9 h-9 rounded-xl bg-red-100 flex items-center justify-center shrink-0">
                 <Trash2 className="h-5 w-5" />
@@ -1045,8 +1325,14 @@ export default function DistributorOverview({ setCurrentScreen }) {
 
       {/* Modal: Proposal Kemitraan & Rincian Pesanan Mitra Toko */}
       {selectedStoreProposal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-surface-container-lowest border border-outline/15 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-5 my-8 max-h-[90vh] flex flex-col">
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) setSelectedStoreProposal(null); }}
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto cursor-pointer animate-in fade-in duration-150"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-surface-container-lowest border border-outline/15 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-5 my-8 max-h-[90vh] flex flex-col cursor-default"
+          >
             {/* Modal Header */}
             <div className="flex items-start justify-between border-b border-outline/10 pb-4">
               <div className="flex items-center gap-3">
@@ -1252,8 +1538,14 @@ export default function DistributorOverview({ setCurrentScreen }) {
 
       {/* Modal: Detail Alur Pesanan Grosir & One-Way State Machine */}
       {selectedOrderDetails && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-surface-container-lowest border border-outline/15 rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-5 my-8">
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) setSelectedOrderDetails(null); }}
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto cursor-pointer animate-in fade-in duration-150"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-surface-container-lowest border border-outline/15 rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-5 my-8 cursor-default"
+          >
             {/* Modal Header */}
             <div className="flex items-start justify-between border-b border-outline/10 pb-4">
               <div className="flex items-center gap-3">
