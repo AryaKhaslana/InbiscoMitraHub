@@ -323,43 +323,65 @@ export async function createOrder(payload) {
 }
 
 /**
- * Retrieves live order tracking details by trackingCode (e.g. INB-2610-A9F2).
+ * Retrieves live order tracking details by trackingCode (e.g. INB-2610-A9F2) or store phone number.
  * Redacts sensitive store PII (phone is masked, full street address & ownerName are omitted from public tracking).
  */
 export async function getOrderByTrackingCode(trackingCode) {
-  const order = await prisma.order.findUnique({
-    where: { trackingCode: trackingCode.toUpperCase() },
-    include: {
-      store: {
-        select: {
-          id: true,
-          name: true,
-          phone: true,
-          district: true,
-          isVerified: true,
-        },
+  const cleanCode = (trackingCode || '').trim();
+  const upperCode = cleanCode.toUpperCase();
+
+  const includeRelations = {
+    store: {
+      select: {
+        id: true,
+        name: true,
+        phone: true,
+        district: true,
+        isVerified: true,
       },
-      items: {
-        include: {
-          product: {
-            select: {
-              id: true,
-              sku: true,
-              name: true,
-              category: true,
-              imageUrl: true,
-            },
+    },
+    items: {
+      include: {
+        product: {
+          select: {
+            id: true,
+            sku: true,
+            name: true,
+            category: true,
+            imageUrl: true,
           },
         },
       },
     },
+  };
+
+  // 1. Try finding by exact uppercase trackingCode
+  let order = await prisma.order.findUnique({
+    where: { trackingCode: upperCode },
+    include: includeRelations,
   });
+
+  // 2. If not found by trackingCode, check if query is a phone number (min 8 digits)
+  if (!order) {
+    const rawDigits = cleanCode.replace(/[^0-9]/g, '');
+    if (rawDigits.length >= 8) {
+      order = await prisma.order.findFirst({
+        where: {
+          store: {
+            phone: { contains: rawDigits.slice(-8) },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+        include: includeRelations,
+      });
+    }
+  }
 
   if (!order) {
     throw new AppError(
-      `Order with tracking code "${trackingCode}" not found`,
+      `Order with tracking code or phone "${cleanCode}" not found`,
       404,
-      [{ field: 'code', message: `No order found for tracking code ${trackingCode}` }]
+      [{ field: 'code', message: `No order found for "${cleanCode}". Pastikan kode resi atau nomor HP toko sudah benar.` }]
     );
   }
 

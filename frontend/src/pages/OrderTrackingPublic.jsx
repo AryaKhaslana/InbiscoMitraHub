@@ -347,7 +347,7 @@ export default function OrderTrackingPublic({ setActiveNav, initialTrackingCode 
                 type="text"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value.toUpperCase())}
-                placeholder="Masukkan Nomor Resi / Tracking Code (contoh: INB-2610-KR06)..."
+                placeholder="Masukkan Nomor Resi (contoh: INB-2610-KR06) atau No. WhatsApp Toko..."
                 className="pl-10 h-11 text-xs sm:text-sm font-mono uppercase bg-surface-container-low border-surface-container-high"
               />
             </div>
