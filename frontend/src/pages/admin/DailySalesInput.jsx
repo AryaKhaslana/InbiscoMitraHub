@@ -145,6 +145,24 @@ export default function DailySalesInput({ setCurrentScreen }) {
         </div>
       </div>
 
+      {/* Panduan Cepat & Konteks DSR */}
+      <div className="p-4 bg-surface-container-lowest border border-outline/10 rounded-xl shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+        <div className="flex items-start gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
+            <CheckSquare className="h-4 w-4" />
+          </div>
+          <div>
+            <span className="font-bold text-on-surface">Panduan Input Penjualan:</span>
+            <span className="text-on-surface-variant ml-1">
+              Catat transaksi harian per SKU dari tim sales lapangan (DSR) ke toko ritel. Setiap data yang disimpan otomatis memotong saldo stok fisik riil di Gudang Krian secara real-time.
+            </span>
+          </div>
+        </div>
+        <Badge variant="surface" className="text-[10px] shrink-0 font-mono">
+          Sinkronisasi Stok Otomatis
+        </Badge>
+      </div>
+
       {/* Main Grid: 8 cols Form + 4 cols Analytics */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Form: 8 cols */}
@@ -341,7 +359,7 @@ export default function DailySalesInput({ setCurrentScreen }) {
 
               <div className="space-y-2 text-xs">
                 <div className="flex justify-between text-on-surface-variant">
-                  <span>Harga Karton (DB):</span>
+                  <span>Harga per Karton:</span>
                   <span className="font-mono font-semibold">{formatRupiah(selectedProduct.cartonPrice || 0)}</span>
                 </div>
                 <div className="flex justify-between text-on-surface-variant">
@@ -378,8 +396,9 @@ export default function DailySalesInput({ setCurrentScreen }) {
                 </div>
                 <div className="text-[10px] text-on-surface-variant">
                   {remainingStock < 100 ? (
-                    <span className="text-error font-semibold flex items-center gap-1">
-                      ⚠️ Sisa stok di bawah 100 dus! Segera ajukan restock.
+                    <span className="text-error font-semibold flex items-center gap-1.5">
+                      <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                      <span>Sisa stok di bawah 100 dus. Segera ajukan restock pasokan.</span>
                     </span>
                   ) : (
                     <span>Stok masih mencukupi untuk operasional harian.</span>

@@ -72,12 +72,16 @@ export default function AdminHeader({ currentScreen, setCurrentScreen }) {
       ]);
 
       let savedReadIds = [];
+      let savedDismissedIds = [];
       try {
         savedReadIds = JSON.parse(localStorage.getItem('supplysync_read_notifications') || '[]');
+        savedDismissedIds = JSON.parse(localStorage.getItem('supplysync_dismissed_notifications') || '[]');
       } catch (e) {
         savedReadIds = [];
+        savedDismissedIds = [];
       }
       const readSet = new Set(savedReadIds);
+      const dismissedSet = new Set(savedDismissedIds);
 
       const items = [];
 
@@ -90,10 +94,11 @@ export default function AdminHeader({ currentScreen, setCurrentScreen }) {
         );
         criticalItems.slice(0, 2).forEach((item) => {
           const id = `risk-${item.sku}`;
+          if (dismissedSet.has(id)) return;
           items.push({
             id,
-            title: `Peringatan Stok Kritis (${item.name ? item.name.split('(')[0].trim() : item.sku})`,
-            message: `Sisa stok ${item.stockCartons} dus di Gudang Krian (runway ${item.runwayDays} hari). Disarankan pengajuan PO restock atau transfer depo.`,
+            title: `Peringatan Stok Rendah (${item.name ? item.name.split('(')[0].trim() : item.sku})`,
+            message: `Sisa stok fisik di Gudang Krian tersisa ${item.stockCartons} dus (estimasi runway ${item.runwayDays} hari). Disarankan pengajuan restock atau transfer antar-depo.`,
             time: 'Realtime',
             type: 'danger',
             targetScreen: 'stockout-risk',
@@ -111,21 +116,23 @@ export default function AdminHeader({ currentScreen, setCurrentScreen }) {
         const activeShipment = deliveries.find((d) => d.status === 'IN_TRANSIT') || deliveries[0];
         if (activeShipment) {
           const id = `inbound-${activeShipment.doNumber}`;
-          const isTransit = activeShipment.status === 'IN_TRANSIT';
-          items.push({
-            id,
-            title: isTransit
-              ? `Armada Inbound Transit (${activeShipment.doNumber})`
-              : `Penerimaan Barang Selesai (${activeShipment.doNumber})`,
-            message: activeShipment.fleet?.plateNumber
-              ? `Truk Wingbox ${activeShipment.fleet.plateNumber} muatan ${activeShipment.cargoSummary?.totalCartons || 850} dus ${isTransit ? `menuju ${activeShipment.destination}` : 'telah terverifikasi BAST di Gudang Krian'}.`
-              : `Surat jalan ${activeShipment.doNumber} origin ${activeShipment.origin}.`,
-            time: activeShipment.eta || 'Hari ini',
-            type: 'truck',
-            targetScreen: 'order-tracking',
-            actionLabel: 'Lacak Armada Inbound',
-            read: readSet.has(id),
-          });
+          if (!dismissedSet.has(id)) {
+            const isTransit = activeShipment.status === 'IN_TRANSIT';
+            items.push({
+              id,
+              title: isTransit
+                ? `Armada Inbound Transit (${activeShipment.doNumber})`
+                : `Penerimaan Barang Selesai (${activeShipment.doNumber})`,
+              message: activeShipment.fleet?.plateNumber
+                ? `Truk Wingbox ${activeShipment.fleet.plateNumber} muatan ${activeShipment.cargoSummary?.totalCartons || 850} dus ${isTransit ? `menuju ${activeShipment.destination}` : 'telah terverifikasi BAST di Gudang Krian'}.`
+                : `Surat jalan ${activeShipment.doNumber} asal ${activeShipment.origin}.`,
+              time: activeShipment.eta || 'Hari ini',
+              type: 'truck',
+              targetScreen: 'order-tracking',
+              actionLabel: 'Lacak Armada Inbound',
+              read: readSet.has(id),
+            });
+          }
         }
       }
 
@@ -138,6 +145,7 @@ export default function AdminHeader({ currentScreen, setCurrentScreen }) {
         setLiveOrders(orderList);
         orderList.slice(0, 2).forEach((ord) => {
           const id = `order-${ord.id || ord.trackingCode}`;
+          if (dismissedSet.has(id)) return;
           items.push({
             id,
             title: `Pesanan Grosir (${ord.trackingCode})`,
@@ -157,20 +165,20 @@ export default function AdminHeader({ currentScreen, setCurrentScreen }) {
         setKpiSnapshot(kpi);
       }
       const sysId = 'sys-sync-live';
-      items.push({
-        id: sysId,
-        title: 'Sinkronisasi Sistem Mayora',
-        message: `${kpi?.activeStores || 12} Mitra Toko Terverifikasi & ${kpi?.totalOrders || 10} Order aktif tersinkronisasi penuh dengan server pusat.`,
-        time: 'Tersinkron',
-        type: 'info',
-        targetScreen: 'executive-overview',
-        actionLabel: 'Ringkasan Jaringan',
-        read: readSet.has(sysId),
-      });
-
-      if (items.length > 0) {
-        setNotifications(items);
+      if (!dismissedSet.has(sysId)) {
+        items.push({
+          id: sysId,
+          title: 'Sinkronisasi Jaringan Distribusi',
+          message: `${kpi?.activeStores || 12} Mitra Toko Terverifikasi & ${kpi?.totalOrders || 10} pesanan aktif tersinkronisasi penuh dengan server pusat Mayora.`,
+          time: 'Tersinkron',
+          type: 'info',
+          targetScreen: 'executive-overview',
+          actionLabel: 'Ringkasan Jaringan',
+          read: readSet.has(sysId),
+        });
       }
+
+      setNotifications(items);
     } catch (err) {
       console.warn('Failed to load dynamic notifications:', err);
     }
@@ -343,15 +351,39 @@ export default function AdminHeader({ currentScreen, setCurrentScreen }) {
   };
 
   const handleClearAll = () => {
-    setNotifications([]);
-    try {
-      localStorage.setItem('supplysync_read_notifications', JSON.stringify([]));
-    } catch (e) {}
+    setNotifications((prev) => {
+      const allIds = prev.map((n) => n.id);
+      try {
+        const existingDismissed = JSON.parse(
+          localStorage.getItem('supplysync_dismissed_notifications') || '[]'
+        );
+        const updated = Array.from(new Set([...existingDismissed, ...allIds]));
+        localStorage.setItem('supplysync_dismissed_notifications', JSON.stringify(updated));
+      } catch (e) {}
+      return [];
+    });
   };
 
   const handleDismissNotification = (e, notifId) => {
     e.stopPropagation();
+    try {
+      const existingDismissed = JSON.parse(
+        localStorage.getItem('supplysync_dismissed_notifications') || '[]'
+      );
+      if (!existingDismissed.includes(notifId)) {
+        existingDismissed.push(notifId);
+        localStorage.setItem('supplysync_dismissed_notifications', JSON.stringify(existingDismissed));
+      }
+    } catch (e) {}
     setNotifications((prev) => prev.filter((n) => n.id !== notifId));
+  };
+
+  const handleResetNotifications = () => {
+    try {
+      localStorage.removeItem('supplysync_dismissed_notifications');
+      localStorage.removeItem('supplysync_read_notifications');
+    } catch (e) {}
+    fetchNotifications();
   };
 
   const handleNotificationClick = (notif) => {
@@ -637,6 +669,12 @@ export default function AdminHeader({ currentScreen, setCurrentScreen }) {
                     <ShieldCheck className="h-6 w-6 mx-auto mb-1 text-emerald-600 opacity-60" />
                     <p className="font-semibold text-on-surface">Semua Sistem Terkendali</p>
                     <p className="text-[11px] text-outline mt-0.5">Tidak ada pemberitahuan baru.</p>
+                    <button
+                      onClick={handleResetNotifications}
+                      className="text-[10px] text-primary hover:underline mt-2 font-medium block mx-auto"
+                    >
+                      Pulihkan Riwayat Notifikasi
+                    </button>
                   </div>
                 ) : (
                   notifications.map((notif) => {

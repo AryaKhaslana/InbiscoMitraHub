@@ -547,19 +547,23 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
           <div className="space-y-2.5">
             <div className="flex items-center gap-2 border-b border-outline/10 pb-2.5">
               <Sparkles className="h-4 w-4 text-primary" />
-              <h3 className="font-bold text-xs text-on-surface">Protokol Mitigasi GTNIC 2026</h3>
+              <h3 className="font-bold text-xs text-on-surface">Panduan Singkat &amp; Konteks Radar</h3>
             </div>
             <p className="text-xs text-on-surface-variant leading-relaxed">
-              Model prediktif menghitung batas pengaman (safety stock) dengan formula standar industri berdasarkan rata-rata laju konsumsi harian.
+              Pusat mitigasi preventif untuk mencegah kekosongan stok fisik di Gudang Krian sebelum terjadi lost-sales di tingkat toko mitra.
             </p>
-            <div className="p-2.5 bg-surface-container-low rounded-lg border border-outline/10 text-xs space-y-1">
-              <div className="flex justify-between">
-                <span className="text-on-surface-variant">Total SKU Dimonitor:</span>
-                <span className="font-bold font-mono text-primary">{rawItems.length} SKU</span>
+            <div className="p-2.5 bg-surface-container-low rounded-lg border border-outline/10 text-xs space-y-2">
+              <div className="flex items-start gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0"></span>
+                <span className="text-on-surface-variant leading-tight">
+                  <strong className="text-on-surface">Simulasi Rebalance:</strong> Klik baris SKU di tabel untuk memilih target rebalance stok dari depo terdekat.
+                </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-on-surface-variant">Service Level Target:</span>
-                <span className="font-bold font-mono text-on-surface">95.0% (Z = 1.65)</span>
+              <div className="flex items-start gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 mt-1.5 shrink-0"></span>
+                <span className="text-on-surface-variant leading-tight">
+                  <strong className="text-on-surface">Otorisasi Transfer:</strong> Eksekusi penyeimbangan stok antar-depot instan saat darurat tanpa menunggu siklus pabrik.
+                </span>
               </div>
             </div>
           </div>
@@ -570,7 +574,7 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
             className="w-full text-xs font-semibold flex items-center justify-center gap-1.5"
           >
             <Sliders className="h-3.5 w-3.5" />
-            <span>Jalankan Simulator Skenario Stress-Test</span>
+            <span>Uji Skenario di What-If Simulator</span>
           </Button>
         </div>
       </div>
@@ -594,8 +598,8 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
                   <h3 className="font-extrabold text-base text-on-surface">
                     Otorisasi Rebalancing Antar-Depot
                   </h3>
-                  <p className="text-xs text-on-surface-variant font-mono">
-                    Emergency Stockout Mitigation Protocol • GTNIC 2026
+                  <p className="text-xs text-on-surface-variant font-medium">
+                    Protokol Pemindahan Stok Darurat Antar-Depot
                   </p>
                 </div>
               </div>

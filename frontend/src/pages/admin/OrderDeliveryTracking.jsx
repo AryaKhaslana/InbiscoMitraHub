@@ -169,6 +169,24 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
         </div>
       </div>
 
+      {/* Panduan Cepat & Konteks Tracking */}
+      <div className="p-4 bg-surface-container-lowest border border-outline/10 rounded-xl shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+        <div className="flex items-start gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
+            <Truck className="h-4 w-4" />
+          </div>
+          <div>
+            <span className="font-bold text-on-surface">Panduan Tracking &amp; BAST:</span>
+            <span className="text-on-surface-variant ml-1">
+              Pilih kartu pengemudi di bawah untuk melihat rute perjalanan dari Pabrik Pasuruan ke Gudang Krian. Saat armada tiba, tekan <strong>Konfirmasi Terima BAST</strong> untuk otomatis memasukkan muatan dus ke saldo stok aktif.
+            </span>
+          </div>
+        </div>
+        <Badge variant="surface" className="text-[10px] shrink-0 font-mono">
+          Telemetri GPS &amp; e-BAST
+        </Badge>
+      </div>
+
       {bastReceipt && (
         <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2.5">

@@ -163,13 +163,13 @@ export default function WhatIfSimulator({ setCurrentScreen }) {
         <div>
           <div className="flex items-center gap-2 text-primary font-mono text-xs uppercase tracking-wider mb-1">
             <Sliders className="h-4 w-4" />
-            <span>Interactive Supply Chain Sandbox • Live Backend Simulation Engine</span>
+            <span>Simulasi Ketahanan Stok • Gudang Krian Logistik</span>
           </div>
           <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-on-surface">
             What-if Restock &amp; Lead Time Simulator
           </h1>
           <p className="text-sm text-on-surface-variant mt-1">
-            Uji ketahanan inventori gudang terhadap lonjakan permintaan retail, keterlambatan armada logistik, dan ukuran alokasi pabrik via endpoint <code>/api/v1/simulation/what-if</code>.
+            Simulasikan ketahanan inventori gudang terhadap lonjakan permintaan pasar, keterlambatan armada, serta penentuan kuota alokasi pabrik secara akurat.
           </p>
         </div>
 
@@ -180,7 +180,7 @@ export default function WhatIfSimulator({ setCurrentScreen }) {
             size="sm"
             className="text-xs h-8"
           >
-            Reset ke Stok Riil DB
+            Reset ke Stok Riil
           </Button>
           <Button
             onClick={() => handleApplyPreset('surge')}
@@ -189,7 +189,7 @@ export default function WhatIfSimulator({ setCurrentScreen }) {
             className="text-xs h-8 text-primary border-primary/30"
           >
             <Zap className="h-3.5 w-3.5 mr-1" />
-            Lonjakan Demand (+70%)
+            Lonjakan Permintaan (+70%)
           </Button>
           <Button
             onClick={() => handleApplyPreset('delay')}
@@ -197,9 +197,27 @@ export default function WhatIfSimulator({ setCurrentScreen }) {
             size="sm"
             className="text-xs h-8 text-amber-700 border-amber-300"
           >
-            Delay Logistik (6 Hari)
+            Keterlambatan Armada (6 Hari)
           </Button>
         </div>
+      </div>
+
+      {/* Panduan Cepat & Konteks Penggunaan */}
+      <div className="p-4 bg-surface-container-lowest border border-outline/10 rounded-xl shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+        <div className="flex items-start gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
+            <Sliders className="h-4 w-4" />
+          </div>
+          <div>
+            <span className="font-bold text-on-surface">Panduan Simulasi Skenario:</span>
+            <span className="text-on-surface-variant ml-1">
+              Geser slider di kolom kiri untuk mengubah variabel. Grafik trajektori 14 hari di kanan akan langsung memperlihatkan apakah stok gudang jatuh ke zona merah di bawah batas aman (Safety Stock) sebelum armada tiba.
+            </span>
+          </div>
+        </div>
+        <Badge variant="surface" className="text-[10px] shrink-0 font-mono">
+          Visualisasi Real-time 14 Hari
+        </Badge>
       </div>
 
       {/* Main Grid: 5 cols Sliders + 7 cols Interactive Chart */}
@@ -469,7 +487,7 @@ export default function WhatIfSimulator({ setCurrentScreen }) {
               {/* Explanatory note from Backend Simulation Engine */}
               <div className="p-3 bg-surface-container-low rounded-lg text-xs space-y-1">
                 <div className="font-bold text-on-surface flex items-center justify-between">
-                  <span>Kesimpulan Engine Simulasi Backend:</span>
+                  <span>Rekomendasi Hasil Simulasi:</span>
                   <Badge variant="surface" className="font-mono text-[10px]">
                     {simResult?.afterMetrics?.riskStatus || 'TERKALKULASI'}
                   </Badge>

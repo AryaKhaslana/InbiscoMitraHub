@@ -244,6 +244,24 @@ export default function RestockRequest({ setCurrentScreen }) {
         </div>
       </div>
 
+      {/* Panduan Cepat & Konteks Pengajuan Restock */}
+      <div className="p-4 bg-surface-container-lowest border border-outline/10 rounded-xl shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+        <div className="flex items-start gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
+            <Boxes className="h-4 w-4" />
+          </div>
+          <div>
+            <span className="font-bold text-on-surface">Panduan Pengajuan Restock:</span>
+            <span className="text-on-surface-variant ml-1">
+              Formulir ini digunakan untuk menerbitkan Purchase Order (PO) resmi ke Pabrik Mayora (DC Pasuruan / Driyorejo). Sistem memantau batas kapasitas truk Wingbox (FTL) dan plafon kredit distributor secara otomatis agar pemesanan efisien dan bebas kendala administrasi.
+            </span>
+          </div>
+        </div>
+        <Badge variant="surface" className="text-[10px] shrink-0 font-mono">
+          Alokasi Pabrik Mayora
+        </Badge>
+      </div>
+
       {/* Smart Pre-Filled Recommendation Banner */}
       <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-surface-container-lowest via-surface-container-low to-surface-container-lowest p-5 shadow-sm border border-outline/10">
         <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-primary"></div>
@@ -258,7 +276,7 @@ export default function RestockRequest({ setCurrentScreen }) {
                   Rekomendasi Kebutuhan Restock
                 </span>
                 <span className="font-mono text-xs text-tertiary font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
-                  Service Level 95% (Z=1.65)
+                  Target Layanan 95% (Optimal)
                 </span>
               </div>
               <h2 className="text-base font-bold text-on-surface">
@@ -465,7 +483,7 @@ export default function RestockRequest({ setCurrentScreen }) {
                   }`}
                 >
                   <div className="font-bold text-xs text-primary flex items-center gap-1">
-                    <span>Expedited GTNIC (24 Jam)</span>
+                    <span>Pengiriman Prioritas (24 Jam)</span>
                     <Badge variant="tertiary" className="text-[8px] py-0 px-1">Prioritas</Badge>
                   </div>
                   <div className="text-[10px] text-on-surface-variant mt-0.5">Pengiriman esok subuh langsung</div>

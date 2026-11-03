@@ -507,7 +507,7 @@ export default function DistributorOverview({ setCurrentScreen }) {
             </div>
             <div>
               <div className="text-xs font-bold text-on-surface">
-                Peringatan Stok &amp; FEFO: {lowestSku.name.split('(')[0].trim()}
+                Peringatan Stok Rendah: {lowestSku.name.split('(')[0].trim()}
               </div>
               <div className="text-[11px] text-on-surface-variant">
                 Stok fisik gudang: <strong>{lowestSku.stockCartons} dus</strong> • Batch {lowestSku.batchNumber} (Sisa umur simpan: {lowestSku.daysUntilExpiry} hari).
@@ -557,13 +557,31 @@ export default function DistributorOverview({ setCurrentScreen }) {
         </div>
       </div>
 
+      {/* Panduan Operasional Depo Krian */}
+      <div className="p-4 bg-surface-container-lowest border border-outline/10 rounded-xl shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+        <div className="flex items-start gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
+            <Warehouse className="h-4 w-4" />
+          </div>
+          <div>
+            <span className="font-bold text-on-surface">Panduan Operasional Gudang:</span>
+            <span className="text-on-surface-variant ml-1">
+              Gunakan tabel inventori untuk mengaudit stok riil per batch FEFO. Pesanan toko mitra di kolom bawah dapat dimajukan statusnya secara bertahap hingga selesai terkirim. Klik baris SKU, Order, atau Armada mana pun untuk inspeksi detail lengkap.
+            </span>
+          </div>
+        </div>
+        <Badge variant="surface" className="text-[10px] shrink-0 font-mono">
+          Depo Hub Sidoarjo Barat
+        </Badge>
+      </div>
+
       {/* 4 Primary KPI Metrik Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         {/* Card 1 */}
         <Card className="border border-outline/10 shadow-xs hover:shadow-md transition-shadow">
           <CardContent className="p-4 flex flex-col justify-between h-full">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Total Stok Aktif (DB)</span>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Total Stok Fisik Gudang</span>
               <span className="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant">
                 <Warehouse className="h-4 w-4" />
               </span>
@@ -592,7 +610,7 @@ export default function DistributorOverview({ setCurrentScreen }) {
         <Card className="border-l-4 border-l-red-600 border border-outline/10 shadow-xs hover:shadow-md transition-shadow">
           <CardContent className="p-4 flex flex-col justify-between h-full">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-red-600">SKU Kritis &amp; FEFO Danger</span>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-red-600">SKU Kritis &amp; Peringatan FEFO</span>
               <span className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center text-red-700">
                 <AlertTriangle className="h-4 w-4" />
               </span>
@@ -606,7 +624,7 @@ export default function DistributorOverview({ setCurrentScreen }) {
                 {criticalSkus.map((s) => s.name.split(' ')[0]).join(', ') || 'Semua SKU Aman'}
               </div>
               <div className="text-[10px] text-on-surface-variant mt-0.5">
-                FEFO Danger (&lt;90hr): {fefo?.summary?.dangerCount || 0} Batch
+                Masa Simpan &lt;90 Hari: {fefo?.summary?.dangerCount || 0} Batch
               </div>
             </div>
           </CardContent>
@@ -616,7 +634,7 @@ export default function DistributorOverview({ setCurrentScreen }) {
         <Card className="border border-outline/10 shadow-xs hover:shadow-md transition-shadow">
           <CardContent className="p-4 flex flex-col justify-between h-full">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Penjualan DSR Tercatat</span>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Penjualan Harian Sales (DSR)</span>
               <span className="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant">
                 <TrendingUp className="h-4 w-4" />
               </span>
@@ -890,7 +908,7 @@ export default function DistributorOverview({ setCurrentScreen }) {
                       <div className="flex-1 max-w-sm space-y-1">
                         <div className="flex justify-between text-[11px]">
                           <span className="text-on-surface-variant">
-                            Stok Fisik DB: <strong className="text-on-surface font-mono">{sku.stockCartons} Dus</strong>
+                            Stok Fisik Gudang: <strong className="text-on-surface font-mono">{sku.stockCartons} Dus</strong>
                           </span>
                           <span className="text-on-surface-variant font-mono">{formatRupiah(sku.cartonPrice)}/dus</span>
                         </div>
@@ -973,7 +991,7 @@ export default function DistributorOverview({ setCurrentScreen }) {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-outline/10 pb-3">
               <div className="flex items-center gap-2">
                 <FileText className="h-4 w-4 text-primary" />
-                <h3 className="font-bold text-xs text-on-surface">Antrean Pesanan Grosir Toko (One-Way State Machine)</h3>
+                <h3 className="font-bold text-xs text-on-surface">Antrean Pesanan Grosir Mitra Toko</h3>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-[11px] font-mono text-on-surface-variant">
@@ -995,17 +1013,24 @@ export default function DistributorOverview({ setCurrentScreen }) {
                 />
               </div>
               <div className="flex items-center gap-1 overflow-x-auto text-[10px] no-scrollbar">
-                {['ALL', 'PENDING', 'CONFIRMED', 'PACKING', 'DISPATCHED', 'COMPLETED'].map((st) => (
+                {[
+                  { id: 'ALL', label: 'Semua' },
+                  { id: 'PENDING', label: 'Menunggu' },
+                  { id: 'CONFIRMED', label: 'Dikonfirmasi' },
+                  { id: 'PACKING', label: 'Dipacking' },
+                  { id: 'DISPATCHED', label: 'Dikirim' },
+                  { id: 'COMPLETED', label: 'Selesai' },
+                ].map((st) => (
                   <button
-                    key={st}
-                    onClick={() => setOrderStatusFilter(st)}
+                    key={st.id}
+                    onClick={() => setOrderStatusFilter(st.id)}
                     className={`px-2 py-1 rounded font-semibold whitespace-nowrap transition-all ${
-                      orderStatusFilter === st
+                      orderStatusFilter === st.id
                         ? 'bg-primary text-white font-bold'
                         : 'bg-surface-container-low text-on-surface-variant hover:text-on-surface'
                     }`}
                   >
-                    {st === 'ALL' ? 'Semua' : st}
+                    {st.label}
                   </button>
                 ))}
               </div>
@@ -1299,7 +1324,7 @@ export default function DistributorOverview({ setCurrentScreen }) {
             <div className="flex items-center justify-between border-b border-outline/10 pb-3">
               <div className="flex items-center gap-2">
                 <Boxes className="h-5 w-5 text-primary" />
-                <h3 className="font-bold text-base text-on-surface">Tambah SKU Produk FMCG Baru</h3>
+                <h3 className="font-bold text-base text-on-surface">Tambah SKU Produk Baru</h3>
               </div>
               <button
                 type="button"
@@ -1881,10 +1906,10 @@ export default function DistributorOverview({ setCurrentScreen }) {
               </button>
             </div>
 
-            {/* Visual One-Way State Machine Stepper (5 Steps) */}
+            {/* Visual Stepper (5 Steps) */}
             <div className="space-y-2">
               <span className="text-[10px] text-outline uppercase font-bold tracking-wider block">
-                Alur Progres One-Way State Machine
+                Tahapan Pemrosesan Pesanan (Status Alur)
               </span>
               <div className="grid grid-cols-5 gap-1.5 text-center text-[10px]">
                 {[

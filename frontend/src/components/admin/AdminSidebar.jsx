@@ -53,7 +53,7 @@ export default function AdminSidebar({ currentScreen, setCurrentScreen }) {
       label: 'Stockout Risk Radar', 
       icon: AlertTriangle, 
       badge: `${criticalCount} Kritis`, 
-      badgeColor: 'destructive' 
+      badgeColor: criticalCount > 0 ? 'destructive' : 'surface' 
     },
     { id: 'smart-recommendations', label: 'Smart Replenishment', icon: Sparkles, badge: 'AI' },
     { id: 'what-if-simulator', label: 'What-if Simulator', icon: Sliders, badge: 'AI Inovasi', badgeColor: 'tertiary' },

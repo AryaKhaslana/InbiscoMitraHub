@@ -169,7 +169,7 @@ export default function SmartRecommendations({ setCurrentScreen }) {
             Prescriptive Replenishment Engine
           </h1>
           <p className="text-sm text-on-surface-variant mt-1 max-w-3xl">
-            Sistem optimasi alokasi inventaris otomatis Mayora Enterprise HQ. Mengalkulasi laju penjualan dinamis (ADS), safety stock, dan utilitas kubikasi armada wingbox secara presisi berdasarkan data operasional rantai pasok.
+            Sistem cerdas penghitung alokasi restock inventaris Mayora HQ. Mengoptimalkan pemesanan berbasis laju konsumsi riil (ADS), batas pengaman stok (Safety Stock), dan efisiensi kubikasi armada Wingbox (FTL).
           </p>
         </div>
 
@@ -205,6 +205,24 @@ export default function SmartRecommendations({ setCurrentScreen }) {
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin text-primary' : ''}`} />
           </Button>
         </div>
+      </div>
+
+      {/* Panduan Cepat & Konteks Alokasi Cerdas */}
+      <div className="p-4 bg-surface-container-lowest border border-outline/10 rounded-xl shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+        <div className="flex items-start gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
+            <Brain className="h-4 w-4" />
+          </div>
+          <div>
+            <span className="font-bold text-on-surface">Panduan Alokasi Restock:</span>
+            <span className="text-on-surface-variant ml-1">
+              Rekomendasi dihitung otomatis untuk memenuhi target stok 7 hari ke depan. Anda dapat mengatur kuantitas pesanan via tombol (+ / -), melakukan uji dampak via menu <strong>Simulasi</strong>, atau mengesahkan sekaligus melalui <strong>Otorisasi Semua PO Rekomendasi</strong>.
+            </span>
+          </div>
+        </div>
+        <Badge variant="surface" className="text-[10px] shrink-0 font-mono">
+          Model Preskriptif Dinamis
+        </Badge>
       </div>
 
       {/* Macro Summary Banner from API */}
@@ -352,7 +370,7 @@ export default function SmartRecommendations({ setCurrentScreen }) {
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-bold text-on-surface flex items-center gap-1.5">
                         <Brain className="h-3.5 w-3.5 text-primary" />
-                        Kalkulasi Explainable AI ({rec.safetyStockFormula})
+                        Kalkulasi Alokasi Cerdas (Safety Stock Dinamis)
                       </span>
                     </div>
 
@@ -370,7 +388,7 @@ export default function SmartRecommendations({ setCurrentScreen }) {
                         <div className="font-bold font-mono text-[11px] mt-0.5 text-emerald-700">+{rec.safetyStock}</div>
                       </div>
                       <div className="p-1.5 bg-surface-container-lowest rounded">
-                        <div className="text-[9px] text-on-surface-variant">Stok Riil DB</div>
+                        <div className="text-[9px] text-on-surface-variant">Stok Fisik Gudang</div>
                         <div className="font-bold font-mono text-[11px] mt-0.5 text-error">{rec.stockCartons}</div>
                       </div>
                     </div>

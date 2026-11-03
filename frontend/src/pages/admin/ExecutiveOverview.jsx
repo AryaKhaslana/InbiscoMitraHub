@@ -238,6 +238,24 @@ export default function ExecutiveOverview({ setCurrentScreen }) {
         </div>
       </div>
 
+      {/* Panduan Cepat & Konteks Eksekutif */}
+      <div className="p-4 bg-surface-container-lowest border border-outline/10 rounded-xl shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+        <div className="flex items-start gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
+            <Building2 className="h-4 w-4" />
+          </div>
+          <div>
+            <span className="font-bold text-on-surface">Konteks Eksekutif Jaringan:</span>
+            <span className="text-on-surface-variant ml-1">
+              Dashboard ini menyajikan telemetri makro ketersediaan produk Mayora di seluruh Jawa Timur. Gunakan panel <strong>Triage Prioritas Operasional</strong> di bawah untuk merespons SKU kritis atau antrean armada secara langsung.
+            </span>
+          </div>
+        </div>
+        <Badge variant="surface" className="text-[10px] shrink-0 font-mono">
+          Telemetri Makro Enterprise
+        </Badge>
+      </div>
+
       {/* Live Manifest Preview Banner if triggered */}
       {manifestData && (
         <Card className="border-2 border-primary/20 bg-surface-container-lowest shadow-xs">
@@ -456,7 +474,7 @@ export default function ExecutiveOverview({ setCurrentScreen }) {
                       <td className="py-3 px-3 text-right font-mono font-semibold text-on-surface">{dist.healthPct}%</td>
                       <td className="py-3 px-3 text-center">
                         <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${statusBadge}`}>
-                          {dist.status}
+                          {dist.status === 'SURPLUS_DONOR' ? 'Surplus (Donor)' : dist.status === 'ATTENTION' ? 'Perlu Atensi' : 'Optimal'}
                         </span>
                       </td>
                       <td className="py-3 px-3 text-right">
