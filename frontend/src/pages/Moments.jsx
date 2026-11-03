@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 
 export default function Moments({ setActiveNav }) {
+  const [selectedCategory, setSelectedCategory] = useState('Semua');
   const [activePhotoModal, setActivePhotoModal] = useState(null);
 
   useEffect(() => {
@@ -114,6 +115,23 @@ export default function Moments({ setActiveNav }) {
     { title: 'Sidoarjo Barat (Sub-Rute)', desc: 'Perimeter koridor Sukodono dan jalur lingkar industri pergudangan.' },
   ];
 
+  const categoryFilters = [
+    { id: 'Semua', label: 'Semua Foto', icon: 'grid_view' },
+    { id: 'Gudang & QA', label: 'Gudang & QA', icon: 'warehouse' },
+    { id: 'Armada & Logistik', label: 'Armada & Logistik', icon: 'local_shipping' },
+    { id: 'Mitra & Toko', label: 'Mitra & Toko', icon: 'storefront' },
+    { id: 'Event & Edukasi', label: 'Event & Edukasi', icon: 'groups' },
+  ];
+
+  const getCategoryCount = (catId) => {
+    if (catId === 'Semua') return galleryItems.length;
+    return galleryItems.filter((item) => item.category === catId).length;
+  };
+
+  const filteredItems = galleryItems.filter((item) =>
+    selectedCategory === 'Semua' ? true : item.category === selectedCategory
+  );
+
 
   return (
     <div className="w-full bg-surface pb-16">
@@ -204,7 +222,7 @@ export default function Moments({ setActiveNav }) {
       {/* ========================================================= */}
       <section className="py-14 bg-surface-container-low border-t border-surface-container-high">
         <div className="max-w-[1280px] mx-auto px-4 md:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-8 gap-4">
             <div>
               <span className="text-xs font-bold text-primary uppercase tracking-wider">
                 GALERI DOKUMENTASI RESMI
@@ -212,13 +230,49 @@ export default function Moments({ setActiveNav }) {
               <h2 className="text-2xl sm:text-3xl font-bold font-display text-on-surface mt-1">
                 Dokumentasi Lapangan & Ekosistem Kemitraan
               </h2>
+              <p className="text-xs text-on-surface-variant mt-1">
+                Pilih filter kategori untuk melihat dokumentasi unit kerja dan kesiapan distribusi Cabang Krian:
+              </p>
             </div>
 
+            {/* Category Filter Pills with Item Counters */}
+            <div className="flex flex-wrap items-center gap-2">
+              {categoryFilters.map((cat) => {
+                const count = getCategoryCount(cat.id);
+                const isSelected = selectedCategory === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-150 cursor-pointer ${
+                      isSelected
+                        ? 'bg-primary-container text-white shadow-xs scale-102 ring-1 ring-primary-container/20'
+                        : 'bg-surface-container-lowest text-on-surface border border-surface-container-high hover:border-outline-variant hover:bg-surface-container'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[16px]">
+                      {cat.icon}
+                    </span>
+                    <span>{cat.label}</span>
+                    <span
+                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-semibold ${
+                        isSelected
+                          ? 'bg-white/25 text-white'
+                          : 'bg-surface-container text-on-surface-variant'
+                      }`}
+                    >
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Photos Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {galleryItems.map((item) => (
+            {filteredItems.map((item) => (
               <div
                 key={item.id}
                 onClick={() => setActivePhotoModal(item)}
@@ -231,6 +285,15 @@ export default function Moments({ setActiveNav }) {
                       alt={item.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
+                    {/* Badge Overlay */}
+                    <span className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-md bg-surface-container-lowest/90 backdrop-blur-xs text-[10px] font-bold text-on-surface shadow-xs border border-surface-container-high/80">
+                      {item.badge}
+                    </span>
+                    {/* Hover Visual Preview Hint */}
+                    <span className="absolute bottom-2.5 right-2.5 px-2 py-1 rounded bg-black/65 text-white text-[10px] font-semibold opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 backdrop-blur-xs">
+                      <Eye className="h-3 w-3" />
+                      <span>Buka Foto</span>
+                    </span>
                   </div>
 
                   <div className="p-4 space-y-1.5">
@@ -245,8 +308,32 @@ export default function Moments({ setActiveNav }) {
                     </p>
                   </div>
                 </div>
+
+                <div className="px-4 pb-3.5 pt-1 text-[11px] font-bold text-primary flex items-center justify-between border-t border-surface-container-low">
+                  <span className="flex items-center gap-1 group-hover:underline">
+                    <Eye className="h-3.5 w-3.5" />
+                    <span>Lihat Foto Penuh</span>
+                  </span>
+                  <span className="material-symbols-outlined text-[15px] text-outline group-hover:text-primary group-hover:translate-x-0.5 transition-transform">
+                    open_in_full
+                  </span>
+                </div>
               </div>
             ))}
+
+            {filteredItems.length === 0 && (
+              <div className="col-span-full py-12 text-center bg-surface-container-lowest rounded-xl border border-surface-container-high p-8 space-y-2">
+                <span className="material-symbols-outlined text-4xl text-outline">photo_library</span>
+                <p className="text-sm font-semibold text-on-surface">Tidak ada dokumentasi dalam kategori ini</p>
+                <button
+                  type="button"
+                  onClick={() => setSelectedCategory('Semua')}
+                  className="text-xs font-bold text-primary hover:underline"
+                >
+                  Tampilkan Semua Foto
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </section>
