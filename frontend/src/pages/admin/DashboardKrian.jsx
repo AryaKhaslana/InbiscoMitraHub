@@ -20,7 +20,10 @@ import {
   RefreshCw,
   Plus,
   X,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Eye,
+  FileText,
+  MapPin
 } from 'lucide-react';
 
 export default function DashboardKrian() {
@@ -37,6 +40,10 @@ export default function DashboardKrian() {
   const [manifestModalOpen, setManifestModalOpen] = useState(false);
   const [manifestData, setManifestData] = useState(null);
 
+  // READ Detail Modals
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [selectedSku, setSelectedSku] = useState(null);
+
   // DSR input state
   const [dsrSku, setDsrSku] = useState('MYR-RMK-01');
   const [dsrCartons, setDsrCartons] = useState(10);
@@ -50,6 +57,8 @@ export default function DashboardKrian() {
     const onKeyDown = (e) => {
       if (e.key === 'Escape') {
         setManifestModalOpen(false);
+        setSelectedOrder(null);
+        setSelectedSku(null);
       }
     };
     window.addEventListener('keydown', onKeyDown);
@@ -306,22 +315,34 @@ export default function DashboardKrian() {
                             </Badge>
                           </td>
                           <td className="p-3 text-right whitespace-nowrap">
-                            {o.nextStatus ? (
+                            <div className="flex items-center justify-end gap-1.5">
                               <Button
-                                onClick={() => handleUpdateStatus(o.id || o.trackingCode, o.nextStatus)}
-                                disabled={isUpdating}
                                 size="sm"
                                 variant="outline"
-                                className="h-7 text-[11px] font-bold gap-1"
+                                onClick={() => setSelectedOrder(o)}
+                                className="h-7 text-[11px] px-2 gap-1 font-semibold text-primary"
+                                title="Lihat Rincian Pesanan"
                               >
-                                <span>{isUpdating ? '...' : (o.nextActionLabel || `Ke ${o.nextStatus}`)}</span>
-                                <ArrowRight className="h-3 w-3" />
+                                <Eye className="h-3 w-3" />
+                                <span>Detail</span>
                               </Button>
-                            ) : (
-                              <span className="text-[11px] text-emerald-700 font-bold flex items-center justify-end gap-1">
-                                <CheckCircle2 className="h-3.5 w-3.5" /> Selesai
-                              </span>
-                            )}
+
+                              {o.nextStatus ? (
+                                <Button
+                                  onClick={() => handleUpdateStatus(o.id || o.trackingCode, o.nextStatus)}
+                                  disabled={isUpdating}
+                                  size="sm"
+                                  className="h-7 text-[11px] font-bold gap-1 bg-primary text-white"
+                                >
+                                  <span>{isUpdating ? '...' : (o.nextActionLabel || `Ke ${o.nextStatus}`)}</span>
+                                  <ArrowRight className="h-3 w-3" />
+                                </Button>
+                              ) : (
+                                <span className="text-[11px] text-emerald-700 font-bold flex items-center gap-1">
+                                  <CheckCircle2 className="h-3.5 w-3.5" /> Selesai
+                                </span>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       );
@@ -433,12 +454,13 @@ export default function DashboardKrian() {
                 <th className="p-3">Safety Stock</th>
                 <th className="p-3">Tanggal Expired</th>
                 <th className="p-3">Status FEFO</th>
+                <th className="p-3 text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-outline/10">
               {inventory.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="p-6 text-center text-on-surface-variant">
+                  <td colSpan={7} className="p-6 text-center text-on-surface-variant">
                     Memuat data inventori gudang...
                   </td>
                 </tr>
@@ -465,6 +487,18 @@ export default function DashboardKrian() {
                       >
                         {item.fefoBadge || 'SAFE'}
                       </Badge>
+                    </td>
+                    <td className="p-3 text-right whitespace-nowrap">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setSelectedSku(item)}
+                        className="h-7 text-[11px] px-2 gap-1 font-semibold text-primary"
+                        title="Lihat Detail SKU"
+                      >
+                        <Eye className="h-3 w-3" />
+                        <span>Detail</span>
+                      </Button>
                     </td>
                   </tr>
                 ))
@@ -564,6 +598,143 @@ export default function DashboardKrian() {
                   Tutup
                 </Button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: DETAIL PESANAN DISPATCH (READ) */}
+      {selectedOrder && (
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) setSelectedOrder(null); }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 cursor-pointer animate-in fade-in duration-150"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-lg bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline/15 overflow-hidden cursor-default space-y-4 p-5"
+          >
+            <div className="flex items-center justify-between border-b border-outline/10 pb-3">
+              <div className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-primary" />
+                <div>
+                  <h3 className="font-bold text-base text-on-surface">Faktur Pesanan {selectedOrder.trackingCode}</h3>
+                  <p className="text-[11px] text-on-surface-variant font-mono">
+                    Status: <strong className="text-primary">{selectedOrder.status}</strong>
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedOrder(null)}
+                className="p-1 rounded-lg text-on-surface-variant hover:bg-surface-container"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="p-3 bg-surface-container-low rounded-xl space-y-1.5">
+                <div className="flex justify-between">
+                  <span className="text-outline">Toko Tujuan:</span>
+                  <strong className="text-on-surface">{selectedOrder.store?.name || selectedOrder.storeName || 'Toko Mitra'}</strong>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-outline">Alamat / Wilayah:</span>
+                  <span className="text-on-surface">{selectedOrder.store?.district || selectedOrder.district || 'Sidoarjo'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-outline">Metode Pembayaran:</span>
+                  <span className="font-mono font-bold text-primary">{selectedOrder.paymentMethod || 'COD'}</span>
+                </div>
+              </div>
+
+              <div className="p-3 bg-surface-container-low rounded-xl space-y-2">
+                <span className="text-[10px] text-outline uppercase font-bold block">Ringkasan Barang Pesanan:</span>
+                <div className="text-on-surface font-semibold">
+                  {selectedOrder.itemsSummary || (selectedOrder.items && selectedOrder.items.map(i => `${i.product?.name || 'SKU'} (${i.quantity} dus)`).join(', ')) || '1 SKU'}
+                </div>
+                <div className="pt-2 border-t border-outline/10 flex justify-between items-center text-sm">
+                  <span className="font-bold text-on-surface">Total Nilai Tagihan:</span>
+                  <span className="font-mono font-black text-primary">{formatRupiah(selectedOrder.totalAmount)}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-outline/10 flex justify-end">
+              <Button onClick={() => setSelectedOrder(null)} variant="outline" size="sm" className="text-xs">
+                Tutup
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: DETAIL INVENTORI SKU (READ) */}
+      {selectedSku && (
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) setSelectedSku(null); }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 cursor-pointer animate-in fade-in duration-150"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-lg bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline/15 overflow-hidden cursor-default space-y-4 p-5"
+          >
+            <div className="flex items-center justify-between border-b border-outline/10 pb-3">
+              <div className="flex items-center gap-2">
+                <Boxes className="h-5 w-5 text-primary" />
+                <div>
+                  <h3 className="font-bold text-base text-on-surface">{selectedSku.name}</h3>
+                  <span className="text-[11px] font-mono text-outline">SKU: {selectedSku.sku}</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedSku(null)}
+                className="p-1 rounded-lg text-on-surface-variant hover:bg-surface-container"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="grid grid-cols-2 gap-2 p-3 bg-surface-container-low rounded-xl">
+                <div>
+                  <span className="text-[10px] text-outline block">Stok Fisik Saat Ini</span>
+                  <strong className="text-base font-mono text-primary">{selectedSku.stock} Karton</strong>
+                </div>
+                <div>
+                  <span className="text-[10px] text-outline block">Safety Stock Threshold</span>
+                  <strong className="text-base font-mono text-on-surface">{selectedSku.minStock || 150} Karton</strong>
+                </div>
+              </div>
+
+              <div className="p-3 bg-surface-container-low rounded-xl space-y-1.5">
+                <div className="flex justify-between">
+                  <span className="text-outline">Status Kepatuhan FEFO:</span>
+                  <Badge
+                    variant={selectedSku.fefoBadge === 'DANGER' ? 'destructive' : selectedSku.fefoBadge === 'WARNING' ? 'warning' : 'success'}
+                    className="text-[10px]"
+                  >
+                    {selectedSku.fefoBadge || 'SAFE'}
+                  </Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-outline">Tanggal Kedaluwarsa:</span>
+                  <strong className="font-mono text-on-surface">
+                    {selectedSku.expiryDate ? new Date(selectedSku.expiryDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'}
+                  </strong>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-outline">Harga Karton Grosir:</span>
+                  <strong className="font-mono text-on-surface">{formatRupiah(selectedSku.price || selectedSku.cartonPrice || 215000)}</strong>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-outline/10 flex justify-end">
+              <Button onClick={() => setSelectedSku(null)} variant="outline" size="sm" className="text-xs">
+                Tutup
+              </Button>
             </div>
           </div>
         </div>

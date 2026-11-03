@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Card, CardContent } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
@@ -26,7 +26,13 @@ import {
   Boxes,
   UploadCloud,
   Image as ImageIcon,
-  Zap
+  Zap,
+  Eye,
+  Search,
+  Filter,
+  Calendar,
+  Tag,
+  ChevronRight
 } from 'lucide-react';
 import { formatRupiah } from '../../lib/utils';
 
@@ -109,6 +115,24 @@ export default function DistributorOverview({ setCurrentScreen }) {
   const [selectedStoreProposal, setSelectedStoreProposal] = useState(null);
   const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
   const [orderAdvanceToast, setOrderAdvanceToast] = useState(null);
+
+  // READ Inspection Dossier Modals
+  const [selectedProductDetail, setSelectedProductDetail] = useState(null);
+  const [selectedInboundDetail, setSelectedInboundDetail] = useState(null);
+
+  // Search & Filter State for Inventory
+  const [inventorySearch, setInventorySearch] = useState('');
+  const [inventoryCategory, setInventoryCategory] = useState('ALL');
+  const [inventoryFefoFilter, setInventoryFefoFilter] = useState('ALL');
+
+  // Search & Filter State for Wholesale Orders
+  const [orderSearch, setOrderSearch] = useState('');
+  const [orderStatusFilter, setOrderStatusFilter] = useState('ALL');
+
+  // Search & Filter State for Partner Stores
+  const [storeSearch, setStoreSearch] = useState('');
+  const [storeDistrictFilter, setStoreDistrictFilter] = useState('ALL');
+  const [storeStatusFilter, setStoreStatusFilter] = useState('ALL');
 
   // CRUD Modal & Feedback State
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -212,6 +236,8 @@ export default function DistributorOverview({ setCurrentScreen }) {
         setProductToDelete(null);
         setSelectedStoreProposal(null);
         setSelectedOrderDetails(null);
+        setSelectedProductDetail(null);
+        setSelectedInboundDetail(null);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -401,6 +427,66 @@ export default function DistributorOverview({ setCurrentScreen }) {
   };
 
   const inventoryItems = fefo?.inventory || [];
+
+  const INVENTORY_CATEGORIES = ['ALL', 'Biskuit', 'Wafer', 'Cokelat', 'Kopi', 'Sereal', 'Permen', 'Minuman'];
+
+  const filteredInventory = useMemo(() => {
+    return inventoryItems.filter((item) => {
+      if (inventoryCategory !== 'ALL' && item.category !== inventoryCategory) {
+        return false;
+      }
+      if (inventoryFefoFilter !== 'ALL' && item.fefoStatus !== inventoryFefoFilter) {
+        return false;
+      }
+      if (inventorySearch.trim()) {
+        const q = inventorySearch.toLowerCase().trim();
+        const matchSku = item.sku?.toLowerCase().includes(q);
+        const matchName = item.name?.toLowerCase().includes(q);
+        const matchBatch = item.batchNumber?.toLowerCase().includes(q);
+        if (!matchSku && !matchName && !matchBatch) return false;
+      }
+      return true;
+    });
+  }, [inventoryItems, inventoryCategory, inventoryFefoFilter, inventorySearch]);
+
+  const filteredOrders = useMemo(() => {
+    return orders.filter((ord) => {
+      if (orderStatusFilter !== 'ALL' && ord.status !== orderStatusFilter) {
+        return false;
+      }
+      if (orderSearch.trim()) {
+        const q = orderSearch.toLowerCase().trim();
+        const matchCode = ord.trackingCode?.toLowerCase().includes(q);
+        const matchStore = ord.store?.name?.toLowerCase().includes(q);
+        const matchDistrict = ord.store?.district?.toLowerCase().includes(q);
+        if (!matchCode && !matchStore && !matchDistrict) return false;
+      }
+      return true;
+    });
+  }, [orders, orderStatusFilter, orderSearch]);
+
+  const filteredStores = useMemo(() => {
+    return stores.filter((st) => {
+      if (storeDistrictFilter !== 'ALL' && st.district?.toLowerCase() !== storeDistrictFilter.toLowerCase()) {
+        return false;
+      }
+      if (storeStatusFilter === 'VERIFIED' && !st.isVerified) return false;
+      if (storeStatusFilter === 'PENDING' && st.isVerified) return false;
+      if (storeSearch.trim()) {
+        const q = storeSearch.toLowerCase().trim();
+        const matchName = st.name?.toLowerCase().includes(q);
+        const matchOwner = st.ownerName?.toLowerCase().includes(q);
+        const matchPhone = st.phone?.toLowerCase().includes(q);
+        if (!matchName && !matchOwner && !matchPhone) return false;
+      }
+      return true;
+    });
+  }, [stores, storeDistrictFilter, storeStatusFilter, storeSearch]);
+
+  const uniqueDistricts = useMemo(() => {
+    const list = stores.map((s) => s.district).filter(Boolean);
+    return ['ALL', ...Array.from(new Set(list))];
+  }, [stores]);
   const totalCartons = fefo?.summary?.totalCartonsInWarehouse ?? 1745;
   const capacityPct = Math.min(100, Math.round((totalCartons / 2400) * 100));
   const criticalSkus = inventoryItems.filter((i) => i.stockCartons < 150 || i.fefoStatus === 'DANGER');
@@ -553,18 +639,29 @@ export default function DistributorOverview({ setCurrentScreen }) {
           </CardContent>
         </Card>
 
-        {/* Card 4 */}
-        <Card className="border border-outline/10 shadow-xs hover:shadow-md transition-shadow">
+        {/* Card 4 - Armada Inbound */}
+        <Card 
+          onClick={() => activeInbound && setSelectedInboundDetail(activeInbound)}
+          className="border border-outline/10 shadow-xs hover:shadow-md transition-shadow cursor-pointer hover:border-primary/40 group"
+          title="Klik untuk membuka Manifest & Surat Jalan Inbound"
+        >
           <CardContent className="p-4 flex flex-col justify-between h-full">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Armada Inbound &amp; Order</span>
-              <span className="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant group-hover:text-primary transition-colors">
+                Armada Inbound &amp; Order
+              </span>
+              <span className="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-primary/10 group-hover:text-primary transition-colors">
                 <Truck className="h-4 w-4" />
               </span>
             </div>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-2xl font-extrabold text-on-surface">{inbound?.activeCount ?? 1}</span>
-              <span className="text-xs text-on-surface-variant font-medium">Truk Wingbox Inbound</span>
+            <div className="flex items-baseline justify-between gap-1.5">
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-2xl font-extrabold text-on-surface">{inbound?.activeCount ?? 1}</span>
+                <span className="text-xs text-on-surface-variant font-medium">Truk Wingbox Inbound</span>
+              </div>
+              <span className="text-[10px] text-primary font-bold flex items-center gap-0.5 group-hover:underline">
+                Manifest <ChevronRight className="h-3 w-3" />
+              </span>
             </div>
             <div className="mt-3 pt-2.5 bg-surface-container-low -mx-4 -mb-4 px-4 pb-3 rounded-b-xl border-t border-outline/5">
               <div className="flex items-center justify-between text-[11px]">
@@ -581,7 +678,7 @@ export default function DistributorOverview({ setCurrentScreen }) {
         </Card>
       </div>
 
-      {/* Main SKU Inventory Health & FEFO Grid (With Live Stock Update Controls) */}
+      {/* Main SKU Inventory Health & FEFO Grid (With Live Stock Update Controls & Rich READ Explorer) */}
       <Card className="border border-outline/10 shadow-xs">
         <CardContent className="p-5 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -591,7 +688,7 @@ export default function DistributorOverview({ setCurrentScreen }) {
                 Inventori Gudang Krian &amp; Rotasi Batch FEFO (First-Expired, First-Out)
               </h3>
               <p className="text-xs text-on-surface-variant">
-                Diurutkan otomatis berdasarkan tanggal kedaluwarsa terdekat. Gunakan tombol +/- untuk penyesuaian stok fisik.
+                Klik baris SKU untuk membuka Dossier Spesifikasi Lengkap. Gunakan filter dan pencarian untuk mengaudit stok.
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -613,7 +710,7 @@ export default function DistributorOverview({ setCurrentScreen }) {
           </div>
 
           {productActionFeedback && (
-            <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-xs font-semibold flex items-center justify-between">
+            <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-xs font-semibold flex items-center justify-between animate-in fade-in">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
                 <span>{productActionFeedback.message}</span>
@@ -624,108 +721,246 @@ export default function DistributorOverview({ setCurrentScreen }) {
             </div>
           )}
 
-          <div className="space-y-2.5">
-            {inventoryItems.map((sku) => {
-              const fefoBadge =
-                sku.fefoStatus === 'DANGER' || sku.fefoStatus === 'EXPIRED'
-                  ? 'bg-red-100 text-red-800 border-red-200'
-                  : sku.fefoStatus === 'WARNING'
-                  ? 'bg-amber-100 text-amber-800 border-amber-200'
-                  : 'bg-emerald-100 text-emerald-800 border-emerald-200';
-              const barColor =
-                sku.stockCartons < 150
-                  ? 'bg-red-600'
-                  : sku.stockCartons < 250
-                  ? 'bg-amber-500'
-                  : 'bg-emerald-600';
-              const fillPercent = Math.min(100, Math.round((sku.stockCartons / 500) * 100));
+          {/* Interactive Search & Multi-Filter Bar (Enhanced READ Experience) */}
+          <div className="space-y-3 pt-1 border-t border-outline/10">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              {/* Search Bar */}
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-on-surface-variant" />
+                <input
+                  type="text"
+                  value={inventorySearch}
+                  onChange={(e) => setInventorySearch(e.target.value)}
+                  placeholder="Cari SKU, nama produk Mayora, atau no. batch..."
+                  className="w-full h-8 pl-8 pr-8 rounded-lg bg-surface-container-low border border-outline/20 text-xs text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+                {inventorySearch && (
+                  <button
+                    onClick={() => setInventorySearch('')}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface p-0.5"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                )}
+              </div>
 
-              const isTargeted = highlightedSku === sku.sku;
-              return (
-                <div 
-                  id={`sku-row-${sku.sku}`}
-                  key={sku.id} 
-                  className={`p-3.5 rounded-xl border transition-all duration-300 ${
-                    isTargeted
-                      ? 'bg-primary/10 border-primary ring-2 ring-primary/40 shadow-md'
-                      : 'bg-surface-container-low border-outline/10 hover:border-outline/25'
-                  }`}
+              {/* FEFO Status Filter Tabs */}
+              <div className="flex items-center gap-1 bg-surface-container-low p-1 rounded-lg border border-outline/10 text-xs self-start sm:self-auto">
+                {[
+                  { id: 'ALL', label: 'Semua Status' },
+                  { id: 'DANGER', label: 'Kritis (<3 Bln)' },
+                  { id: 'WARNING', label: 'Waspada (<6 Bln)' },
+                  { id: 'SAFE', label: 'Aman' },
+                ].map((st) => (
+                  <button
+                    key={st.id}
+                    onClick={() => setInventoryFefoFilter(st.id)}
+                    className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all ${
+                      inventoryFefoFilter === st.id
+                        ? 'bg-surface-container-lowest text-primary shadow-xs font-bold'
+                        : 'text-on-surface-variant hover:text-on-surface'
+                    }`}
+                  >
+                    {st.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Category Filter Pills */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-outline shrink-0 mr-1 flex items-center gap-1">
+                <Tag className="h-3 w-3" /> Kategori:
+              </span>
+              {INVENTORY_CATEGORIES.map((cat) => {
+                const count = cat === 'ALL'
+                  ? inventoryItems.length
+                  : inventoryItems.filter((i) => i.category === cat).length;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => setInventoryCategory(cat)}
+                    className={`px-2.5 py-1 rounded-full text-[11px] font-semibold shrink-0 transition-all ${
+                      inventoryCategory === cat
+                        ? 'bg-primary text-white font-bold shadow-xs'
+                        : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container hover:text-on-surface border border-outline/10'
+                    }`}
+                  >
+                    {cat === 'ALL' ? 'Semua Kategori' : cat} ({count})
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Active Query Status Indicator */}
+            <div className="flex items-center justify-between text-[11px] text-on-surface-variant pt-0.5">
+              <span>
+                Menampilkan <strong>{filteredInventory.length}</strong> dari <strong>{inventoryItems.length}</strong> SKU produk aktif
+              </span>
+              {(inventorySearch || inventoryCategory !== 'ALL' || inventoryFefoFilter !== 'ALL') && (
+                <button
+                  onClick={() => {
+                    setInventorySearch('');
+                    setInventoryCategory('ALL');
+                    setInventoryFefoFilter('ALL');
+                  }}
+                  className="text-primary hover:underline font-bold text-[10px] flex items-center gap-1"
                 >
-                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-                    <div className="flex items-start gap-3 min-w-[260px]">
-                      <div className="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center font-bold text-xs text-primary shrink-0">
-                        {sku.name.substring(0, 2).toUpperCase()}
-                      </div>
-                      <div>
-                        <div className="font-bold text-xs text-on-surface">{sku.name}</div>
-                        <div className="text-[10px] text-on-surface-variant font-mono">
-                          {sku.sku} • Batch: <strong>{sku.batchNumber}</strong> • Exp: {sku.daysUntilExpiry} hari lagi
+                  <RefreshCw className="h-3 w-3" /> Reset Filter
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-2.5">
+            {filteredInventory.length === 0 ? (
+              <div className="p-8 text-center bg-surface-container-low rounded-xl border border-outline/10 text-xs text-on-surface-variant space-y-2">
+                <Boxes className="h-8 w-8 mx-auto text-outline" />
+                <p className="font-semibold text-on-surface">Tidak ada SKU produk yang cocok dengan filter.</p>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setInventorySearch('');
+                    setInventoryCategory('ALL');
+                    setInventoryFefoFilter('ALL');
+                  }}
+                  className="text-xs font-bold"
+                >
+                  Tampilkan Semua SKU
+                </Button>
+              </div>
+            ) : (
+              filteredInventory.map((sku) => {
+                const fefoBadge =
+                  sku.fefoStatus === 'DANGER' || sku.fefoStatus === 'EXPIRED'
+                    ? 'bg-red-100 text-red-800 border-red-200'
+                    : sku.fefoStatus === 'WARNING'
+                    ? 'bg-amber-100 text-amber-800 border-amber-200'
+                    : 'bg-emerald-100 text-emerald-800 border-emerald-200';
+                const barColor =
+                  sku.stockCartons < 150
+                    ? 'bg-red-600'
+                    : sku.stockCartons < 250
+                    ? 'bg-amber-500'
+                    : 'bg-emerald-600';
+                const fillPercent = Math.min(100, Math.round((sku.stockCartons / 500) * 100));
+
+                const isTargeted = highlightedSku === sku.sku;
+                return (
+                  <div 
+                    id={`sku-row-${sku.sku}`}
+                    key={sku.id} 
+                    className={`p-3.5 rounded-xl border transition-all duration-300 ${
+                      isTargeted
+                        ? 'bg-primary/10 border-primary ring-2 ring-primary/40 shadow-md'
+                        : 'bg-surface-container-low border-outline/10 hover:border-outline/25'
+                    }`}
+                  >
+                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                      {/* Product identity & Clickable link to dossier */}
+                      <div 
+                        onClick={() => setSelectedProductDetail(sku)}
+                        className="flex items-start gap-3 min-w-[260px] cursor-pointer group"
+                        title="Klik untuk membuka Dossier & Spesifikasi Lengkap SKU"
+                      >
+                        <div className="relative w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center font-bold text-xs text-primary shrink-0 overflow-hidden border border-outline/15 group-hover:border-primary transition-colors">
+                          {sku.imageUrl ? (
+                            <img
+                              src={sku.imageUrl}
+                              alt={sku.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <span>{sku.name.substring(0, 2).toUpperCase()}</span>
+                          )}
+                        </div>
+                        <div>
+                          <div className="font-bold text-xs text-on-surface group-hover:text-primary transition-colors flex items-center gap-1.5">
+                            <span>{sku.name}</span>
+                            <Eye className="h-3 w-3 text-outline opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </div>
+                          <div className="text-[10px] text-on-surface-variant font-mono">
+                            {sku.sku} • Batch: <strong>{sku.batchNumber}</strong> • Exp: {sku.daysUntilExpiry} hari lagi
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    {/* Progress bar */}
-                    <div className="flex-1 max-w-sm space-y-1">
-                      <div className="flex justify-between text-[11px]">
-                        <span className="text-on-surface-variant">
-                          Stok Fisik DB: <strong className="text-on-surface font-mono">{sku.stockCartons} Dus</strong>
+                      {/* Progress bar */}
+                      <div className="flex-1 max-w-sm space-y-1">
+                        <div className="flex justify-between text-[11px]">
+                          <span className="text-on-surface-variant">
+                            Stok Fisik DB: <strong className="text-on-surface font-mono">{sku.stockCartons} Dus</strong>
+                          </span>
+                          <span className="text-on-surface-variant font-mono">{formatRupiah(sku.cartonPrice)}/dus</span>
+                        </div>
+                        <div className="w-full h-2 bg-surface-container-highest rounded-full overflow-hidden">
+                          <div className={`h-full ${barColor} rounded-full`} style={{ width: `${fillPercent}%` }}></div>
+                        </div>
+                      </div>
+
+                      {/* FEFO Pill & Action Controls */}
+                      <div className="flex items-center gap-2.5 justify-between lg:justify-end flex-wrap">
+                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${fefoBadge}`}>
+                          FEFO: {sku.fefoStatus} ({sku.monthsUntilExpiry} bln)
                         </span>
-                        <span className="text-on-surface-variant font-mono">{formatRupiah(sku.cartonPrice)}/dus</span>
-                      </div>
-                      <div className="w-full h-2 bg-surface-container-highest rounded-full overflow-hidden">
-                        <div className={`h-full ${barColor} rounded-full`} style={{ width: `${fillPercent}%` }}></div>
-                      </div>
-                    </div>
 
-                    {/* FEFO Pill & Stock Adjustment Controls */}
-                    <div className="flex items-center gap-2.5 justify-between lg:justify-end flex-wrap">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${fefoBadge}`}>
-                        FEFO: {sku.fefoStatus} ({sku.monthsUntilExpiry} bln)
-                      </span>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setSelectedProductDetail(sku)}
+                          title="Lihat Spesifikasi & Dossier Lengkap SKU"
+                          className="h-7 text-xs font-bold gap-1 px-2.5 border-primary/30 text-primary hover:bg-primary/10"
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                          <span>Detail SKU</span>
+                        </Button>
 
-                      <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            disabled={mutatingId === sku.id}
+                            onClick={() => handleAdjustStock(sku.id, -25)}
+                            title="Kurangi 25 Dus"
+                            className="px-2 py-1 rounded bg-surface-container hover:bg-surface-container-high text-[11px] font-mono font-bold text-on-surface flex items-center gap-0.5"
+                          >
+                            <Minus className="h-3 w-3" />25
+                          </button>
+                          <button
+                            type="button"
+                            disabled={mutatingId === sku.id}
+                            onClick={() => handleAdjustStock(sku.id, 50)}
+                            title="Tambah 50 Dus"
+                            className="px-2 py-1 rounded bg-primary/10 hover:bg-primary text-primary hover:text-white text-[11px] font-mono font-bold flex items-center gap-0.5 transition-colors"
+                          >
+                            <Plus className="h-3 w-3" />50
+                          </button>
+                        </div>
+
+                        <Button
+                          size="sm"
+                          onClick={() => setCurrentScreen && setCurrentScreen('restock-request')}
+                          className="bg-primary text-white text-xs h-7 px-3 hover:bg-primary-container"
+                        >
+                          Restock PO
+                        </Button>
+
                         <button
                           type="button"
                           disabled={mutatingId === sku.id}
-                          onClick={() => handleAdjustStock(sku.id, -25)}
-                          title="Kurangi 25 Dus"
-                          className="px-2 py-1 rounded bg-surface-container hover:bg-surface-container-high text-[11px] font-mono font-bold text-on-surface flex items-center gap-0.5"
+                          onClick={() => setProductToDelete(sku)}
+                          title="Hapus / Arsipkan SKU ini"
+                          className="p-1.5 rounded hover:bg-red-50 text-on-surface-variant hover:text-red-600 transition-colors"
                         >
-                          <Minus className="h-3 w-3" />25
-                        </button>
-                        <button
-                          type="button"
-                          disabled={mutatingId === sku.id}
-                          onClick={() => handleAdjustStock(sku.id, 50)}
-                          title="Tambah 50 Dus"
-                          className="px-2 py-1 rounded bg-primary/10 hover:bg-primary text-primary hover:text-white text-[11px] font-mono font-bold flex items-center gap-0.5 transition-colors"
-                        >
-                          <Plus className="h-3 w-3" />50
+                          <Trash2 className="h-3.5 w-3.5" />
                         </button>
                       </div>
-
-                      <Button
-                        size="sm"
-                        onClick={() => setCurrentScreen && setCurrentScreen('restock-request')}
-                        className="bg-primary text-white text-xs h-7 px-3 hover:bg-primary-container"
-                      >
-                        Restock PO
-                      </Button>
-
-                      <button
-                        type="button"
-                        disabled={mutatingId === sku.id}
-                        onClick={() => setProductToDelete(sku)}
-                        title="Hapus / Arsipkan SKU ini"
-                        className="p-1.5 rounded hover:bg-red-50 text-on-surface-variant hover:text-red-600 transition-colors"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })
+            )}
           </div>
         </CardContent>
       </Card>
@@ -735,12 +970,45 @@ export default function DistributorOverview({ setCurrentScreen }) {
         {/* Left: Wholesale Orders State Machine (7 cols) */}
         <Card className="lg:col-span-7 border border-outline/10 shadow-xs">
           <CardContent className="p-5 space-y-3">
-            <div className="flex items-center justify-between border-b border-outline/10 pb-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-outline/10 pb-3">
               <div className="flex items-center gap-2">
                 <FileText className="h-4 w-4 text-primary" />
                 <h3 className="font-bold text-xs text-on-surface">Antrean Pesanan Grosir Toko (One-Way State Machine)</h3>
               </div>
-              <span className="text-[11px] font-mono text-on-surface-variant">{orders.length} Order Terakhir</span>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-mono text-on-surface-variant">
+                  {filteredOrders.length} dari {orders.length} Pesanan
+                </span>
+              </div>
+            </div>
+
+            {/* Quick Search & Filter for Orders */}
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-on-surface-variant" />
+                <input
+                  type="text"
+                  value={orderSearch}
+                  onChange={(e) => setOrderSearch(e.target.value)}
+                  placeholder="Cari no. PO atau nama toko..."
+                  className="w-full h-7 pl-7 pr-2 rounded-lg bg-surface-container-low border border-outline/20 text-xs text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none"
+                />
+              </div>
+              <div className="flex items-center gap-1 overflow-x-auto text-[10px] no-scrollbar">
+                {['ALL', 'PENDING', 'CONFIRMED', 'PACKING', 'DISPATCHED', 'COMPLETED'].map((st) => (
+                  <button
+                    key={st}
+                    onClick={() => setOrderStatusFilter(st)}
+                    className={`px-2 py-1 rounded font-semibold whitespace-nowrap transition-all ${
+                      orderStatusFilter === st
+                        ? 'bg-primary text-white font-bold'
+                        : 'bg-surface-container-low text-on-surface-variant hover:text-on-surface'
+                    }`}
+                  >
+                    {st === 'ALL' ? 'Semua' : st}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Instant Toast Feedback saat status PO dimajukan */}
@@ -762,67 +1030,73 @@ export default function DistributorOverview({ setCurrentScreen }) {
             )}
 
             <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
-              {orders.map((ord) => {
-                const nextAction = NEXT_ORDER_STATUS[ord.status];
-                return (
-                  <div
-                    key={ord.id}
-                    className="p-3 bg-surface-container-low rounded-lg border border-outline/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs hover:border-outline/25 transition-all"
-                  >
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-mono font-bold text-primary">{ord.trackingCode}</span>
-                        <span className="font-bold text-on-surface truncate">{ord.store?.name}</span>
-                        <Badge variant="surface" className="text-[9px] py-0 px-1.5">{ord.store?.district}</Badge>
+              {filteredOrders.length === 0 ? (
+                <div className="p-6 text-center text-xs text-on-surface-variant bg-surface-container-low rounded-lg">
+                  Tidak ada pesanan grosir yang cocok dengan filter.
+                </div>
+              ) : (
+                filteredOrders.map((ord) => {
+                  const nextAction = NEXT_ORDER_STATUS[ord.status];
+                  return (
+                    <div
+                      key={ord.id}
+                      className="p-3 bg-surface-container-low rounded-lg border border-outline/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs hover:border-outline/25 transition-all"
+                    >
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-mono font-bold text-primary">{ord.trackingCode}</span>
+                          <span className="font-bold text-on-surface truncate">{ord.store?.name}</span>
+                          <Badge variant="surface" className="text-[9px] py-0 px-1.5">{ord.store?.district}</Badge>
+                        </div>
+                        <div className="text-[11px] text-on-surface-variant mt-0.5">
+                          {ord.itemsSummary} • <strong className="font-mono text-on-surface">{formatRupiah(ord.totalAmount)}</strong> ({ord.paymentMethodLabel})
+                        </div>
                       </div>
-                      <div className="text-[11px] text-on-surface-variant mt-0.5">
-                        {ord.itemsSummary} • <strong className="font-mono text-on-surface">{formatRupiah(ord.totalAmount)}</strong> ({ord.paymentMethodLabel})
-                      </div>
-                    </div>
 
-                    <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setSelectedOrderDetails(ord)}
-                        className="text-[10px] h-7 px-2 gap-1 font-semibold"
-                        title="Lihat Alur Status & Faktur Rincian"
-                      >
-                        <FileText className="h-3 w-3 text-primary" />
-                        <span>Detail &amp; Alur</span>
-                      </Button>
-
-                      <span className="px-2 py-0.5 rounded bg-surface-container-highest text-[10px] font-mono font-bold">
-                        {ord.status}
-                      </span>
-
-                      {nextAction && (
-                        <Button
-                          size="sm"
-                          disabled={mutatingId === ord.id}
-                          onClick={() => handleAdvanceOrder(ord.id, nextAction.status, ord)}
-                          className="bg-primary text-white text-[11px] h-7 px-2.5 hover:bg-primary-container"
-                        >
-                          {mutatingId === ord.id ? '...' : nextAction.label}
-                        </Button>
-                      )}
-
-                      {ord.status === 'DISPATCHED' && (
+                      <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => setCurrentScreen && setCurrentScreen('order-tracking')}
-                          className="text-[10px] h-7 px-2 text-primary border-primary/30 hover:bg-primary/10 font-bold"
-                          title="Lacak armada pengiriman ke toko di Tracking & Dispatch"
+                          onClick={() => setSelectedOrderDetails(ord)}
+                          className="text-[10px] h-7 px-2 gap-1 font-semibold"
+                          title="Lihat Alur Status & Faktur Rincian"
                         >
-                          <Truck className="h-3 w-3 mr-1" />
-                          <span>Lacak</span>
+                          <FileText className="h-3 w-3 text-primary" />
+                          <span>Detail &amp; Alur</span>
                         </Button>
-                      )}
+
+                        <span className="px-2 py-0.5 rounded bg-surface-container-highest text-[10px] font-mono font-bold">
+                          {ord.status}
+                        </span>
+
+                        {nextAction && (
+                          <Button
+                            size="sm"
+                            disabled={mutatingId === ord.id}
+                            onClick={() => handleAdvanceOrder(ord.id, nextAction.status, ord)}
+                            className="bg-primary text-white text-[11px] h-7 px-2.5 hover:bg-primary-container"
+                          >
+                            {mutatingId === ord.id ? '...' : nextAction.label}
+                          </Button>
+                        )}
+
+                        {ord.status === 'DISPATCHED' && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setCurrentScreen && setCurrentScreen('order-tracking')}
+                            className="text-[10px] h-7 px-2 text-primary border-primary/30 hover:bg-primary/10 font-bold"
+                            title="Lacak armada pengiriman ke toko di Tracking & Dispatch"
+                          >
+                            <Truck className="h-3 w-3 mr-1" />
+                            <span>Lacak</span>
+                          </Button>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
           </CardContent>
         </Card>
@@ -830,60 +1104,93 @@ export default function DistributorOverview({ setCurrentScreen }) {
         {/* Right: Partner Stores Verification (5 cols) */}
         <Card className="lg:col-span-5 border border-outline/10 shadow-xs">
           <CardContent className="p-5 space-y-3">
-            <div className="flex items-center justify-between border-b border-outline/10 pb-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-outline/10 pb-3">
               <div className="flex items-center gap-2">
                 <Store className="h-4 w-4 text-primary" />
                 <h3 className="font-bold text-xs text-on-surface">Direktori &amp; Verifikasi Mitra Toko Sidoarjo</h3>
               </div>
-              <Badge variant="surface" className="text-[10px] font-mono">{stores.length} Toko</Badge>
+              <Badge variant="surface" className="text-[10px] font-mono">
+                {filteredStores.length} dari {stores.length} Toko
+              </Badge>
+            </div>
+
+            {/* Quick Search & District Filter for Stores */}
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-on-surface-variant" />
+                <input
+                  type="text"
+                  value={storeSearch}
+                  onChange={(e) => setStoreSearch(e.target.value)}
+                  placeholder="Cari toko, pemilik, HP..."
+                  className="w-full h-7 pl-7 pr-2 rounded-lg bg-surface-container-low border border-outline/20 text-xs text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none"
+                />
+              </div>
+              <select
+                value={storeDistrictFilter}
+                onChange={(e) => setStoreDistrictFilter(e.target.value)}
+                className="h-7 px-2 rounded-lg bg-surface-container-low border border-outline/20 text-[11px] text-on-surface font-semibold focus:outline-none"
+              >
+                {uniqueDistricts.map((d) => (
+                  <option key={d} value={d}>
+                    {d === 'ALL' ? 'Semua Kecamatan' : `Kec. ${d}`}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
-              {stores.map((st) => (
-                <div
-                  key={st.id}
-                  className="p-2.5 bg-surface-container-low rounded-lg border border-outline/10 flex items-center justify-between gap-2 text-xs hover:border-outline/25 transition-all"
-                >
-                  <div className="overflow-hidden min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <span className="font-bold text-on-surface truncate">{st.name}</span>
-                      <span className="text-[10px] text-outline font-mono">
-                        ({(st.orders || []).length} PO)
-                      </span>
+              {filteredStores.length === 0 ? (
+                <div className="p-6 text-center text-xs text-on-surface-variant bg-surface-container-low rounded-lg">
+                  Tidak ada toko mitra yang cocok dengan pencarian.
+                </div>
+              ) : (
+                filteredStores.map((st) => (
+                  <div
+                    key={st.id}
+                    className="p-2.5 bg-surface-container-low rounded-lg border border-outline/10 flex items-center justify-between gap-2 text-xs hover:border-outline/25 transition-all"
+                  >
+                    <div className="overflow-hidden min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-bold text-on-surface truncate">{st.name}</span>
+                        <span className="text-[10px] text-outline font-mono">
+                          ({(st.orders || []).length} PO)
+                        </span>
+                      </div>
+                      <div className="text-[10px] text-on-surface-variant truncate">
+                        {st.ownerName} • {st.district} • <span className="font-mono">{st.phone}</span>
+                      </div>
                     </div>
-                    <div className="text-[10px] text-on-surface-variant truncate">
-                      {st.ownerName} • {st.district} • <span className="font-mono">{st.phone}</span>
-                    </div>
-                  </div>
 
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setSelectedStoreProposal(st)}
-                      className="text-[10px] h-7 px-2 gap-1 font-semibold hover:bg-surface-container"
-                    >
-                      <FileText className="h-3 w-3 text-primary" />
-                      <span>Proposal &amp; PO</span>
-                    </Button>
-
-                    {st.isVerified ? (
-                      <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
-                        ✓ Verified
-                      </span>
-                    ) : (
+                    <div className="flex items-center gap-1.5 shrink-0">
                       <Button
                         size="sm"
-                        disabled={mutatingId === st.id}
-                        onClick={() => handleVerifyStore(st.id, true)}
-                        className="bg-amber-600 hover:bg-amber-700 text-white text-[10px] h-7 px-2.5"
+                        variant="outline"
+                        onClick={() => setSelectedStoreProposal(st)}
+                        className="text-[10px] h-7 px-2 gap-1 font-semibold hover:bg-surface-container"
                       >
-                        Verifikasi
+                        <FileText className="h-3 w-3 text-primary" />
+                        <span>Proposal &amp; PO</span>
                       </Button>
-                    )}
+
+                      {st.isVerified ? (
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                          ✓ Verified
+                        </span>
+                      ) : (
+                        <Button
+                          size="sm"
+                          disabled={mutatingId === st.id}
+                          onClick={() => handleVerifyStore(st.id, true)}
+                          className="bg-amber-600 hover:bg-amber-700 text-white text-[10px] h-7 px-2.5"
+                        >
+                          Verifikasi
+                        </Button>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </CardContent>
         </Card>
@@ -1682,6 +1989,366 @@ export default function DistributorOverview({ setCurrentScreen }) {
                   Tutup
                 </Button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Dossier & Spesifikasi Lengkap SKU FMCG (Rich READ Modal) */}
+      {selectedProductDetail && (
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) setSelectedProductDetail(null); }}
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto cursor-pointer animate-in fade-in duration-150"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-surface-container-lowest border border-outline/15 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-5 my-8 max-h-[92vh] flex flex-col cursor-default"
+          >
+            {/* Modal Header */}
+            <div className="flex items-start justify-between border-b border-outline/10 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 font-bold font-mono text-sm border border-primary/20">
+                  {selectedProductDetail.name.substring(0, 2).toUpperCase()}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="font-extrabold text-base text-on-surface">
+                      {selectedProductDetail.name}
+                    </h3>
+                    <Badge variant="surface" className="text-[10px] font-mono font-bold">
+                      {selectedProductDetail.sku}
+                    </Badge>
+                    <span className="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant text-[10px] font-bold">
+                      {selectedProductDetail.category}
+                    </span>
+                  </div>
+                  <p className="text-xs text-on-surface-variant font-mono mt-0.5">
+                    Official SKU PT Mayora Indah Tbk • Depo Surya Krian Logistik
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedProductDetail(null)}
+                className="text-on-surface-variant hover:text-on-surface p-1 rounded-lg hover:bg-surface-container transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Modal Body - Scrollable */}
+            <div className="space-y-4 overflow-y-auto pr-1 flex-1 text-xs">
+              {/* Product Visual & Status Row */}
+              <div className="flex flex-col sm:flex-row gap-4 p-4 bg-surface-container-low rounded-xl border border-outline/10">
+                <div className="w-full sm:w-40 h-36 rounded-lg bg-black/5 overflow-hidden flex items-center justify-center shrink-0 border border-outline/15 relative">
+                  {selectedProductDetail.imageUrl ? (
+                    <img
+                      src={selectedProductDetail.imageUrl}
+                      alt={selectedProductDetail.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center text-outline gap-1">
+                      <Boxes className="h-8 w-8" />
+                      <span className="text-[10px]">Gambar Standar FMCG</span>
+                    </div>
+                  )}
+                  <span className="absolute top-1.5 left-1.5 bg-black/60 backdrop-blur-xs text-white text-[9px] font-mono px-1.5 py-0.5 rounded">
+                    {selectedProductDetail.category}
+                  </span>
+                </div>
+
+                <div className="flex-1 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] uppercase font-bold tracking-wider text-outline">
+                      Kesiapan &amp; Kepatuhan FEFO
+                    </span>
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                        selectedProductDetail.fefoStatus === 'DANGER' || selectedProductDetail.fefoStatus === 'EXPIRED'
+                          ? 'bg-red-100 text-red-800 border-red-200'
+                          : selectedProductDetail.fefoStatus === 'WARNING'
+                          ? 'bg-amber-100 text-amber-800 border-amber-200'
+                          : 'bg-emerald-100 text-emerald-800 border-emerald-200'
+                      }`}
+                    >
+                      Rotasi FEFO: {selectedProductDetail.fefoStatus}
+                    </span>
+                  </div>
+
+                  <div className="text-xs text-on-surface-variant leading-relaxed">
+                    {selectedProductDetail.fefoRecommendation || 'Prioritas rotasi batch FEFO terstandarisasi ISO 9001 Mayora.'}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 pt-1 border-t border-outline/10 text-[11px]">
+                    <div>
+                      <span className="text-outline block text-[10px]">Batch Produksi Pabrik:</span>
+                      <strong className="font-mono text-on-surface">{selectedProductDetail.batchNumber}</strong>
+                    </div>
+                    <div>
+                      <span className="text-outline block text-[10px]">Tanggal Kedaluwarsa:</span>
+                      <strong className="font-mono text-on-surface">
+                        {new Date(selectedProductDetail.expiryDate).toLocaleDateString('id-ID', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric'
+                        })} ({selectedProductDetail.daysUntilExpiry} hari lagi)
+                      </strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Financial & Commercial Valuation */}
+              <div className="p-4 bg-surface-container-low rounded-xl border border-outline/10 space-y-3">
+                <span className="text-[10px] uppercase font-bold tracking-wider text-outline block">
+                  Analisis Finansial &amp; Margin Ritel Mitra
+                </span>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                  <div className="p-2.5 bg-surface-container-lowest rounded-lg border border-outline/10">
+                    <span className="text-[10px] text-outline block">Harga Karton (Grosir)</span>
+                    <span className="font-mono font-bold text-primary text-sm">
+                      {formatRupiah(selectedProductDetail.cartonPrice)}
+                    </span>
+                  </div>
+                  <div className="p-2.5 bg-surface-container-lowest rounded-lg border border-outline/10">
+                    <span className="text-[10px] text-outline block">Estimasi Eceran Ritel</span>
+                    <span className="font-mono font-bold text-on-surface text-sm">
+                      {formatRupiah(selectedProductDetail.retailPriceEst)}
+                    </span>
+                  </div>
+                  <div className="p-2.5 bg-surface-container-lowest rounded-lg border border-outline/10">
+                    <span className="text-[10px] text-outline block">Margin Mitra per Dus</span>
+                    <span className="font-mono font-bold text-emerald-700 text-sm">
+                      +{formatRupiah(selectedProductDetail.estimatedMarginPerCarton || 20000)}
+                    </span>
+                    <span className="text-[9px] text-emerald-800 block">
+                      ({selectedProductDetail.estimatedMarginPercent || 9.3}%)
+                    </span>
+                  </div>
+                  <div className="p-2.5 bg-surface-container-lowest rounded-lg border border-outline/10">
+                    <span className="text-[10px] text-outline block">Total Nilai Aset Stok</span>
+                    <span className="font-mono font-extrabold text-on-surface text-sm">
+                      {formatRupiah(selectedProductDetail.stockCartons * selectedProductDetail.cartonPrice)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Logistics, Palletizing & Warehouse Runway */}
+              <div className="p-4 bg-surface-container-low rounded-xl border border-outline/10 space-y-3">
+                <span className="text-[10px] uppercase font-bold tracking-wider text-outline block">
+                  Logistik Pergudangan, Runway &amp; Penempatan Rak
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                  <div className="space-y-1">
+                    <span className="text-[10px] text-outline block">Stok Fisik Depo:</span>
+                    <strong className="text-sm font-mono text-on-surface block">
+                      {selectedProductDetail.stockCartons} Karton
+                    </strong>
+                    <span className="text-[10px] text-on-surface-variant">
+                      Kapasitas Terisi: ~{Math.min(100, Math.round((selectedProductDetail.stockCartons / 500) * 100))}% dari batas aman
+                    </span>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[10px] text-outline block">Ketahanan Stok (Runway):</span>
+                    <strong className="text-sm font-mono text-primary block">
+                      ~{Math.round(selectedProductDetail.stockCartons / 14)} Hari Operasional
+                    </strong>
+                    <span className="text-[10px] text-on-surface-variant">
+                      Rata-rata Penjualan ADS: ~14 dus/hari
+                    </span>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[10px] text-outline block">Estimasi Volume &amp; Rak:</span>
+                    <strong className="text-sm font-mono text-on-surface block">
+                      {(selectedProductDetail.stockCartons * 0.042).toFixed(2)} m³ (CBM)
+                    </strong>
+                    <span className="text-[10px] text-emerald-700 font-semibold">
+                      Zona Rak {selectedProductDetail.category.toUpperCase().slice(0, 3)}-0{(selectedProductDetail.stockCartons % 4) + 1}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="pt-3 border-t border-outline/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] text-on-surface-variant font-medium">
+                  Penyesuaian Cepat:
+                </span>
+                <button
+                  type="button"
+                  disabled={mutatingId === selectedProductDetail.id}
+                  onClick={async () => {
+                    await handleAdjustStock(selectedProductDetail.id, -25);
+                    setSelectedProductDetail((prev) => prev ? { ...prev, stockCartons: Math.max(0, prev.stockCartons - 25) } : prev);
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-surface-container hover:bg-surface-container-high text-xs font-mono font-bold text-on-surface"
+                >
+                  -25 Dus
+                </button>
+                <button
+                  type="button"
+                  disabled={mutatingId === selectedProductDetail.id}
+                  onClick={async () => {
+                    await handleAdjustStock(selectedProductDetail.id, 50);
+                    setSelectedProductDetail((prev) => prev ? { ...prev, stockCartons: prev.stockCartons + 50 } : prev);
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-primary/10 hover:bg-primary text-primary hover:text-white text-xs font-mono font-bold transition-colors"
+                >
+                  +50 Dus
+                </button>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    setSelectedProductDetail(null);
+                    setCurrentScreen && setCurrentScreen('restock-request');
+                  }}
+                  className="bg-primary text-white text-xs font-bold px-3 gap-1 hover:bg-primary-container"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  <span>Restock PO</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedProductDetail(null)}
+                  className="text-xs px-4"
+                >
+                  Tutup
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Manifest Inbound & Surat Jalan Armada Pabrik (Rich READ Modal) */}
+      {selectedInboundDetail && (
+        <div 
+          onClick={(e) => { if (e.target === e.currentTarget) setSelectedInboundDetail(null); }}
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto cursor-pointer animate-in fade-in duration-150"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-surface-container-lowest border border-outline/15 rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-5 my-8 cursor-default"
+          >
+            <div className="flex items-start justify-between border-b border-outline/10 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
+                  <Truck className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-extrabold text-base text-on-surface">
+                      Surat Jalan Inbound: {selectedInboundDetail.doNumber || 'DO-2026-0881'}
+                    </h3>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-800 font-mono">
+                      {selectedInboundDetail.status || 'IN_TRANSIT'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-on-surface-variant">
+                    Pengiriman Antar-Fasilitas Mayora (Pabrik Pasuruan ➔ Depo Surya Krian)
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedInboundDetail(null)}
+                className="text-on-surface-variant hover:text-on-surface p-1 rounded-lg hover:bg-surface-container transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4 text-xs">
+              {/* Fleet & Driver Dossier */}
+              <div className="grid grid-cols-2 gap-3 p-3.5 bg-surface-container-low rounded-xl">
+                <div>
+                  <span className="text-[10px] text-outline uppercase font-bold block">Armada Truk &amp; Nopol</span>
+                  <strong className="text-on-surface font-mono text-sm">
+                    {selectedInboundDetail.fleet?.plateNumber || 'W 9102 UP'}
+                  </strong>
+                  <span className="text-[10px] text-on-surface-variant block">
+                    {selectedInboundDetail.fleet?.vehicleType || 'Hino 500 Wingbox (24 Ton)'}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-outline uppercase font-bold block">Pengemudi Otorisasi</span>
+                  <strong className="text-on-surface text-sm">
+                    {selectedInboundDetail.fleet?.driverName || 'Slamet Riyadi'}
+                  </strong>
+                  <span className="text-[10px] text-on-surface-variant block font-mono">
+                    ID: DRV-0881 • SIM B2 Umum
+                  </span>
+                </div>
+              </div>
+
+              {/* Cargo Itemization */}
+              <div className="p-3.5 bg-surface-container-low rounded-xl space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-[10px] text-outline uppercase font-bold block">Rincian Muatan FMCG Segel</span>
+                  <span className="font-mono font-bold text-primary">
+                    Total: {selectedInboundDetail.cargoSummary?.totalCartons || 850} Dus (~18.5 Ton)
+                  </span>
+                </div>
+                <div className="space-y-1 pt-1">
+                  {(selectedInboundDetail.cargoSummary?.items || [
+                    { name: 'Roma Biskuit Kelapa 300g', cartons: 350, batch: 'BATCH-RK-2611A' },
+                    { name: 'Beng-Beng Wafer Caramel 25g', cartons: 250, batch: 'BATCH-BB-2611B' },
+                    { name: 'Teh Pucuk Harum 350ml', cartons: 150, batch: 'BATCH-TP-2603B' },
+                    { name: 'Le Minerale 600ml', cartons: 100, batch: 'BATCH-LM-2604A' },
+                  ]).map((item, idx) => (
+                    <div key={idx} className="flex justify-between p-2 rounded bg-surface-container-lowest text-xs">
+                      <div>
+                        <strong className="text-on-surface">{item.name}</strong>
+                        <span className="text-[10px] text-outline block font-mono">Batch: {item.batch}</span>
+                      </div>
+                      <span className="font-mono font-bold text-primary">{item.cartons} Dus</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* GPS Timeline Milestones */}
+              <div className="p-3.5 bg-surface-container-low rounded-xl space-y-2">
+                <span className="text-[10px] text-outline uppercase font-bold block">Tracking Rute &amp; Posisi GPS</span>
+                <div className="space-y-2 pt-1">
+                  {(selectedInboundDetail.milestones || [
+                    { step: 1, title: 'Muat Barang di Pabrik Pasuruan Plant 2', time: '06:30 WIB', completed: true },
+                    { step: 2, title: 'Timbangan & Segel Kontainer Disetujui', time: '07:15 WIB', completed: true },
+                    { step: 3, title: 'Perjalanan Tol Pandaan Menuju Exit Krian', time: '08:45 WIB', completed: false },
+                    { step: 4, title: 'Bongkar Muat & Verifikasi FEFO Gudang Krian', time: 'Estimasi 09:30 WIB', completed: false },
+                  ]).map((m) => (
+                    <div key={m.step} className="flex items-center gap-2.5">
+                      {m.completed ? (
+                        <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                      ) : (
+                        <Clock className="h-4 w-4 text-amber-600 shrink-0" />
+                      )}
+                      <span className={m.completed ? 'font-semibold text-on-surface' : 'text-on-surface-variant'}>
+                        {m.title} ({m.time})
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-3 border-t border-outline/10 flex justify-end">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSelectedInboundDetail(null)}
+                className="text-xs px-4"
+              >
+                Tutup
+              </Button>
             </div>
           </div>
         </div>
