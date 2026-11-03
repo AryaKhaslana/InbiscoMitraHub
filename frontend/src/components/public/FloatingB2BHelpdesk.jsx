@@ -159,7 +159,7 @@ export default function FloatingB2BHelpdesk({ setActiveNav }) {
             ? 'bg-neutral-800 hover:bg-neutral-900'
             : 'bg-gradient-to-r from-[#128C7E] to-[#075E54] hover:shadow-2xl'
         }`}
-        aria-label="Buka Pusat Bantuan B2B"
+        aria-label={isOpen ? 'Tutup Bantuan' : 'B2B Hotline Cabang Krian'}
       >
         {isOpen ? (
           <>

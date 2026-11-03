@@ -186,8 +186,11 @@ export default function PublicHeader({ activeNav, setActiveNav }) {
             Portal
           </button>
           <button
+            type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-lg text-on-surface hover:bg-surface-container"
+            className="p-2 rounded-lg text-on-surface hover:bg-surface-container cursor-pointer"
+            aria-label={mobileMenuOpen ? 'Tutup menu navigasi' : 'Buka menu navigasi'}
+            aria-expanded={mobileMenuOpen}
           >
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6 text-on-surface" />}
           </button>

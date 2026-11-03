@@ -46,9 +46,9 @@ export default function PublicFooter({ setActiveNav }) {
 
           {/* Navigasi Layanan */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+            <h3 className="text-xs font-bold text-white uppercase tracking-wider">
               Navigasi Layanan
-            </h4>
+            </h3>
             <ul className="space-y-2.5 text-sm text-[#b0a2a0]">
               <li>
                 <button type="button" onClick={() => handleNav('home')} className="hover:text-white transition-colors text-left cursor-pointer">
@@ -85,9 +85,9 @@ export default function PublicFooter({ setActiveNav }) {
 
           {/* Kategori Pasokan Utama */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+            <h3 className="text-xs font-bold text-white uppercase tracking-wider">
               Pasokan Produk Utama
-            </h4>
+            </h3>
             <ul className="space-y-2.5 text-sm text-[#b0a2a0]">
               <li>
                 <button type="button" onClick={() => handleNav('products', 'Biskuit')} className="hover:text-white transition-colors text-left cursor-pointer">
@@ -124,9 +124,9 @@ export default function PublicFooter({ setActiveNav }) {
 
           {/* Hubungi Kantor Cabang & Jam Operasional */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+            <h3 className="text-xs font-bold text-white uppercase tracking-wider">
               Kantor & Depot Distribusi
-            </h4>
+            </h3>
             <div className="space-y-2.5 text-sm text-[#b0a2a0]">
               <div className="flex items-start gap-2">
                 <span className="material-symbols-outlined text-[18px] text-primary shrink-0 mt-0.5">location_on</span>
@@ -144,11 +144,19 @@ export default function PublicFooter({ setActiveNav }) {
                 <span className="material-symbols-outlined text-[18px] text-primary shrink-0 mt-0.5">schedule</span>
                 <span>Senin – Sabtu: 07:00 – 17:00 WIB</span>
               </div>
-              <div className="pt-2 flex flex-col gap-1.5 text-xs font-semibold">
-                <button type="button" onClick={() => handleNav('partnership')} className="text-white hover:underline text-left">
+              <div className="pt-2 flex flex-col gap-1 text-xs font-semibold">
+                <button
+                  type="button"
+                  onClick={() => handleNav('partnership')}
+                  className="py-1.5 text-white hover:underline text-left inline-flex items-center cursor-pointer min-h-[32px]"
+                >
                   Daftar Kemitraan Toko →
                 </button>
-                <button type="button" onClick={() => handleNav('login')} className="text-[#d0c0be] hover:text-white hover:underline text-left">
+                <button
+                  type="button"
+                  onClick={() => handleNav('login')}
+                  className="py-1.5 text-[#d0c0be] hover:text-white hover:underline text-left inline-flex items-center cursor-pointer min-h-[32px]"
+                >
                   Portal Masuk B2B Operasional →
                 </button>
               </div>
@@ -161,16 +169,28 @@ export default function PublicFooter({ setActiveNav }) {
           <div>
             © {currentYear} PT Inbisco Niagatama Semesta — Cabang Krian. Seluruh hak cipta dilindungi undang-undang.
           </div>
-          <div className="flex items-center gap-4 text-[#b0a2a0]">
-            <button type="button" onClick={() => handleNav('contact')} className="hover:text-white transition-colors text-left cursor-pointer">
+          <div className="flex flex-wrap items-center gap-3 text-[#b0a2a0]">
+            <button
+              type="button"
+              onClick={() => handleNav('contact')}
+              className="py-1.5 hover:text-white transition-colors text-left cursor-pointer min-h-[32px] inline-flex items-center"
+            >
               Pusat Bantuan & FAQ
             </button>
-            <span>•</span>
-            <button type="button" onClick={() => handleNav('about')} className="hover:text-white transition-colors text-left cursor-pointer">
+            <span aria-hidden="true">•</span>
+            <button
+              type="button"
+              onClick={() => handleNav('about')}
+              className="py-1.5 hover:text-white transition-colors text-left cursor-pointer min-h-[32px] inline-flex items-center"
+            >
               SOP Logistik & Retur
             </button>
-            <span>•</span>
-            <button type="button" onClick={() => handleNav('partnership')} className="hover:text-white transition-colors text-left cursor-pointer">
+            <span aria-hidden="true">•</span>
+            <button
+              type="button"
+              onClick={() => handleNav('partnership')}
+              className="py-1.5 hover:text-white transition-colors text-left cursor-pointer min-h-[32px] inline-flex items-center"
+            >
               Syarat Kemitraan
             </button>
           </div>

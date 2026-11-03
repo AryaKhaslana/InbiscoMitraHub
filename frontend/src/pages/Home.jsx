@@ -190,7 +190,7 @@ export default function Home({ setActiveNav }) {
 
                   {/* Quick Preset Tracking Code Chips */}
                   <div className="mt-2.5 flex flex-wrap items-center gap-1.5 text-[11px]">
-                    <span className="text-outline font-medium flex items-center gap-1 text-[10px]">
+                    <span className="text-on-surface-variant font-semibold flex items-center gap-1 text-[11px]">
                       <Sparkles className="h-3 w-3 text-primary" />
                       Contoh Resi:
                     </span>
@@ -207,7 +207,7 @@ export default function Home({ setActiveNav }) {
                         title={`Cek status ${s.label}`}
                       >
                         <span>{s.code}</span>
-                        <span className={`opacity-80 ${trackingInput === s.code ? 'text-white' : 'text-outline'}`}>
+                        <span className={trackingInput === s.code ? 'text-white/90 font-medium' : 'text-on-surface-variant font-medium'}>
                           ({s.status})
                         </span>
                       </button>
@@ -282,6 +282,10 @@ export default function Home({ setActiveNav }) {
                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCU1lsfRf2RijOStSWs_HRnNw-TorpNVrh53pA28nJ1lgEzANReT5jk-wIfOcuHgvL1KpxZ_WpmngV64hL6sMv3u4YBLUP8nHYHAGRdwLzw1CRbAonLimLrNxxHCRvh2SzlzbeISrdl05t3I1SUfVbqHO9UYX9gVnChBTalEXsw_ZHg-ghsDlqZuxWdZ_WaPFUgyOHrtJyPsaABwUy8R6torxHYaZEUh8v3MemRjg"
                     alt="Depot Konsolidasi Krian Sidoarjo"
                     className="w-full h-full object-cover"
+                    width={566}
+                    height={420}
+                    fetchPriority="high"
+                    decoding="async"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
                 </div>
@@ -447,7 +451,7 @@ export default function Home({ setActiveNav }) {
                       className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
-                  <div className="text-[10px] font-mono text-outline">{p.sku}</div>
+                  <div className="text-[10px] font-mono text-on-surface-variant font-medium">{p.sku}</div>
                   <h3 className="text-sm font-bold font-display text-on-surface line-clamp-1 group-hover:text-primary transition-colors">
                     {p.name}
                   </h3>

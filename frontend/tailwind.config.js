@@ -56,8 +56,8 @@ export default {
           variant: "#5d3f3b",
         },
         outline: {
-          DEFAULT: "#926f69",
-          variant: "#e7bdb6",
+          DEFAULT: "#6b4d47",
+          variant: "#d1a8a2",
         },
         error: {
           DEFAULT: "#ba1a1a",

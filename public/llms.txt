@@ -1,0 +1,11 @@
+# Inbisco MitraHub — B2B FMCG Supply Chain & Logistics Engine
+
+> Official B2B Rantai Pasok & Distribusi Mayora FMCG Kabupaten Sidoarjo & Jawa Timur (PT Inbisco Niagatama Semesta - Cabang Krian).
+
+## Directory of Services & Endpoints
+- [Beranda & Pelacakan Surat Jalan](https://inbisco-mitrahub.vercel.app/): Lacak armada distribusi dan pemesanan logistik Mayora di 18 kecamatan Sidoarjo.
+- [Katalog Produk FMCG Mayora](https://inbisco-mitrahub.vercel.app/products): Biskuit Roma, Beng-Beng, Torabika, Energen, Kopiko, Le Minerale.
+- [Pendaftaran Kemitraan Toko & Warung](https://inbisco-mitrahub.vercel.app/partnership): Registrasi mitra retail, kalkulasi tempo TOP, dan rute pengiriman rutin.
+- [Aktivitas & Jaringan Distribusi](https://inbisco-mitrahub.vercel.app/moments): Dokumentasi sistem racking FEFO, 16 armada boks ber-GPS, dan operasional depo Krian.
+- [Profil Depot Logistik Cabang Krian](https://inbisco-mitrahub.vercel.app/about): Good Distribution Practice (GDP) dan integritas rantai pasok Mayora.
+- [Kontak Layanan Pelanggan & FAQ](https://inbisco-mitrahub.vercel.app/contact): Hotline WhatsApp resmi, lokasi Jl. Raya Krian KM 29, dan FAQ logistik.

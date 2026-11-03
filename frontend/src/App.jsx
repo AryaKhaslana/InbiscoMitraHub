@@ -4,12 +4,14 @@ import PublicHeader from './components/public/PublicHeader';
 import PublicFooter from './components/public/PublicFooter';
 import FloatingB2BHelpdesk from './components/public/FloatingB2BHelpdesk';
 import Home from './pages/Home';
-import Products from './pages/Products';
-import Partnership from './pages/Partnership';
-import About from './pages/About';
-import Moments from './pages/Moments';
-import Contact from './pages/Contact';
-import Login from './pages/Login';
+
+// Lazy-load secondary public pages for optimal initial payload
+const Products = lazy(() => import('./pages/Products'));
+const Partnership = lazy(() => import('./pages/Partnership'));
+const About = lazy(() => import('./pages/About'));
+const Moments = lazy(() => import('./pages/Moments'));
+const Contact = lazy(() => import('./pages/Contact'));
+const Login = lazy(() => import('./pages/Login'));
 
 import AdminSidebar from './components/admin/AdminSidebar';
 import AdminHeader from './components/admin/AdminHeader';
@@ -112,18 +114,25 @@ function AppContent() {
         <PublicHeader activeNav={publicNav} setActiveNav={handlePublicNav} />
         <main key={publicNav} className="flex-1 anim-fade-in">
           {publicNav === 'home' && <Home setActiveNav={handlePublicNav} />}
-          {publicNav === 'products' && (
-            <Products
-              setActiveNav={handlePublicNav}
-              initialCategory={productCategoryFilter}
-              onCategoryChange={setProductCategoryFilter}
-            />
-          )}
-          {publicNav === 'partnership' && <Partnership setActiveNav={handlePublicNav} />}
-          {publicNav === 'moments' && <Moments setActiveNav={handlePublicNav} />}
-          {publicNav === 'about' && <About setActiveNav={handlePublicNav} />}
-          {publicNav === 'contact' && <Contact setActiveNav={handlePublicNav} />}
-          {publicNav === 'login' && <Login setActiveNav={handlePublicNav} />}
+          <Suspense fallback={
+            <div className="min-h-[50vh] flex flex-col items-center justify-center gap-3">
+              <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin" />
+              <span className="text-xs text-on-surface-variant font-medium">Memuat halaman...</span>
+            </div>
+          }>
+            {publicNav === 'products' && (
+              <Products
+                setActiveNav={handlePublicNav}
+                initialCategory={productCategoryFilter}
+                onCategoryChange={setProductCategoryFilter}
+              />
+            )}
+            {publicNav === 'partnership' && <Partnership setActiveNav={handlePublicNav} />}
+            {publicNav === 'moments' && <Moments setActiveNav={handlePublicNav} />}
+            {publicNav === 'about' && <About setActiveNav={handlePublicNav} />}
+            {publicNav === 'contact' && <Contact setActiveNav={handlePublicNav} />}
+            {publicNav === 'login' && <Login setActiveNav={handlePublicNav} />}
+          </Suspense>
         </main>
         <FloatingB2BHelpdesk setActiveNav={handlePublicNav} />
         <PublicFooter setActiveNav={handlePublicNav} />

@@ -3,6 +3,9 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
+  esbuild: {
+    legalComments: 'none',
+  },
   server: {
     port: 5173,
     proxy: {
@@ -15,6 +18,9 @@ export default defineConfig({
   build: {
     outDir: '../public',
     emptyOutDir: true,
+    target: 'es2020',
+    cssCodeSplit: true,
+    minify: 'esbuild',
     rollupOptions: {
       output: {
         manualChunks: {
