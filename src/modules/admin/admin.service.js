@@ -525,6 +525,24 @@ export async function getAdminStores({ verified, district, page = 1, limit = 50 
         _count: {
           select: { orders: true },
         },
+        orders: {
+          orderBy: { createdAt: 'desc' },
+          include: {
+            items: {
+              include: {
+                product: {
+                  select: {
+                    id: true,
+                    sku: true,
+                    name: true,
+                    category: true,
+                    cartonPrice: true,
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     }),
   ]);

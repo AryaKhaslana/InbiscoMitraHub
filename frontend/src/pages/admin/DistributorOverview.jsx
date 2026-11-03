@@ -44,6 +44,7 @@ export default function DistributorOverview({ setCurrentScreen }) {
   const [stores, setStores] = useState([]);
   const [mutatingId, setMutatingId] = useState(null);
   const [highlightedSku, setHighlightedSku] = useState(null);
+  const [selectedStoreProposal, setSelectedStoreProposal] = useState(null);
 
   // CRUD Modal & Feedback State
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -173,6 +174,7 @@ export default function DistributorOverview({ setCurrentScreen }) {
     setStores((prev) =>
       prev.map((s) => (s.id === storeId ? { ...s, isVerified } : s))
     );
+    setSelectedStoreProposal((prev) => (prev && prev.id === storeId ? { ...prev, isVerified } : prev));
     try {
       await api.verifyStore(storeId, isVerified);
       window.dispatchEvent(new CustomEvent('supplysync:refresh'));
@@ -638,28 +640,48 @@ export default function DistributorOverview({ setCurrentScreen }) {
 
             <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
               {stores.map((st) => (
-                <div key={st.id} className="p-2.5 bg-surface-container-low rounded-lg border border-outline/10 flex items-center justify-between gap-2 text-xs">
-                  <div className="overflow-hidden">
-                    <div className="font-bold text-on-surface truncate">{st.name}</div>
+                <div
+                  key={st.id}
+                  className="p-2.5 bg-surface-container-low rounded-lg border border-outline/10 flex items-center justify-between gap-2 text-xs hover:border-outline/25 transition-all"
+                >
+                  <div className="overflow-hidden min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-bold text-on-surface truncate">{st.name}</span>
+                      <span className="text-[10px] text-outline font-mono">
+                        ({(st.orders || []).length} PO)
+                      </span>
+                    </div>
                     <div className="text-[10px] text-on-surface-variant truncate">
                       {st.ownerName} • {st.district} • <span className="font-mono">{st.phone}</span>
                     </div>
                   </div>
 
-                  {st.isVerified ? (
-                    <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold shrink-0">
-                      ✓ Verified
-                    </span>
-                  ) : (
+                  <div className="flex items-center gap-1.5 shrink-0">
                     <Button
                       size="sm"
-                      disabled={mutatingId === st.id}
-                      onClick={() => handleVerifyStore(st.id, true)}
-                      className="bg-amber-600 hover:bg-amber-700 text-white text-[10px] h-7 px-2.5 shrink-0"
+                      variant="outline"
+                      onClick={() => setSelectedStoreProposal(st)}
+                      className="text-[10px] h-7 px-2 gap-1 font-semibold hover:bg-surface-container"
                     >
-                      Verifikasi Mitra
+                      <FileText className="h-3 w-3 text-primary" />
+                      <span>Proposal &amp; PO</span>
                     </Button>
-                  )}
+
+                    {st.isVerified ? (
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                        ✓ Verified
+                      </span>
+                    ) : (
+                      <Button
+                        size="sm"
+                        disabled={mutatingId === st.id}
+                        onClick={() => handleVerifyStore(st.id, true)}
+                        className="bg-amber-600 hover:bg-amber-700 text-white text-[10px] h-7 px-2.5"
+                      >
+                        Verifikasi
+                      </Button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -957,6 +979,213 @@ export default function DistributorOverview({ setCurrentScreen }) {
                 className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-4"
               >
                 {submittingProduct ? 'Memproses...' : 'Ya, Hapus / Arsip SKU'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Proposal Kemitraan & Rincian Pesanan Mitra Toko */}
+      {selectedStoreProposal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-surface-container-lowest border border-outline/15 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-5 my-8 max-h-[90vh] flex flex-col">
+            {/* Modal Header */}
+            <div className="flex items-start justify-between border-b border-outline/10 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                  <Store className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="font-extrabold text-base text-on-surface">
+                      {selectedStoreProposal.name}
+                    </h3>
+                    {selectedStoreProposal.isVerified ? (
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                        ✓ Mitra Terverifikasi
+                      </span>
+                    ) : (
+                      <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold">
+                        Menunggu Otorisasi Verifikasi
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-on-surface-variant font-mono">
+                    ID: REG-SDA-{selectedStoreProposal.id.slice(0, 8).toUpperCase()} • Terdaftar:{' '}
+                    {new Date(selectedStoreProposal.createdAt).toLocaleDateString('id-ID', {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric',
+                    })}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedStoreProposal(null)}
+                className="text-on-surface-variant hover:text-on-surface p-1 rounded-lg hover:bg-surface-container transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Modal Content - Scrollable */}
+            <div className="space-y-4 overflow-y-auto pr-1 flex-1">
+              {/* Info Grid Toko */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 bg-surface-container-low rounded-xl text-xs">
+                <div>
+                  <span className="text-[10px] text-outline uppercase font-bold block">
+                    Penanggung Jawab / Pemilik
+                  </span>
+                  <span className="font-bold text-on-surface">{selectedStoreProposal.ownerName}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-outline uppercase font-bold block">
+                    Kontak WhatsApp / Telepon
+                  </span>
+                  <span className="font-mono font-bold text-primary">{selectedStoreProposal.phone}</span>
+                </div>
+                <div className="sm:col-span-2">
+                  <span className="text-[10px] text-outline uppercase font-bold block">
+                    Titik Distribusi &amp; Alamat Lengkap
+                  </span>
+                  <span className="text-on-surface font-medium flex items-center gap-1 mt-0.5">
+                    <MapPin className="h-3.5 w-3.5 text-primary shrink-0" />
+                    {selectedStoreProposal.address}, Kec. {selectedStoreProposal.district}, Kab. Sidoarjo
+                  </span>
+                </div>
+              </div>
+
+              {/* Section: Proposal Pesanan Grosir Toko */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-bold text-xs text-on-surface flex items-center gap-1.5">
+                    <FileText className="h-4 w-4 text-primary" />
+                    Proposal Pesanan &amp; Alokasi SKU Mitra (B2B Purchase Orders)
+                  </h4>
+                  <Badge variant="surface" className="text-[10px] font-mono">
+                    {(selectedStoreProposal.orders || []).length} Pesanan Tercatat
+                  </Badge>
+                </div>
+
+                {(selectedStoreProposal.orders || []).length > 0 ? (
+                  <div className="space-y-3">
+                    {selectedStoreProposal.orders.map((po) => (
+                      <div
+                        key={po.id}
+                        className="p-3.5 bg-surface-container-lowest border border-outline/15 rounded-xl shadow-xs space-y-3"
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-outline/10 pb-2.5">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-mono font-black text-primary text-xs">
+                                {po.trackingCode}
+                              </span>
+                              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-surface-container font-mono">
+                                {po.status}
+                              </span>
+                            </div>
+                            <span className="text-[10px] text-on-surface-variant font-mono">
+                              Metode: {po.paymentMethod.replace(/_/g, ' ')} • Dibuat:{' '}
+                              {new Date(po.createdAt).toLocaleDateString('id-ID', {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric',
+                              })}
+                            </span>
+                          </div>
+                          <div className="text-left sm:text-right">
+                            <span className="text-[10px] text-on-surface-variant block">Total Nilai Tagihan</span>
+                            <span className="font-mono font-bold text-sm text-on-surface">
+                              {formatRupiah(po.totalAmount)}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Table SKU Items */}
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left text-xs">
+                            <thead>
+                              <tr className="text-[10px] uppercase text-outline border-b border-outline/10">
+                                <th className="pb-1.5 font-bold">SKU Produk</th>
+                                <th className="pb-1.5 font-bold text-right">Kuantitas</th>
+                                <th className="pb-1.5 font-bold text-right">Harga Dus</th>
+                                <th className="pb-1.5 font-bold text-right">Subtotal</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-outline/5 font-mono">
+                              {(po.items || []).map((it) => (
+                                <tr key={it.id}>
+                                  <td className="py-2">
+                                    <div className="font-sans font-bold text-on-surface">
+                                      {it.product?.name || 'Produk Mayora'}
+                                    </div>
+                                    <span className="text-[10px] text-on-surface-variant">
+                                      {it.product?.sku}
+                                    </span>
+                                  </td>
+                                  <td className="py-2 text-right font-bold text-primary">
+                                    {it.quantity} Dus
+                                  </td>
+                                  <td className="py-2 text-right text-on-surface-variant">
+                                    {formatRupiah(it.unitPrice)}
+                                  </td>
+                                  <td className="py-2 text-right font-bold text-on-surface">
+                                    {formatRupiah(it.subtotal)}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+
+                        {po.notes && (
+                          <div className="p-2 bg-surface-container-low rounded-lg text-[11px] text-on-surface-variant italic">
+                            Catatan Mitra: "{po.notes}"
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-6 bg-surface-container-low rounded-xl border border-outline/10 text-center space-y-2">
+                    <Boxes className="h-8 w-8 text-outline mx-auto" />
+                    <div className="font-bold text-xs text-on-surface">Belum Ada Pesanan Terbit</div>
+                    <p className="text-[11px] text-on-surface-variant max-w-sm mx-auto">
+                      Toko ini baru mengajukan permohonan kemitraan outlet resmi. Lakukan verifikasi agar toko dapat memesan SKU biskuit, wafer, dan sereal secara langsung melalui platform B2B.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="pt-3 border-t border-outline/10 flex items-center justify-between gap-2">
+              <div>
+                {!selectedStoreProposal.isVerified && (
+                  <Button
+                    size="sm"
+                    disabled={mutatingId === selectedStoreProposal.id}
+                    onClick={async () => {
+                      await handleVerifyStore(selectedStoreProposal.id, true);
+                    }}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 gap-1.5 shadow-xs"
+                  >
+                    <CheckCircle2 className="h-4 w-4" />
+                    <span>
+                      {mutatingId === selectedStoreProposal.id
+                        ? 'Memverifikasi...'
+                        : 'Verifikasi Mitra Ini'}
+                    </span>
+                  </Button>
+                )}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSelectedStoreProposal(null)}
+                className="text-xs px-4"
+              >
+                Tutup
               </Button>
             </div>
           </div>

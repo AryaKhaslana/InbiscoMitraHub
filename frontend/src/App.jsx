@@ -82,6 +82,7 @@ function AppContent() {
         login: 'Portal Masuk Operasional B2B — Inbisco MitraHub',
       };
       document.title = titles[publicNav] || 'Inbisco MitraHub — B2B FMCG Supply Chain';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       const adminTitles = {
         'executive-overview': 'Executive Overview — SupplySync Mayora HQ',
