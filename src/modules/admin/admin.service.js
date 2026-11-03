@@ -887,12 +887,12 @@ const SKU_OPERATIONAL_META = {
 };
 
 async function resolveProduct({ productId, sku }) {
-  if (productId) {
-    const byId = await prisma.product.findUnique({ where: { id: productId } });
+  if (productId && typeof productId === 'string' && productId.trim() !== '') {
+    const byId = await prisma.product.findUnique({ where: { id: productId.trim() } });
     if (byId) return byId;
   }
 
-  if (sku) {
+  if (sku && typeof sku === 'string' && sku.trim() !== '') {
     const normalized = sku.trim().toUpperCase();
     const mappedSku = STITCH_SKU_ALIASES[normalized] || normalized;
     const bySku = await prisma.product.findFirst({

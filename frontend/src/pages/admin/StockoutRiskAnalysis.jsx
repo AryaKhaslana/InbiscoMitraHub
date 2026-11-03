@@ -80,24 +80,43 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
     });
   }, [rawItems, selectedCategory, selectedSeverity]);
 
-  const activeTransferTarget = selectedTransferSku || rawItems[0];
+  const threatenedSkus = useMemo(() => {
+    return rawItems.filter(
+      (item) => item.riskLevel === 'CRITICAL' || item.riskLevel === 'HIGH' || (item.deficitCartons && item.deficitCartons > 0)
+    );
+  }, [rawItems]);
+
+  const activeTransferTarget = selectedTransferSku || threatenedSkus[0] || rawItems[0];
 
   const handleAuthorizeTransfer = async (overrideItem = null) => {
-    const target = overrideItem || activeTransferTarget;
+    const isSyntheticEvent =
+      overrideItem &&
+      (overrideItem.nativeEvent ||
+        overrideItem._reactName ||
+        typeof overrideItem.preventDefault === 'function');
+    const validOverride = isSyntheticEvent ? null : overrideItem;
+    const target = validOverride || activeTransferTarget;
     if (!target) return;
     setIsAuthorizing(true);
     setLastTransferReceipt(null);
     try {
       const rec = target.crossDepotRecommendation || {};
       const qty = rec.suggestedTransferCartons || 200;
-      const result = await api.crossDepotTransfer({
-        productId: target.productId,
-        sku: target.sku,
-        sourceDepot: rec.donorDepot || 'Depo Mitra Mojokerto (Surplus Buffer)',
-        targetDepot: rec.targetDepot || 'CV Surya Krian Logistik (Hub Jawa Timur 1)',
-        quantityCartons: qty,
-        notes: `Cross-depot emergency rebalancing untuk ${target.name}`,
-      });
+      const payload = {
+        quantityCartons: Number(qty),
+        sourceDepot: String(rec.donorDepot || 'Depo Mojokerto (Hub Jatim 2)').slice(0, 100),
+        targetDepot: String(rec.targetDepot || 'CV Surya Krian Logistik (Hub Jatim 1)').slice(0, 100),
+        notes: `Cross-depot emergency rebalancing untuk ${target.name || target.sku || 'SKU'}`.slice(0, 240),
+      };
+      if (target.sku) payload.sku = String(target.sku).trim();
+      if (
+        target.productId &&
+        typeof target.productId === 'string' &&
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(target.productId)
+      ) {
+        payload.productId = target.productId;
+      }
+      const result = await api.crossDepotTransfer(payload);
       setLastTransferReceipt(result);
       setRebalanceConfirmItem(null);
       confetti({ particleCount: 70, spread: 70, origin: { y: 0.6 } });
@@ -111,6 +130,7 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
 
   const criticalCount = riskData?.summary?.criticalSkuCount ?? 0;
   const totalRevAtRisk = riskData?.summary?.totalRevenueAtRiskIDR ?? 0;
+  const totalDeficit = rawItems.reduce((sum, i) => sum + (i.deficitCartons || 0), 0);
   const avgRunway =
     rawItems.length > 0
       ? (rawItems.reduce((sum, i) => sum + Number(i.runwayDays || 0), 0) / rawItems.length).toFixed(1)
@@ -146,7 +166,10 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
           </p>
         </div>
         <div className="flex items-center gap-2.5">
-          <Badge variant="destructive" className="text-xs font-bold animate-pulse">
+          <Badge
+            variant={criticalCount > 0 ? 'destructive' : 'outline'}
+            className={`text-xs font-bold ${criticalCount > 0 ? 'animate-pulse' : 'text-emerald-700 bg-emerald-50 border-emerald-200'}`}
+          >
             {criticalCount} SKU Kritis / Siaga
           </Badge>
           <Button
@@ -165,29 +188,33 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {/* Card 1: Critical Risk SKU */}
         <Card className="border border-outline/10 shadow-xs relative overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 h-1 bg-red-600"></div>
+          <div className={`absolute top-0 left-0 right-0 h-1 ${criticalCount > 0 ? 'bg-red-600' : 'bg-emerald-600'}`}></div>
           <CardContent className="p-5 flex flex-col justify-between h-full">
             <div className="flex items-start justify-between">
               <div>
-                <span className="text-[11px] font-bold text-red-600 uppercase tracking-wider">SKU Kritis &amp; Siaga Tinggi</span>
+                <span className={`text-[11px] font-bold uppercase tracking-wider ${criticalCount > 0 ? 'text-red-600' : 'text-emerald-700'}`}>
+                  SKU Kritis &amp; Siaga Tinggi
+                </span>
                 <div className="text-2xl lg:text-3xl font-extrabold text-on-surface mt-1">
                   {criticalCount} SKU Terancam
                 </div>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-red-100 text-red-700 flex items-center justify-center">
-                <AlertTriangle className="h-5 w-5" />
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${criticalCount > 0 ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                {criticalCount > 0 ? <AlertTriangle className="h-5 w-5" /> : <CheckCircle2 className="h-5 w-5" />}
               </div>
             </div>
-            <div className="mt-4 pt-2.5 bg-surface-container-low rounded-lg p-2.5 space-y-1">
-              <span className="text-[11px] font-semibold text-on-surface">Prioritas Penanganan Gudang Krian:</span>
-              <div className="flex flex-wrap gap-1">
-                {rawItems.slice(0, 3).map((it) => (
-                  <span key={it.productId} className="text-[10px] font-mono bg-surface-container-highest px-2 py-0.5 rounded text-on-surface-variant">
-                    {it.name.split('(')[0].trim()} ({it.runwayDays}h)
-                  </span>
-                ))}
+            {threatenedSkus.length > 0 && (
+              <div className="mt-4 pt-2.5 bg-surface-container-low rounded-lg p-2.5 space-y-1">
+                <span className="text-[11px] font-semibold text-on-surface">Prioritas Penanganan Gudang Krian:</span>
+                <div className="flex flex-wrap gap-1">
+                  {threatenedSkus.slice(0, 3).map((it) => (
+                    <span key={it.productId} className="text-[10px] font-mono bg-surface-container-highest px-2 py-0.5 rounded text-on-surface-variant">
+                      {it.name.split('(')[0].trim()} ({it.runwayDays}h)
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </CardContent>
         </Card>
 
@@ -208,8 +235,8 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
             </div>
             <div className="mt-4 pt-2.5 bg-surface-container-low rounded-lg p-2.5 flex items-center justify-between text-xs text-on-surface-variant">
               <span>Total Defisit terhadap Target 5 Hari:</span>
-              <span className="font-mono font-bold text-red-600">
-                -{rawItems.reduce((sum, i) => sum + (i.deficitCartons || 0), 0)} Dus B2B
+              <span className={`font-mono font-bold ${totalDeficit > 0 ? 'text-red-600' : 'text-emerald-700'}`}>
+                {totalDeficit > 0 ? `-${totalDeficit} Dus B2B` : '0 Dus B2B'}
               </span>
             </div>
           </CardContent>
@@ -270,7 +297,7 @@ export default function StockoutRiskAnalysis({ setCurrentScreen }) {
 
               <div className="flex flex-col items-end gap-2 shrink-0 self-start lg:self-auto">
                 <Button
-                  onClick={handleAuthorizeTransfer}
+                  onClick={() => handleAuthorizeTransfer(activeTransferTarget)}
                   disabled={isAuthorizing}
                   className="bg-primary text-white text-xs font-bold px-4 py-2 hover:bg-primary-container shadow-xs flex items-center gap-2"
                 >

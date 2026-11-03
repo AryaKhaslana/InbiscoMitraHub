@@ -279,8 +279,8 @@ export const whatIfSimulationSchema = z
 
 export const crossDepotTransferSchema = z
   .object({
-    productId: z.string().uuid().optional(),
-    sku: z.string().trim().min(2).max(50).optional(),
+    productId: z.string().uuid().optional().nullable().or(z.literal('')),
+    sku: z.string().trim().min(2).max(50).optional().nullable(),
     sourceDepot: z
       .string()
       .trim()
@@ -298,10 +298,10 @@ export const crossDepotTransferSchema = z
       .int()
       .min(1, 'quantityCartons must be at least 1 carton')
       .max(50000),
-    notes: z.string().trim().max(250).optional(),
+    notes: z.string().trim().max(250).optional().nullable(),
   })
   .strict()
-  .refine((data) => Boolean(data.productId || data.sku), {
+  .refine((data) => Boolean((data.productId && data.productId.trim()) || (data.sku && data.sku.trim())), {
     message: 'Either productId or sku must be provided',
   });
 
