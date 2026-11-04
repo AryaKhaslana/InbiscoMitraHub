@@ -47,27 +47,27 @@ export default function AdminSidebar({ currentScreen, setCurrentScreen }) {
   }, []);
 
   const macroNav = [
-    { id: 'executive-overview', label: 'Executive Overview', icon: LayoutDashboard, badge: 'Macro' },
+    { id: 'executive-overview', label: 'Executive Overview', icon: LayoutDashboard },
     { 
       id: 'stockout-risk', 
       label: 'Stockout Risk Radar', 
       icon: AlertTriangle, 
-      badge: `${criticalCount} Kritis`, 
+      badge: criticalCount > 0 ? `${criticalCount} Kritis` : 'Aman', 
       badgeColor: criticalCount > 0 ? 'destructive' : 'surface' 
     },
-    { id: 'smart-recommendations', label: 'Smart Replenishment', icon: Sparkles, badge: 'AI' },
-    { id: 'what-if-simulator', label: 'What-if Simulator', icon: Sliders, badge: 'AI Inovasi', badgeColor: 'tertiary' },
+    { id: 'smart-recommendations', label: 'Smart Replenishment', icon: Sparkles, badge: 'Auto', badgeColor: 'surface' },
+    { id: 'what-if-simulator', label: 'What-if Simulator', icon: Sliders, badge: 'Skenario', badgeColor: 'surface' },
   ];
 
   const microNav = [
-    { id: 'distributor-overview', label: isHq ? 'Distributor Overview' : 'Depo Krian Overview', icon: isHq ? Store : LayoutDashboard },
+    { id: 'distributor-overview', label: 'Distributor Overview', icon: Store, badge: 'FEFO', badgeColor: 'surface' },
     { id: 'daily-sales-input', label: 'Input Penjualan DSR', icon: CheckSquare },
-    { id: 'restock-request', label: 'Pengajuan Restock', icon: Boxes, badge: 'AI Ready', badgeColor: 'tertiary' },
-    { id: 'order-tracking', label: 'Tracking & Dispatch', icon: Truck, badge: 'Live POD' },
+    { id: 'restock-request', label: 'Pengajuan Restock', icon: Boxes, badge: 'Inbound', badgeColor: 'surface' },
+    { id: 'order-tracking', label: 'Tracking & Dispatch', icon: Truck, badge: 'e-POD', badgeColor: 'surface' },
   ];
 
   const systemNav = [
-    { id: 'audit-logs', label: isHq ? 'Audit Trail & Log' : 'Riwayat Log Hub', icon: FileText, badge: 'Live', badgeColor: 'secondary' },
+    { id: 'audit-logs', label: 'Audit Trail & Log', icon: FileText, badge: 'Audit', badgeColor: 'surface' },
   ];
 
   const handleToggleRole = () => {
@@ -131,83 +131,58 @@ export default function AdminSidebar({ currentScreen, setCurrentScreen }) {
                 <div className="text-[10px] text-on-surface-variant">Mayora FMCG Enterprise</div>
               </div>
             </div>
-            <Badge variant="tertiary" className="text-[10px] py-0 px-1.5 font-bold">GTNIC 2026</Badge>
           </div>
 
           {/* ACTIVE NODE CARD */}
           <div className="p-2.5 bg-surface-container-low rounded-xl border border-outline/10 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              {isHq ? (
-                <Building2 className="h-4 w-4 text-primary shrink-0" />
-              ) : (
-                <Warehouse className="h-4 w-4 text-secondary shrink-0" />
-              )}
+              <Building2 className="h-4 w-4 text-primary shrink-0" />
               <div className="overflow-hidden">
                 <div className="text-xs font-bold text-on-surface truncate">
-                  {isHq ? 'Mayora Admin (HQ)' : 'CV Surya Krian Logistik'}
+                  Admin Operasional Terpadu
                 </div>
                 <div className="text-[10px] text-on-surface-variant truncate font-mono">
-                  {isHq ? 'Root Governance • Surabaya' : 'Hub Jawa Timur 1 • Krian'}
+                  Mayora HQ &amp; Depo Krian Sidoarjo
                 </div>
               </div>
             </div>
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" title="Sistem Aktif &amp; Terhubung"></span>
           </div>
         </div>
 
-        {/* NAVIGATION LINKS: Both Macro and Micro available with active role first */}
+        {/* NAVIGATION LINKS: Unified Macro & Micro Operational Hierarchy */}
         <nav className="p-3 space-y-3">
-          {isHq ? (
-            <>
-              {renderNavSection('Macro Intelligence & HQ', macroNav)}
-              {renderNavSection('Micro Operations (Depo Krian)', microNav)}
-              {renderNavSection('Governance & Audit', systemNav)}
-            </>
-          ) : (
-            <>
-              {renderNavSection('Micro Operations (Depo Krian)', microNav)}
-              {renderNavSection('Macro Intelligence (HQ View)', macroNav)}
-              {renderNavSection('Governance & Audit', systemNav)}
-            </>
-          )}
+          {renderNavSection('Manajemen Strategis (Mayora HQ)', macroNav)}
+          {renderNavSection('Operasional Lapangan & Depo Krian', microNav)}
+          {renderNavSection('Tata Kelola & Kepatuhan', systemNav)}
         </nav>
       </div>
 
-      {/* BOTTOM ROLE SWITCHER CARD (GTNIC SHOWCASE PROMPT) */}
-      <div className="p-3 space-y-2.5 border-t border-outline/10 bg-surface-container-low/50">
-        <div className="p-2.5 bg-surface-container-lowest rounded-xl border border-outline/10 shadow-xs space-y-1.5">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-outline">Switch Portal Role</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          </div>
-          <p className="text-[11px] text-on-surface-variant leading-tight">
-            {isHq
-              ? 'Beralih ke otoritas gudang mitra lokal (Bambang Sudiro).'
-              : 'Beralih ke pembuat keputusan pusat (Mayora HQ SCM).'}
-          </p>
-          <button
-            onClick={handleToggleRole}
-            className="w-full py-1.5 px-2.5 bg-primary/10 hover:bg-primary text-primary hover:text-white rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all"
-          >
-            <ArrowRightLeft className="h-3.5 w-3.5" />
-            <span>{isHq ? 'Switch to Depo Krian Ops' : 'Switch to Mayora HQ Admin'}</span>
-          </button>
+      {/* BOTTOM USER & NETWORK FOOTER */}
+      <div className="p-3 border-t border-outline/10 bg-surface-container-low/40 space-y-2">
+        <div className="flex items-center justify-between px-1 text-[11px] text-on-surface-variant font-medium">
+          <span className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            <span>Jaringan Terhubung</span>
+          </span>
+          <span className="font-mono text-[10px] text-outline">Jatim Hub 1</span>
         </div>
 
         {/* User Card & Sign Out */}
-        <div className="flex items-center justify-between pt-0.5">
+        <div className="p-2 bg-surface-container-lowest rounded-xl border border-outline/10 flex items-center justify-between shadow-2xs">
           <div className="flex items-center gap-2 overflow-hidden">
-            <div className="h-7 w-7 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xs shrink-0">
-              {currentUser.name ? currentUser.name.charAt(0) : 'U'}
+            <div className="h-7 w-7 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+              A
             </div>
             <div className="overflow-hidden">
-              <div className="text-xs font-bold text-on-surface truncate">{currentUser.name}</div>
-              <div className="text-[10px] text-on-surface-variant truncate">{currentUser.username}</div>
+              <div className="text-xs font-bold text-on-surface truncate">Admin SCM &amp; Logistik</div>
+              <div className="text-[10px] text-on-surface-variant truncate font-mono">admin@inbisco.co.id</div>
             </div>
           </div>
           <button
             onClick={() => switchRole('storefront', 'home')}
-            title="Keluar ke Portal Publik"
-            className="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors"
+            title="Keluar ke Portal Publik Mitra"
+            className="p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors cursor-pointer"
           >
             <LogOut className="h-4 w-4" />
           </button>

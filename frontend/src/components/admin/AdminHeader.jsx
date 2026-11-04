@@ -412,7 +412,7 @@ export default function AdminHeader({ currentScreen, setCurrentScreen }) {
           <Home className="h-4 w-4 shrink-0 text-on-surface-variant" />
           <span className="opacity-40">/</span>
           <span className="text-on-surface font-bold">
-            {isHq ? 'Mayora HQ' : 'Depo Krian'}
+            SupplySync SCM
           </span>
           <span className="opacity-40">/</span>
           <span className="capitalize text-primary font-semibold truncate max-w-[120px] sm:max-w-[170px] lg:max-w-[220px]">
