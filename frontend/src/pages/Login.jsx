@@ -21,48 +21,23 @@ import {
 
 export default function Login({ setActiveNav }) {
   const { switchRole } = useAuthRole();
-  const [selectedRole, setSelectedRole] = useState('HQ_ADMIN'); // 'HQ_ADMIN' | 'DISTRIBUTOR_DEPO'
-  const [username, setUsername] = useState('ops.hq');
-  const [password, setPassword] = useState('MayoraHQ2026!');
+  const [username, setUsername] = useState('admin.scm@inbisco.co.id');
+  const [password, setPassword] = useState('Inbisco2026!');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const handleRoleSelect = (role) => {
-    setSelectedRole(role);
-    setError(null);
-    if (role === 'HQ_ADMIN') {
-      setUsername('ops.hq');
-      setPassword('MayoraHQ2026!');
-    } else {
-      setUsername('bambang.sudiro');
-      setPassword('KrianDepot2026!');
-    }
-  };
-
-  const handleDirectDemoLogin = async (role) => {
+  const handleDirectDemoLogin = async () => {
     setLoading(true);
     setError(null);
     try {
-      const u = role === 'HQ_ADMIN' ? 'ops.hq' : 'bambang.sudiro';
-      const p = role === 'HQ_ADMIN' ? 'MayoraHQ2026!' : 'KrianDepot2026!';
-      
-      const res = await api.login(u, p, role);
+      const res = await api.login('ops.hq@mayora.co.id', 'Inbisco2026!', 'HQ_ADMIN');
       if (res && res.token) {
         localStorage.setItem('inbisco_auth_token', res.token);
       }
-      
-      if (role === 'HQ_ADMIN') {
-        switchRole('hq_admin');
-      } else {
-        switchRole('distributor_ops');
-      }
+      switchRole('hq_admin');
     } catch (err) {
       // Fallback demo bypass for presentation resilience
-      if (role === 'HQ_ADMIN') {
-        switchRole('hq_admin');
-      } else {
-        switchRole('distributor_ops');
-      }
+      switchRole('hq_admin');
     } finally {
       setLoading(false);
     }
@@ -74,15 +49,11 @@ export default function Login({ setActiveNav }) {
     setError(null);
 
     try {
-      const res = await api.login(username.trim(), password, selectedRole);
+      const res = await api.login(username.trim(), password, 'HQ_ADMIN');
       if (res && res.token) {
         localStorage.setItem('inbisco_auth_token', res.token);
       }
-      if (selectedRole === 'HQ_ADMIN') {
-        switchRole('hq_admin');
-      } else {
-        switchRole('distributor_ops');
-      }
+      switchRole('hq_admin');
     } catch (err) {
       setError(err.message || 'Login gagal. Periksa username dan password.');
     } finally {
@@ -184,49 +155,14 @@ export default function Login({ setActiveNav }) {
               {/* Header Title */}
               <div>
                 <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container text-on-surface-variant text-[11px] font-bold uppercase mb-2">
-                  <span>SISTEM LOGIN TERINTEGRASI</span>
+                  <span>PORTAL MASUK TERPADU</span>
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-bold font-display text-on-surface">
-                  Selamat Datang Kembali
+                  Login Administrator
                 </h2>
                 <p className="text-xs text-on-surface-variant mt-1 leading-relaxed">
-                  Pilih lingkungan otorisasi kerja Anda untuk membuka modul konsol yang sesuai.
+                  Akses tunggal sistem rantai pasok terpadu SupplySync PT Inbisco Niagatama Semesta &amp; Mayora Group.
                 </p>
-              </div>
-
-              {/* Role Switcher Selector */}
-              <div className="grid grid-cols-2 gap-3 p-1 rounded-xl bg-surface-container-low border border-surface-container-high">
-                <button
-                  type="button"
-                  onClick={() => handleRoleSelect('HQ_ADMIN')}
-                  className={`p-3 rounded-lg text-left transition-all ${
-                    selectedRole === 'HQ_ADMIN'
-                      ? 'bg-surface-container-lowest text-on-surface shadow-sm font-bold border border-surface-container-high'
-                      : 'text-on-surface-variant hover:text-on-surface'
-                  }`}
-                >
-                  <div className="flex items-center gap-1.5 text-xs text-primary font-bold mb-0.5">
-                    <Building2 className="h-3.5 w-3.5" />
-                    <span>SupplySync HQ</span>
-                  </div>
-                  <div className="text-[11px] text-outline">Macro Intelligence & Risk</div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleRoleSelect('DISTRIBUTOR_DEPO')}
-                  className={`p-3 rounded-lg text-left transition-all ${
-                    selectedRole === 'DISTRIBUTOR_DEPO'
-                      ? 'bg-surface-container-lowest text-on-surface shadow-sm font-bold border border-surface-container-high'
-                      : 'text-on-surface-variant hover:text-on-surface'
-                  }`}
-                >
-                  <div className="flex items-center gap-1.5 text-xs text-emerald-700 font-bold mb-0.5">
-                    <Warehouse className="h-3.5 w-3.5" />
-                    <span>Depot Krian Hub</span>
-                  </div>
-                  <div className="text-[11px] text-outline">Distribusi & Sales Last-Mile</div>
-                </button>
               </div>
 
               {/* Fast 1-Click Operational Switcher Ribbon */}
@@ -234,28 +170,24 @@ export default function Login({ setActiveNav }) {
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-primary flex items-center gap-1.5">
                     <Sparkles className="h-3.5 w-3.5 text-primary" />
-                    Akses Cepat Sistem Internal:
+                    Akses Cepat Pengujian:
+                  </span>
+                  <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded border border-emerald-200">
+                    1-Klik Masuk
                   </span>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleDirectDemoLogin('HQ_ADMIN')}
-                    className="p-2 rounded-lg bg-surface-container-lowest border border-surface-container-high hover:border-primary text-xs font-semibold text-on-surface hover:text-primary transition-all text-left flex items-center justify-between group shadow-2xs"
-                  >
-                    <span>Masuk HQ Admin</span>
-                    <ArrowRight className="h-3.5 w-3.5 text-outline group-hover:text-primary group-hover:translate-x-0.5 transition-transform" />
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleDirectDemoLogin('DISTRIBUTOR_DEPO')}
-                    className="p-2 rounded-lg bg-surface-container-lowest border border-surface-container-high hover:border-primary text-xs font-semibold text-on-surface hover:text-primary transition-all text-left flex items-center justify-between group shadow-2xs"
-                  >
-                    <span>Masuk Depo Krian</span>
-                    <ArrowRight className="h-3.5 w-3.5 text-outline group-hover:text-primary group-hover:translate-x-0.5 transition-transform" />
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={handleDirectDemoLogin}
+                  disabled={loading}
+                  className="w-full py-2.5 px-3 rounded-lg bg-primary hover:bg-primary-container text-white text-xs font-bold transition-all flex items-center justify-between shadow-xs cursor-pointer group"
+                >
+                  <div className="flex items-center gap-2">
+                    <Building2 className="h-4 w-4" />
+                    <span>Masuk sebagai Admin Terpadu (Akses Penuh)</span>
+                  </div>
+                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </button>
               </div>
 
               {/* Form Input */}
@@ -269,12 +201,12 @@ export default function Login({ setActiveNav }) {
               <form onSubmit={handleFormSubmit} className="space-y-4">
                 <div>
                   <label className="text-xs font-semibold text-on-surface block mb-1">
-                    ID Akun / Username
+                    ID Akun / Email Personel
                   </label>
                   <Input
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Username personel"
+                    placeholder="admin.scm@inbisco.co.id"
                     className="text-xs h-10 bg-surface-container-low"
                     required
                   />
@@ -297,7 +229,7 @@ export default function Login({ setActiveNav }) {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full text-xs font-bold py-2.5 gap-2 shadow-sm"
+                  className="w-full text-xs font-bold py-2.5 gap-2 shadow-sm cursor-pointer"
                 >
                   <Lock className="h-4 w-4" />
                   <span>{loading ? 'Memvalidasi Kredensial...' : 'Masuk ke Konsol Operasional'}</span>
