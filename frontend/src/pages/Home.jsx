@@ -283,11 +283,11 @@ export default function Home({ setActiveNav }) {
               <div className="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 border-t border-surface-container-high text-xs font-semibold text-on-surface">
                 <div className="flex items-center gap-1.5">
                   <span className="material-symbols-outlined text-[18px] text-emerald-600">verified</span>
-                  <span>100% Asli Mayora</span>
+                  <span><AnimatedCounter end={100} suffix="%" /> Asli Mayora</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="material-symbols-outlined text-[18px] text-emerald-600">schedule</span>
-                  <span>SLA Kirim 24 Jam</span>
+                  <span>SLA Kirim <AnimatedCounter end={24} suffix=" Jam" /></span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="material-symbols-outlined text-[18px] text-emerald-600">inventory</span>
@@ -746,7 +746,7 @@ export default function Home({ setActiveNav }) {
                 <div className="grid grid-cols-2 gap-4 text-center divide-x divide-surface-container-high">
                   <div>
                     <span className="text-2xl font-bold font-display text-primary block">
-                      1,850+
+                      <AnimatedCounter end={1850} suffix="+" />
                     </span>
                     <span className="text-xs text-on-surface-variant font-medium">
                       Mitra Retail Terdaftar
@@ -754,7 +754,7 @@ export default function Home({ setActiveNav }) {
                   </div>
                   <div>
                     <span className="text-2xl font-bold font-display text-on-surface block">
-                      100%
+                      <AnimatedCounter end={100} suffix="%" />
                     </span>
                     <span className="text-xs text-on-surface-variant font-medium">
                       Kepatuhan Legalitas & Faktur
@@ -858,6 +858,34 @@ export default function Home({ setActiveNav }) {
             <p className="text-sm text-on-surface-variant mt-2 leading-relaxed">
               Mulai dari pendaftaran online hingga pengantaran pertama ke titik usaha Anda dengan standar operasional yang terukur.
             </p>
+          </div>
+
+          {/* Animated Distribution Metrics Bar */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10 p-4 rounded-xl bg-surface-container-low border border-surface-container-high shadow-xs">
+            <div className="text-center sm:text-left p-2">
+              <span className="text-2xl sm:text-3xl font-black font-display text-primary block">
+                <AnimatedCounter end={18} />
+              </span>
+              <span className="text-xs text-on-surface-variant font-medium">Kecamatan di Sidoarjo</span>
+            </div>
+            <div className="text-center sm:text-left p-2 sm:border-l border-surface-container-high">
+              <span className="text-2xl sm:text-3xl font-black font-display text-on-surface block">
+                <AnimatedCounter end={4} />
+              </span>
+              <span className="text-xs text-on-surface-variant font-medium">Koridor Armada Pengiriman</span>
+            </div>
+            <div className="text-center sm:text-left p-2 border-t sm:border-t-0 sm:border-l border-surface-container-high">
+              <span className="text-2xl sm:text-3xl font-black font-display text-primary block">
+                <AnimatedCounter end={12000} suffix="+" />
+              </span>
+              <span className="text-xs text-on-surface-variant font-medium">Kapasitas Dus Depot Krian</span>
+            </div>
+            <div className="text-center sm:text-left p-2 border-t sm:border-t-0 sm:border-l border-surface-container-high">
+              <span className="text-2xl sm:text-3xl font-black font-display text-on-surface block">
+                <AnimatedCounter end={24} suffix=" Jam" />
+              </span>
+              <span className="text-xs text-on-surface-variant font-medium">Standar SLA Pengiriman</span>
+            </div>
           </div>
 
           {/* Stepper Grid */}
