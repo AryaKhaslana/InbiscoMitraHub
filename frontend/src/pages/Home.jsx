@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
@@ -14,14 +14,149 @@ import {
   ArrowRight,
   ShieldCheck,
   Clock,
-  Sparkles
+  Sparkles,
+  ChevronLeft,
+  ChevronRight,
+  Play,
+  Pause
 } from 'lucide-react';
+
+// Custom animated number counter using requestAnimationFrame & IntersectionObserver
+function AnimatedCounter({ end, duration = 1400, prefix = '', suffix = '', decimals = 0 }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef(null);
+  const animatedRef = useRef(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !animatedRef.current) {
+          animatedRef.current = true;
+          let startTimestamp = null;
+          const animate = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            // Ease out cubic
+            const easeProgress = 1 - Math.pow(1 - progress, 3);
+            setCount(easeProgress * end);
+            if (progress < 1) {
+              window.requestAnimationFrame(animate);
+            } else {
+              setCount(end);
+            }
+          };
+          window.requestAnimationFrame(animate);
+        }
+      },
+      { threshold: 0.15 }
+    );
+
+    const currentElem = ref.current;
+    if (currentElem) {
+      observer.observe(currentElem);
+    }
+
+    return () => {
+      if (currentElem) observer.unobserve(currentElem);
+    };
+  }, [end, duration]);
+
+  const formatted = decimals > 0 
+    ? count.toFixed(decimals) 
+    : Math.floor(count).toLocaleString('id-ID');
+
+  return (
+    <span ref={ref} className="tabular-nums">
+      {prefix}{formatted}{suffix}
+    </span>
+  );
+}
+
+// 3 Core Visual Slides for Hero Switcher
+const HERO_SLIDES = [
+  {
+    id: 'depot',
+    title: 'Depot Konsolidasi Krian',
+    code: 'SDA-KRN',
+    badge: 'FEFO READY',
+    desc: 'Hub logistik master 12.000 karton Mayora lintas Krian, Balongbendo, Tarik, Prambon, dan perimeter industri Sidoarjo Barat.',
+    status: 'READY INVENTORY (12.000+ DUS)',
+    leadTime: 'LEAD TIME: SAMEDAY / H+1',
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCCU1lsfRf2RijOStSWs_HRnNw-TorpNVrh53pA28nJ1lgEzANReT5jk-wIfOcuHgvL1KpxZ_WpmngV64hL6sMv3u4YBLUP8nHYHAGRdwLzw1CRbAonLimLrNxxHCRvh2SzlzbeISrdl05t3I1SUfVbqHO9UYX9gVnChBTalEXsw_ZHg-ghsDlqZuxWdZ_WaPFUgyOHrtJyPsaABwUy8R6torxHYaZEUh8v3MemRjg',
+    icon: 'warehouse',
+    tag: 'Gudang Konsolidasi'
+  },
+  {
+    id: 'fleet',
+    title: 'Armada Box & Wingbox Terjadwal',
+    code: '18 KECAMATAN',
+    badge: 'GPS LIVE',
+    desc: 'Armada boks tertutup terkelola mandiri dari Depot Krian untuk menjamin keutuhan kemasan karton tiba tanpa cacat.',
+    status: 'DISPATCH: 08.00 & 13.00 WIB',
+    leadTime: 'ONGKIR RP 0 DISTRIBUTOR',
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDoxZNKgeLEThWYt0YQGRYfdVf4meW88QIFAgVB34rWsqpRCv8bWG5lgTDXqRGJbuSdE-_KiDVf0IwqqRpebV89aObO5wtWUov2PHWD_D6szVRdXVnp-j410nLuUvD1QXT6maayfN6LukDCZOlqAcH7XzoFYdpVvGp9q2EWAuH6mvqjtppPaUn7kkzpcBF6I6CvXW1kNj3iWreoNDssxRdO2a7vexsac9_53h-nHfM',
+    icon: 'local_shipping',
+    tag: 'Armada Logistik'
+  },
+  {
+    id: 'partner',
+    title: 'Pemberdayaan Warung & Warkop UMKM',
+    code: '1.850+ MITRA',
+    badge: 'TEMPO 7 HARI',
+    desc: 'Restock mandiri harga grosir resmi pabrik tanpa tengkulak, didukung opsi pembayaran COD & kredit tempo bersahabat.',
+    status: 'PRODUK: 100% ASLI MAYORA',
+    leadTime: 'MARGIN: STABIL & TRANSPARAN',
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCFtNWrxQtwmBDUqITQA0Nv2nkrqw1i02N2a5JiQ0NhuhkSxq4t5fCZ-Rwqz9fua2UqyYayCCsg2Rrt4T8AVAxFoG52Q-UqK-CsSaBIUq09Xow0JIu7yfwqpzmX_VGlGxgFX7eVuna_ybHuol1xp1Vh9eSRZpnXDnIY7hRsU4zu4O3tz8hGFwnJNUmAjcT1JY374oXvhL9ann5haaOn4W0QyqyNb4YMJtPvolf-x_w',
+    icon: 'storefront',
+    tag: 'Mitra Warung'
+  }
+];
 
 export default function Home({ setActiveNav }) {
   const [trackingInput, setTrackingInput] = useState('');
   const [trackingResult, setTrackingResult] = useState(null);
   const [trackingLoading, setTrackingLoading] = useState(false);
   const [trackingError, setTrackingError] = useState(null);
+
+  // HERO DYNAMIC VISUAL SWITCHER STATE
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [slideProgress, setSlideProgress] = useState(0);
+
+  const SLIDE_DURATION = 5000; // 5 seconds per slide
+  const TICK_INTERVAL = 50;
+
+  useEffect(() => {
+    if (isPaused) return;
+
+    const interval = setInterval(() => {
+      setSlideProgress((prev) => {
+        const next = prev + (TICK_INTERVAL / SLIDE_DURATION) * 100;
+        if (next >= 100) {
+          setActiveSlide((curr) => (curr + 1) % HERO_SLIDES.length);
+          return 0;
+        }
+        return next;
+      });
+    }, TICK_INTERVAL);
+
+    return () => clearInterval(interval);
+  }, [isPaused]);
+
+  const handleSelectSlide = (idx) => {
+    setActiveSlide(idx);
+    setSlideProgress(0);
+  };
+
+  const handlePrevSlide = () => {
+    setActiveSlide((curr) => (curr - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
+    setSlideProgress(0);
+  };
+
+  const handleNextSlide = () => {
+    setActiveSlide((curr) => (curr + 1) % HERO_SLIDES.length);
+    setSlideProgress(0);
+  };
 
   const sampleTrackingCodes = [
     { code: 'INB-2610-KR06', label: 'Toko Makmur' },
@@ -295,44 +430,143 @@ export default function Home({ setActiveNav }) {
               </div>
             </div>
 
-            {/* Right Hero Depot Card */}
-            <div className="lg:col-span-6 relative">
+            {/* Right Hero Depot & Logistics Dynamic Visual Switcher */}
+            <div 
+              className="lg:col-span-6 relative group"
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+            >
               <div className="relative rounded-2xl overflow-hidden border border-surface-container-high shadow-md bg-surface-container-low p-2">
-                <div className="relative h-[360px] sm:h-[420px] rounded-xl overflow-hidden">
-                  <img
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCU1lsfRf2RijOStSWs_HRnNw-TorpNVrh53pA28nJ1lgEzANReT5jk-wIfOcuHgvL1KpxZ_WpmngV64hL6sMv3u4YBLUP8nHYHAGRdwLzw1CRbAonLimLrNxxHCRvh2SzlzbeISrdl05t3I1SUfVbqHO9UYX9gVnChBTalEXsw_ZHg-ghsDlqZuxWdZ_WaPFUgyOHrtJyPsaABwUy8R6torxHYaZEUh8v3MemRjg"
-                    alt="Depot Konsolidasi Krian Sidoarjo"
-                    className="w-full h-full object-cover"
-                    width={566}
-                    height={420}
-                    fetchPriority="high"
-                    decoding="async"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                {/* Image Showcase Frame with Cross-Fade */}
+                <div className="relative h-[380px] sm:h-[430px] rounded-xl overflow-hidden bg-black/90">
+                  {HERO_SLIDES.map((slide, idx) => (
+                    <div
+                      key={slide.id}
+                      className={`absolute inset-0 transition-all duration-700 ease-in-out ${
+                        activeSlide === idx 
+                          ? 'opacity-100 scale-100 z-10' 
+                          : 'opacity-0 scale-105 z-0 pointer-events-none'
+                      }`}
+                    >
+                      <img
+                        src={slide.image}
+                        alt={slide.title}
+                        className="w-full h-full object-cover"
+                        width={566}
+                        height={430}
+                        loading={idx === 0 ? "eager" : "lazy"}
+                        fetchPriority={idx === 0 ? "high" : "auto"}
+                        decoding="async"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/35"></div>
+                    </div>
+                  ))}
+
+                  {/* Top Segmented Progress Bar & Slide Indicator */}
+                  <div className="absolute top-3.5 left-3.5 right-3.5 z-20 flex items-center justify-between gap-3">
+                    {/* Segmented Progress Bars */}
+                    <div className="flex-1 flex items-center gap-1.5">
+                      {HERO_SLIDES.map((s, idx) => {
+                        const isCurrent = activeSlide === idx;
+                        const isPast = activeSlide > idx;
+                        const fillPercent = isCurrent ? slideProgress : (isPast ? 100 : 0);
+                        return (
+                          <button
+                            key={s.id}
+                            type="button"
+                            onClick={() => handleSelectSlide(idx)}
+                            className="flex-1 h-1.5 rounded-full bg-white/30 overflow-hidden cursor-pointer transition-colors hover:bg-white/50"
+                            title={`Lihat ${s.tag}`}
+                          >
+                            <div 
+                              className="h-full bg-white transition-all duration-75 rounded-full"
+                              style={{ width: `${fillPercent}%` }}
+                            />
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Counter Pill & Pause/Play State */}
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <span className="px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-white text-[10px] font-mono font-bold tracking-wider border border-white/20">
+                        {String(activeSlide + 1).padStart(2, '0')} / {String(HERO_SLIDES.length).padStart(2, '0')}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setIsPaused(!isPaused)}
+                        className="w-6 h-6 rounded-full bg-black/60 backdrop-blur-md text-white/90 hover:text-white flex items-center justify-center border border-white/20 cursor-pointer transition-colors"
+                        title={isPaused ? "Lanjutkan Auto-Slide" : "Jeda Auto-Slide"}
+                      >
+                        {isPaused ? <Play className="h-3 w-3 fill-current" /> : <Pause className="h-3 w-3 fill-current" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Quick Category Selector Pills on Image */}
+                  <div className="absolute top-12 left-3.5 z-20 flex flex-wrap gap-1.5">
+                    {HERO_SLIDES.map((s, idx) => (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => handleSelectSlide(idx)}
+                        className={`px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wide transition-all cursor-pointer flex items-center gap-1 backdrop-blur-md ${
+                          activeSlide === idx
+                            ? 'bg-primary-container text-white border border-primary/40 shadow-xs'
+                            : 'bg-black/45 text-white/80 hover:text-white hover:bg-black/65 border border-white/10'
+                        }`}
+                      >
+                        <span className="material-symbols-outlined text-[12px]">{s.icon}</span>
+                        <span>{s.tag}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Manual Arrow Controls (Appear on Hover) */}
+                  <div className="absolute inset-y-0 left-2 right-2 z-20 flex items-center justify-between pointer-events-none">
+                    <button
+                      type="button"
+                      onClick={handlePrevSlide}
+                      className="w-8 h-8 rounded-full bg-black/60 hover:bg-black/85 text-white backdrop-blur-md flex items-center justify-center pointer-events-auto transition-all opacity-0 group-hover:opacity-100 hover:scale-105 border border-white/20 cursor-pointer shadow-md"
+                      title="Slide Sebelumnya"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleNextSlide}
+                      className="w-8 h-8 rounded-full bg-black/60 hover:bg-black/85 text-white backdrop-blur-md flex items-center justify-center pointer-events-auto transition-all opacity-0 group-hover:opacity-100 hover:scale-105 border border-white/20 cursor-pointer shadow-md"
+                      title="Slide Berikutnya"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
 
-                {/* Floating Depot Info Box */}
-                <div className="absolute bottom-5 left-5 right-5 bg-surface-container-lowest/95 backdrop-blur-md p-4 rounded-xl border border-surface-container-high shadow-lg">
+                {/* Floating Dynamic Info Box (Synced to Active Slide) */}
+                <div className="absolute bottom-5 left-5 right-5 z-20 bg-surface-container-lowest/95 backdrop-blur-md p-4 rounded-xl border border-surface-container-high shadow-lg transition-all duration-300">
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary-container shrink-0 border border-surface-variant">
-                      <span className="material-symbols-outlined text-[22px]">warehouse</span>
+                    <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary-container shrink-0 border border-surface-variant transition-transform duration-300">
+                      <span className="material-symbols-outlined text-[22px]">
+                        {HERO_SLIDES[activeSlide].icon}
+                      </span>
                     </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold font-display text-on-surface">
-                          Depot Konsolidasi Krian
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-sm font-bold font-display text-on-surface truncate">
+                          {HERO_SLIDES[activeSlide].title}
                         </span>
                         <span className="px-1.5 py-0.5 text-[10px] font-bold rounded bg-tertiary-container/30 text-tertiary uppercase tracking-wide">
-                          SDA-KRN
+                          {HERO_SLIDES[activeSlide].badge}
                         </span>
                       </div>
-                      <p className="text-xs text-on-surface-variant mt-0.5 leading-snug">
-                        Hub logistik lintas Krian, Balongbendo, Tarik, Prambon, dan perimeter industri Sidoarjo Barat.
+                      <p className="text-xs text-on-surface-variant mt-0.5 leading-snug line-clamp-2">
+                        {HERO_SLIDES[activeSlide].desc}
                       </p>
-                      <div className="mt-2 flex items-center gap-3 text-[11px] font-mono text-on-surface-variant">
-                        <span className="text-primary font-bold">STATUS: READY INVENTORY</span>
+                      <div className="mt-2 flex items-center gap-2 sm:gap-3 text-[10.5px] font-mono text-on-surface-variant flex-wrap">
+                        <span className="text-primary font-bold">{HERO_SLIDES[activeSlide].status}</span>
                         <span>•</span>
-                        <span>LEAD TIME: SAMEDAY / H+1</span>
+                        <span>{HERO_SLIDES[activeSlide].leadTime}</span>
                       </div>
                     </div>
                   </div>

@@ -815,13 +815,24 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
             </div>
 
             {/* Stepper Status Alur Outbound */}
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <div className="flex items-center justify-between text-xs font-bold text-on-surface">
                 <span>Alur Pemenuhan &amp; Pengiriman Outbound:</span>
-                <span className="text-[11px] text-primary font-mono">
+                <span className="text-[11px] text-primary font-mono font-bold">
                   Tahap {(STATUS_INDEX_MAP[selectedOrderDetails.status] ?? 0) + 1} dari 5
                 </span>
               </div>
+
+              {/* Animated Progress Bar Track */}
+              <div className="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-primary to-emerald-500 rounded-full transition-all duration-500 ease-out"
+                  style={{ 
+                    width: `${Math.min(100, Math.max(12, (((STATUS_INDEX_MAP[selectedOrderDetails.status] ?? 0) + 1) / 5) * 100))}%` 
+                  }}
+                />
+              </div>
+
               <div className="grid grid-cols-5 gap-1.5 text-center text-[10px]">
                 {[
                   { key: 'PENDING', label: '1. Masuk PO' },
@@ -837,16 +848,17 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
                   return (
                     <div
                       key={st.key}
-                      className={`p-2 rounded-lg border font-semibold transition-all ${
+                      className={`p-2 rounded-lg border font-semibold transition-all duration-300 ease-out ${
                         isCurrent
-                          ? 'bg-primary text-white border-primary shadow-xs'
+                          ? 'bg-primary text-white border-primary shadow-xs scale-[1.02]'
                           : isDone
                           ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
                           : 'bg-surface-container-low text-on-surface-variant border-transparent'
                       }`}
                     >
-                      <div>{st.label}</div>
-                      <div className="text-[9px] opacity-80 mt-0.5">
+                      <div className="truncate">{st.label}</div>
+                      <div className="text-[9px] opacity-80 mt-0.5 flex items-center justify-center gap-1">
+                        {isCurrent && <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>}
                         {isCurrent ? 'Aktif' : isDone ? '✓ Selesai' : 'Antre'}
                       </div>
                     </div>
@@ -987,7 +999,7 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
                         selectedOrderDetails
                       )
                     }
-                    className="bg-primary hover:bg-primary-container text-white text-xs font-bold px-4 gap-1.5 shadow-xs h-9"
+                    className="bg-primary hover:bg-primary-container text-white text-xs font-bold px-4 gap-1.5 shadow-xs h-9 active:scale-95 transition-transform duration-150 cursor-pointer"
                   >
                     <span>
                       {mutatingOrderId === selectedOrderDetails.id

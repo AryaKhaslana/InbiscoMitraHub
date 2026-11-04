@@ -502,12 +502,22 @@ export default function OrderTrackingPublic({ setActiveNav, initialTrackingCode 
             </div>
 
             {/* Visual 5-Stage Stepper */}
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               <div className="flex items-center justify-between text-xs font-bold text-on-surface">
                 <span>Alur Pemrosesan Logistik Distribusi:</span>
-                <span className="font-mono text-primary text-[11px]">
+                <span className="font-mono text-primary font-bold text-[11px]">
                   Tahap {currentStageIndex} dari 5
                 </span>
+              </div>
+
+              {/* Animated Progress Bar Track */}
+              <div className="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-primary to-emerald-500 rounded-full transition-all duration-500 ease-out"
+                  style={{ 
+                    width: `${Math.min(100, Math.max(12, (currentStageIndex / 5) * 100))}%` 
+                  }}
+                />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-5 gap-2.5">

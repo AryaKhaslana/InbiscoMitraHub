@@ -166,7 +166,7 @@ function AppContent() {
       <AdminSidebar currentScreen={adminScreen} setCurrentScreen={setAdminScreen} />
       <div className="pl-72 w-full flex flex-col min-h-screen">
         <AdminHeader currentScreen={adminScreen} setCurrentScreen={setAdminScreen} />
-        <main className="pt-20 px-6 sm:px-8 max-w-[1600px] w-full mx-auto flex-1">
+        <main key={adminScreen} className="pt-20 px-6 sm:px-8 max-w-[1600px] w-full mx-auto flex-1 anim-admin-enter">
           <Suspense
             fallback={
               <div className="py-24 text-center">
