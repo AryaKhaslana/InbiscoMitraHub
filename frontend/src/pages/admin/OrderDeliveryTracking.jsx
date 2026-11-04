@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { formatRupiah } from '../../lib/utils';
 import confetti from 'canvas-confetti';
+import LiveOutboundRadarMap from '../../components/admin/LiveOutboundRadarMap';
 
 const NEXT_ORDER_STATUS = {
   PENDING: { status: 'CONFIRMED', label: 'Konfirmasi PO' },
@@ -37,9 +38,11 @@ const STATUS_INDEX_MAP = {
 };
 
 export default function OrderDeliveryTracking({ setCurrentScreen }) {
+  const [activeTab, setActiveTab] = useState('outbound'); // 'outbound' (Mitra Toko Sidoarjo) | 'inbound' (Pabrik Mayora BAST)
   const [deliveries, setDeliveries] = useState([]);
   const [selectedDoNumber, setSelectedDoNumber] = useState('DO-2026-0881');
   const [outboundOrders, setOutboundOrders] = useState([]);
+  const [radarSelectedOrder, setRadarSelectedOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [confirmingBast, setConfirmingBast] = useState(false);
   const [bastReceipt, setBastReceipt] = useState(null);
@@ -62,7 +65,9 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
           return exists ? prev : list[0].doNumber;
         });
       }
-      setOutboundOrders(Array.isArray(ordersRes) ? ordersRes : ordersRes?.orders || []);
+      const ordersList = Array.isArray(ordersRes) ? ordersRes : ordersRes?.orders || [];
+      setOutboundOrders(ordersList);
+      setRadarSelectedOrder((prev) => prev || ordersList[0] || null);
     } catch (err) {
       console.error('OrderDeliveryTracking fetch error:', err);
     } finally {
@@ -236,25 +241,25 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
         <div>
           <div className="flex items-center gap-2 text-primary font-mono text-xs uppercase tracking-wider mb-1">
             <Truck className="h-4 w-4" />
-            <span>Depo Krian Logistics • Inbound Delivery &amp; Outbound Dispatch</span>
+            <span>Depo Krian Logistics • SCM Tracking &amp; Dispatch Console</span>
           </div>
           <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-on-surface">
-            Pelacakan Delivery Armada &amp; Status PO Inbound
+            Pelacakan Armada &amp; Status Distribusi
           </h1>
           <p className="text-sm text-on-surface-variant mt-1">
-            Pantau armada pengiriman dari Pabrik Mayora, verifikasi serah terima muatan (BAST), serta kelola antrean distribusi ke toko mitra.
+            Kelola pengiriman karton Mayora ke toko mitra kelontong Sidoarjo (Outbound) dan pantau pasokan truk pabrik (Inbound BAST).
           </p>
         </div>
 
         <div className="flex items-center gap-2.5 self-start lg:self-auto">
           <Badge variant="surface" className="font-mono text-xs">
-            {deliveries.filter((d) => d.status === 'IN_TRANSIT').length} Truk Dalam Perjalanan
+            {outboundOrders.length} Pesanan Mitra • {deliveries.filter((d) => d.status === 'IN_TRANSIT').length} Truk Inbound
           </Badge>
           <Button
             onClick={fetchTrackingData}
             variant="outline"
             size="sm"
-            className="h-9 text-xs gap-1.5"
+            className="h-9 text-xs gap-1.5 cursor-pointer"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin text-primary' : ''}`} />
             <span>Refresh Telemetri</span>
@@ -262,45 +267,275 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
         </div>
       </div>
 
-      {/* Panduan Cepat & Konteks Tracking */}
-      <div className="p-4 bg-surface-container-lowest border border-outline/10 rounded-xl shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
-        <div className="flex items-start gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
-            <Truck className="h-4 w-4" />
-          </div>
-          <div>
-            <span className="font-bold text-on-surface">Panduan Tracking &amp; BAST:</span>
-            <span className="text-on-surface-variant ml-1">
-              Pilih kartu pengemudi di bawah untuk melihat rute perjalanan dari Pabrik Pasuruan ke Gudang Krian. Saat armada tiba, tekan <strong>Konfirmasi Terima BAST</strong> untuk otomatis memasukkan muatan dus ke saldo stok aktif.
+      {/* 2-Way SCM Direction Switcher (Outbound vs Inbound Tabs) */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-1.5 bg-surface-container-low rounded-2xl border border-outline/10 shadow-xs">
+        <div className="flex items-center gap-1.5 w-full sm:w-auto">
+          <button
+            type="button"
+            onClick={() => setActiveTab('outbound')}
+            className={`flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+              activeTab === 'outbound'
+                ? 'bg-primary text-white shadow-sm'
+                : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container'
+            }`}
+          >
+            <Package className="h-4 w-4" />
+            <span>Outbound: Distribusi Toko Mitra</span>
+            <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded font-bold ${activeTab === 'outbound' ? 'bg-white/20' : 'bg-surface-container-high'}`}>
+              {outboundOrders.length} Pesanan
             </span>
-          </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('inbound')}
+            className={`flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+              activeTab === 'inbound'
+                ? 'bg-primary text-white shadow-sm'
+                : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container'
+            }`}
+          >
+            <Truck className="h-4 w-4" />
+            <span>Inbound: Suplai Pabrik Mayora (BAST)</span>
+            <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded font-bold ${activeTab === 'inbound' ? 'bg-white/20' : 'bg-surface-container-high'}`}>
+              {deliveries.length} Truk
+            </span>
+          </button>
         </div>
-        <Badge variant="surface" className="text-[10px] shrink-0 font-mono">
-          Telemetri GPS &amp; e-BAST
-        </Badge>
+
+        <div className="text-[11px] text-on-surface-variant px-3 py-1 font-medium hidden lg:block font-mono">
+          {activeTab === 'outbound' 
+            ? '🚚 Rute Depo Krian ➔ 18 Kec. Sidoarjo (Suzuki Carry Box • e-POD)'
+            : '🏭 Rute Pabrik DC Pasuruan ➔ Depo Krian (Hino Wingbox • BAST)'}
+        </div>
       </div>
 
-      {bastReceipt && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0" />
-            <div>
-              <div className="font-bold">
-                Berita Acara Serah Terima ({bastReceipt.bastNumber}) untuk {bastReceipt.doNumber} Terverifikasi!
+      {/* ========================================================================= */}
+      {/* TAB 1: OUTBOUND DISTRIBUTION TO TOKO MITRA (FOKUS UTAMA PESANAN WEB)     */}
+      {/* ========================================================================= */}
+      {activeTab === 'outbound' && (
+        <div className="space-y-6 animate-in fade-in duration-200">
+          {/* Outbound Context Guide */}
+          <div className="p-4 bg-surface-container-lowest border border-outline/10 rounded-xl shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+            <div className="flex items-start gap-2.5">
+              <div className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
+                <Package className="h-4 w-4" />
               </div>
-              <div className="text-[11px] text-emerald-700 mt-0.5">
-                Stok Gudang Krian telah diperbarui:{' '}
-                {(bastReceipt.restockedItems || [])
-                  .map((it) => `${it.name.split('(')[0].trim()} (+${it.addedCartons} dus → ${it.newStockCartons} dus)`)
-                  .join(', ')}
+              <div>
+                <span className="font-bold text-on-surface">Alur Pengiriman Toko Mitra:</span>
+                <span className="text-on-surface-variant ml-1">
+                  Semua pesanan yang dibuat oleh toko mitra melalui katalog publik akan masuk ke antrean ini. Anda dapat memajukan tahapan (Konfirmasi PO ➔ Packing FEFO ➔ Kirim Armada Carry ➔ Selesai e-POD) dan memantau rute pengantaran secara <em>live</em> pada radar di bawah.
+                </span>
               </div>
             </div>
+            <Badge variant="surface" className="text-[10px] shrink-0 font-mono">
+              Live e-POD &amp; Rute Lokal
+            </Badge>
           </div>
-          <Button size="sm" variant="outline" onClick={() => setBastReceipt(null)} className="h-7 text-xs">
-            Tutup
-          </Button>
+
+          {/* DYNAMIC LIVE OUTBOUND RADAR MAP */}
+          <LiveOutboundRadarMap
+            selectedOrder={radarSelectedOrder || outboundOrders[0]}
+            outboundOrders={outboundOrders}
+            onSelectOrder={(ord) => {
+              if (typeof ord === 'string') {
+                const found = outboundOrders.find((o) =>
+                  o.store?.district?.toLowerCase().includes(ord.toLowerCase())
+                );
+                if (found) setRadarSelectedOrder(found);
+              } else if (ord) {
+                setRadarSelectedOrder(ord);
+              }
+            }}
+          />
+
+          {/* Toast Feedback Status Update Outbound */}
+          {orderFeedbackToast && (
+            <div className="p-4 bg-primary/10 border border-primary/20 text-on-surface rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs animate-in fade-in duration-200">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center shrink-0">
+                  <CheckCircle2 className="h-4 w-4" />
+                </div>
+                <div>
+                  <div className="font-bold text-on-surface">
+                    {orderFeedbackToast.title} • <span className="font-mono text-primary font-extrabold">{orderFeedbackToast.trackingCode}</span>
+                  </div>
+                  <div className="text-xs text-on-surface-variant mt-0.5">
+                    {orderFeedbackToast.message}
+                  </div>
+                </div>
+              </div>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setOrderFeedbackToast(null)}
+                className="h-7 text-xs text-on-surface-variant hover:text-on-surface self-end sm:self-auto cursor-pointer"
+              >
+                Tutup
+              </Button>
+            </div>
+          )}
+
+          {/* Outbound Wholesale Store Orders Dispatch Table */}
+          <Card className="border border-outline/10 shadow-xs">
+            <CardContent className="p-5 space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-outline/10 pb-3 gap-2">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-4 w-4 text-primary" />
+                    <h3 className="text-sm font-bold text-on-surface">
+                      Antrean &amp; Status Pengiriman Outbound ke Toko Mitra Sidoarjo
+                    </h3>
+                  </div>
+                  <p className="text-xs text-on-surface-variant mt-0.5">
+                    Klik baris pesanan untuk menyorot posisi rute pada radar GPS, atau klik <strong>Detail &amp; POD</strong> untuk bukti tanda terima digital.
+                  </p>
+                </div>
+                <Badge variant="surface" className="text-xs font-mono self-start sm:self-auto">
+                  {outboundOrders.length} Pesanan Toko
+                </Badge>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="bg-surface-container-low text-on-surface-variant border-b border-outline/10">
+                      <th className="py-2.5 px-3 font-semibold">No Resi</th>
+                      <th className="py-2.5 px-3 font-semibold">Toko Tujuan &amp; Kecamatan</th>
+                      <th className="py-2.5 px-3 font-semibold">Ringkasan Item</th>
+                      <th className="py-2.5 px-3 font-semibold text-right">Total Tagihan</th>
+                      <th className="py-2.5 px-3 font-semibold text-center">Status Saat Ini</th>
+                      <th className="py-2.5 px-3 font-semibold text-right">Aksi Dispatch &amp; e-POD</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-outline/10 font-medium">
+                    {outboundOrders.map((ord) => {
+                      const nextStep = NEXT_ORDER_STATUS[ord.status];
+                      const isRadarActive = radarSelectedOrder?.id === ord.id;
+                      return (
+                        <tr
+                          key={ord.id}
+                          onClick={() => setRadarSelectedOrder(ord)}
+                          className={`hover:bg-surface-container-low/80 cursor-pointer transition-colors group ${
+                            isRadarActive ? 'bg-primary/5 ring-1 ring-primary/30' : ''
+                          }`}
+                        >
+                          <td className="py-3 px-3 font-mono font-bold text-primary group-hover:underline">
+                            <div className="flex items-center gap-1.5">
+                              {isRadarActive && <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>}
+                              <span>{ord.trackingCode}</span>
+                            </div>
+                          </td>
+                          <td className="py-3 px-3">
+                            <div className="font-bold text-on-surface">{ord.store?.name}</div>
+                            <div className="text-[10px] text-on-surface-variant">
+                              {ord.store?.district} • {ord.store?.phone}
+                            </div>
+                          </td>
+                          <td className="py-3 px-3 text-on-surface-variant max-w-xs truncate">
+                            {ord.itemsSummary}
+                          </td>
+                          <td className="py-3 px-3 text-right font-mono font-bold">
+                            {formatRupiah(ord.totalAmount)}
+                          </td>
+                          <td className="py-3 px-3 text-center">
+                            <span
+                              className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold ${
+                                ord.status === 'COMPLETED'
+                                  ? 'bg-emerald-100 text-emerald-800'
+                                  : ord.status === 'DISPATCHED'
+                                  ? 'bg-blue-100 text-blue-800'
+                                  : ord.status === 'PACKING'
+                                  ? 'bg-amber-100 text-amber-800'
+                                  : 'bg-surface-container-highest text-on-surface'
+                              }`}
+                            >
+                              {ord.statusLabel || ord.status}
+                            </span>
+                          </td>
+                          <td className="py-3 px-3 text-right" onClick={(e) => e.stopPropagation()}>
+                            <div className="flex items-center justify-end gap-1.5">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => setSelectedOrderDetails(ord)}
+                                className="h-7 px-2 text-[11px] gap-1 border-outline/20 hover:bg-surface-container cursor-pointer"
+                                title="Buka Rincian Pesanan & e-POD"
+                              >
+                                <Eye className="h-3 w-3 text-primary" />
+                                <span>Detail &amp; POD</span>
+                              </Button>
+                              {nextStep ? (
+                                <Button
+                                  size="sm"
+                                  disabled={mutatingOrderId === ord.id}
+                                  onClick={() => handleAdvanceOrder(ord.id, nextStep.status, ord)}
+                                  className="bg-primary text-white text-[11px] h-7 px-2.5 hover:bg-primary-container font-semibold shadow-xs cursor-pointer active:scale-95 transition-transform"
+                                >
+                                  {mutatingOrderId === ord.id ? '...' : nextStep.label}
+                                </Button>
+                              ) : (
+                                <span className="text-[11px] text-emerald-700 font-bold px-1.5 flex items-center gap-1">
+                                  <CheckCircle2 className="h-3.5 w-3.5" /> Selesai
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       )}
+
+      {/* ========================================================================= */}
+      {/* TAB 2: INBOUND FACTORY REPLENISHMENT FROM MAYORA HQ (BAST & GUDANG KRIAN) */}
+      {/* ========================================================================= */}
+      {activeTab === 'inbound' && (
+        <div className="space-y-6 animate-in fade-in duration-200">
+          {bastReceipt && (
+            <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-2.5">
+                <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0" />
+                <div>
+                  <div className="font-bold">
+                    Berita Acara Serah Terima ({bastReceipt.bastNumber}) untuk {bastReceipt.doNumber} Terverifikasi!
+                  </div>
+                  <div className="text-[11px] text-emerald-700 mt-0.5">
+                    Stok Gudang Krian telah diperbarui:{' '}
+                    {(bastReceipt.restockedItems || [])
+                      .map((it) => `${it.name.split('(')[0].trim()} (+${it.addedCartons} dus → ${it.newStockCartons} dus)`)
+                      .join(', ')}
+                  </div>
+                </div>
+              </div>
+              <Button size="sm" variant="outline" onClick={() => setBastReceipt(null)} className="h-7 text-xs cursor-pointer">
+                Tutup
+              </Button>
+            </div>
+          )}
+
+          {/* Inbound Context Guide */}
+          <div className="p-4 bg-surface-container-lowest border border-outline/10 rounded-xl shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+            <div className="flex items-start gap-2.5">
+              <div className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
+                <Truck className="h-4 w-4" />
+              </div>
+              <div>
+                <span className="font-bold text-on-surface">Alur Pasokan Masuk Pabrik Mayora (Inbound BAST):</span>
+                <span className="text-on-surface-variant ml-1">
+                  Pasokan ratusan dus karton Mayora dari Pabrik DC Pasuruan &amp; Balaraja diangkut armada truk Hino Wingbox. Pilih kartu pengemudi di bawah untuk melihat rute perjalanan tol Trans-Jawa. Saat armada tiba di Bay Gudang Krian, tekan <strong>Konfirmasi Terima BAST</strong> untuk otomatis memasukkan muatan dus ke saldo stok aktif.
+                </span>
+              </div>
+            </div>
+            <Badge variant="surface" className="text-[10px] shrink-0 font-mono">
+              Inbound Truk Pabrik &amp; BAST
+            </Badge>
+          </div>
 
       {/* Fleet & Driver Selector Grid (Pilih Pengemudi & Truk Aktif) */}
       <div className="space-y-2.5">
@@ -636,143 +871,10 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
           </Card>
         </div>
       </div>
+    </div>
+  )}
 
-      {/* Toast Feedback Status Update Outbound */}
-      {orderFeedbackToast && (
-        <div className="p-4 bg-primary/10 border border-primary/20 text-on-surface rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs animate-in fade-in duration-200">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center shrink-0">
-              <CheckCircle2 className="h-4 w-4" />
-            </div>
-            <div>
-              <div className="font-bold text-on-surface">
-                {orderFeedbackToast.title} • <span className="font-mono text-primary font-extrabold">{orderFeedbackToast.trackingCode}</span>
-              </div>
-              <div className="text-xs text-on-surface-variant mt-0.5">
-                {orderFeedbackToast.message}
-              </div>
-            </div>
-          </div>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => setOrderFeedbackToast(null)}
-            className="h-7 text-xs text-on-surface-variant hover:text-on-surface self-end sm:self-auto"
-          >
-            Tutup
-          </Button>
-        </div>
-      )}
-
-      {/* Outbound Wholesale Store Orders Dispatch Table */}
-      <Card className="border border-outline/10 shadow-xs">
-        <CardContent className="p-5 space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-outline/10 pb-3 gap-2">
-            <div>
-              <div className="flex items-center gap-2">
-                <FileText className="h-4 w-4 text-primary" />
-                <h3 className="text-sm font-bold text-on-surface">
-                  Status Pengiriman Outbound ke Toko Mitra Sidoarjo
-                </h3>
-              </div>
-              <p className="text-xs text-on-surface-variant mt-0.5">
-                Klik baris pesanan atau tombol <strong>Detail &amp; POD</strong> untuk memeriksa rincian kargo dus, alamat penerima, kurir, dan bukti tanda terima digital (e-POD).
-              </p>
-            </div>
-            <Badge variant="surface" className="text-xs font-mono self-start sm:self-auto">
-              {outboundOrders.length} Pesanan Toko
-            </Badge>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="bg-surface-container-low text-on-surface-variant border-b border-outline/10">
-                  <th className="py-2.5 px-3 font-semibold">No Resi</th>
-                  <th className="py-2.5 px-3 font-semibold">Toko Tujuan &amp; Kecamatan</th>
-                  <th className="py-2.5 px-3 font-semibold">Ringkasan Item</th>
-                  <th className="py-2.5 px-3 font-semibold text-right">Total Tagihan</th>
-                  <th className="py-2.5 px-3 font-semibold text-center">Status Saat Ini</th>
-                  <th className="py-2.5 px-3 font-semibold text-right">Aksi Dispatch &amp; e-POD</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-outline/10 font-medium">
-                {outboundOrders.map((ord) => {
-                  const nextStep = NEXT_ORDER_STATUS[ord.status];
-                  return (
-                    <tr
-                      key={ord.id}
-                      onClick={() => setSelectedOrderDetails(ord)}
-                      className="hover:bg-surface-container-low/80 cursor-pointer transition-colors group"
-                    >
-                      <td className="py-3 px-3 font-mono font-bold text-primary group-hover:underline">
-                        {ord.trackingCode}
-                      </td>
-                      <td className="py-3 px-3">
-                        <div className="font-bold text-on-surface">{ord.store?.name}</div>
-                        <div className="text-[10px] text-on-surface-variant">
-                          {ord.store?.district} • {ord.store?.phone}
-                        </div>
-                      </td>
-                      <td className="py-3 px-3 text-on-surface-variant max-w-xs truncate">
-                        {ord.itemsSummary}
-                      </td>
-                      <td className="py-3 px-3 text-right font-mono font-bold">
-                        {formatRupiah(ord.totalAmount)}
-                      </td>
-                      <td className="py-3 px-3 text-center">
-                        <span
-                          className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold ${
-                            ord.status === 'COMPLETED'
-                              ? 'bg-emerald-100 text-emerald-800'
-                              : ord.status === 'DISPATCHED'
-                              ? 'bg-blue-100 text-blue-800'
-                              : ord.status === 'PACKING'
-                              ? 'bg-amber-100 text-amber-800'
-                              : 'bg-surface-container-highest text-on-surface'
-                          }`}
-                        >
-                          {ord.statusLabel || ord.status}
-                        </span>
-                      </td>
-                      <td className="py-3 px-3 text-right" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center justify-end gap-1.5">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setSelectedOrderDetails(ord)}
-                            className="h-7 px-2 text-[11px] gap-1 border-outline/20 hover:bg-surface-container"
-                            title="Buka Rincian Pesanan & e-POD"
-                          >
-                            <Eye className="h-3 w-3 text-primary" />
-                            <span>Detail &amp; POD</span>
-                          </Button>
-                          {nextStep ? (
-                            <Button
-                              size="sm"
-                              disabled={mutatingOrderId === ord.id}
-                              onClick={() => handleAdvanceOrder(ord.id, nextStep.status, ord)}
-                              className="bg-primary text-white text-[11px] h-7 px-2.5 hover:bg-primary-container font-semibold shadow-xs"
-                            >
-                              {mutatingOrderId === ord.id ? '...' : nextStep.label}
-                            </Button>
-                          ) : (
-                            <span className="text-[11px] text-emerald-700 font-bold px-1.5 flex items-center gap-1">
-                              <CheckCircle2 className="h-3.5 w-3.5" /> Selesai
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Modal Dossier Detail & e-POD Pesanan Toko Outbound */}
+  {/* Modal Dossier Detail & e-POD Pesanan Toko Outbound */}
       {selectedOrderDetails && (
         <div
           onClick={(e) => {
