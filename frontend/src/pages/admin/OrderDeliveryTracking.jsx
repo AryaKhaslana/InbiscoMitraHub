@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { formatRupiah } from '../../lib/utils';
 import confetti from 'canvas-confetti';
-import LiveOutboundRadarMap from '../../components/admin/LiveOutboundRadarMap';
+import SidoarjoDeliveryMap from '../../components/common/SidoarjoDeliveryMap';
 
 const NEXT_ORDER_STATUS = {
   PENDING: { status: 'CONFIRMED', label: 'Konfirmasi PO' },
@@ -333,20 +333,10 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
             </Badge>
           </div>
 
-          {/* DYNAMIC LIVE OUTBOUND RADAR MAP */}
-          <LiveOutboundRadarMap
-            selectedOrder={radarSelectedOrder || outboundOrders[0]}
-            outboundOrders={outboundOrders}
-            onSelectOrder={(ord) => {
-              if (typeof ord === 'string') {
-                const found = outboundOrders.find((o) =>
-                  o.store?.district?.toLowerCase().includes(ord.toLowerCase())
-                );
-                if (found) setRadarSelectedOrder(found);
-              } else if (ord) {
-                setRadarSelectedOrder(ord);
-              }
-            }}
+          {/* REAL FORMAL SIDOARJO LOGISTICS MAP */}
+          <SidoarjoDeliveryMap
+            orderData={radarSelectedOrder || outboundOrders[0]}
+            height="h-[380px]"
           />
 
           {/* Toast Feedback Status Update Outbound */}

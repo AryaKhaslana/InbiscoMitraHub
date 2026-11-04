@@ -24,6 +24,7 @@ import {
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
+import SidoarjoDeliveryMap from '../components/common/SidoarjoDeliveryMap';
 
 const STEPPER_STAGES = [
   { key: 'PENDING', step: 1, title: 'Pesanan Masuk', desc: 'PO dibuat & tersimpan di sistem' },
@@ -554,6 +555,9 @@ export default function OrderTrackingPublic({ setActiveNav, initialTrackingCode 
                 })}
               </div>
             </div>
+
+            {/* Real Interactive Sidoarjo FMCG Logistics Map */}
+            <SidoarjoDeliveryMap orderData={orderData} height="h-[360px]" />
 
             {/* 2-Columns: Driver Telemetry & Store Destination */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
