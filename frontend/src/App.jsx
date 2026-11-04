@@ -16,6 +16,7 @@ const OrderTrackingPublic = lazy(() => import('./pages/OrderTrackingPublic'));
 
 import AdminSidebar from './components/admin/AdminSidebar';
 import AdminHeader from './components/admin/AdminHeader';
+import JudgesDemoGuideModal from './components/common/JudgesDemoGuideModal';
 
 // Code-split 9 SupplySync Admin Screens (preloaded on admin entry for 0ms tab switches)
 const loadOrderDeliveryTracking = () => import('./pages/admin/OrderDeliveryTracking');
@@ -148,6 +149,12 @@ function AppContent() {
           </Suspense>
         </main>
         <FloatingB2BHelpdesk setActiveNav={handlePublicNav} />
+        <JudgesDemoGuideModal 
+          setActiveNav={handlePublicNav} 
+          switchRole={switchRole} 
+          setAdminScreen={setAdminScreen} 
+          activeRole={activeRole} 
+        />
         <PublicFooter setActiveNav={handlePublicNav} />
       </div>
     );
@@ -199,6 +206,12 @@ function AppContent() {
             )}
           </Suspense>
         </main>
+        <JudgesDemoGuideModal 
+          setActiveNav={handlePublicNav} 
+          switchRole={switchRole} 
+          setAdminScreen={setAdminScreen} 
+          activeRole={activeRole} 
+        />
       </div>
     </div>
   );

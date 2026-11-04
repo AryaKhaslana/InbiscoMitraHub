@@ -42,9 +42,9 @@ const STAGE_INDEX_MAP = {
 };
 
 const SAMPLE_CODES = [
-  { code: 'INB-2610-KR06', store: 'Toko Makmur (Waru)', status: 'Packing' },
-  { code: 'INB-2610-KR05', store: 'Minimarket Barokah (Krian)', status: 'Selesai' },
-  { code: 'INB-2611-C7CHLQND', store: 'Toko Sumber Jaya (Tarik)', status: 'Pending' },
+  { code: 'INB-2610-KR06', store: 'Toko Makmur (Krian)' },
+  { code: 'INB-2610-KR05', store: 'Minimarket Barokah (Wonoayu)' },
+  { code: 'INB-2611-C7CHLQND', store: 'Toko Sumber Jaya (Tarik)' },
 ];
 
 export default function OrderTrackingPublic({ setActiveNav, initialTrackingCode = '' }) {
@@ -382,7 +382,7 @@ export default function OrderTrackingPublic({ setActiveNav, initialTrackingCode 
                 }`}
               >
                 <span className="font-bold">{s.code}</span>
-                <span className="text-[10px] opacity-80 font-sans">({s.status})</span>
+                <span className="text-[10px] opacity-80 font-sans">• {s.store}</span>
               </button>
             ))}
           </div>

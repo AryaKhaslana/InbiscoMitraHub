@@ -24,9 +24,9 @@ export default function Home({ setActiveNav }) {
   const [trackingError, setTrackingError] = useState(null);
 
   const sampleTrackingCodes = [
-    { code: 'INB-2610-KR06', label: 'Toko Makmur', status: 'Packing' },
-    { code: 'INB-2610-KR05', label: 'Minimarket Barokah', status: 'Selesai' },
-    { code: 'INB-2611-C7CHLQND', label: 'Pesanan Baru', status: 'Pending' },
+    { code: 'INB-2610-KR06', label: 'Toko Makmur' },
+    { code: 'INB-2610-KR05', label: 'Minimarket Barokah' },
+    { code: 'INB-2611-C7CHLQND', label: 'Toko Sumber Jaya' },
   ];
 
   const handleTrackWithCode = async (code) => {
@@ -208,7 +208,7 @@ export default function Home({ setActiveNav }) {
                       >
                         <span>{s.code}</span>
                         <span className={trackingInput === s.code ? 'text-white/90 font-medium' : 'text-on-surface-variant font-medium'}>
-                          ({s.status})
+                          • {s.label}
                         </span>
                       </button>
                     ))}
