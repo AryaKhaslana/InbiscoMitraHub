@@ -15,9 +15,9 @@ export function AuthRoleProvider({ children }) {
     if (path === 'admin/depo' || path === 'admin/krian') {
       return { role: 'distributor_ops', nav: 'home' };
     }
-    const validNavs = ['home', 'products', 'partnership', 'moments', 'about', 'contact', 'login'];
+    const validNavs = ['home', 'products', 'partnership', 'moments', 'about', 'contact', 'login', 'track-order', 'driver', 'portal-driver'];
     if (validNavs.includes(path)) {
-      return { role: 'storefront', nav: path };
+      return { role: 'storefront', nav: path === 'portal-driver' ? 'driver' : path };
     }
     const savedRole = localStorage.getItem('inbisco_active_role');
     if (savedRole && savedRole !== 'storefront') {
@@ -57,10 +57,10 @@ export function AuthRoleProvider({ children }) {
         setActiveRole('distributor_ops');
         return;
       }
-      const validNavs = ['home', 'products', 'partnership', 'moments', 'about', 'contact', 'login'];
+      const validNavs = ['home', 'products', 'partnership', 'moments', 'about', 'contact', 'login', 'track-order', 'driver', 'portal-driver'];
       setActiveRole('storefront');
       if (validNavs.includes(path)) {
-        setPublicNavState(path);
+        setPublicNavState(path === 'portal-driver' ? 'driver' : path);
       } else {
         setPublicNavState('home');
       }

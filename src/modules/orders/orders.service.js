@@ -398,3 +398,56 @@ export async function getOrderByTrackingCode(trackingCode) {
 
   return serialized;
 }
+
+// In-memory telemetry cache for live driver smartphone GPS broadcasts
+const liveDriverGpsStore = new Map();
+
+/**
+ * Updates live real-time GPS telemetry transmitted by kurir/driver smartphone.
+ */
+export async function updateDriverGps(payload) {
+  const { trackingCode, lat, lng, accuracy, speed, driverName, vehiclePlate, note, status } = payload;
+  if (!trackingCode || lat === undefined || lng === undefined) {
+    throw new AppError('trackingCode, lat, and lng are required', 400);
+  }
+
+  const cleanCode = trackingCode.trim().toUpperCase();
+  const telemetry = {
+    trackingCode: cleanCode,
+    lat: Number(lat),
+    lng: Number(lng),
+    accuracy: Number(accuracy) || 8,
+    speed: Number(speed) || 0,
+    driverName: driverName || 'Bambang Triyono',
+    vehiclePlate: vehiclePlate || 'W 8821 NA',
+    note: note || '',
+    updatedAt: new Date().toISOString(),
+    isLiveDevice: true,
+  };
+
+  liveDriverGpsStore.set(cleanCode, telemetry);
+
+  // If status is passed (e.g. driver marks DISPATCHED or COMPLETED), update order status in DB
+  if (status && ['DISPATCHED', 'COMPLETED'].includes(status)) {
+    try {
+      await prisma.order.updateMany({
+        where: { trackingCode: cleanCode },
+        data: { status },
+      });
+    } catch (e) {
+      // silent fallback
+    }
+  }
+
+  return telemetry;
+}
+
+/**
+ * Retrieves the latest live GPS telemetry broadcast by kurir/driver smartphone.
+ */
+export async function getDriverGps(trackingCode) {
+  if (!trackingCode) return null;
+  const cleanCode = trackingCode.trim().toUpperCase();
+  return liveDriverGpsStore.get(cleanCode) || null;
+}
+

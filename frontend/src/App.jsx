@@ -13,6 +13,7 @@ const Moments = lazy(() => import('./pages/Moments'));
 const Contact = lazy(() => import('./pages/Contact'));
 const Login = lazy(() => import('./pages/Login'));
 const OrderTrackingPublic = lazy(() => import('./pages/OrderTrackingPublic'));
+const DriverPortal = lazy(() => import('./pages/DriverPortal'));
 
 import AdminSidebar from './components/admin/AdminSidebar';
 import AdminHeader from './components/admin/AdminHeader';
@@ -84,6 +85,7 @@ function AppContent() {
         contact: 'Kontak Cabang Krian & FAQ — Inbisco MitraHub',
         login: 'Portal Masuk Operasional B2B — Inbisco MitraHub',
         'track-order': 'Status Pesanan & Pelacakan Pengiriman — Inbisco MitraHub',
+        driver: 'Portal HP Kurir GPS — Inbisco MitraHub',
       };
       document.title = titles[publicNav] || 'Inbisco MitraHub — B2B FMCG Supply Chain';
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -146,6 +148,7 @@ function AppContent() {
             {publicNav === 'about' && <About setActiveNav={handlePublicNav} />}
             {publicNav === 'contact' && <Contact setActiveNav={handlePublicNav} />}
             {publicNav === 'login' && <Login setActiveNav={handlePublicNav} />}
+            {publicNav === 'driver' && <DriverPortal setActiveNav={handlePublicNav} />}
           </Suspense>
         </main>
         <FloatingB2BHelpdesk setActiveNav={handlePublicNav} />

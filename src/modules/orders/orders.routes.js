@@ -30,4 +30,24 @@ router.get(
   ordersController.trackOrder
 );
 
+/**
+ * POST /api/v1/orders/driver-gps
+ * Public/Driver endpoint to transmit real-time GPS coordinates from smartphone browser.
+ */
+router.post(
+  '/driver-gps',
+  rateLimit({ prefix: 'rl:driver_gps_post', max: 60, windowSeconds: 60 }),
+  ordersController.updateDriverGps
+);
+
+/**
+ * GET /api/v1/orders/driver-gps/:code
+ * Public endpoint to fetch real-time active driver GPS coordinates for an order.
+ */
+router.get(
+  '/driver-gps/:code',
+  rateLimit({ prefix: 'rl:driver_gps_get', max: 60, windowSeconds: 60 }),
+  ordersController.getDriverGps
+);
+
 export default router;

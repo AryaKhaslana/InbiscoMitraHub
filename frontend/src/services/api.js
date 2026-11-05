@@ -214,6 +214,13 @@ export const api = {
     return fetchJson('/orders', { method: 'POST', body: JSON.stringify(cleanPayload) });
   },
   trackOrder: (trackingCode) => fetchJson(`/orders/track/${encodeURIComponent(trackingCode)}`),
+  sendDriverGps: (payload) =>
+    fetchJson('/orders/driver-gps', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+  getDriverGps: (trackingCode) =>
+    fetchJson(`/orders/driver-gps/${encodeURIComponent(trackingCode)}`),
   submitContactInquiry: (payload) =>
     fetchJson('/contact', {
       method: 'POST',

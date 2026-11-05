@@ -29,3 +29,30 @@ export async function trackOrder(req, res, next) {
   }
 }
 
+export async function updateDriverGps(req, res, next) {
+  try {
+    const telemetry = await ordersService.updateDriverGps(req.body);
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: 'Driver GPS telemetry updated successfully',
+      data: telemetry,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function getDriverGps(req, res, next) {
+  try {
+    const telemetry = await ordersService.getDriverGps(req.params.code);
+    return sendSuccess(res, {
+      statusCode: 200,
+      message: 'Driver GPS telemetry retrieved successfully',
+      data: telemetry,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+
