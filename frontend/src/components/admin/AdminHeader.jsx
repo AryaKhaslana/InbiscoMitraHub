@@ -269,7 +269,7 @@ export default function AdminHeader({ currentScreen, setCurrentScreen }) {
         docs.push({
           id: d.doNumber || `DO-${d.id}`,
           label: `Surat Jalan ${d.doNumber}`,
-          desc: `${d.fleet?.plateNumber || 'Armada Inbound'} • ${d.origin} ➔ ${d.destination} (${d.status})`,
+          desc: `${d.fleet?.plateNumber || 'Armada Inbound'} • ${d.origin} → ${d.destination} (${d.status})`,
           targetScreen: 'order-tracking',
           icon: Truck,
         });

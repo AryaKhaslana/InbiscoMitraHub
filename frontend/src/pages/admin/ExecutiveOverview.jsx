@@ -673,7 +673,8 @@ export default function ExecutiveOverview({ setCurrentScreen }) {
                   }}
                   className="bg-primary hover:bg-primary-container text-white text-xs font-bold px-4 gap-1.5 shadow-xs h-8"
                 >
-                  <span>Buka Depo Krian Logistik ➔</span>
+                  <span>Buka Depo Krian Logistik</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
                 </Button>
               ) : (
                 <Button
@@ -685,7 +686,7 @@ export default function ExecutiveOverview({ setCurrentScreen }) {
                   className="bg-primary hover:bg-primary-container text-white text-xs font-bold px-4 gap-1.5 shadow-xs h-8"
                 >
                   <ArrowRight className="h-3.5 w-3.5" />
-                  <span>Simulasi Rebalance Pasokan ➔</span>
+                  <span>Simulasi Rebalance Pasokan</span>
                 </Button>
               )}
             </div>

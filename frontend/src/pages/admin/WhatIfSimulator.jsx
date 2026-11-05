@@ -517,7 +517,8 @@ export default function WhatIfSimulator({ setCurrentScreen }) {
                   className="flex-1 bg-primary text-white text-xs font-bold h-10 hover:bg-primary-container shadow-xs flex items-center justify-center gap-2"
                 >
                   <Boxes className="h-4 w-4" />
-                  <span>Terapkan Simulasi ke Pengajuan Restock ({proposedRestock} Dus) ➔</span>
+                  <span>Terapkan Simulasi ke Pengajuan Restock ({proposedRestock} Dus)</span>
+                  <ArrowRight className="h-4 w-4" />
                 </Button>
                 <Button
                   variant="outline"

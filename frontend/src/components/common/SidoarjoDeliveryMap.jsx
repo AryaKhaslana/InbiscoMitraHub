@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { 
@@ -14,16 +14,18 @@ import {
   Layers,
   Compass,
   Phone,
-  MessageCircle,
-  Star,
   CheckCircle2,
   ExternalLink,
   Radio,
-  Wifi,
-  Sparkles
+  ArrowRight,
+  Warehouse
 } from 'lucide-react';
-import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
+import { 
+  RAW_SVGS, 
+  StarSolidIcon, 
+  WhatsAppSolidIcon, 
+  SmartphoneDeviceIcon 
+} from './CustomTrackingIcons';
 import { api } from '../../services/api';
 
 // Master coordinates for 18 districts across Sidoarjo Regency
@@ -56,19 +58,19 @@ const DEPO_KRIAN = {
   address: 'Jl. Raya Surabaya - Krian KM 28, Sidoarjo',
 };
 
-// Tokopedia/Shopee styled crisp Map Marker HTML DivIcons
-function createShopeeTokpedMarker(type, title, subtitle, isLiveDevice = false) {
+// Pure Vector SVG Map Markers (Zero Emojis, Sharp & Professional)
+function createVectorMapMarker(type, title, subtitle, isLiveDevice = false) {
   if (type === 'depo') {
     return L.divIcon({
-      className: 'tokped-depo-marker',
+      className: 'inbisco-depo-marker',
       html: `
         <div style="transform: translate(-50%, -100%);" class="flex flex-col items-center pointer-events-auto group cursor-pointer">
-          <div class="px-2.5 py-1 rounded-full text-[10px] font-bold shadow-lg whitespace-nowrap mb-1 bg-[#a80000] text-white border-2 border-white flex items-center gap-1">
-            <span>🏭</span>
-            <span>${title}</span>
+          <div class="px-2.5 py-1 rounded-full text-[10px] font-bold shadow-md whitespace-nowrap mb-1 bg-[#8b0000] text-white border-2 border-white flex items-center gap-1.5">
+            <span class="inline-flex items-center text-white/90">${RAW_SVGS.miniHub}</span>
+            <span class="tracking-wide">${title}</span>
           </div>
-          <div class="w-8 h-8 rounded-full bg-[#a80000] text-white flex items-center justify-center shadow-xl border-2 border-white text-sm group-hover:scale-110 transition-transform">
-            🏭
+          <div class="w-8 h-8 rounded-full bg-[#8b0000] text-white flex items-center justify-center shadow-lg border-2 border-white group-hover:scale-110 transition-transform">
+            ${RAW_SVGS.hubFactory}
           </div>
           <div class="w-2 h-1 bg-black/40 rounded-full blur-[1px] mt-0.5"></div>
         </div>
@@ -80,15 +82,15 @@ function createShopeeTokpedMarker(type, title, subtitle, isLiveDevice = false) {
 
   if (type === 'store') {
     return L.divIcon({
-      className: 'tokped-store-marker',
+      className: 'inbisco-store-marker',
       html: `
         <div style="transform: translate(-50%, -100%);" class="flex flex-col items-center pointer-events-auto group cursor-pointer">
-          <div class="px-2.5 py-1 rounded-full text-[10px] font-bold shadow-lg whitespace-nowrap mb-1 bg-emerald-600 text-white border-2 border-white flex items-center gap-1 animate-bounce">
-            <span>📍</span>
-            <span>Toko Anda: ${title}</span>
+          <div class="px-2.5 py-1 rounded-full text-[10px] font-bold shadow-md whitespace-nowrap mb-1 bg-[#047857] text-white border-2 border-white flex items-center gap-1.5 animate-bounce">
+            <span class="inline-flex items-center text-white/90">${RAW_SVGS.miniPin}</span>
+            <span class="tracking-wide">Toko: ${title}</span>
           </div>
-          <div class="w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-xl border-2 border-white text-base group-hover:scale-110 transition-transform">
-            🏪
+          <div class="w-9 h-9 rounded-full bg-[#047857] text-white flex items-center justify-center shadow-lg border-2 border-white group-hover:scale-110 transition-transform">
+            ${RAW_SVGS.retailStore}
           </div>
           <div class="w-2.5 h-1 bg-black/40 rounded-full blur-[1px] mt-0.5"></div>
         </div>
@@ -98,20 +100,22 @@ function createShopeeTokpedMarker(type, title, subtitle, isLiveDevice = false) {
     });
   }
 
-  // Courier Vehicle Marker (Suzuki Carry Box) with Live GPS halo
-  const haloColor = isLiveDevice ? 'bg-emerald-500/40' : 'bg-blue-500/30';
-  const badgeBg = isLiveDevice ? 'bg-emerald-700 text-white' : 'bg-white text-on-surface';
+  // Courier Vehicle Marker (Suzuki Carry Box) with Pure SVG & Live GPS halo
+  const haloColor = isLiveDevice ? 'bg-emerald-500/30' : 'bg-blue-600/25';
+  const badgeClass = isLiveDevice 
+    ? 'bg-emerald-800 text-white border-emerald-600' 
+    : 'bg-white text-on-surface border-outline/25';
 
   return L.divIcon({
-    className: 'tokped-vehicle-marker',
+    className: 'inbisco-vehicle-marker',
     html: `
       <div style="transform: translate(-50%, -50%);" class="relative flex items-center justify-center pointer-events-auto cursor-pointer">
         <div class="absolute w-12 h-12 rounded-full ${haloColor} animate-ping"></div>
-        <div class="w-9 h-9 rounded-full ${isLiveDevice ? 'bg-emerald-600' : 'bg-blue-600'} text-white flex items-center justify-center shadow-xl border-2 border-white text-base z-10 hover:scale-110 transition-transform">
-          🚚
+        <div class="w-9 h-9 rounded-full ${isLiveDevice ? 'bg-[#047857]' : 'bg-[#1d4ed8]'} text-white flex items-center justify-center shadow-lg border-2 border-white z-10 hover:scale-110 transition-transform">
+          ${RAW_SVGS.deliveryTruck}
         </div>
-        <div class="absolute top-10 px-2 py-0.5 rounded-md ${badgeBg} text-[9px] font-bold shadow-md border border-outline/20 whitespace-nowrap z-20 font-mono flex items-center gap-1">
-          ${isLiveDevice ? '<span class="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span>' : ''}
+        <div class="absolute top-10 px-2 py-0.5 rounded-md ${badgeClass} text-[9px] font-bold shadow-sm border whitespace-nowrap z-20 font-mono flex items-center gap-1">
+          ${isLiveDevice ? '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>' : ''}
           <span>${title}</span>
         </div>
       </div>
@@ -131,7 +135,6 @@ export default function SidoarjoDeliveryMap({ orderData, height = 'h-[440px]' })
   const [roadGeometry, setRoadGeometry] = useState(null); // OSRM real road coordinates
   const [roadMeta, setRoadMeta] = useState({ distanceKm: 0, durationMin: 20 });
   const [liveDriverGps, setLiveDriverGps] = useState(null); // Telemetry from real driver phone
-  const [lastTelemetryCheck, setLastTelemetryCheck] = useState(null);
 
   // Extract destination coordinates
   const districtKey = (orderData?.store?.district || orderData?.district || 'krian').toLowerCase().trim();
@@ -140,19 +143,18 @@ export default function SidoarjoDeliveryMap({ orderData, height = 'h-[440px]' })
   const orderStatus = (orderData?.status || 'PENDING').toUpperCase();
   const trackingCode = orderData?.trackingCode || 'INB-2610-KR06';
 
-  // 1. Fetch real turn-by-turn road geometry from OSRM (snaps line to real Sidoarjo asphalt streets)
+  // 1. Fetch real turn-by-turn road geometry from OSRM
   useEffect(() => {
     let isCancelled = false;
     const fetchOsrmRoute = async () => {
       try {
         const url = `https://router.project-osrm.org/route/v1/driving/${DEPO_KRIAN.lng},${DEPO_KRIAN.lat};${destCoords.lng},${destCoords.lat}?overview=full&geometries=geojson`;
         const res = await fetch(url);
-        if (!res.ok) throw new Error('OSRM network response error');
+        if (!res.ok) throw new Error('OSRM routing request failed');
         const data = await res.json();
 
         if (!isCancelled && data.code === 'Ok' && data.routes?.[0]) {
           const route = data.routes[0];
-          // GeoJSON coordinates are [lng, lat], Leaflet polyline expects [lat, lng]
           const latLngs = route.geometry.coordinates.map((coord) => [coord[1], coord[0]]);
           setRoadGeometry(latLngs);
           setRoadMeta({
@@ -163,7 +165,6 @@ export default function SidoarjoDeliveryMap({ orderData, height = 'h-[440px]' })
       } catch (err) {
         console.warn('OSRM routing fallback to waypoint geometry:', err.message);
         if (!isCancelled) {
-          // Graceful fallback: 3-point waypoint
           const midLat = (DEPO_KRIAN.lat + destCoords.lat) / 2 + 0.005;
           const midLng = (DEPO_KRIAN.lng + destCoords.lng) / 2 - 0.005;
           setRoadGeometry([
@@ -190,7 +191,6 @@ export default function SidoarjoDeliveryMap({ orderData, height = 'h-[440px]' })
         const telemetry = await api.getDriverGps(trackingCode);
         if (active && telemetry && telemetry.lat && telemetry.lng) {
           setLiveDriverGps(telemetry);
-          setLastTelemetryCheck(new Date());
         }
       } catch (e) {
         // quiet fallback
@@ -206,7 +206,7 @@ export default function SidoarjoDeliveryMap({ orderData, height = 'h-[440px]' })
     };
   }, [trackingCode]);
 
-  // 3. Compute vehicle coordinate: Real Smartphone GPS coordinate takes priority, else interpolate along real road
+  // 3. Compute vehicle coordinate
   let vehicleLat = DEPO_KRIAN.lat;
   let vehicleLng = DEPO_KRIAN.lng;
   const isLiveDevice = Boolean(liveDriverGps?.isLiveDevice && liveDriverGps?.lat && liveDriverGps?.lng);
@@ -215,7 +215,6 @@ export default function SidoarjoDeliveryMap({ orderData, height = 'h-[440px]' })
     vehicleLat = liveDriverGps.lat;
     vehicleLng = liveDriverGps.lng;
   } else if (roadGeometry && roadGeometry.length > 0) {
-    // Determine progress along road geometry
     let progressRatio = 0.05;
     if (orderStatus === 'CONFIRMED') progressRatio = 0.18;
     else if (orderStatus === 'PACKING') progressRatio = 0.35;
@@ -229,7 +228,6 @@ export default function SidoarjoDeliveryMap({ orderData, height = 'h-[440px]' })
     vehicleLat = roadGeometry[targetIdx][0];
     vehicleLng = roadGeometry[targetIdx][1];
   } else {
-    // Fallback simple interpolation
     const ratio = orderStatus === 'COMPLETED' ? 1.0 : orderStatus === 'DISPATCHED' ? 0.65 : 0.15;
     vehicleLat = DEPO_KRIAN.lat + (destCoords.lat - DEPO_KRIAN.lat) * ratio;
     vehicleLng = DEPO_KRIAN.lng + (destCoords.lng - DEPO_KRIAN.lng) * ratio;
@@ -265,7 +263,7 @@ export default function SidoarjoDeliveryMap({ orderData, height = 'h-[440px]' })
     };
   }, []);
 
-  // 5. Basemap tile provider (OpenStreetMap or Esri WorldStreetMap - 100% Free, NO WATERMARK)
+  // 5. Basemap tile provider (OpenStreetMap or Esri - 100% Free, NO WATERMARK)
   useEffect(() => {
     const map = mapInstanceRef.current;
     if (!map) return;
@@ -287,7 +285,7 @@ export default function SidoarjoDeliveryMap({ orderData, height = 'h-[440px]' })
     }).addTo(map);
   }, [mapStyle]);
 
-  // 6. Draw road-following polyline, origin hub marker, destination store marker, and vehicle
+  // 6. Draw vector markers & road-following polyline
   useEffect(() => {
     const map = mapInstanceRef.current;
     const layers = layerGroupRef.current;
@@ -297,10 +295,10 @@ export default function SidoarjoDeliveryMap({ orderData, height = 'h-[440px]' })
 
     // 1. Depo Inbisco Krian Hub Marker (Origin)
     const depoMarker = L.marker([DEPO_KRIAN.lat, DEPO_KRIAN.lng], {
-      icon: createShopeeTokpedMarker('depo', 'Depo Inbisco Krian', 'Pusat Pasokan FMCG'),
+      icon: createVectorMapMarker('depo', 'Depo Inbisco Krian', 'Pusat Pasokan FMCG'),
     }).bindPopup(`
       <div style="font-family: sans-serif; font-size: 12px; line-height: 1.5; padding: 2px;">
-        <strong style="color: #a80000;">🏭 PT Inbisco Niagatama Semesta</strong><br/>
+        <strong style="color: #8b0000;">PT Inbisco Niagatama Semesta</strong><br/>
         <span>Pusat Distribusi Resmi Mayora Cabang Krian</span><br/>
         <small style="color: #666;">Jl. Raya Surabaya - Krian KM 28</small>
       </div>
@@ -309,10 +307,10 @@ export default function SidoarjoDeliveryMap({ orderData, height = 'h-[440px]' })
 
     // 2. Destination Mitra Store Marker
     const storeMarker = L.marker([destCoords.lat, destCoords.lng], {
-      icon: createShopeeTokpedMarker('store', storeName, destCoords.name),
+      icon: createVectorMapMarker('store', storeName, destCoords.name),
     }).bindPopup(`
       <div style="font-family: sans-serif; font-size: 12px; line-height: 1.5; padding: 2px;">
-        <strong style="color: #047857;">🏪 ${storeName}</strong><br/>
+        <strong style="color: #047857;">${storeName}</strong><br/>
         <span>Toko Mitra Ritel Resmi Inbisco</span><br/>
         <small style="color: #666;">Wilayah: ${destCoords.name}</small>
       </div>
@@ -351,17 +349,17 @@ export default function SidoarjoDeliveryMap({ orderData, height = 'h-[440px]' })
 
     // 4. Moving Courier Vehicle Marker
     const vehicleTitle = isLiveDevice
-      ? `🟢 GPS HP Kurir (±${liveDriverGps.accuracy}m)`
+      ? `GPS Kurir (±${liveDriverGps.accuracy}m)`
       : 'W 8821 NA (Carry)';
 
     const vehicleMarker = L.marker([vehicleLat, vehicleLng], {
-      icon: createShopeeTokpedMarker('vehicle', vehicleTitle, 'Kurir: Bambang Triyono', isLiveDevice),
+      icon: createVectorMapMarker('vehicle', vehicleTitle, 'Kurir: Bambang Triyono', isLiveDevice),
     }).bindPopup(`
       <div style="font-family: sans-serif; font-size: 12px; line-height: 1.5; padding: 2px;">
-        <strong style="color: #2563eb;">🚚 Suzuki Carry Box (W 8821 NA)</strong><br/>
+        <strong style="color: #2563eb;">Suzuki Carry Box (W 8821 NA)</strong><br/>
         <span>Kurir: Bambang Triyono (Logistik Ritel)</span><br/>
         <small style="color: ${isLiveDevice ? '#059669' : '#666'};">
-          ${isLiveDevice ? `🟢 Sinyal GPS HP Aktif (Akurasi: ±${liveDriverGps.accuracy}m)` : `Status Order: ${orderStatus}`}
+          ${isLiveDevice ? `Sinyal GPS HP Aktif (Akurasi: ±${liveDriverGps.accuracy}m)` : `Status Order: ${orderStatus}`}
         </small>
       </div>
     `);
@@ -418,11 +416,11 @@ export default function SidoarjoDeliveryMap({ orderData, height = 'h-[440px]' })
   )}`;
 
   return (
-    <div className={`rounded-2xl border border-surface-container-high bg-surface-container-lowest overflow-hidden shadow-md transition-all duration-300 flex flex-col ${isExpanded ? 'h-[620px]' : height}`}>
-      {/* 1. TOKOPEDIA / SHOPEE LIVE STATUS HEADER */}
-      <div className="p-4 bg-gradient-to-r from-surface-container-low via-surface-container to-surface-container-low border-b border-surface-container-high flex flex-col md:flex-row md:items-center justify-between gap-3">
+    <div className={`rounded-2xl border border-surface-container-high bg-surface-container-lowest overflow-hidden shadow-sm transition-all duration-300 flex flex-col ${isExpanded ? 'h-[620px]' : height}`}>
+      {/* 1. TOP STATUS HEADER (CLEAN ENTERPRISE SCM) */}
+      <div className="p-4 bg-surface-container-low border-b border-surface-container-high flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-primary text-white flex items-center justify-center shadow-sm shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center shadow-xs shrink-0">
             <Truck className="h-5 w-5" />
           </div>
           <div>
@@ -431,21 +429,27 @@ export default function SidoarjoDeliveryMap({ orderData, height = 'h-[440px]' })
                 Pelacakan Pengantaran Kurir Langsung
               </span>
               
-              {/* Live Device Pill vs System Pill */}
+              {/* Telemetry Indicator Pill */}
               {isLiveDevice ? (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1 font-mono animate-pulse">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-300 flex items-center gap-1.5 font-mono">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
                   <span>GPS HP Driver Aktif (±{liveDriverGps.accuracy}m)</span>
                 </span>
               ) : (
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1.5 ${
                   orderStatus === 'COMPLETED'
-                    ? 'bg-emerald-100 text-emerald-800'
+                    ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
                     : orderStatus === 'DISPATCHED'
-                    ? 'bg-blue-100 text-blue-800 animate-pulse'
-                    : 'bg-amber-100 text-amber-800'
+                    ? 'bg-blue-50 text-blue-800 border border-blue-200'
+                    : 'bg-amber-50 text-amber-800 border border-amber-200'
                 }`}>
-                  <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
+                  <span className={`w-1.5 h-1.5 rounded-full ${
+                    orderStatus === 'COMPLETED' 
+                      ? 'bg-emerald-600' 
+                      : orderStatus === 'DISPATCHED' 
+                      ? 'bg-blue-600 animate-pulse' 
+                      : 'bg-amber-600'
+                  }`}></span>
                   <span>
                     {orderStatus === 'COMPLETED'
                       ? 'Pesanan Selesai (e-POD Valid)'
@@ -457,10 +461,14 @@ export default function SidoarjoDeliveryMap({ orderData, height = 'h-[440px]' })
               )}
             </div>
 
-            <p className="text-xs text-on-surface-variant mt-0.5">
-              Rute Fisik: <strong>Depo Krian</strong> ➔ <strong>{storeName}</strong> ({destCoords.name})
+            <p className="text-xs text-on-surface-variant mt-0.5 flex items-center gap-1 flex-wrap">
+              <span>Rute Distribusi:</span>
+              <strong className="text-on-surface">Depo Krian</strong>
+              <ArrowRight className="h-3 w-3 text-outline inline" />
+              <strong className="text-on-surface">{storeName}</strong>
+              <span className="text-outline">({destCoords.name})</span>
               {roadMeta.distanceKm > 0 && (
-                <span className="ml-2 font-mono font-semibold text-primary">
+                <span className="font-mono font-semibold text-primary ml-1">
                   • {roadMeta.distanceKm} km ({roadMeta.durationMin} mnt)
                 </span>
               )}
@@ -468,7 +476,7 @@ export default function SidoarjoDeliveryMap({ orderData, height = 'h-[440px]' })
           </div>
         </div>
 
-        {/* Quick Map Action Buttons */}
+        {/* Quick Map Controls */}
         <div className="flex items-center gap-2 self-start md:self-center flex-wrap">
           <button
             type="button"
@@ -484,7 +492,7 @@ export default function SidoarjoDeliveryMap({ orderData, height = 'h-[440px]' })
             type="button"
             onClick={() => setMapStyle(mapStyle === 'osm' ? 'esri' : 'osm')}
             className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-surface-container-lowest hover:bg-surface-container text-on-surface border border-outline/15 shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer"
-            title="Ganti Lapisan Peta (OpenStreetMap / Esri)"
+            title="Ganti Lapisan Peta"
           >
             <Layers className="h-3.5 w-3.5 text-outline" />
             <span>{mapStyle === 'osm' ? 'Peta OSM' : 'Peta Esri'}</span>
@@ -504,7 +512,7 @@ export default function SidoarjoDeliveryMap({ orderData, height = 'h-[440px]' })
         </div>
       </div>
 
-      {/* 2. MAIN MAP CANVAS (WITH TOKOPEDIA FLOATING COURIER CARD) */}
+      {/* 2. MAIN MAP CANVAS (WITH FLOATING COURIER CARD) */}
       <div className="relative flex-1 min-h-[250px]">
         {/* Leaflet Map Canvas */}
         <div ref={mapContainerRef} className="w-full h-full z-10" />
@@ -516,42 +524,46 @@ export default function SidoarjoDeliveryMap({ orderData, height = 'h-[440px]' })
             onClick={handleCenterStore}
             className="px-3 py-1.5 bg-white/95 backdrop-blur-md hover:bg-white text-xs font-bold text-emerald-800 rounded-xl shadow-md border border-emerald-200 transition-all flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95"
           >
-            <span>📍 Toko Tujuan</span>
+            <Store className="h-3.5 w-3.5 text-emerald-700" />
+            <span>Toko Tujuan</span>
           </button>
           <button
             type="button"
             onClick={handleCenterVehicle}
             className="px-3 py-1.5 bg-white/95 backdrop-blur-md hover:bg-white text-xs font-bold text-blue-700 rounded-xl shadow-md border border-blue-200 transition-all flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95"
           >
-            <span>🚚 Posisi Kurir</span>
+            <Truck className="h-3.5 w-3.5 text-blue-700" />
+            <span>Posisi Kurir</span>
           </button>
           <button
             type="button"
             onClick={handleCenterDepo}
             className="px-3 py-1.5 bg-white/95 backdrop-blur-md hover:bg-white text-xs font-bold text-primary rounded-xl shadow-md border border-primary/20 transition-all flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95"
           >
-            <span>🏭 Hub Krian</span>
+            <Warehouse className="h-3.5 w-3.5 text-primary" />
+            <span>Hub Krian</span>
           </button>
         </div>
 
-        {/* 3. SHOPEE / TOKOPEDIA FLOATING COURIER CARD (BOTTOM OVERLAY) */}
+        {/* 3. ENTERPRISE COURIER DOSSIER CARD (BOTTOM OVERLAY) */}
         <div className="absolute bottom-3 left-3 right-3 md:right-auto md:w-96 z-[400] bg-white/95 backdrop-blur-md rounded-2xl p-3.5 shadow-xl border border-outline/15 pointer-events-auto space-y-2.5 animate-in fade-in slide-in-from-bottom-2 duration-200">
           {/* Courier Info Row */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm shrink-0 border border-blue-200 shadow-xs">
+              <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-800 flex items-center justify-center font-bold text-xs shrink-0 border border-blue-200 shadow-2xs font-mono">
                 BT
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
                   <span className="font-extrabold text-xs text-on-surface">Bambang Triyono</span>
-                  <span className="text-[10px] bg-blue-50 text-blue-700 border border-blue-200 font-bold px-1.5 py-0.2 rounded-full flex items-center gap-0.5">
-                    ✓ Kurir Ritel
+                  <span className="text-[10px] bg-blue-50 text-blue-700 border border-blue-200 font-bold px-1.5 py-0.2 rounded-full flex items-center gap-1">
+                    <CheckCircle2 className="h-2.5 w-2.5 text-blue-700" />
+                    <span>Kurir Resmi</span>
                   </span>
                 </div>
                 <div className="text-[10px] text-on-surface-variant flex items-center gap-1 mt-0.5">
-                  <span className="flex items-center text-amber-500 font-bold">
-                    <Star className="h-3 w-3 fill-amber-400 text-amber-400 inline" /> 4.9
+                  <span className="flex items-center text-amber-500 font-bold gap-0.5">
+                    <StarSolidIcon className="h-3 w-3 text-amber-500 fill-amber-400" /> 4.9
                   </span>
                   <span>•</span>
                   <span className="font-mono font-semibold">Suzuki Carry (W 8821 NA)</span>
@@ -574,8 +586,8 @@ export default function SidoarjoDeliveryMap({ orderData, height = 'h-[440px]' })
               ? 'bg-emerald-50 text-emerald-900 border-emerald-200'
               : 'bg-surface-container-low text-on-surface-variant border-outline/5'
           }`}>
-            <div className="flex items-center gap-1.5 truncate">
-              <span className={`w-2 h-2 rounded-full shrink-0 ${isLiveDevice ? 'bg-emerald-500 animate-ping' : 'bg-primary'}`}></span>
+            <div className="flex items-center gap-2 truncate">
+              <span className={`w-2 h-2 rounded-full shrink-0 ${isLiveDevice ? 'bg-emerald-500 animate-pulse' : 'bg-primary'}`}></span>
               <span className="truncate">
                 {isLiveDevice
                   ? `Sinyal GPS HP Driver Aktif • Kecepatan: ${liveDriverGps.speed || 38} km/j`
@@ -588,7 +600,7 @@ export default function SidoarjoDeliveryMap({ orderData, height = 'h-[440px]' })
             </div>
           </div>
 
-          {/* Action Buttons: WhatsApp, Telp, and HP Driver Testing Link */}
+          {/* Action Buttons: WhatsApp & Phone */}
           <div className="grid grid-cols-2 gap-2 pt-1">
             <a
               href={kurirWaUrl}
@@ -596,7 +608,7 @@ export default function SidoarjoDeliveryMap({ orderData, height = 'h-[440px]' })
               rel="noopener noreferrer"
               className="py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 text-center"
             >
-              <MessageCircle className="h-3.5 w-3.5" />
+              <WhatsAppSolidIcon className="h-3.5 w-3.5 text-white" />
               <span>Chat WhatsApp</span>
             </a>
 
@@ -609,7 +621,7 @@ export default function SidoarjoDeliveryMap({ orderData, height = 'h-[440px]' })
             </a>
           </div>
 
-          {/* Driver Phone Geolocation Portal Direct Link for Judges */}
+          {/* Driver Phone Geolocation Portal Direct Link */}
           <div className="pt-1 border-t border-outline/10 flex items-center justify-between">
             <span className="text-[10px] text-outline flex items-center gap-1">
               <Radio className="h-3 w-3 text-primary" />
@@ -622,6 +634,7 @@ export default function SidoarjoDeliveryMap({ orderData, height = 'h-[440px]' })
               className="text-[10px] font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer"
               title="Buka portal pemancar GPS di smartphone driver"
             >
+              <SmartphoneDeviceIcon className="h-3 w-3" />
               <span>{isLiveDevice ? 'HP Terhubung (Buka Portal)' : 'Buka Portal HP Driver (Uji Coba)'}</span>
               <ExternalLink className="h-2.5 w-2.5" />
             </a>
@@ -629,7 +642,7 @@ export default function SidoarjoDeliveryMap({ orderData, height = 'h-[440px]' })
         </div>
       </div>
 
-      {/* 4. FOOTER TIKER */}
+      {/* 4. FOOTER TICKER */}
       <div className="px-4 py-2 bg-surface-container-low border-t border-surface-container-high flex items-center justify-between text-[11px] text-on-surface-variant">
         <div className="flex items-center gap-2">
           <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />

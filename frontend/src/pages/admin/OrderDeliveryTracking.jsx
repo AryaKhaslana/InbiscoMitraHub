@@ -16,7 +16,9 @@ import {
   Users,
   Eye,
   X,
-  ArrowRight
+  ArrowRight,
+  Warehouse,
+  Check
 } from 'lucide-react';
 import { formatRupiah } from '../../lib/utils';
 import confetti from 'canvas-confetti';
@@ -303,10 +305,18 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
           </button>
         </div>
 
-        <div className="text-[11px] text-on-surface-variant px-3 py-1 font-medium hidden lg:block font-mono">
-          {activeTab === 'outbound' 
-            ? '🚚 Rute Depo Krian ➔ 18 Kec. Sidoarjo (Suzuki Carry Box • e-POD)'
-            : '🏭 Rute Pabrik DC Pasuruan ➔ Depo Krian (Hino Wingbox • BAST)'}
+        <div className="text-[11px] text-on-surface-variant px-3 py-1 font-medium hidden lg:flex items-center gap-1.5 font-mono">
+          {activeTab === 'outbound' ? (
+            <>
+              <Truck className="h-3.5 w-3.5 text-primary" />
+              <span>Rute Depo Krian → 18 Kec. Sidoarjo (Suzuki Carry Box • e-POD)</span>
+            </>
+          ) : (
+            <>
+              <Warehouse className="h-3.5 w-3.5 text-primary" />
+              <span>Rute Pabrik DC Pasuruan → Depo Krian (Hino Wingbox • BAST)</span>
+            </>
+          )}
         </div>
       </div>
 
@@ -324,7 +334,7 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
               <div>
                 <span className="font-bold text-on-surface">Alur Pengiriman Toko Mitra:</span>
                 <span className="text-on-surface-variant ml-1">
-                  Semua pesanan yang dibuat oleh toko mitra melalui katalog publik akan masuk ke antrean ini. Anda dapat memajukan tahapan (Konfirmasi PO ➔ Packing FEFO ➔ Kirim Armada Carry ➔ Selesai e-POD) dan memantau rute pengantaran secara <em>live</em> pada radar di bawah.
+                  Semua pesanan yang dibuat oleh toko mitra melalui katalog publik akan masuk ke antrean ini. Anda dapat memajukan tahapan (Konfirmasi PO → Packing FEFO → Kirim Armada Carry → Selesai e-POD) dan memantau rute pengantaran secara <em>live</em> pada radar di bawah.
                 </span>
               </div>
             </div>
@@ -592,13 +602,14 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
 
                 <div className="mt-2.5 pt-2 border-t border-outline/5 flex items-center justify-between">
                   <span
-                    className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
+                    className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-1 ${
                       isDelivered
                         ? 'bg-emerald-100 text-emerald-800'
                         : 'bg-purple-100 text-purple-800'
                     }`}
                   >
-                    {isDelivered ? '✓ BAST Valid' : 'In Transit'}
+                    {isDelivered && <CheckCircle2 className="h-2.5 w-2.5" />}
+                    <span>{isDelivered ? 'BAST Valid' : 'In Transit'}</span>
                   </span>
                   <span className="text-[10px] font-mono text-outline truncate max-w-[90px]">
                     {del.origin.split('(')[0].replace('Mayora', '').trim()}
@@ -688,10 +699,15 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
 
               {/* Confirm BAST Action */}
               <div className="pt-3 border-t border-outline/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="text-xs text-on-surface-variant">
-                  {isBastVerified
-                    ? '✓ Muatan DO ini telah diverifikasi dan masuk ke saldo stok gudang.'
-                    : 'Klik tombol di samping saat truk tiba di Bay Gudang Krian untuk memverifikasi BAST dan menambah stok otomatis.'}
+                <div className="text-xs text-on-surface-variant flex items-center gap-1.5">
+                  {isBastVerified ? (
+                    <>
+                      <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                      <span className="text-emerald-800 font-semibold">Muatan DO ini telah diverifikasi dan masuk ke saldo stok gudang.</span>
+                    </>
+                  ) : (
+                    <span>Klik tombol di samping saat truk tiba di Bay Gudang Krian untuk memverifikasi BAST dan menambah stok otomatis.</span>
+                  )}
                 </div>
 
                 <Button
@@ -951,7 +967,7 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
                       <div className="truncate">{st.label}</div>
                       <div className="text-[9px] opacity-80 mt-0.5 flex items-center justify-center gap-1">
                         {isCurrent && <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>}
-                        {isCurrent ? 'Aktif' : isDone ? '✓ Selesai' : 'Antre'}
+                        {isCurrent ? 'Aktif' : isDone ? 'Selesai' : 'Antre'}
                       </div>
                     </div>
                   );
@@ -986,12 +1002,23 @@ export default function OrderDeliveryTracking({ setCurrentScreen }) {
                 <div className="text-on-surface-variant text-[11px]">
                   Kurir: <strong>Bambang Triyono</strong> (Depo Krian Hub)
                 </div>
-                <div className="text-emerald-700 font-semibold text-[11px]">
-                  {selectedOrderDetails.status === 'COMPLETED'
-                    ? '✓ Tiba & Diserahterimakan di Lokasi'
-                    : selectedOrderDetails.status === 'DISPATCHED'
-                    ? '🚚 Dalam Perjalanan Pengantaran'
-                    : '⏳ Menunggu Jadwal Muat Dispatch'}
+                <div className="text-emerald-700 font-semibold text-[11px] flex items-center gap-1.5">
+                  {selectedOrderDetails.status === 'COMPLETED' ? (
+                    <>
+                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+                      <span>Tiba &amp; Diserahterimakan di Lokasi</span>
+                    </>
+                  ) : selectedOrderDetails.status === 'DISPATCHED' ? (
+                    <>
+                      <Truck className="h-3.5 w-3.5 text-blue-600" />
+                      <span>Dalam Perjalanan Pengantaran</span>
+                    </>
+                  ) : (
+                    <>
+                      <Clock className="h-3.5 w-3.5 text-amber-600" />
+                      <span>Menunggu Jadwal Muat Dispatch</span>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

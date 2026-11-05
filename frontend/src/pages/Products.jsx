@@ -756,7 +756,8 @@ export default function Products({ setActiveNav, initialCategory, onCategoryChan
                         className="text-xs font-bold px-5 gap-2 bg-emerald-600 text-white shadow-xs hover:bg-emerald-700 transition-colors cursor-pointer w-full sm:w-auto py-2.5"
                       >
                         <Truck className="h-4 w-4" />
-                        <span>Pantau Status Pesanan Sekarang ➔</span>
+                        <span>Pantau Status Pesanan Sekarang</span>
+                        <ArrowRight className="h-4 w-4" />
                       </Button>
                       <Button
                         type="button"

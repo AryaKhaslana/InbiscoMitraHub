@@ -598,7 +598,7 @@ export default function Partnership({ setActiveNav }) {
                 }`}
               >
                 <div className="text-[10px] uppercase font-mono tracking-wider">
-                  {step > s.num ? '✓ Selesai' : `Langkah ${s.num}`}
+                  {step > s.num ? 'Selesai' : `Langkah ${s.num}`}
                 </div>
                 <div className="text-xs mt-0.5 truncate">{s.title}</div>
               </div>

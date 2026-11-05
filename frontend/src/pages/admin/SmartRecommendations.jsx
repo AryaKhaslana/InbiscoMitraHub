@@ -253,7 +253,10 @@ export default function SmartRecommendations({ setCurrentScreen }) {
           <div className="text-xl font-extrabold font-mono text-on-surface mt-0.5">
             {formatRupiah(data?.depot?.creditLimitIDR || 420000000)}
           </div>
-          <div className="text-[10px] text-emerald-700 font-semibold mt-0.5">✓ Financial Clearance Valid</div>
+          <div className="text-[10px] text-emerald-700 font-semibold mt-0.5 flex items-center gap-1">
+            <CheckCircle2 className="h-2.5 w-2.5" />
+            <span>Financial Clearance Valid</span>
+          </div>
         </div>
       </div>
 

@@ -250,7 +250,7 @@ export default function LiveOutboundRadarMap({ selectedOrder, outboundOrders = [
             <circle cx={depoCoords.x} cy={depoCoords.y} r="16" fill="none" stroke="#d91a1a" strokeWidth="1" opacity="0.4" className="animate-ping" />
             <rect x={depoCoords.x - 45} y={depoCoords.y - 24} width="90" height="15" rx="3" fill="rgba(217, 26, 26, 0.85)" />
             <text x={depoCoords.x} y={depoCoords.y - 13} textAnchor="middle" fill="white" fontSize="8" fontWeight="bold" fontFamily="sans-serif">
-              🏭 DEPO KRIAN (HUB)
+              DEPO KRIAN (HUB)
             </text>
           </g>
 
@@ -260,7 +260,7 @@ export default function LiveOutboundRadarMap({ selectedOrder, outboundOrders = [
               <circle cx={targetCoords.x} cy={targetCoords.y} r="8" fill="#10b981" stroke="white" strokeWidth="2" />
               <rect x={targetCoords.x - 55} y={targetCoords.y - 26} width="110" height="16" rx="4" fill="rgba(16, 185, 129, 0.9)" />
               <text x={targetCoords.x} y={targetCoords.y - 14} textAnchor="middle" fill="white" fontSize="8" fontWeight="bold" fontFamily="sans-serif">
-                🏪 {selectedOrder.store?.name?.substring(0, 15) || 'Toko Mitra'}
+                TOKO: {selectedOrder.store?.name?.substring(0, 15) || 'Toko Mitra'}
               </text>
             </g>
           )}
@@ -366,7 +366,7 @@ export default function LiveOutboundRadarMap({ selectedOrder, outboundOrders = [
           <Navigation className="h-3.5 w-3.5 text-primary shrink-0" />
           <span className="truncate">
             {orderStatus === 'COMPLETED'
-              ? `✓ Paket telah diserahterimakan kepada kasir/pemilik ${selectedOrder?.store?.name || 'Toko Mitra'} secara utuh.`
+              ? `Paket telah diserahterimakan kepada kasir/pemilik ${selectedOrder?.store?.name || 'Toko Mitra'} secara utuh (e-POD).`
               : orderStatus === 'DISPATCHED'
               ? `Armada sedang melaju di Jl. Raya Surabaya - Krian menuju ${selectedOrder?.store?.name || 'Toko Mitra'} (${destDistrict}).`
               : `Pesanan ${selectedOrder?.trackingCode || 'PO'} sedang dipersiapkan di Depo Krian untuk rute ${destDistrict}.`}

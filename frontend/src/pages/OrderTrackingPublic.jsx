@@ -19,7 +19,8 @@ import {
   ShoppingBag,
   ExternalLink,
   Store,
-  ChevronRight
+  ChevronRight,
+  Radio
 } from 'lucide-react';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
@@ -577,9 +578,10 @@ export default function OrderTrackingPublic({ setActiveNav, initialTrackingCode 
               <button
                 type="button"
                 onClick={() => setActiveNav('driver')}
-                className="px-3.5 py-2 rounded-xl bg-primary hover:bg-[#a80000] text-white font-bold text-xs flex items-center justify-center gap-1.5 shrink-0 shadow-xs transition-all cursor-pointer hover:scale-105 active:scale-95"
+                className="px-3.5 py-2 rounded-xl bg-primary hover:bg-[#8b0000] text-white font-bold text-xs flex items-center justify-center gap-1.5 shrink-0 shadow-xs transition-all cursor-pointer hover:scale-105 active:scale-95"
               >
-                <span>📱 Uji Coba di HP Driver</span>
+                <Radio className="h-3.5 w-3.5 text-white animate-pulse" />
+                <span>Portal Telemetry HP Driver</span>
                 <ChevronRight className="h-3.5 w-3.5" />
               </button>
             </div>

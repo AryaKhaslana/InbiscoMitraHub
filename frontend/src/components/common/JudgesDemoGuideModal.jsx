@@ -15,7 +15,9 @@ import {
   ExternalLink,
   Layers,
   Store,
-  Warehouse
+  Warehouse,
+  CheckCircle2,
+  Radio
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -174,8 +176,9 @@ export default function JudgesDemoGuideModal({ setActiveNav, switchRole, setAdmi
                           </span>
                         </div>
                         <p className="text-[11px] text-on-surface-variant leading-tight">{st.desc}</p>
-                        <div className="text-[10px] text-primary font-mono flex items-center gap-1">
-                          <span>✓ {st.backendProof}</span>
+                        <div className="text-[10px] text-primary font-mono flex items-center gap-1.5">
+                          <CheckCircle2 className="h-3 w-3 text-emerald-600 shrink-0" />
+                          <span>{st.backendProof}</span>
                         </div>
                       </div>
                     </div>
@@ -226,7 +229,8 @@ export default function JudgesDemoGuideModal({ setActiveNav, switchRole, setAdmi
                   className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-2xs"
                   title="Buka portal transmitter GPS smartphone driver"
                 >
-                  <span>📱 Portal Driver GPS</span>
+                  <Radio className="h-3 w-3 text-white animate-pulse" />
+                  <span>Portal Driver GPS</span>
                   <ExternalLink className="h-3 w-3" />
                 </button>
               </div>

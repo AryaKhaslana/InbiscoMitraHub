@@ -21,7 +21,8 @@ import {
   FileSpreadsheet,
   Calendar,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  X
 } from 'lucide-react';
 
 export default function SupplySyncHQ() {
@@ -576,9 +577,9 @@ export default function SupplySyncHQ() {
               </div>
               <button
                 onClick={() => setCrossDepotModalOpen(false)}
-                className="p-1 rounded-lg text-on-surface-variant hover:bg-surface-container"
+                className="p-1 rounded-lg text-on-surface-variant hover:bg-surface-container flex items-center justify-center cursor-pointer"
               >
-                ✕
+                <X className="h-4 w-4" />
               </button>
             </div>
 

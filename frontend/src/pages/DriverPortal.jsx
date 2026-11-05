@@ -127,8 +127,8 @@ export default function DriverPortal({ setActiveNav }) {
         <div className="bg-surface-container-lowest p-5 rounded-3xl border border-outline/15 shadow-md space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-2xl bg-primary text-white flex items-center justify-center font-bold text-base shadow-sm">
-                🚚
+              <div className="w-10 h-10 rounded-2xl bg-primary text-white flex items-center justify-center shadow-sm">
+                <Truck className="h-5 w-5 text-white" />
               </div>
               <div>
                 <h1 className="text-base font-extrabold text-on-surface font-display leading-tight">
@@ -344,3 +344,4 @@ export default function DriverPortal({ setActiveNav }) {
     </div>
   );
 }
+

@@ -1047,9 +1047,9 @@ export default function DistributorOverview({ setCurrentScreen }) {
                 </div>
                 <button
                   onClick={() => setOrderAdvanceToast(null)}
-                  className="text-emerald-700 hover:text-emerald-900 font-bold text-xs ml-2"
+                  className="text-emerald-700 hover:text-emerald-900 font-bold text-xs ml-2 flex items-center"
                 >
-                  ✕
+                  <X className="h-3.5 w-3.5" />
                 </button>
               </div>
             )}
@@ -1199,8 +1199,9 @@ export default function DistributorOverview({ setCurrentScreen }) {
                       </Button>
 
                       {st.isVerified ? (
-                        <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
-                          ✓ Verified
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold flex items-center gap-1">
+                          <CheckCircle2 className="h-2.5 w-2.5" />
+                          <span>Verified</span>
                         </span>
                       ) : (
                         <Button
@@ -1516,7 +1517,7 @@ export default function DistributorOverview({ setCurrentScreen }) {
                                 </span>
                               )}
                               <span className="font-bold text-primary font-mono">
-                                ➔ {photoMetrics?.compressedSizeStr}
+                                → {photoMetrics?.compressedSizeStr}
                               </span>
                               {photoMetrics?.savingsPercent > 0 && (
                                 <span className="px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[9px]">
@@ -1524,8 +1525,9 @@ export default function DistributorOverview({ setCurrentScreen }) {
                                 </span>
                               )}
                             </div>
-                            <span className="text-[9px] text-emerald-700 font-medium block">
-                              ✓ Siap disimpan ke Supabase Storage (Performa 100%)
+                            <span className="text-[9px] text-emerald-700 font-medium flex items-center gap-1">
+                              <CheckCircle2 className="h-2.5 w-2.5" />
+                              <span>Siap disimpan ke Supabase Storage (Performa 100%)</span>
                             </span>
                           </div>
                         </div>
@@ -1677,8 +1679,9 @@ export default function DistributorOverview({ setCurrentScreen }) {
                       {selectedStoreProposal.name}
                     </h3>
                     {selectedStoreProposal.isVerified ? (
-                      <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
-                        ✓ Mitra Terverifikasi
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold flex items-center gap-1">
+                        <CheckCircle2 className="h-2.5 w-2.5" />
+                        <span>Mitra Terverifikasi</span>
                       </span>
                     ) : (
                       <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold">
@@ -2002,7 +2005,7 @@ export default function DistributorOverview({ setCurrentScreen }) {
                     }}
                     className="text-xs text-primary"
                   >
-                    Lacak Pengiriman ➔
+                    Lacak Pengiriman →
                   </Button>
                 )}
                 <Button
@@ -2278,7 +2281,7 @@ export default function DistributorOverview({ setCurrentScreen }) {
                     </span>
                   </div>
                   <p className="text-xs text-on-surface-variant">
-                    Pengiriman Antar-Fasilitas Mayora (Pabrik Pasuruan ➔ Depo Surya Krian)
+                    Pengiriman Antar-Fasilitas Mayora (Pabrik Pasuruan → Depo Surya Krian)
                   </p>
                 </div>
               </div>
