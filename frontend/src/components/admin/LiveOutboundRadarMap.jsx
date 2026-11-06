@@ -103,7 +103,7 @@ export default function LiveOutboundRadarMap({ selectedOrder, outboundOrders = [
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
             </div>
             <div className="text-[10px] text-white/60 font-mono">
-              Gateway: Depo Krian (Jl. Raya Surabaya - Krian KM 28)
+              Gateway: Depo Krian (Jl. Raya Ponokawan Km. 27 No. 8)
             </div>
           </div>
         </div>

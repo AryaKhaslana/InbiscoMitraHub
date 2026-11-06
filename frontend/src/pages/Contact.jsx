@@ -143,14 +143,30 @@ export default function Contact({ setActiveNav }) {
                       <MapPin className="h-4 w-4" />
                     </div>
                     <div>
-                      <strong className="text-on-surface block text-sm">Alamat Kantor & Depot</strong>
-                      <span>Jl. Raya Krian KM 29, Krian, Kabupaten Sidoarjo, Jawa Timur 61262</span>
+                      <strong className="text-on-surface block text-sm">Alamat Kantor & Regional DC Sidoarjo</strong>
+                      <span>Jl. Raya Ponokawan No. Km. 27 No. 8, Karangpoh, Ponokawan, Kec. Krian, Kabupaten Sidoarjo, Jawa Timur 61262</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                      <Phone className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <strong className="text-on-surface block text-sm">Telepon Kantor Cabang (Fix Line)</strong>
+                      <a 
+                        href="tel:+62318983290" 
+                        className="font-mono text-primary font-bold hover:underline block"
+                      >
+                        (031) 8983290
+                      </a>
+                      <span className="text-[11px] block text-outline">Hunting resmi PT Inbisco Niagatama Semesta Krian</span>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-3">
                     <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-800 flex items-center justify-center shrink-0">
-                      <Phone className="h-4 w-4" />
+                      <MessageSquare className="h-4 w-4" />
                     </div>
                     <div>
                       <strong className="text-on-surface block text-sm">WhatsApp Resmi CS Kemitraan</strong>
@@ -162,7 +178,7 @@ export default function Contact({ setActiveNav }) {
                       >
                         +62 812-3456-7890
                       </a>
-                      <span className="text-[11px] block text-outline">Respons cepat pada jam kerja operasional</span>
+                      <span className="text-[11px] block text-outline">Konsultasi pasokan, jadwal armada & pendaftaran toko</span>
                     </div>
                   </div>
 

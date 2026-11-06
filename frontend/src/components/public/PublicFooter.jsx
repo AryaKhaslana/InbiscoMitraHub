@@ -136,11 +136,11 @@ export default function PublicFooter({ setActiveNav }) {
             <div className="space-y-2.5 text-sm text-[#b0a2a0]">
               <div className="flex items-start gap-2">
                 <span className="material-symbols-outlined text-[18px] text-primary shrink-0 mt-0.5">location_on</span>
-                <span>Jl. Raya Krian KM 29, Krian, Kabupaten Sidoarjo, Jawa Timur 61262</span>
+                <span>Jl. Raya Ponokawan No. Km. 27 No. 8, Ponokawan, Kec. Krian, Kabupaten Sidoarjo 61262</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-[18px] text-primary shrink-0">call</span>
-                <span>WhatsApp: +62 812-3456-7890</span>
+                <span>Telp: (031) 8983290 &bull; WA: +62 812-3456-7890</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-[18px] text-primary shrink-0">mail</span>

@@ -109,7 +109,7 @@ export default function About({ setActiveNav }) {
                       Pergudangan PT Inbisco Niagatama Semesta Cabang Krian
                     </span>
                     <span className="text-[11px] text-on-surface-variant font-mono">
-                      Kawasan Pergudangan KM 29, Krian, Sidoarjo
+                      Jl. Raya Ponokawan Km. 27 No. 8, Krian, Sidoarjo
                     </span>
                   </div>
                 </div>

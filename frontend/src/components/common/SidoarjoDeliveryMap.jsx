@@ -55,10 +55,10 @@ const SIDOARJO_DISTRICT_COORDS = {
 
 // Base Origin: Depo PT Inbisco Niagatama Semesta Cabang Krian
 const DEPO_KRIAN = {
-  lat: -7.4042,
-  lng: 112.5804,
-  title: 'Depo Inbisco Krian (Hub Distribusi)',
-  address: 'Jl. Raya Surabaya - Krian KM 28, Sidoarjo',
+  lat: -7.3930,
+  lng: 112.5980,
+  title: 'Depo Inbisco Krian (Regional DC)',
+  address: 'Jl. Raya Ponokawan Km. 27 No. 8, Ponokawan, Krian, Sidoarjo',
 };
 
 // Pure Vector SVG Map Markers (Realistic 3D Pins & Top-Down Vehicle)
@@ -333,8 +333,8 @@ export default function SidoarjoDeliveryMap({ orderData, height = 'h-[440px]' })
     }).bindPopup(`
       <div style="font-family: sans-serif; font-size: 12px; line-height: 1.5; padding: 2px;">
         <strong style="color: #8b0000;">PT Inbisco Niagatama Semesta</strong><br/>
-        <span>Pusat Distribusi Resmi Mayora Cabang Krian</span><br/>
-        <small style="color: #666;">Jl. Raya Surabaya - Krian KM 28</small>
+        <span>Regional Distribution Center Cabang Krian</span><br/>
+        <small style="color: #666;">Jl. Raya Ponokawan Km. 27 No. 8, Krian, Sidoarjo (Telp: 031-8983290)</small>
       </div>
     `);
     layers.addLayer(depoMarker);

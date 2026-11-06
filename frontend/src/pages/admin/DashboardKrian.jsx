@@ -541,7 +541,7 @@ export default function DashboardKrian() {
                 </div>
                 <div className="flex justify-between">
                   <span>Gudang Asal:</span>
-                  <span>Depo Krian KM 29 Hub</span>
+                  <span>Depo Krian Ponokawan Hub</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Armada:</span>

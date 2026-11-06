@@ -335,7 +335,7 @@ export default function Products({ setActiveNav, initialCategory, onCategoryChan
           <div>
             <h1 class="title">PT Inbisco Niagatama Semesta</h1>
             <div class="subtitle">Distributor Resmi Mayora Group — Cabang Krian (Sidoarjo)</div>
-            <div class="address">Kawasan Pergudangan KM 29, Jl. Raya Krian, Kabupaten Sidoarjo, Jawa Timur 61262</div>
+            <div class="address">Jl. Raya Ponokawan No. Km. 27 No. 8, Ponokawan, Kec. Krian, Kabupaten Sidoarjo 61262 (Telp: 031-8983290)</div>
           </div>
           <div style="text-align: right;">
             <div class="badge">SURAT PESANAN GROSIR (PO)</div>

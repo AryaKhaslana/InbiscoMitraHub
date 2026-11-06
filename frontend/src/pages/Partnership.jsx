@@ -113,7 +113,7 @@ const SIDOARJO_ZONES = [
     badgeVariant: 'bg-primary-container text-white',
     leadTime: '< 12 Jam (Same-Day / Next-Day Pagi)',
     frequency: 'Rute Harian (Senin – Sabtu, 2 Rit/Hari)',
-    depotDistance: 'Perimeter Utama KM 29 Krian (Radius 2 – 14 km)',
+    depotDistance: 'Perimeter Utama Ponokawan Km 27 Krian (Radius 2 – 14 km)',
     vehicle: 'Colt Diesel Boks & Canter Ber-GPS',
     districts: ['Krian', 'Balongbendo', 'Tarik', 'Prambon', 'Wonoayu'],
     description: 'Koridor prioritas dengan perimeter logistik terdekat ke pusat pergudangan. Menyediakan pengantaran terjadwal cepat dan tanggap retur instan.',
@@ -311,7 +311,7 @@ export default function Partnership({ setActiveNav }) {
           <div>
             <h1 class="title">PT Inbisco Niagatama Semesta</h1>
             <div class="subtitle">Distributor Resmi Mayora Group — Cabang Krian (Sidoarjo)</div>
-            <div class="address">Kawasan Pergudangan KM 29, Jl. Raya Krian, Kabupaten Sidoarjo, Jawa Timur 61262</div>
+            <div class="address">Jl. Raya Ponokawan No. Km. 27 No. 8, Ponokawan, Kec. Krian, Kabupaten Sidoarjo 61262 (Telp: 031-8983290)</div>
           </div>
           <div style="text-align: right;">
             <div class="badge">BUKTI RESMI REGISTRASI</div>
