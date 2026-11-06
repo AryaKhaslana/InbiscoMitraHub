@@ -16,9 +16,7 @@ import {
   Clock,
   Sparkles,
   ChevronLeft,
-  ChevronRight,
-  Play,
-  Pause
+  ChevronRight
 } from 'lucide-react';
 
 // Custom animated number counter using requestAnimationFrame & IntersectionObserver
@@ -485,21 +483,6 @@ export default function Home({ setActiveNav }) {
                           </button>
                         );
                       })}
-                    </div>
-
-                    {/* Counter Pill & Pause/Play State */}
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <span className="px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-white text-[10px] font-mono font-bold tracking-wider border border-white/20">
-                        {String(activeSlide + 1).padStart(2, '0')} / {String(HERO_SLIDES.length).padStart(2, '0')}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => setIsPaused(!isPaused)}
-                        className="w-6 h-6 rounded-full bg-black/60 backdrop-blur-md text-white/90 hover:text-white flex items-center justify-center border border-white/20 cursor-pointer transition-colors"
-                        title={isPaused ? "Lanjutkan Auto-Slide" : "Jeda Auto-Slide"}
-                      >
-                        {isPaused ? <Play className="h-3 w-3 fill-current" /> : <Pause className="h-3 w-3 fill-current" />}
-                      </button>
                     </div>
                   </div>
 
