@@ -80,63 +80,146 @@ export function SmartphoneDeviceIcon({ className = "w-4 h-4", ...props }) {
   );
 }
 
+// Helper to calculate navigation bearing angle in degrees between two coordinates
+export function calculateCompassBearing(lat1, lng1, lat2, lng2) {
+  if (!lat1 || !lng1 || !lat2 || !lng2) return 0;
+  const rad = Math.PI / 180;
+  const dLng = (lng2 - lng1) * rad;
+  const phi1 = lat1 * rad;
+  const phi2 = lat2 * rad;
+  const y = Math.sin(dLng) * Math.cos(phi2);
+  const x = Math.cos(phi1) * Math.sin(phi2) - Math.sin(phi1) * Math.cos(phi2) * Math.cos(dLng);
+  const bearing = (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+  return Math.round(bearing);
+}
+
 // ============================================================================
-// 2. RAW SVG STRINGS FOR LEAFLET DIVICON (Crisp Vector Map Markers)
+// 2. ULTRA-REALISTIC VECTOR MAP ASSETS (True Delivery App Aesthetics)
 // ============================================================================
 
 export const RAW_SVGS = {
-  // Industrial Depo Hub Factory (White glyph on crimson)
-  hubFactory: `
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M3 21h18"/>
-      <path d="M5 21V7l7-4 7 4v14"/>
-      <path d="M9 14h6"/>
-      <path d="M9 18h6"/>
-      <path d="M9 10h6"/>
+  // Realistic 3D Teardrop Pin: Depo Inbisco Krian Hub (Crimson Mayora Branding)
+  realisticDepoPin: `
+    <svg width="38" height="50" viewBox="0 0 38 50" fill="none" xmlns="http://www.w3.org/2000/svg" class="filter drop-shadow-md">
+      <defs>
+        <linearGradient id="depoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#b91c1c"/>
+          <stop offset="100%" stop-color="#7f1d1d"/>
+        </linearGradient>
+      </defs>
+      <!-- Ground Shadow -->
+      <ellipse cx="19" cy="47" rx="8" ry="3" fill="rgba(0,0,0,0.3)"/>
+      <!-- Teardrop Pin Body -->
+      <path d="M19 2 C9.6 2 2 9.6 2 19 C2 29 19 45 19 45 C19 45 36 29 36 19 C36 9.6 28.4 2 19 2 Z" fill="url(#depoGrad)" stroke="#ffffff" stroke-width="2.5"/>
+      <!-- Inner White Circular Lens -->
+      <circle cx="19" cy="18" r="11" fill="#ffffff" filter="drop-shadow(0 1px 1px rgba(0,0,0,0.15))"/>
+      <!-- Hub Warehouse Industrial Glyph -->
+      <path d="M12 23V15L19 11L26 15V23" stroke="#990000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M16 23V18H22V23" stroke="#990000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <line x1="12" y1="23" x2="26" y2="23" stroke="#990000" stroke-width="2"/>
     </svg>
   `,
-  // Retail Storefront (White glyph on emerald)
-  retailStore: `
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M3 9l2-5h14l2 5"/>
-      <path d="M21 9v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9"/>
-      <path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/>
-      <path d="M9 22V12h6v10"/>
+
+  // Realistic 3D Teardrop Pin: Toko Mitra Store (Emerald Retail Branding)
+  realisticStorePin: `
+    <svg width="38" height="50" viewBox="0 0 38 50" fill="none" xmlns="http://www.w3.org/2000/svg" class="filter drop-shadow-md">
+      <defs>
+        <linearGradient id="storeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#059669"/>
+          <stop offset="100%" stop-color="#064e3b"/>
+        </linearGradient>
+      </defs>
+      <!-- Ground Shadow -->
+      <ellipse cx="19" cy="47" rx="8" ry="3" fill="rgba(0,0,0,0.3)"/>
+      <!-- Teardrop Pin Body -->
+      <path d="M19 2 C9.6 2 2 9.6 2 19 C2 29 19 45 19 45 C19 45 36 29 36 19 C36 9.6 28.4 2 19 2 Z" fill="url(#storeGrad)" stroke="#ffffff" stroke-width="2.5"/>
+      <!-- Inner White Circular Lens -->
+      <circle cx="19" cy="18" r="11" fill="#ffffff" filter="drop-shadow(0 1px 1px rgba(0,0,0,0.15))"/>
+      <!-- Retail Shop Storefront Glyph -->
+      <path d="M12 17L14 13H24L26 17" stroke="#047857" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M13 17V23H25V17" stroke="#047857" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M17 23V19H21V23" stroke="#047857" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   `,
-  // Delivery Carry Box Truck (White glyph on cobalt/emerald)
-  deliveryTruck: `
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/>
-      <path d="M14 8h4.5a1.5 1.5 0 0 1 1.2.6L22 12v5a1 1 0 0 1-1 1h-2"/>
-      <circle cx="7" cy="18" r="2"/>
-      <circle cx="17" cy="18" r="2"/>
-      <path d="M14 13h4"/>
+
+  // Top-Down Realistic Suzuki Carry Box Delivery Truck (With Headlight Beams & Livery)
+  suzukiCarryBox: `
+    <svg width="36" height="58" viewBox="0 0 36 58" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- Headlight Beams Spreading Onto Asphalt -->
+        <linearGradient id="lightBeamLeft" x1="0%" y1="100%" x2="0%" y2="0%">
+          <stop offset="0%" stop-color="rgba(254, 240, 138, 0.45)"/>
+          <stop offset="100%" stop-color="rgba(254, 240, 138, 0)"/>
+        </linearGradient>
+        <linearGradient id="lightBeamRight" x1="0%" y1="100%" x2="0%" y2="0%">
+          <stop offset="0%" stop-color="rgba(254, 240, 138, 0.45)"/>
+          <stop offset="100%" stop-color="rgba(254, 240, 138, 0)"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Headlight Projections Forward (Driving Direction) -->
+      <polygon points="7,10 0,-16 13,-16" fill="url(#lightBeamLeft)"/>
+      <polygon points="29,10 23,-16 36,-16" fill="url(#lightBeamRight)"/>
+
+      <!-- Chassis Drop Shadow on Road -->
+      <rect x="3" y="6" width="30" height="49" rx="6" fill="rgba(15, 23, 42, 0.35)"/>
+
+      <!-- Front Wheels (Tires) -->
+      <rect x="1" y="9" width="3.5" height="8" rx="1.5" fill="#0f172a"/>
+      <rect x="31.5" y="9" width="3.5" height="8" rx="1.5" fill="#0f172a"/>
+
+      <!-- Rear Dual Wheels (Tires) -->
+      <rect x="1" y="38" width="3.5" height="9" rx="1.5" fill="#0f172a"/>
+      <rect x="31.5" y="38" width="3.5" height="9" rx="1.5" fill="#0f172a"/>
+
+      <!-- Cargo Box Body (Back of Carry Box) -->
+      <rect x="5" y="17" width="26" height="36" rx="2" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+
+      <!-- Mayora FMCG Corporate Livery Stripes on Cargo Box -->
+      <rect x="5" y="24" width="26" height="6" fill="#a80000"/>
+      <rect x="5" y="32" width="26" height="2" fill="#d97706"/>
+
+      <!-- Cargo Box Center Door Joint -->
+      <line x1="18" y1="17" x2="18" y2="53" stroke="#cbd5e1" stroke-width="1"/>
+      <rect x="16" y="50" width="4" height="2" rx="0.5" fill="#475569"/>
+
+      <!-- Rear Brake Lights -->
+      <rect x="5" y="51" width="3.5" height="2" fill="#ef4444"/>
+      <rect x="27.5" y="51" width="3.5" height="2" fill="#ef4444"/>
+
+      <!-- Front Cab (Suzuki Carry White Cabin) -->
+      <rect x="6.5" y="4" width="23" height="15" rx="4.5" fill="#f8fafc" stroke="#475569" stroke-width="1.2"/>
+
+      <!-- Tinted Front Windshield with Gloss Highlight -->
+      <path d="M8.5 12 Q18 9 27.5 12 L26.5 16 Q18 14 9.5 16 Z" fill="#0369a1"/>
+      <path d="M10 13 Q18 10.5 26 13" stroke="rgba(255,255,255,0.7)" stroke-width="0.8" stroke-linecap="round"/>
+
+      <!-- Side Mirrors -->
+      <rect x="3" y="11" width="3" height="3" rx="0.8" fill="#1e293b"/>
+      <rect x="30" y="11" width="3" height="3" rx="0.8" fill="#1e293b"/>
+
+      <!-- Headlight Bulbs (Glowing Yellow/White) -->
+      <circle cx="9" cy="6" r="2" fill="#fef08a" stroke="#eab308" stroke-width="0.6"/>
+      <circle cx="27" cy="6" r="2" fill="#fef08a" stroke="#eab308" stroke-width="0.6"/>
     </svg>
   `,
-  // Mini Pin Icon
+
+  // Mini glyphs for clean badges
   miniPin: `
-    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
       <circle cx="12" cy="10" r="3"/>
     </svg>
   `,
-  // Mini Hub Factory Icon
   miniHub: `
-    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <path d="M3 21h18"/>
       <path d="M5 21V7l7-4 7 4v14"/>
     </svg>
   `,
-  // Mini Check Icon
   miniCheck: `
     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
       <polyline points="20 6 9 17 4 12"/>
     </svg>
-  `,
-  // Live Pulse Dot
-  livePulseDot: `
-    <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse mr-1"></span>
   `
 };
-
