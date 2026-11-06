@@ -3,6 +3,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { api } from '../services/api';
 import confetti from 'canvas-confetti';
+import DepotLocationMap from '../components/common/DepotLocationMap';
 import { 
   Phone, 
   Mail, 
@@ -133,17 +134,8 @@ export default function Contact({ setActiveNav }) {
             {/* LEFT COLUMN: DEPOT INFO */}
             <div className="lg:col-span-5 space-y-6">
               <div className="bg-surface-container-lowest rounded-2xl border border-surface-container-high p-5 shadow-xs space-y-4">
-                <div className="relative h-44 rounded-xl overflow-hidden bg-surface-container">
-                  <img
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAV2H9nF8GLDWtNtpTxEambD16lyZIfbzF97RfbuFxzgH35TVc6nfJQrd4TxSQdFiV-sXsn3sFPwREneZpfZC6O1Df_k9dHH4ks-UKxsEJZ1lcQXUlEIEIcmcmo-tjOvPPh0uIO3eEgvyRwYlldHV2Pl6vY1mLMiFlOr1P7kJ0TozDUN-a5yGD0-MudaW1nt1X245d-ydtCaeRQnRHPRcJgWuV1rmUlQ2qKMek6zGY"
-                    alt="Depot pergudangan logistik Inbisco MitraHub cabang Krian"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                  <span className="absolute bottom-3 left-3 text-white text-xs font-bold font-display">
-                    Depot Konsolidasi Logistik Krian
-                  </span>
-                </div>
+                {/* INTERACTIVE DEPOT LOCATION MAP */}
+                <DepotLocationMap height="h-[260px]" />
 
                 <div className="space-y-3.5 text-xs text-on-surface-variant">
                   <div className="flex items-start gap-3">
